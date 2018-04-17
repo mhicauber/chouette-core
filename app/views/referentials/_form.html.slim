@@ -49,7 +49,7 @@
     .separator
     .row
       .col-lg-11
-        = subform.input :lines, as: :select, collection: Chouette::Line.includes(:company).order(:name).for_organisation(current_organisation).for_workbench(@workbench), selected: subform.object.line_ids, label_method: :display_name, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', style: 'width: 100%' }
+        = subform.input :lines, as: :select, collection: @workbench.lines, selected: subform.object.line_ids, label_method: :display_name, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', style: 'width: 100%' }
       .col-lg-1
         a.clear-lines.btn.btn-default href='#'
           .fa.fa-trash

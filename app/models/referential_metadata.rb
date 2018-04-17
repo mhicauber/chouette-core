@@ -155,10 +155,10 @@ class ReferentialMetadata < ApplicationModel
   end
   private :clear_periods
 
-  def self.new_from(from, organisation)
+  def self.new_from(from, workbench)
     from.dup.tap do |metadata|
       metadata.referential_source_id = from.referential_id
-      metadata.line_ids = from.referential.lines.where(id: metadata.line_ids).for_organisation(organisation).pluck(:id)
+      metadata.line_ids = workbench.lines.where(id: metadata.line_ids).pluck(:id)
       metadata.referential_id = nil
     end
   end
