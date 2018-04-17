@@ -8,11 +8,11 @@ class Workbench < ApplicationModel
   belongs_to :output, class_name: 'ReferentialSuite'
   belongs_to :workgroup
 
-  has_many :lines, -> (workbench) { Stif::MyWorkbenchScopes.new(workbench).line_scope(self) }, through: :line_referential
+  has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
+  has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
   has_many :networks, through: :line_referential
   has_many :companies, through: :line_referential
   has_many :group_of_lines, through: :line_referential
-  has_many :stop_areas, through: :stop_area_referential
   has_many :imports, class_name: Import::Base
   has_many :exports, class_name: Export::Base
   has_many :workbench_imports, class_name: Import::Workbench
@@ -29,6 +29,9 @@ class Workbench < ApplicationModel
 
   before_validation :initialize_output
 
+  def workbench_scopes
+    workgroup.workbench_scopes(self)
+  end
 
   def all_referentials
     if line_ids.empty?

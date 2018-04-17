@@ -19,6 +19,9 @@ class Workgroup < ApplicationModel
 
   accepts_nested_attributes_for :workbenches
 
+  @@workbench_scopes_class = Stif::WorkbenchScopes
+  mattr_accessor :workbench_scopes_class
+
   def custom_fields_definitions
     Hash[*custom_fields.map{|cf| [cf.code, cf]}.flatten]
   end
@@ -64,5 +67,9 @@ class Workgroup < ApplicationModel
       h[k] = "workgroups.compliance_control_sets.#{k}".t.capitalize
       h
     end
+  end
+
+  def workbench_scopes workbench
+    self.class.workbench_scopes_class.new(workbench)
   end
 end

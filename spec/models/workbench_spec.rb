@@ -35,14 +35,32 @@ RSpec.describe Workbench, :type => :model do
     let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
     let!(:organisation) { create :organisation, sso_attributes: { functional_scope: ids.to_json } }
     let(:workbench) { create :workbench, organisation: organisation }
-
-    it 'should filter lines based on my organisation functional_scope' do
+    let(:lines){ workbench.lines }
+    before do
       (ids + ['STIF:CODIFLIGNE:Line:0000']).each do |id|
         create :line, objectid: id, line_referential: workbench.line_referential
       end
-      lines = workbench.lines
-      expect(lines.count).to eq 2
-      expect(lines.map(&:objectid)).to include(*ids)
+    end
+    context "with the default scope policy" do
+      before do
+        Workgroup.workbench_scopes_class = WorkbenchScopes::All
+      end
+
+      it 'should retrieve all lines' do
+        expect(lines.count).to eq 3
+      end
+    end
+
+    context "with a scope policy based on the sso_attributes" do
+      before do
+        Workgroup.workbench_scopes_class = Stif::WorkbenchScopes
+      end
+
+      it 'should filter lines based on my organisation functional_scope' do
+        lines = workbench.lines
+        expect(lines.count).to eq 2
+        expect(lines.map(&:objectid)).to include(*ids)
+      end
     end
   end
 
