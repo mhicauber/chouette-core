@@ -7,6 +7,7 @@ node do |stop_area|
     :short_registration_number => truncate(stop_area.registration_number, :length => 10) || "",
     :name                      => stop_area.name || "",
     :short_name                => truncate(stop_area.name, :length => 30) || "",
+    :local_code                  => stop_area.local_code || "",
     :zip_code                  => stop_area.zip_code || "",
     :city_name                 => stop_area.city_name || "",
     :short_city_name           => truncate(stop_area.city_name, :length => 15) || "",

@@ -48,6 +48,7 @@ en:
         area_type: "Area type"
         city_name: "City name"
         zip_code: "Zip code"
+        local_code: "Local code"
         position: "Position"
   simple_form:
     labels:

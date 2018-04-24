@@ -49,7 +49,8 @@ fr:
       export_hub_physical: "Export HUB des arrêts physiques"
     filters:
       name_or_objectid: "Recherche par nom ou par objectid..."
-      zip_code: Indiquez un code INSEE...
+      local_code: Indiquez un code INSEE...
+      zip_code: Indiquez un code postal...
       city_name: Indiquez un nom de commune...
       area_type: "Indiquez un type d'arrêt..."
     new:
@@ -83,7 +84,8 @@ fr:
       access_link_legend_2: "cliquer sur les flêches pour créer/éditer un lien"
     index:
       name: "Recherche par nom..."
-      zip_code: "Code INSEE"
+      zip_code: "Code postal"
+      local_code: "Code INSEE"
       city_name: "Commune"
       title: "Arrêts"
       selection: "Filtrer sur"
@@ -145,7 +147,8 @@ fr:
         routing_line_ids: "Lignes affectées par l'ITL"
         parent: "Parent"
         coordinates: "Coordonnées (lat,lng) WGS84"
-        zip_code: "Code INSEE"
+        zip_code: "Code postal"
+        local_code: "Code INSEE"
         city_name: "Commune"
         waiting_time: Temps de desserte (minutes)
         status: État

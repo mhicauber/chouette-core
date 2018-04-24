@@ -156,7 +156,7 @@ module Stif
           name:          'Name',
           area_type:     'TypeOfPlaceRef',
           object_version: 'version',
-          zip_code:       'PostalRegion',
+          local_code:       'PostalRegion',
           city_name:      'Town',
           stif_type:      'OBJECT_STATUS',
         }.each do |k, v| stop[k] = entry[v] end

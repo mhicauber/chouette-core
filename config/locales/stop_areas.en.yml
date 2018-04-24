@@ -49,6 +49,7 @@ en:
     filters:
       name_or_objectid: "Search by name or by objectid..."
       zip_code: Enter a zip code...
+      local_code: Enter a local code...
       city_name: Enter a city name...
       area_type: Enter an area type...
     new:
@@ -144,6 +145,7 @@ en:
         parent: "Parent"
         coordinates: "Coordinates (lat,lng) WGS84"
         zip_code: "Zip code"
+        local_code: "Local code"
         city_name: "City"
         waiting_time: Waiting time (minutes)
         status: Status

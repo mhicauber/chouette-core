@@ -10,15 +10,37 @@
 
   .ffg-row
     = f.input :zip_code_cont, placeholder: t('.zip_code'), label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:q], :zip_code_cont)}
-    = f.input :city_name_cont, placeholder: t('.city_name'), label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:q], :city_name_cont)}
+    = f.input :city_name_cont, placeholder: t('.city_name'), label: Chouette::StopArea.tmf(:city_name), required: false, wrapper_html: {class: filter_item_class(params[:q], :city_name_cont)}
 
     .form-group.togglable class=filter_item_class(params[:q], :area_type_eq_any)
-      = f.label Chouette::StopArea.tmf('area_type'), required: false, class: 'control-label'
+      = f.label Chouette::StopArea.tmf(:area_type), required: false, class: 'control-label'
       = f.input :area_type_eq_any, checked: params[:q] && params[:q][:area_type_eq_any], collection: Chouette::AreaType.options, as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + w[0] + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
-    .form-group.togglable class=filter_item_class(params[:q], :by_status)
-      = f.label Chouette::StopArea.tmf('status'), required: false, class: 'control-label'
-      = f.input :by_status, checked: params[:q] && params[:q][:by_status], collection: [:in_creation, :confirmed, :deactivated], as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + stop_area_status(w) + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+      
+    .form-group.togglable class=filter_item_class(params[:q], :status)
+      = f.label Chouette::StopArea.tmf(:state), required: false, class: 'control-label'
+      .form-group.checkbox_list
+        = f.simple_fields_for :status do |p|
+          = p.input :in_creation,
+            label: ("<span>#{t('activerecord.attributes.stop_area.in_creation')}<span class='fa fa-pencil text-info'></span></span>").html_safe,
+            as: :boolean,
+            wrapper_html: { class: 'checkbox-wrapper' },
+            checked_value: true,
+            unchecked_value: false,
+            input_html: { checked: @status.try(:[], :in_creation) }
+          = p.input :confirmed,
+            label: ("<span>#{t('activerecord.attributes.stop_area.confirmed')}<span class='fa fa-check-circle text-success'></span></span>").html_safe,
+            as: :boolean,
+            wrapper_html: { class: 'checkbox-wrapper' },
+            checked_value: true,
+            unchecked_value: false,
+            input_html: { checked: @status.try(:[], :confirmed) }
+          = p.input :deactivated,
+            label: ("<span>#{t('activerecord.attributes.stop_area.deleted')}<span class='fa fa-exclamation-circle text-danger'></span></span>").html_safe,
+            as: :boolean,
+            wrapper_html: { class: 'checkbox-wrapper' },
+            checked_value: true,
+            unchecked_value: false,
+            input_html: { checked: @status.try(:[], :deactivated) }
 
   .actions
     = link_to t('actions.erase'), @workbench, class: 'btn btn-link'

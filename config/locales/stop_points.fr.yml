@@ -47,7 +47,8 @@ fr:
         for_alighting: "Descente"
         area_type: "Type d'arrêt"
         city_name: "Commune"
-        zip_code: "Code INSEE"
+        zip_code: "Code postal"
+        local_code: "Code INSEE"
         position: "Position"
   simple_form:
     labels:

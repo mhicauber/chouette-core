@@ -35,7 +35,7 @@ describe 'reflex:sync' do
 
     it 'should map xml data to StopArea attribute' do
       stop_area = Chouette::StopArea.find_by(objectid: 'FR:77153:LDA:69325:STIF')
-      expect(stop_area.zip_code).to eq '77153'
+      expect(stop_area.local_code).to eq '77153'
       expect(stop_area.area_type).to eq 'lda'
     end
 
