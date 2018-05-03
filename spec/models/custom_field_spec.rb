@@ -52,18 +52,11 @@ RSpec.describe CustomField, type: :model do
       let(:ref2){ create :workbench_referential }
       before do
         create :custom_field, field_type: :integer, code: :ref1_energy, name: :energy, workgroup: ref1.workgroup, options: {default: 12}
-        class CustomField
-          enumerize :field_type, in: %i{list integer string attachment float_test}
-          class Instance
-            class FloatTest < Integer
-              def preprocess_value_for_assignment val
-                val&.to_f
-              end
-            end
-          end
-        end
-        create :custom_field, field_type: :float_test, code: :ref1_energy, name: :energy, workgroup: ref1.workgroup, options: {default: 12}, resource_type: "Company"
+
+        create :custom_field, field_type: :float, code: :ref1_energy, name: :energy, workgroup: ref1.workgroup, options: {default: 12}, resource_type: "Company"
         create :custom_field, field_type: :integer, code: :ref2_energy, name: :energy, workgroup: ref2.workgroup
+        expect_any_instance_of(CustomField::Instance::Float).to receive(:preprocess_value_for_assignment) {|_, v| v.to_f }
+
       end
       it "should only initialize fields from the right workgroup" do
         ref1.switch
@@ -81,15 +74,20 @@ RSpec.describe CustomField, type: :model do
   end
 
   context "with a 'list' field_type" do
-    let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values: %w(foo bar baz)}, workgroup: workgroup)] }
+    let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values: %w(foo bar baz), default: 1}, workgroup: workgroup)] }
     let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: "1"} }
     it "should cast the value" do
       expect(vj.custom_fields[:energy].value).to eq 1
       expect(vj.custom_fields[:energy].display_value).to eq "bar"
     end
 
-    it "should not break initailizartion if the model does not have the :custom_field_values attribute" do
+    it "should not break initialization if the model does not have the :custom_field_values attribute" do
       expect{Chouette::VehicleJourney.where(id: vj.id).select(:id).last}.to_not raise_error
+    end
+
+    it "should use the default value" do
+      vj = Chouette::VehicleJourney.new
+      expect(vj.custom_fields[:energy].value).to eq 1
     end
 
     it "should validate the value" do
@@ -105,7 +103,37 @@ RSpec.describe CustomField, type: :model do
           expect(vj.validate).to be_truthy
         else
           expect(vj.validate).to be_falsy
-          expect(vj.errors.messages[:"custom_fields.energy"]).to be_present
+          expect(vj.errors.messages[:"custom_field_energy"]).to be_present
+        end
+      end
+    end
+
+    context 'with the values defined in a Hash' do
+      let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values:{"1" => "foo", "2" => "bar", "3" => "BAZ"}}, workgroup: workgroup)] }
+      it "should cast the value" do
+        expect(vj.custom_fields[:energy].value).to eq 1
+        expect(vj.custom_fields[:energy].display_value).to eq "foo"
+      end
+
+      it "should not break initialization if the model does not have the :custom_field_values attribute" do
+        expect{Chouette::VehicleJourney.where(id: vj.id).select(:id).last}.to_not raise_error
+      end
+
+      it "should validate the value" do
+        {
+          "1" => true,
+          1 => true,
+          "azerty" => false,
+          "10" => false,
+          10 => false
+        }.each do |val, valid|
+          vj = build :vehicle_journey, custom_field_values: {energy: val}
+          if valid
+            expect(vj.validate).to be_truthy
+          else
+            expect(vj.validate).to be_falsy
+            expect(vj.errors.messages[:"custom_field_energy"]).to be_present
+          end
         end
       end
     end
@@ -122,6 +150,12 @@ RSpec.describe CustomField, type: :model do
       {
         99 => true,
         "99" => true,
+        "-99" => true,
+        -99 => true,
+        99.1 => false,
+        "99.1" => false,
+        "-99.1" => false,
+        -99.1 => false,
         "azerty" => false,
         "91a" => false,
         "a91" => false
@@ -131,7 +165,39 @@ RSpec.describe CustomField, type: :model do
           expect(vj.validate).to be_truthy
         else
           expect(vj.validate).to be_falsy, "#{val} should not ba a valid value"
-          expect(vj.errors.messages[:"custom_fields.energy"]).to be_present
+          expect(vj.errors.messages[:"custom_field_energy"]).to be_present
+        end
+      end
+    end
+  end
+
+  context "with a 'float' field_type" do
+    let!(:field){ [create(:custom_field, code: :energy, field_type: 'float', workgroup: workgroup)] }
+    let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: "99"} }
+    it "should cast the value" do
+      expect(vj.custom_fields[:energy].value).to eq 99.0
+    end
+
+    it "should validate the value" do
+      {
+        99 => true,
+        "99" => true,
+        "-99" => true,
+        -99 => true,
+        99.1 => true,
+        "99.1" => true,
+        "-99.1" => true,
+        -99.1 => true,
+        "azerty" => false,
+        "91a" => false,
+        "a91" => false
+      }.each do |val, valid|
+        vj = build :vehicle_journey, custom_field_values: {energy: val}
+        if valid
+          expect(vj.validate).to be_truthy
+        else
+          expect(vj.validate).to be_falsy, "#{val} should not ba a valid value"
+          expect(vj.errors.messages[:"custom_field_energy"]).to be_present
         end
       end
     end
