@@ -8,6 +8,12 @@ class MergesController < ChouetteController
 
   before_action :set_mergeable_controllers, only: [:new]
 
+  protected
+
+  def begin_of_association_chain
+    current_organisation
+  end
+
   private
 
   def set_mergeable_controllers
