@@ -195,10 +195,13 @@ class CustomField < ApplicationModel
     end
 
     class List < Integer
+      def collection_is_a_hash?
+        options["list_values"].is_a?(Hash)
+      end
+
       def validate
-        super
         return unless value.present?
-        if options["list_values"].is_a?(Hash)
+        if collection_is_a_hash?
           unless options["list_values"].keys.map(&:to_s).include?(value.to_s)
             @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
             @valid = false
@@ -213,7 +216,7 @@ class CustomField < ApplicationModel
 
       def display_value
         return unless value
-        k = options["list_values"].is_a?(Hash) ? value.to_s : value.to_i
+        k = collection_is_a_hash? ? value.to_s : value.to_i
         options["list_values"][k]
       end
 

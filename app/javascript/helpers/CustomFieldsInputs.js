@@ -18,9 +18,11 @@ export default class CustomFieldsInputs extends Component {
   }
 
   listInput(cf){
+    let keys = _.orderBy(_.keys(this.options(cf).list_values), function(i){ return parseInt(i)})
     return(
       <Select2
-        data={_.map(this.options(cf).list_values, (v, k) => {
+        data={_.map(keys, (k) => {
+          let v = this.options(cf).list_values[k]
           return {id: k, text: (v.length > 0 ? v : '\u00A0')}
         })}
         ref={'custom_fields.' + cf.code}
