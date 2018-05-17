@@ -196,7 +196,7 @@ const actions = {
                 let stop_point = val.route_short_description.stop_points[i]
                 stop_point.checked = false
                 val.stop_area_short_descriptions.map((element) => {
-                  if(element.stop_area_short_description.id === stop_point.id){
+                  if(element.stop_area_short_description.position === stop_point.position){
                     stop_point.checked = true
                   }
                 })
