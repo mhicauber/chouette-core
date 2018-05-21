@@ -35,7 +35,7 @@ fr:
         ref: Ref
         creation_date: Date et heure de création
         associated_object: Objet associé
-        assigned_to: Affectation
+        assigned_to: Affectations
         compliance_control_set: Jeu de contrôle exécuté
         name: Nom
       compliance_check_resource:

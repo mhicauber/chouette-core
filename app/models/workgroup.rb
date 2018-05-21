@@ -30,7 +30,7 @@ class Workgroup < ApplicationModel
     export_types.include? export_name
   end
 
-  def all_compliance_control_sets
+  def self.all_compliance_control_sets
     %i(after_import
       after_import_by_workgroup
       before_merge
@@ -41,18 +41,22 @@ class Workgroup < ApplicationModel
     )
   end
 
-  def compliance_control_sets_by_workgroup
+  def self.all_compliance_control_sets_labels
+    compliance_control_sets_labels all_compliance_control_sets
+  end
+
+  def self.compliance_control_sets_by_workgroup
     compliance_control_sets_labels all_compliance_control_sets.grep(/by_workgroup$/)
   end
 
-  def compliance_control_sets_by_workbench
+  def self.compliance_control_sets_by_workbench
     compliance_control_sets_labels all_compliance_control_sets.grep_v(/by_workgroup$/)
   end
 
-  def import_compliance_control_sets
+  def self.import_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_import/)
   end
-
+  
   def before_merge_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^before_merge/)
   end
@@ -61,12 +65,28 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
+  def import_compliance_control_sets
+    self.class.import_compliance_control_sets
+  end
+
   def workbench_scopes workbench
     self.class.workbench_scopes_class.new(workbench)
   end
 
+  def all_compliance_control_sets_labels
+    self.class.all_compliance_control_sets_labels
+  end
+
+  def compliance_control_sets_by_workgroup
+    self.class.compliance_control_sets_by_workgroup
+  end
+
+  def compliance_control_sets_by_workbench
+    self.class.compliance_control_sets_by_workbench
+  end
+
   private
-  def compliance_control_sets_labels(keys)
+  def self.compliance_control_sets_labels(keys)
     keys.inject({}) do |h, k|
       h[k] = "workgroups.compliance_control_sets.#{k}".t.capitalize
       h

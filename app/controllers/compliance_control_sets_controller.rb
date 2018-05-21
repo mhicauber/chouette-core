@@ -29,8 +29,9 @@ class ComplianceControlSetsController < ChouetteController
 
   protected
 
-  def begin_of_association_chain
-    current_organisation
+  def end_of_association_chain
+    organisation_ids = [current_organisation.id] + current_organisation.workbenches.map{|w| w.workgroup.owner_id}.uniq
+    ComplianceControlSet.where(organisation_id: organisation_ids)
   end
 
   private
@@ -38,6 +39,7 @@ class ComplianceControlSetsController < ChouetteController
   def collection
     @compliance_control_sets ||= begin
       scope = end_of_association_chain.all
+      scope = scope.assigned_to_slots(current_organisation, params[:q].try(:[], :assigned_to_slots))
       scope = self.ransack_period_range(scope: scope, error_message: t('imports.filters.error_period_filter'), query: :where_updated_at_between)
       @q_for_form = scope.ransack(params[:q])
       compliance_control_sets = @q_for_form.result
