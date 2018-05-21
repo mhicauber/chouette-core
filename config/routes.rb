@@ -1,5 +1,6 @@
 ChouetteIhm::Application.routes.draw do
   resource :dashboard
+  resource :subscriptions, only: :create
 
   resources :workbenches, except: [:destroy] do
     delete :referentials, on: :member, action: :delete_referentials

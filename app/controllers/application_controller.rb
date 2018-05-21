@@ -31,6 +31,10 @@ class ApplicationController < ActionController::Base
     render 'errors/forbidden', status: 403
   end
 
+  def not_found
+    render 'errors/not_found', status: 404
+  end
+
   def current_organisation
     current_user.organisation if current_user
   end
