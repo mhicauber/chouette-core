@@ -48,7 +48,6 @@ RSpec.describe ComplianceControlSetsController, type: :controller do
         it "should filter the output" do
           get :index, q: {assigned_to_slots: assigned_to_slots}
           expect(response).to be_success
-          p same_organisation_cc_set
           expect(assigns(:compliance_control_sets)).to include(same_organisation_cc_set)
           expect(assigns(:compliance_control_sets)).to_not include(workgroups_owner_cc_set)
           expect(assigns(:compliance_control_sets)).to_not include(different_organisation_cc_set)
