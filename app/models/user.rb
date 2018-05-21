@@ -28,6 +28,7 @@ class User < ApplicationModel
   # attr_accessible :email, :password, :current_password, :password_confirmation, :remember_me, :name, :organisation_attributes
   belongs_to :organisation
   has_many :workbenches, through: :organisation
+  has_many :workgroups, through: :workbenches
   accepts_nested_attributes_for :organisation
 
   validates :organisation, :presence => true
