@@ -80,9 +80,6 @@ class Subscription
   end
 
   def save
-    p organisation.valid?
-    p organisation.errors
-    p valid?
     if valid?
       ActiveRecord::Base.transaction do
         organisation.save!
