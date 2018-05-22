@@ -21,24 +21,30 @@ class Subscription
   end
 
   def organisation
-    @organisation ||= Organisation.new name: organisation_name
+    @organisation ||= Organisation.new name: organisation_name, code: "#{user_name}_#{organisation_name}"
   end
 
   def valid?
     @valid = !@valid.nil? ? @valid : begin
+      valid = true
       unless organisation.valid?
         organisation.errors[:name].each do |e|
           errors.add(:organisation_name, e)
         end
+        valid = false
       end
       unless user.valid?
-        %i{user_name password password_confirmation email}.each do |attribute|
+        %i{password password_confirmation email}.each do |attribute|
           user.errors[attribute].each do |e|
             errors.add attribute, e
           end
         end
+        user.errors[:name].each do |e|
+          errors.add :user_name, e
+        end
+        valid = false
       end
-      errors.empty?
+      valid
     end
   end
 
@@ -58,7 +64,7 @@ class Subscription
   end
 
   def workgroup
-    @workgroup ||= Workgroup.create!(name: Workgroup.ts) do |w|
+    @workgroup ||= Workgroup.create!(name: organisation_name) do |w|
       w.line_referential      = line_referential
       w.stop_area_referential = stop_area_referential
     end
@@ -74,6 +80,9 @@ class Subscription
   end
 
   def save
+    p organisation.valid?
+    p organisation.errors
+    p valid?
     if valid?
       ActiveRecord::Base.transaction do
         organisation.save!

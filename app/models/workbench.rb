@@ -48,7 +48,7 @@ class Workbench < ApplicationModel
 
   def self.default
     self.last if self.count == 1
-    where(name: DEFAULT_WORKBENCH_NAME).last
+    where(name: DEFAULT_WORKBENCH_NAME).last || last
   end
 
   # XXX

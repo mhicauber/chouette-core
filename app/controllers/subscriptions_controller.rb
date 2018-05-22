@@ -1,10 +1,20 @@
 class SubscriptionsController < ChouetteController
+  layout "devise"
+
   skip_before_action :authenticate_user!
   before_action :check_feature_is_activated
 
+  def devise_mapping
+    Devise.mappings[:user]
+  end
+  helper_method :devise_mapping
 
   def resource
     @subscription ||= Subscription.new subscription_params
+  end
+
+  def resource_class
+    Subscription
   end
 
   def create

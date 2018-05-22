@@ -5,8 +5,12 @@ class User < ApplicationModel
   @@authentication_type = "#{Rails.application.config.chouette_authentication_settings[:type]}_authenticatable".to_sym
   cattr_reader :authentication_type
 
+  def self.more_devise_modules
+    Rails.application.config.accept_user_creation ? [:confirmable] : []
+  end
+
   devise :invitable, :registerable, :validatable, :lockable,
-         :recoverable, :rememberable, :trackable, :async, authentication_type
+         :recoverable, :rememberable, :trackable, :async, authentication_type, *more_devise_modules
 
   # FIXME https://github.com/nbudin/devise_cas_authenticatable/issues/53
   # Work around :validatable, when database_authenticatable is disabled.
@@ -40,6 +44,10 @@ class User < ApplicationModel
     self.email        = extra[:email]
     self.organisation = Organisation.sync_update extra[:organisation_code], extra[:organisation_name], extra[:functional_scope]
     self.permissions  = Stif::PermissionTranslator.translate(extra[:permissions], self.organisation)
+  end
+
+  def confirmed?
+    !!confirmed_at || created_at > 24.hours.ago
   end
 
   def self.portail_api_request

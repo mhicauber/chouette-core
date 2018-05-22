@@ -58,13 +58,13 @@ Rails.application.configure do
   config.company_name = "STIF"
   config.company_theme = "#66b4e0"
   config.company_contact = "http://www.chouette.mobi/club-utilisateurs/contact-support/"
-  config.accept_user_creation = false
+  config.accept_user_creation = true
 
   # Reflex api url
   config.reflex_api_url = "https://pprod.reflex.stif.info/ws/reflex/V1/service=getData"
   config.codifligne_api_url = "https://pprod.codifligne.stif.info/rest/v1/lc/getlist"
 
-  if Rails.env.development? && ENV['NO_VPN']
+  if config.accept_user_creation || ENV['NO_VPN'] 
     config.chouette_authentication_settings = {
       type: "database"
     }
