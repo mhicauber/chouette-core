@@ -17,13 +17,12 @@
             })
         - attributes.merge!(Chouette::StopArea.tmf('waiting_time') => @stop_area.waiting_time_text) if has_feature?(:stop_area_waiting_time)
         - attributes.merge!({ "Coordonnées" => geo_data(@stop_area, @stop_area_referential),
-            Chouette::StopArea.tmf('zip_code') => @stop_area.zip_code,
-            Chouette::StopArea.tmf('local_code') => @stop_area.try(:local_code),
-            Chouette::StopArea.tmf('city_name') => @stop_area.city_name,
-            Chouette::StopArea.tmf('country_code') => @stop_area.country_code.presence || '-',
-            Chouette::StopArea.tmf('time_zone') => @stop_area.time_zone.presence || '-',
-            Chouette::StopArea.tmf('status') => stop_area_status(@stop_area.status),
-            Chouette::StopArea.tmf('comment') => @stop_area.try(:comment),
+            Chouette::StopArea.tmf(:zip_code) => @stop_area.zip_code,
+            Chouette::StopArea.tmf(:local_code) => @stop_area.try(:local_code),
+            Chouette::StopArea.tmf(:city_name) => @stop_area.city_name,
+            Chouette::StopArea.tmf(:country_code) => @stop_area.country_code.presence || '-',
+            t('activerecord.attributes.stop_area.state') => stop_area_status(@stop_area),
+            Chouette::StopArea.tmf(:comment) => @stop_area.try(:comment),
             })
         - @stop_area.custom_fields.each do |code, field|
           - attributes.merge!(field.name => field.display_value)
