@@ -1,10 +1,10 @@
 .nested-fields.col-lg-4.col-md-4.col-sm-6.col-xs-12
   .panel.panel-default
     .panel-body
-      = f.input :code, label: 'Titre'
-      = f.input :label, label: 'Texte'
+     = f.input :code, label: Chouette::Footnote.tmf(:code)
+      = f.input :label, label: Chouette::Footnote.tmf(:label)
       
       .text-right
-        = link_to_remove_association f, class: 'btn btn-outline-danger', data: { confirm: 'Etes-vous sûr(e) ?' }, title: t('actions.delete') do
+        = link_to_remove_association f, class: 'btn btn-outline-danger', data: { confirm: t('are_you_sure') }, title: t('actions.delete') do
           span.fa.fa-trash
           / span = t('actions.delete')

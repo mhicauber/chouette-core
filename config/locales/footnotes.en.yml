@@ -15,6 +15,7 @@ en:
         other: "notes"
     attributes:
       footnote:
-        code: "number"
-        checksum: checksum
-        label: "line text"
+        code: "Number"
+        checksum: Checksum
+        label: "Line text"
+
