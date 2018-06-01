@@ -392,7 +392,7 @@ module Chouette
               time -= day_offset*24.hours
 
               empty_vjas.update_attribute :arrival_time, time
-              empty_vjas.update_attribute :arrival_day_offset, previous_stop.arrival_day_offset + day_offset
+              empty_vjas.update_attribute :arrival_day_offset, previous_stop.departure_day_offset + day_offset
               empty_vjas.update_attribute :departure_time, time
               empty_vjas.update_attribute :departure_day_offset, previous_stop.departure_day_offset + day_offset
               previous = empty_vjas

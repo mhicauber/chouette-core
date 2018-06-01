@@ -983,6 +983,18 @@ describe Chouette::VehicleJourney, :type => :model do
       expect(@target_4.departure_time).to eq @target_3.arrival_time
     end
 
+    context "with a stop across midnight" do
+      before do
+        @middle.update arrival_time: @start.departure_time + 11.hours, departure_time: @start.departure_time + 13.hours, departure_day_offset: 1, arrival_day_offset: 0
+      end
+
+      it "should set the following stop day offset" do
+        @journey.reload.fill_passing_times!
+        expect(@target_3.reload.arrival_day_offset).to eq 1
+        expect(@target_3.departure_day_offset).to eq 1
+      end
+    end
+
     context "with a day offset" do
       before do
         @end.update arrival_time: offset_passing_time(@middle.departure_time, - 4.hours), departure_time: offset_passing_time(@middle.departure_time, - 4.hours), departure_day_offset: 1, arrival_day_offset: 1
