@@ -5,6 +5,7 @@ en:
   footnotes:
     actions:
       add_footnote: "add footnote"
+      destroy_confirm: Are you sure you want to delete this footnote ?
     index:
       title: "Footnotes"
   activerecord:

@@ -15,7 +15,7 @@ class PurchaseWindowDecorator < AF83::Decorator
     instance_decorator.edit_action_link
 
     instance_decorator.destroy_action_link do |l|
-      l.data confirm: t('purchase_windows.actions.destroy_confirm')
+      l.data {{ confirm: h.t('purchase_windows.actions.destroy_confirm') }}
     end
   end
 

@@ -17,7 +17,7 @@ class ComplianceControlDecorator < AF83::Decorator
     instance_decorator.edit_action_link
 
     instance_decorator.destroy_action_link do |l|
-      l.data confirm: t('compliance_controls.actions.destroy_confirm')
+      l.data {{ confirm: h.t('compliance_controls.actions.destroy_confirm') }}
     end
   end
 

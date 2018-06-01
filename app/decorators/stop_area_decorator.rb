@@ -23,7 +23,7 @@ class StopAreaDecorator < AF83::Decorator
         )
       end
       l.method :put
-      l.data confirm: t('stop_areas.actions.deactivate_confirm')
+      l.data {{ confirm: h.t('stop_areas.actions.deactivate_confirm') }}
       l.add_class 'delete-action'
     end
 
@@ -36,13 +36,13 @@ class StopAreaDecorator < AF83::Decorator
         )
       end
       l.method :put
-      l.data confirm: t('stop_areas.actions.activate_confirm')
+      l.data {{ confirm: h.t('stop_areas.actions.activate_confirm') }}
       l.add_class 'delete-action'
     end
 
     instance_decorator.destroy_action_link do |l|
       l.content { h.destroy_link_content('stop_areas.actions.destroy') }
-      l.data confirm: t('stop_areas.actions.destroy_confirm')
+      l.data {{ confirm: h.t('stop_areas.actions.destroy_confirm') }}
     end
   end
 

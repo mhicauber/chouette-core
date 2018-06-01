@@ -23,7 +23,7 @@ en:
       destroy: Destroy
       add_compliance_control: Compliance Control
       add_compliance_control_block: Compliance Control Block
-      destroy_confirm: Are you sure ?
+      destroy_confirm: Are you sure you want to destroy this compliance control set ?
       loaded: Load the control
     filters:
       name: 'Enter name ...'
