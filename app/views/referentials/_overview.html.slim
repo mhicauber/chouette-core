@@ -7,13 +7,18 @@
           span.input-group-btn
             button.btn.btn-default#search-btn type='submit'
               span.fa.fa-search
-        .form-group.togglable
-          = f.label Chouette::Line.human_attribute_name(:company_id), required: false, class: 'control-label'
-          = f.input :company_id_eq_any, collection: overview.referential_lines.map(&:company).compact.uniq.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
 
-        .form-group.togglable
-          = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
-          = f.input :transport_mode_eq_any, collection: overview.referential_lines.map(&:transport_mode).compact.uniq.sort, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+        - companies = overview.referential_lines.map(&:company).compact.uniq
+        - if companies.size > 1
+          .form-group.togglable
+            = f.label Chouette::Line.human_attribute_name(:company_id), required: false, class: 'control-label'
+            = f.input :company_id_eq_any, collection: companies.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+
+        - transport_modes = overview.referential_lines.map(&:transport_mode).compact.uniq
+        - if transport_modes.size > 1
+          .form-group.togglable
+            = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
+            = f.input :transport_mode_eq_any, collection: transport_modes.sort, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
 
       .actions
         = link_to t('actions.erase'), url_for() + "##{overview.pagination_param_name}", class: 'btn btn-link'
