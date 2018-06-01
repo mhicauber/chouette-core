@@ -14,6 +14,7 @@
       = f.input :text_color
       = f.input :stable_id
       = f.input :url
+      = f.input :seasonal
       = f.input :mobility_restricted_suitability, as: :select, :collection => [[@line.human_attribute_name("accessible"), true], [@line.human_attribute_name("not_accessible"), false]], :include_blank => true
       = f.input :flexible_service, as: :select, :collection => [[@line.human_attribute_name("on_demaond_fs"), true], [@line.human_attribute_name("regular_fs"), false]], :include_blank => true
       = f.input :comment
