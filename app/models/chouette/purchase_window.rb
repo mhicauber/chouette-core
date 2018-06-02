@@ -15,7 +15,7 @@ module Chouette
     belongs_to :referential
     has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
 
-    validates_presence_of :name, :referential
+    validates_presence_of :name, :referential, :date_ranges
 
     scope :contains_date, ->(date) { where('date ? <@ any (date_ranges)', date) }
     scope :overlap_dates, ->(date_range) { where('daterange(?, ?) && any (date_ranges)', date_range.first, date_range.last + 1.day) }
