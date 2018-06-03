@@ -9,6 +9,10 @@ class ComplianceControl < ApplicationModel
       ComplianceControlPolicy
     end
 
+    def block_class
+      self.parent.to_s.sub('Control', '').underscore 
+    end
+
     def subclass_patterns
       {
         generic: 'Generic',

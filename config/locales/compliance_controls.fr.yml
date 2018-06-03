@@ -28,6 +28,13 @@ fr:
       title: "Editer un contrôle"
     select_type:
       title: "Sélectionner un type de contrôle"
+      compliance_control_groups:
+        generic_attribute: Générique
+        line: Ligne
+        route: Itinéraire
+        routing_constraint_zone: ITL
+        journey_pattern: Mission
+        vehicle_journey: Course
     actions:
       new: Ajouter
       edit: Editer
