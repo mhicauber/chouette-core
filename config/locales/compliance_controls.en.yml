@@ -31,6 +31,13 @@ en:
       title: "Update compliance control"
     select_type:
       title: "Select a control type"
+      compliance_control_groups:
+        generic_attribute: Generic
+        line: Line
+        route: Route
+        routing_constraint_zone: Routing constraint zone
+        journey_pattern: Journey pattern
+        vehicle_journey: Vehicle journey    
     actions:
       new: Add
       edit: Edit
