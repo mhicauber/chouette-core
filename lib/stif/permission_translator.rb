@@ -34,6 +34,8 @@ module Stif
         compliance_control_sets
         compliance_control_blocks
         compliance_check_sets
+        workbenches
+        workgroups
       ]
     end
 
