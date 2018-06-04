@@ -15,6 +15,15 @@ describe "PurchaseWindows", type: :feature do
         click_link(I18n.t('purchase_windows.actions.new'))
 
         fill_in('purchase_window[name]', with: name)
+        click_link(I18n.t('simple_form.labels.purchase_window.add_a_date_range'))
+        find(:css, "[name*='[begin(3i)]']").set("1")
+        find(:css, "[name*='[begin(2i)]']").set("1")
+        find(:css, "[name*='[begin(1i)]']").set("2000")
+
+        find(:css, "[name*='[end(3i)]']").set("1")
+        find(:css, "[name*='[end(2i)]']").set("1")
+        find(:css, "[name*='[end(1i)]']").set("2001")
+
         # select('#DD2DAA', from: 'purchase_window[color]')
 
         click_link(I18n.t('simple_form.labels.purchase_window.add_a_date_range'))

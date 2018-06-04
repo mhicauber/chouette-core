@@ -21,6 +21,7 @@
                   = t('simple_form.labels.purchase_window.ranges.end')
             div
 
+        - f.object.periods << f.object.build_period if f.object.periods.size == 0
         = f.simple_fields_for :periods do |period|
           = render 'period_fields', f: period
         .links.nested-linker
