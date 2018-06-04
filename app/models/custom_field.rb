@@ -237,19 +237,33 @@ class CustomField < ApplicationModel
         _attr_name = attr_name
         _uploader_name = uploader_name
         _digest_name = digest_name
+
+        read_uploaders = owner.instance_variable_get("@read_uploaders") || {}
+        write_uploaders = owner.instance_variable_get("@write_uploaders") || {}
+        read_uploaders[_attr_name] = ->(){
+          custom_field_values[custom_field_code] && custom_field_values[custom_field_code]["path"]
+        }
+
+        write_uploaders[_attr_name] = ->(val){
+          self.custom_field_values[custom_field_code] ||= {}
+          self.custom_field_values[custom_field_code]["path"] = val
+          self.custom_field_values[custom_field_code]["digest"] = self.send _digest_name
+        }
+
+        owner.instance_variable_set "@read_uploaders", read_uploaders
+        owner.instance_variable_set "@write_uploaders", write_uploaders
+
         owner.send :define_singleton_method, "read_uploader" do |attr|
-          if attr.to_s == _attr_name
-            custom_field_values[custom_field_code] && custom_field_values[custom_field_code]["path"]
+          if @read_uploaders[attr.to_s]
+            instance_exec &@read_uploaders[attr.to_s]
           else
             read_attribute attr
           end
         end
 
         owner.send :define_singleton_method, "write_uploader" do |attr, val|
-          if attr.to_s == _attr_name
-            self.custom_field_values[custom_field_code] ||= {}
-            self.custom_field_values[custom_field_code]["path"] = val
-            self.custom_field_values[custom_field_code]["digest"] = self.send _digest_name
+          if @write_uploaders[attr.to_s]
+            instance_exec val, &@write_uploaders[attr.to_s]
           else
             write_attribute attr, val
           end
@@ -325,10 +339,37 @@ class CustomField < ApplicationModel
       end
 
       class Input < Base::Input
+        def preview
+          preview = ""
+          if @instance.value.present?
+            preview = @form_helper.label form_input_id, @instance.value.file&.filename
+          else
+            preview = @form_helper.label form_input_id, "actions.select".t
+          end
+          preview
+        end
+
+        def form_input
+          out = "<div class = 'custom_field_attachment_wrapper form-group'>"
+          out += @form_helper.label form_input_id, name, class: "file optional col-sm-4 col-xs-5 control-label"
+          out += "<div class = 'col-sm-8 col-xs-7'>"
+          out += "<div class='btn btn-success'>"
+          out += "<span class='fa fa-upload'></span>"
+          out += preview
+          out += "</div>"
+          out += @form_helper.input form_input_id, form_input_options
+          out += "</div>"
+          out += "</div>"
+          out.html_safe
+        end
+
         def form_input_options
           super.update({
             as: :file,
-            wrapper: :horizontal_file_input
+            wrapper: :horizontal_file_input,
+            label: false,
+            input_html: {value: value, name: form_input_name, style: "display: none", class: "file custom_field_attachment"},
+            hint: options["extension_whitelist"]&.to_sentence
           })
         end
       end

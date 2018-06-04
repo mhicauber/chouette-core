@@ -24,10 +24,10 @@ class CustomFieldAttachmentUploader < CarrierWave::Uploader::Base
   def dynamic_versions
     custom_field = model.custom_fields[mounted_as.to_s.gsub('custom_field_', '').to_sym]
     _versions = custom_field.options["versions"] || {}
-
+    _mounted_as = mounted_as
     _versions.each do |name, size|
       size = size.split('x')
-      self.class.version name do
+      self.class.version name, if: ->(uploader, picture){ uploader.mounted_as == _mounted_as} do |obj|
         process :resize_to_fit => size
       end
     end
