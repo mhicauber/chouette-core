@@ -985,7 +985,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
     context "with a stop across midnight" do
       before do
-        @middle.update arrival_time: @start.departure_time + 11.hours, departure_time: @start.departure_time + 13.hours, departure_day_offset: 1, arrival_day_offset: 0
+        @middle.update arrival_time: offset_passing_time(@start.departure_time, 11.hours), departure_time: offset_passing_time(@start.departure_time, 13.hours), departure_day_offset: 1, arrival_day_offset: 0
       end
 
       it "should set the following stop day offset" do
