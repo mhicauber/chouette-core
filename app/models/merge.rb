@@ -418,7 +418,7 @@ class Merge < ApplicationModel
       time_tables_by_id = Hash[referential.time_tables.includes(:dates, :periods).all.to_a.map { |t| [t.id, t] }]
 
       time_tables_with_associated_lines =
-        referential.time_tables.joins(vehicle_journeys: {route: :line}).pluck("lines.id", :id, "vehicle_journeys.id")
+        referential.time_tables.joins(vehicle_journeys: {route: :line}).where("vehicle_journeys.id is not null").pluck("lines.id", :id, "vehicle_journeys.id")
 
       # Because TimeTables will be modified according metadata periods
       # we're loading timetables per line (line is associated to a period list)
