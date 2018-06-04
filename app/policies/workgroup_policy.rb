@@ -9,7 +9,7 @@ class WorkgroupPolicy < ApplicationPolicy
     false
   end
 
-  def desrtroy?
+  def destroy?
     false
   end
 
