@@ -4,6 +4,7 @@ RSpec.describe Chouette::PurchaseWindow, :type => :model do
 
   it { should belong_to(:referential) }
   it { is_expected.to validate_presence_of(:name) }
+  it { is_expected.to validate_presence_of(:date_ranges) }
 
   describe 'validations' do
     it 'validates and date_ranges do not overlap' do
