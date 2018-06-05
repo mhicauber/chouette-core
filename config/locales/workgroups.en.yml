@@ -10,3 +10,6 @@ en:
       after_merge: after merge
       after_merge_by_workgroup: after merge (group)
       automatic_by_workgroup: automatic
+  activerecord:
+    models:
+      workgroup: Workgroup
