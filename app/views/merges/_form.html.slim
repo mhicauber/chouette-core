@@ -6,12 +6,26 @@
 
   .separator
 
-  .row
-    .col-lg-12
-      = form.input :referentials, :collection => @mergeable_referentials, include_blank: false, input_html: { multiple: true, 'data-select2ed': true }
+  //.row
+  //  .col-lg-12
+  //    = form.input :referentials, :collection => @mergeable_referentials, include_blank: false, input_html: { multiple: true, 'data-select2ed': true }
 
   .row
     .col-lg-12
       = form.input :creator, input_html: { disabled: true }
 
+  .row.merge-referentials-selector
+    .col-md-12
+      h4= Merge.tmf('referentials')
+    .col-md-5.col
+      ul.source-referentials.connectedSortable
+        - @mergeable_referentials.each do |r|
+          li= r.name
+    .col-md-2
+    .col-md-5.col
+      ul.target.connectedSortable
+
+
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_merge_form'
+
+= javascript_pack_tag 'merges/new.js'

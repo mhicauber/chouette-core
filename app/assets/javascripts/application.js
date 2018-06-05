@@ -25,6 +25,7 @@
 //= require "i18n"
 //= require "i18n/extended"
 //= require "i18n/translations"
+//= require jquery-ui
 
 $(document).ready(function() {
     $('a[disabled=disabled]').click(function(event){
