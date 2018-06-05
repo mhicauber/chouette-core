@@ -17,18 +17,18 @@ class Subscription
   end
 
   def user
-    @user ||= organisation.users.build name: user_name, email: email, password: password, password_confirmation: password_confirmation
+    @user ||= organisation.users.build name: user_name, email: email, password: password, password_confirmation: password_confirmation, permissions: Permission.all
   end
 
   def organisation
-    @organisation ||= Organisation.new name: organisation_name, code: "#{user_name}_#{organisation_name}"
+    @organisation ||= Organisation.new name: organisation_name, code: organisation_name.parameterize
   end
 
   def valid?
     @valid = !@valid.nil? ? @valid : begin
       valid = true
       unless organisation.valid?
-        organisation.errors[:name].each do |e|
+        organisation.errors[:code].each do |e|
           errors.add(:organisation_name, e)
         end
         valid = false
@@ -64,7 +64,7 @@ class Subscription
   end
 
   def workgroup
-    @workgroup ||= Workgroup.create!(name: organisation_name) do |w|
+    @workgroup ||= Workgroup.create!(name: "#{Workgroup.ts} #{organisation.name}") do |w|
       w.line_referential      = line_referential
       w.stop_area_referential = stop_area_referential
     end
