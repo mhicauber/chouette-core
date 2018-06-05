@@ -131,6 +131,7 @@ gem 'acts_as_tree', '~> 2.1.0', require: 'acts_as_tree'
 
 gem 'rabl'
 gem 'carrierwave', '~> 1.0'
+gem 'rmagick'
 
 gem 'sidekiq', require: ['sidekiq', 'sidekiq/web']
 gem 'whenever', github: 'af83/whenever', require: false # '~> 0.9'

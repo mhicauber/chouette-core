@@ -2,10 +2,11 @@ class CustomField < ApplicationModel
 
   extend Enumerize
   belongs_to :workgroup
-  enumerize :field_type, in: %i{list integer string attachment}
+  enumerize :field_type, in: %i{list integer float string attachment}
 
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}, presence: true
+  validates :workgroup, :resource_type, :field_type, presence: true
 
   class Collection < HashWithIndifferentAccess
     def initialize object, workgroup=nil
@@ -47,7 +48,7 @@ class CustomField < ApplicationModel
       end
 
       def options
-        @custom_field.options || {}
+        @custom_field.options&.stringify_keys || {}
       end
 
       def validate
@@ -57,6 +58,10 @@ class CustomField < ApplicationModel
       def valid?
         validate unless @validated
         @valid
+      end
+
+      def required?
+        !!options["required"]
       end
 
       def value
@@ -76,7 +81,8 @@ class CustomField < ApplicationModel
       end
 
       def errors_key
-        "custom_fields.#{code}"
+        # this must match the ID used in the inputs
+        "custom_field_#{code}"
       end
 
       def to_hash
@@ -91,7 +97,7 @@ class CustomField < ApplicationModel
       end
 
       def preprocess_value_for_assignment val
-        val
+        val || default_value
       end
 
       def render_partial
@@ -111,7 +117,7 @@ class CustomField < ApplicationModel
           @instance.custom_field
         end
 
-        delegate :custom_field, :value, :options, to: :@instance
+        delegate :custom_field, :value, :options, :required?, to: :@instance
         delegate :code, :name, :field_type, to: :custom_field
 
         def to_s
@@ -122,7 +128,7 @@ class CustomField < ApplicationModel
         protected
 
         def form_input_id
-          "custom_field_#{code}"
+          "custom_field_#{code}".to_sym
         end
 
         def form_input_name
@@ -144,15 +150,46 @@ class CustomField < ApplicationModel
 
     class Integer < Base
       def value
-        @raw_value&.to_i
+        @raw_value.present? ? @raw_value.to_i : nil
+      end
+
+      def validate
+        @valid = true
+        return if @raw_value.is_a?(Fixnum)
+        unless @raw_value.to_s =~ /\A-?\d*\Z/
+          @owner.errors.add errors_key, "'#{@raw_value}' is not a valid integer"
+          @valid = false
+        end
+      end
+
+      class Input < Base::Input
+        def form_input_options
+          super.update({
+            as: :integer
+          })
+        end
+      end
+    end
+
+    class Float < Integer
+      def value
+        @raw_value.present? ? @raw_value.to_f : nil
       end
 
       def validate
         @valid = true
         return if @raw_value.is_a?(Fixnum) || @raw_value.is_a?(Float)
-        unless @raw_value.to_s =~ /\A\d*\Z/
-          @owner.errors.add errors_key, "'#{@raw_value}' is not a valid integer"
+        unless @raw_value.to_s =~ /\A-?\d*(\.\d+)?\Z/
+          @owner.errors.add errors_key, "'#{@raw_value}' is not a valid float"
           @valid = false
+        end
+      end
+
+      class Input < Base::Input
+        def form_input_options
+          super.update({
+            as: :float
+          })
         end
       end
     end
@@ -161,9 +198,16 @@ class CustomField < ApplicationModel
       def validate
         super
         return unless value.present?
-        unless value >= 0 && value < options["list_values"].size
-          @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
-          @valid = false
+        if options["list_values"].is_a?(Hash)
+          unless options["list_values"].keys.map(&:to_s).include?(value.to_s)
+            @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
+            @valid = false
+          end
+        else
+          unless value >= 0 && value < options["list_values"].size
+            @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
+            @valid = false
+          end
         end
       end
 
@@ -178,6 +222,7 @@ class CustomField < ApplicationModel
           collection = options["list_values"]
           collection = collection.each_with_index.to_a if collection.is_a?(Array)
           collection = collection.map(&:reverse) if collection.is_a?(Hash)
+          collection = [["", ""]] + collection unless required?
           super.update({
             selected: value,
             collection: collection
@@ -192,19 +237,33 @@ class CustomField < ApplicationModel
         _attr_name = attr_name
         _uploader_name = uploader_name
         _digest_name = digest_name
+
+        read_uploaders = owner.instance_variable_get("@read_uploaders") || {}
+        write_uploaders = owner.instance_variable_get("@write_uploaders") || {}
+        read_uploaders[_attr_name] = ->(){
+          custom_field_values[custom_field_code] && custom_field_values[custom_field_code]["path"]
+        }
+
+        write_uploaders[_attr_name] = ->(val){
+          self.custom_field_values[custom_field_code] ||= {}
+          self.custom_field_values[custom_field_code]["path"] = val
+          self.custom_field_values[custom_field_code]["digest"] = self.send _digest_name
+        }
+
+        owner.instance_variable_set "@read_uploaders", read_uploaders
+        owner.instance_variable_set "@write_uploaders", write_uploaders
+
         owner.send :define_singleton_method, "read_uploader" do |attr|
-          if attr.to_s == _attr_name
-            custom_field_values[custom_field_code] && custom_field_values[custom_field_code]["path"]
+          if @read_uploaders[attr.to_s]
+            instance_exec &@read_uploaders[attr.to_s]
           else
             read_attribute attr
           end
         end
 
         owner.send :define_singleton_method, "write_uploader" do |attr, val|
-          if attr.to_s == _attr_name
-            self.custom_field_values[custom_field_code] ||= {}
-            self.custom_field_values[custom_field_code]["path"] = val
-            self.custom_field_values[custom_field_code]["digest"] = self.send _digest_name
+          if @write_uploaders[attr.to_s]
+            instance_exec val, &@write_uploaders[attr.to_s]
           else
             write_attribute attr, val
           end
@@ -280,10 +339,37 @@ class CustomField < ApplicationModel
       end
 
       class Input < Base::Input
+        def preview
+          preview = ""
+          if @instance.value.present?
+            preview = @form_helper.label form_input_id, @instance.value.file&.filename
+          else
+            preview = @form_helper.label form_input_id, "actions.select".t
+          end
+          preview
+        end
+
+        def form_input
+          out = "<div class = 'custom_field_attachment_wrapper form-group'>"
+          out += @form_helper.label form_input_id, name, class: "file optional col-sm-4 col-xs-5 control-label"
+          out += "<div class = 'col-sm-8 col-xs-7'>"
+          out += "<div class='btn btn-success'>"
+          out += "<span class='fa fa-upload'></span>"
+          out += preview
+          out += "</div>"
+          out += @form_helper.input form_input_id, form_input_options
+          out += "</div>"
+          out += "</div>"
+          out.html_safe
+        end
+
         def form_input_options
           super.update({
             as: :file,
-            wrapper: :horizontal_file_input
+            wrapper: :horizontal_file_input,
+            label: false,
+            input_html: {value: value, name: form_input_name, style: "display: none", class: "file custom_field_attachment"},
+            hint: options["extension_whitelist"]&.to_sentence
           })
         end
       end

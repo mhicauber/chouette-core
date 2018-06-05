@@ -449,6 +449,7 @@ GEM
     rgeo-activerecord (4.0.5)
       activerecord (~> 4.2)
       rgeo (~> 0.3)
+    rmagick (2.16.0)
     roo (2.7.1)
       nokogiri (~> 1)
       rubyzip (~> 1.1, < 2.0.0)
@@ -688,6 +689,7 @@ DEPENDENCIES
   reflex!
   responders
   rgeo (~> 0.5.2)
+  rmagick
   roo
   rspec-rails (~> 3.5.0)
   rspec-snapshot
