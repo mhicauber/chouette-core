@@ -2,7 +2,7 @@ module Support
   module Permissions extend self
 
     def all_permissions
-      @__all_permissions__ ||= _destructive_permissions + %w{sessions.create workbenches.update}
+      @__all_permissions__ ||= _destructive_permissions + %w{sessions.create}
     end
 
     private
@@ -31,6 +31,8 @@ module Support
         compliance_control_sets
         compliance_control_blocks
         compliance_check_sets
+        workbenches
+        workgroups
       ]
     end
   end
