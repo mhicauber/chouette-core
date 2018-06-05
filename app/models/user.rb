@@ -5,8 +5,20 @@ class User < ApplicationModel
   @@authentication_type = "#{Rails.application.config.chouette_authentication_settings[:type]}_authenticatable".to_sym
   cattr_reader :authentication_type
 
+  def self.more_devise_modules
+    if Rails.application.config.accept_user_creation
+      [:confirmable]
+    else
+      []
+    end
+  end
+
   devise :invitable, :registerable, :validatable, :lockable,
-         :recoverable, :rememberable, :trackable, :async, authentication_type
+         :recoverable, :rememberable, :trackable, :async, authentication_type, *more_devise_modules
+
+  if Devise.mappings[:user].try :confirmable?
+    self.allow_unconfirmed_access_for = 1.day
+  end
 
   # FIXME https://github.com/nbudin/devise_cas_authenticatable/issues/53
   # Work around :validatable, when database_authenticatable is disabled.

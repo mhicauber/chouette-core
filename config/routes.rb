@@ -1,5 +1,6 @@
 ChouetteIhm::Application.routes.draw do
   resource :dashboard
+  resource :subscriptions, only: :create
 
   resources :workbenches, except: [:destroy] do
     delete :referentials, on: :member, action: :delete_referentials
@@ -146,7 +147,8 @@ ChouetteIhm::Application.routes.draw do
   end
 
   devise_for :users, :controllers => {
-    :registrations => 'users/registrations', :invitations => 'users/invitations'
+    invitations: 'users/invitations',
+    registrations: 'devise/sessions'
   }
 
   devise_scope :user do

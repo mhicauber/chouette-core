@@ -8,7 +8,8 @@
       .col-md-4.login
         .panel.panel-default
           .panel-body
-            = simple_form_for(resource, :as => resource_name, :url => session_path(resource_name), html: { :class => 'form-horizontal session_new' } ) do |form|
+            - user = resource.is_a?(User) ? resource : User.new
+            = simple_form_for(user, :as => :user, :url => session_path(:user), html: { :class => 'form-horizontal session_new' } ) do |form|
 
               = form.input :email, :label => false, input_html: { :class => "form-control" }
 
@@ -25,14 +26,12 @@
                     = form.input :remember_me, :as => :boolean if devise_mapping.rememberable?
 
                 .col-md-6.new_password
-                  = link_to t("devise.links.new_password"), new_password_path(resource_name)
+                  = link_to t("devise.links.new_password"), new_password_path(:user)
 
                   / FIXME ref #819
                   - if false
                     - if devise_mapping.confirmable? && controller_name != 'confirmations'
                       br
-                      = link_to t("devise.links.new_confirmation"), new_confirmation_path(resource_name)
+                      = link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
 
-        / FIXME ref #819
-        - if false
-          = render partial: 'devise/shared/form_registration', locals: { organisation: (resource.organisation || Organisation.new) }
+        = render partial: 'devise/shared/form_registration'
