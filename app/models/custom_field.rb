@@ -207,6 +207,7 @@ class CustomField < ApplicationModel
             @valid = false
           end
         else
+          super
           unless value >= 0 && value < options["list_values"].size
             @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
             @valid = false
