@@ -1,6 +1,7 @@
 RSpec.describe SubscriptionsController, type: :controller do
   let(:params){{
-    user_name: "foo"
+    user_name: "foo",
+    organisation_name: "bar"
   }}
 
   let(:resource){ assigns(:subscription)}
