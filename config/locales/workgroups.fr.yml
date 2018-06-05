@@ -10,3 +10,6 @@ fr:
       after_merge: après finalisation
       after_merge_by_workgroup: après finalisation (groupe)
       automatic_by_workgroup: automatique
+  activerecord:
+    models:
+      workgroup: Groupe de travail
