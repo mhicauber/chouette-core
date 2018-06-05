@@ -43,7 +43,7 @@ Rails.application.configure do
   config.company_name = "afimb"
   config.company_theme = "#61970b" # AFIMB color
   config.company_contact = "http://www.chouette.mobi/club-utilisateurs/contact-support/"
-  config.accept_user_creation = true
+  config.accept_user_creation = false
 
   # config.chouette_authentication_settings = {
   #   type: "database"
