@@ -32,6 +32,32 @@ RSpec.describe Import::Netex, type: [:model, :with_commit] do
   #   end
   # end
 
+  describe "#notify_parent" do
+
+    it "makes referential `ready` when status is successful or warning" do
+      workbench_import = create(:workbench_import)
+
+      %w(failed aborted canceled).each do |status|
+        netex_import = create(:netex_import, parent: workbench_import, status: status)
+        netex_import.notify_parent # fake test
+
+        expect(netex_import.referential.ready).to be false
+      end
+    end
+
+    it "makes referential `ready` when status is successful or warning" do
+      workbench_import = create(:workbench_import)
+
+      %w(successful warning).each do |status|
+        netex_import = create(:netex_import, parent: workbench_import, status: status)
+        netex_import.notify_parent # fake test
+
+        expect(netex_import.referential.ready).to be true
+      end
+    end
+
+  end
+
   describe "#destroy" do
     it "must destroy its associated Referential if ready: false" do
       workbench_import = create(:workbench_import)
