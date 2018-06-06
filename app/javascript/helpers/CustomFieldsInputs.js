@@ -27,7 +27,7 @@ export default class CustomFieldsInputs extends Component {
         })}
         ref={'custom_fields.' + cf.code}
         className='form-control'
-        defaultValue={cf.value || this.options(cf).default}
+        defaultValue={cf.value !== undefined ? cf.value : this.options(cf).default}
         disabled={this.props.disabled}
         options={{
           theme: 'bootstrap',
