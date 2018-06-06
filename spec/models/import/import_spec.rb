@@ -162,13 +162,6 @@ RSpec.describe Import::Base, type: :model do
       expect(workbench_import).to receive(:update_status)
       workbench_import.child_change
     end
-
-    it "calls #update_referentials" do
-      allow(workbench_import).to receive(:update)
-
-      expect(workbench_import).to receive(:update_referentials)
-      workbench_import.child_change
-    end
   end
 
   describe "#update_status" do
@@ -265,30 +258,6 @@ RSpec.describe Import::Base, type: :model do
 
         expect(workbench_import.ended_at).to eq(Time.now)
       end
-    end
-  end
-
-  describe "#update_referentials" do
-    it "doesn't update referentials if parent status isn't finished" do
-      workbench_import = create(:workbench_import, status: 'pending')
-      netex_import = create(:netex_import, parent: workbench_import)
-      netex_import.referential.update(ready: false)
-
-      workbench_import.update_referentials
-      netex_import.referential.reload
-
-      expect(netex_import.referential.ready).to be false
-    end
-
-    it "makes child referentials `ready` when status is successful" do
-      workbench_import = create(:workbench_import, status: 'successful')
-      netex_import = create(:netex_import, parent: workbench_import)
-      netex_import.referential.update(ready: false)
-
-      workbench_import.update_referentials
-      netex_import.referential.reload
-
-      expect(netex_import.referential.ready).to be true
     end
   end
 end

@@ -82,9 +82,9 @@ class Import::Netex < Import::Base
 
   def update_referential
     if self.status.successful? || self.status.warning?
-      self&.referential&.active!
+      self.referential&.active!
     else
-      self&.referential&.failed!
+      self.referential&.failed!
     end
   end
 
