@@ -130,7 +130,7 @@ en:
         3_vehiclejourney_5_2: "The vehicle journey with %{source_objectid} objectid has an departure time %{error_value} at stop point %{target_0_label} (%{target_0_objectid}) greater than the arrival %{reference_value} at the next stop point"
       description: "The arrival time of a stop point must be smaller than the departure time of this stop point AND the departure time of the stop points must be in chronological order"
       prerequisite: "None"
-    vehicle_journey_control/purchase_window:
+    vehicle_journey_control/purchase_window_dates:
       messages:
         3_vehiclejourney_7: The end date of journey's %{source_objectid} purchase windows must be before or equal of the end date of circulation
       description: The end of sales must be before end of circulation

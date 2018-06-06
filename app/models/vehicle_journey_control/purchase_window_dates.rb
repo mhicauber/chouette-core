@@ -1,5 +1,5 @@
 module VehicleJourneyControl
-  class PurchaseWindow < InternalControl::Base
+  class PurchaseWindowDates < InternalControl::Base
     def self.default_code; "3-VehicleJourney-7" end
 
     def self.object_path compliance_check, vehicle_journey
@@ -17,6 +17,5 @@ module VehicleJourneyControl
     def self.custom_message_attributes compliance_check, vehicle_journey
       {source_objectid: vehicle_journey.objectid}
     end
-
   end
 end
