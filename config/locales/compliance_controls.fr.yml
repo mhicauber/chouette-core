@@ -105,6 +105,11 @@ fr:
         3_journeypattern_2: "La mission %{source_objectid} n'a pas de course"
       description: "Une mission doit avoir au moins une course"
       prerequisite: "Aucun"
+    journey_pattern_control/minimum_length:
+      messages:
+        3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"
+      description: "Une mission doit contenir au moins 2 arrêts"
+      prerequisite: "Aucun"
     vehicle_journey_control/waiting_time:
       messages:
         3_vehiclejourney_1: "Sur la course %{source_objectid}, le temps d'attente %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) est supérieur au seuil toléré (%{reference_value})"
@@ -136,11 +141,20 @@ fr:
       messages:
         3_vehiclejourney_8: La course %{source_objectid} doit avoir un numéro de service compris entre %{min} et %{max} pour le transporteur %{company_name}
       description: Valeur du numéro de service pour un transporteur donné
+    vehicle_journey_control/purchase_window_dates:
+      messages:
+        3_vehiclejourney_7: La date de fin du calendrier commercial de la course %{source_objectid} doit être inférieure ou égale à la date de fin de circulation
+      description: Cohérence date de fin de vente - date de fin de circulation
       prerequisite: "Aucun"
     vehicle_journey_control/bus_capacity:
       messages:
         3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
       description: "Une course doit avoir une capacité de bus"
+      prerequisite: "Aucun"
+    vehicle_journey_control/purchase_window:
+      messages:
+        3_vehiclejourney_6: "La course %{vehicle_journey_name} doit avoir au moins un calendrier de vente"
+      description: "Une course doit avoir au moins un calendrier de vente"
       prerequisite: "Aucun"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
@@ -223,6 +237,8 @@ fr:
         one: "Doublon de missions dans une ligne"
       journey_pattern_control/vehicle_journey:
         one: "Présence de courses"
+      journey_pattern_control/minimum_length:
+        one: "Définition minimale d'une mission"
       vehicle_journey_control/waiting_time:
         one: "La durée d’attente à un arrêt ne doit pas être trop grande"
       vehicle_journey_control/speed:
@@ -237,6 +253,8 @@ fr:
         one: "Présence de la capacité du bus"
       vehicle_journey_control/published_journey_name:
         one: Valeur du numéro de service pour un transporteur donné
+      vehicle_journey_control/purchase_window:
+        one: Cohérence date de fin de vente - date de fin de circulation
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:
