@@ -38,8 +38,9 @@ RSpec.describe Import::Netex, type: [:model, :with_commit] do
       workbench_import = create(:workbench_import)
 
       %w(failed aborted canceled).each do |status|
-        netex_import = create(:netex_import, parent: workbench_import, status: status)
-        netex_import.notify_parent # fake test
+        netex_import = create(:netex_import, parent: workbench_import)
+        netex_import.update_column(:status, status)
+        netex_import.notify_parent
 
         expect(netex_import.referential.ready).to be false
       end
@@ -49,8 +50,9 @@ RSpec.describe Import::Netex, type: [:model, :with_commit] do
       workbench_import = create(:workbench_import)
 
       %w(successful warning).each do |status|
-        netex_import = create(:netex_import, parent: workbench_import, status: status)
-        netex_import.notify_parent # fake test
+        netex_import = create(:netex_import, parent: workbench_import)
+        netex_import.update_column(:status, status)
+        netex_import.notify_parent
 
         expect(netex_import.referential.ready).to be true
       end
