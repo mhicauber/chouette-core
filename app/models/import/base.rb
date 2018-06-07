@@ -25,21 +25,6 @@ class Import::Base < ApplicationModel
     return if self.class.finished_statuses.include?(status)
 
     super
-    update_referentials
-  end
-
-  def update_referentials
-    Rails.logger.info "update_referentials for #{inspect}"
-    return unless self.class.finished_statuses.include?(status)
-
-    # We treat all created referentials in a batch
-    # If a single fails, we consider they all failed
-    # Ohana means family !
-    if self.successful?
-      children.map(&:referential).compact.each &:active!
-    else
-      children.map(&:referential).compact.each &:failed!
-    end
   end
 
   private

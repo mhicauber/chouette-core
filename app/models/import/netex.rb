@@ -20,6 +20,7 @@ class Import::Netex < Import::Base
   def notify_parent
     if super
       main_resource.update_status_from_importer self.status
+      update_referential
       next_step
     end
   end
@@ -78,6 +79,14 @@ class Import::Netex < Import::Base
   end
 
   private
+
+  def update_referential
+    if self.status.successful? || self.status.warning?
+      self.referential&.active!
+    else
+      self.referential&.failed!
+    end
+  end
 
   def iev_callback_url
     URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/importer/new?id=#{id}")
