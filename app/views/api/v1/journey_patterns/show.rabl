@@ -23,6 +23,7 @@ node(:vehicle_journey_object_ids) do |journey_pattern|
 end unless root_object.vehicle_journeys.empty?
 
 child :stop_points => :stop_area_short_descriptions do |stop_points|
+  attribute :position
   node do |stop_point|
     cache stop_point.stop_area_id
     partial("api/v1/stop_areas/short_description", :object => stop_point.stop_area)
