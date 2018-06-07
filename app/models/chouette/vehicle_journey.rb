@@ -359,6 +359,7 @@ module Chouette
     def fill_passing_times!
       encountered_empty_vjas = []
       previous_stop = nil
+      tz_offset = vehicle_journey_at_stops.first.time_zone_offset || 0
       vehicle_journey_at_stops.each do |vjas|
         sp = vjas.stop_point
         if vjas.arrival_time.nil? && vjas.departure_time.nil?
@@ -390,6 +391,10 @@ module Chouette
               time = previous_stop.departure_time + distance_from_last_known.to_f / distance_between_known.to_f * (arrival_time - previous_stop.departure_time)
               day_offset = time.day - 1
               time -= day_offset*24.hours
+
+              if(time + tz_offset).day > 1
+                day_offset += 1
+              end
 
               empty_vjas.update_attribute :arrival_time, time
               empty_vjas.update_attribute :arrival_day_offset, previous_stop.departure_day_offset + day_offset

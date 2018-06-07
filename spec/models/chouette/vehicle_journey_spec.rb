@@ -935,22 +935,22 @@ describe Chouette::VehicleJourney, :type => :model do
 
   describe "#fill_passing_times!" do
     before do
-      start = create :stop_area
-      border = create :stop_area, kind: :non_commercial, area_type: :border
-      border_2 = create :stop_area, kind: :non_commercial, area_type: :border
-      middle = create :stop_area
-      border_3 = create :stop_area, kind: :non_commercial, area_type: :border
-      border_4 = create :stop_area, kind: :non_commercial, area_type: :border
-      _end = create :stop_area
+      @start_area = create :stop_area
+      @border_area = create :stop_area, kind: :non_commercial, area_type: :border
+      @border_2_area = create :stop_area, kind: :non_commercial, area_type: :border
+      @middle_area = create :stop_area
+      @border_3_area = create :stop_area, kind: :non_commercial, area_type: :border
+      @border_4_area = create :stop_area, kind: :non_commercial, area_type: :border
+      @end_area = create :stop_area
       journey_pattern = create :journey_pattern
       journey_pattern.stop_points.destroy_all
-      journey_pattern.stop_points << start_point = create(:stop_point, stop_area: start, position: 0)
-      journey_pattern.stop_points << border_point = create(:stop_point, stop_area: border, position: 1)
-      journey_pattern.stop_points << border_point_2 = create(:stop_point, stop_area: border_2, position: 2)
-      journey_pattern.stop_points << middle_point = create(:stop_point, stop_area: middle, position: 3)
-      journey_pattern.stop_points << border_point_3 = create(:stop_point, stop_area: border_3, position: 4)
-      journey_pattern.stop_points << border_point_4 = create(:stop_point, stop_area: border_4, position: 5)
-      journey_pattern.stop_points << end_point = create(:stop_point, stop_area: _end, position: 6)
+      journey_pattern.stop_points << start_point = create(:stop_point, stop_area: @start_area, position: 0)
+      journey_pattern.stop_points << border_point = create(:stop_point, stop_area: @border_area, position: 1)
+      journey_pattern.stop_points << border_point_2 = create(:stop_point, stop_area: @border_2_area, position: 2)
+      journey_pattern.stop_points << middle_point = create(:stop_point, stop_area: @middle_area, position: 3)
+      journey_pattern.stop_points << border_point_3 = create(:stop_point, stop_area: @border_3_area, position: 4)
+      journey_pattern.stop_points << border_point_4 = create(:stop_point, stop_area: @border_4_area, position: 5)
+      journey_pattern.stop_points << end_point = create(:stop_point, stop_area: @end_area, position: 6)
       journey_pattern.update_attribute :costs, {
         "#{start_point.stop_area_id}-#{border_point.stop_area_id}" => {distance: 50},
         "#{border_point.stop_area_id}-#{border_point_2.stop_area_id}" => {distance: 0},
@@ -993,6 +993,34 @@ describe Chouette::VehicleJourney, :type => :model do
         @journey.reload.fill_passing_times!
         expect(@target_3.reload.arrival_day_offset).to eq 1
         expect(@target_3.departure_day_offset).to eq 1
+      end
+    end
+
+    context "with timezones" do
+      before do
+        @start_area.update time_zone: "Paris"
+        @border_area.update time_zone: "Paris"
+        @border_2_area.update time_zone: "Paris"
+        @middle_area.update time_zone: "Paris"
+        @border_3_area.update time_zone: "Paris"
+        @border_4_area.update time_zone: "Paris"
+        @end_area.update time_zone: "Paris"
+
+        departure_time = Time.now.utc.noon + 10.hour + 30.minutes
+        @start.update departure_time: departure_time, arrival_time: departure_time
+        @middle.update departure_time: offset_passing_time(departure_time, 2.hours), arrival_time: offset_passing_time(departure_time, 2.hours)
+        @end.update departure_time: offset_passing_time(departure_time, 4.hours), arrival_time: offset_passing_time(departure_time, 4.hours)
+      end
+
+      it "should compute passing time" do
+        @journey.reload.calculate_vehicle_journey_at_stop_day_offset
+        @journey.fill_passing_times!
+        @journey.reload
+        expect{
+          Chouette::VehicleJourneyAtStopsDayOffset.new(@journey.vehicle_journey_at_stops).calculate!
+        }.to_not change{
+          p @journey.vehicle_journey_at_stops.sort_by{|vj| vj.stop_point.position}.map(&:current_checksum_source).join(' ')
+        }
       end
     end
 
