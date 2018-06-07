@@ -50,8 +50,12 @@ class Import::Netex < Import::Base
       save!
     else
       Rails.logger.info "Can't create referential for import #{self.id}: #{referential.inspect} #{referential.metadatas.inspect} #{referential.errors.messages}"
-
-      if referential.metadatas.all?{|m| m.line_ids.empty? && m.line_ids.empty?}
+      metadata = referential.metadatas.first
+      p "FOOOO"
+      p @line_objectids
+      if @line_objectids.empty?
+        create_message criticity: :error, message_key: "referential_creation_missing_lines_in_files", message_attributes: {referential_name: referential.name}
+      elsif metadata.line_ids.empty?
         create_message criticity: :error, message_key: "referential_creation_missing_lines", message_attributes: {referential_name: referential.name}
       elsif (overlapped_referential_ids = referential.overlapped_referential_ids).any?
         overlapped = Referential.find overlapped_referential_ids.last
@@ -99,8 +103,8 @@ class Import::Netex < Import::Base
       if frame
         metadata.periodes = frame.periods
 
-        line_objectids = frame.line_refs.map { |ref| "STIF:CODIFLIGNE:Line:#{ref}" }
-        metadata.line_ids = workbench.lines.where(objectid: line_objectids).pluck(:id)
+        @line_objectids = frame.line_refs.map { |ref| "STIF:CODIFLIGNE:Line:#{ref}" }
+        metadata.line_ids = workbench.lines.where(objectid: @line_objectids).pluck(:id)
       end
     end
 
