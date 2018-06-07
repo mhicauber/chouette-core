@@ -3,7 +3,9 @@ class Merge < ApplicationModel
 
   belongs_to :workbench
   belongs_to :new, class_name: 'Referential'
+
   validates :workbench, presence: true
+  validate :check_other_merges, :on => :create
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
@@ -23,6 +25,13 @@ class Merge < ApplicationModel
       create_before_merge_compliance_check_sets
     else
       MergeWorker.perform_async(id)
+    end
+  end
+
+  def check_other_merges
+    if workbench && workbench.merges.where(status: [:new, :pending, :running]).exists?
+      Rails.logger.warn "Pending Merge(s) on Workbench #{workbench.name}/#{workbench.id}"
+      errors.add(:base, :multiple_process)
     end
   end
 

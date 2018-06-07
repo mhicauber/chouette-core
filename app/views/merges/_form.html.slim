@@ -1,9 +1,14 @@
 = simple_form_for merge, as: :merge, url: workbench_merges_path(workbench), html: {class: 'form-horizontal', id: 'wb_merge_form'}, wrapper: :horizontal_form do |form|
+  .row
+    .col-lg-12
+      .alert.alert-warning
+        = form.error :base
+
+  .separator
 
   .row
     .col-lg-12
       = form.input :referentials, :collection => @mergeable_referentials, include_blank: false, input_html: { multiple: true, 'data-select2ed': true }
-
 
   .row
     .col-lg-12
