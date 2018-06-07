@@ -74,6 +74,13 @@ RSpec.describe ReferentialPolicy, type: :policy do
             end
           end
 
+          describe "in a referential suite" do
+            let( :record ){ build_stubbed :referential, ready: true, referential_suite: create(:referential_suite)  }
+            it 'does remove permission for pending referentials' do
+              expect_it.not_to permit(user_context, record)
+            end
+          end
+
           describe "in error" do
             let( :record ){ build_stubbed :referential, failed_at: 2.minutes.ago, ready: false  }
             it 'does not remove permission for failed referentials' do
@@ -83,8 +90,8 @@ RSpec.describe ReferentialPolicy, type: :policy do
         end
       end
     end
-    permissions :archive? do
 
+    permissions :archive? do
       context 'permission present →' do
         before do
           add_permissions('referentials.update', to_user: user)
