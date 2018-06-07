@@ -32,3 +32,9 @@ fr:
         referentials: "Data spaces"
         new: Finalized dataset
         operator: User
+    errors:
+      models:
+        merge:
+          attributes:
+            base:
+              multiple_process: "Another Merge is already pending"
