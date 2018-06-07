@@ -52,8 +52,7 @@ class Import::Netex < Import::Base
     else
       Rails.logger.info "Can't create referential for import #{self.id}: #{referential.inspect} #{referential.metadatas.inspect} #{referential.errors.messages}"
       metadata = referential.metadatas.first
-      p "FOOOO"
-      p @line_objectids
+    
       if @line_objectids.empty?
         create_message criticity: :error, message_key: "referential_creation_missing_lines_in_files", message_attributes: {referential_name: referential.name}
       elsif metadata.line_ids.empty?
