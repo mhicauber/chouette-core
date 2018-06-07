@@ -1,23 +1,40 @@
 require "rails_helper"
 
 RSpec.describe Merge do
+  let(:stop_area_referential){ create :stop_area_referential }
+  let(:line_referential){ create :line_referential }
+  let(:company){ create :company, line_referential: line_referential }
+  let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
+  let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3)) }
+  let(:referential){
+    create :referential,
+      workbench: workbench,
+      organisation: workbench.organisation,
+      metadatas: [referential_metadata]
+  }
+
+  before(:each) do
+    4.times { create :line, line_referential: line_referential, company: company, network: nil }
+    10.times { create :stop_area, stop_area_referential: stop_area_referential }
+  end
+
+  it "should be valid" do
+    merge = Merge.new(workbench: referential.workbench, referentials: [referential, referential])
+    expect(merge).to be_valid
+  end
+
+  context "with another concurent merge" do
+    before do
+       Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+    end
+
+    it "should not be valid" do
+      merge = Merge.new(workbench: referential.workbench, referentials: [referential, referential])
+      expect(merge).to_not be_valid
+    end
+  end
 
   it "should work" do
-    stop_area_referential = FactoryGirl.create :stop_area_referential
-    10.times { FactoryGirl.create :stop_area, stop_area_referential: stop_area_referential }
-
-    line_referential = FactoryGirl.create :line_referential
-    company = FactoryGirl.create :company, line_referential: line_referential
-    4.times { FactoryGirl.create :line, line_referential: line_referential, company: company, network: nil }
-
-    workbench = FactoryGirl.create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential
-
-    referential_metadata = FactoryGirl.create(:referential_metadata, lines: line_referential.lines.limit(3))
-
-    referential = FactoryGirl.create :referential,
-                                      workbench: workbench,
-                                      organisation: workbench.organisation,
-                                      metadatas: [referential_metadata]
 
     factor = 2
     stop_points_positions = {}
