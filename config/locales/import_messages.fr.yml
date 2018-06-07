@@ -6,7 +6,8 @@ fr:
     wrong_calendar_in_zip_file: "Le calendrier contenu dans %{source_filename} contient des données incorrectes ou incohérentes"
     referential_creation: "Le référentiel %{referential_name} n'a pas pu être créé."
     referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
-    referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car au moins une ligne n'appartient pas à l'organisation"
+    referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car aucune ligne n'appartient à l'organisation"
+    referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} n'a pas pu être créé car aucune donnée n'est présente dans le fichier"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"
