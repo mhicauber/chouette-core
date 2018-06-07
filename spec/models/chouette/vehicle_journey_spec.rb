@@ -1019,7 +1019,7 @@ describe Chouette::VehicleJourney, :type => :model do
         expect{
           Chouette::VehicleJourneyAtStopsDayOffset.new(@journey.vehicle_journey_at_stops).calculate!
         }.to_not change{
-          p @journey.vehicle_journey_at_stops.sort_by{|vj| vj.stop_point.position}.map(&:current_checksum_source).join(' ')
+          @journey.vehicle_journey_at_stops.sort_by{|vj| vj.stop_point.position}.map(&:current_checksum_source).join(' ')
         }
       end
     end
