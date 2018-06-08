@@ -199,6 +199,8 @@ ChouetteIhm::Application.routes.draw do
       namespace :internals do
         get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
         get 'netex_imports/:id/notify_parent', to: 'netex_imports#notify_parent'
+        get 'netex_exports/:id/notify_parent', to: 'netex_exports#notify_parent'
+        put 'netex_exports/:id/upload', to: 'netex_exports#upload'
       end
     end
   end
