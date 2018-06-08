@@ -81,9 +81,10 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           }
           context "on index" do
             it 'has corresponding actions' do
-              expect_action_link_elements(action).to eq ["Consulter"]
+              expect_action_link_elements(action).to eq ["Consulter", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
               expect_action_link_hrefs(action).to eq([
                 [object],
+                referential_path(object),
               ])
             end
           end
@@ -91,8 +92,8 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           context "on show" do
             let( :action){ :show }
             it 'has corresponding actions' do
-              expect_action_link_elements(action).to eq []
-              expect_action_link_hrefs(action).to eq([])
+              expect_action_link_elements(action).to eq ["<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
+              expect_action_link_hrefs(action).to eq([referential_path(object)])
             end
           end
         end
@@ -125,12 +126,13 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
       context 'all rights and same organisation' do
         let( :user ){ build_stubbed :allmighty_user, organisation: referential.organisation }
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Dupliquer", "Désarchiver"]
+          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Dupliquer", "Désarchiver", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
           expect_action_link_hrefs.to eq([
             [object],
             referential_time_tables_path(object),
             new_workbench_referential_path(referential.workbench, from: object.id),
             unarchive_referential_path(object),
+            referential_path(object)
           ])
         end
       end
