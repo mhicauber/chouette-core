@@ -71,12 +71,12 @@ Rails.application.configure do
   else
     config.chouette_authentication_settings = {
       type: "cas",
-      cas_server: "http://stif-portail-dev.af83.priv/sessions"
+      cas_server: "http://stif-portail-dev.cloud.af83.priv/sessions"
     }
   end
   config.stif_portail_api = {
     key: "Ohphie1Voo6the5hohpi",
-    url: "http://stif-portail-dev.af83.priv"
+    url: "http://stif-portail-dev.cloud.af83.priv"
   }
 
   # Ext. apps links
