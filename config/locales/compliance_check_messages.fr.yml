@@ -35,7 +35,7 @@ fr:
     attributes:
       compliance_check_message:
         criticity: Criticité
-        message_key: Clé du message
-        resource_objectid: Objectid de la resource
-        link: Lien
+        message_key: Code du contrôle
+        resource_objectid: Nom de l'objet
+        link: Lien vers l'objet
         message: Message
