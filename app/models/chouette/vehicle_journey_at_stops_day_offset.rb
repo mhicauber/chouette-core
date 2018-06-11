@@ -13,7 +13,11 @@ module Chouette
       offset = 0
       tz_offset = @at_stops.first&.time_zone_offset
       @at_stops.select{|s| s.arrival_time.present? && s.departure_time.present? }.inject(nil) do |prior_stop, stop|
-        next stop if prior_stop.nil?
+        if prior_stop.nil?
+          stop.departure_day_offset = 0
+          stop.arrival_day_offset = 0
+          next stop
+        end
 
         # we only compare time of the day, not actual times
         stop_arrival_time = time_from_fake_date stop.arrival_local_time(tz_offset)
