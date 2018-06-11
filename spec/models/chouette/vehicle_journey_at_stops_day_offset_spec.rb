@@ -13,7 +13,9 @@ describe Chouette::VehicleJourneyAtStop do
         at_stops << build_stubbed(
           :vehicle_journey_at_stop,
           arrival_time: arrival_time,
-          departure_time: departure_time
+          departure_time: departure_time,
+          arrival_day_offset: 12,
+          departure_day_offset: 12
         )
       end
 
@@ -145,7 +147,7 @@ describe Chouette::VehicleJourneyAtStop do
           departure_time: '05:05'
         )
         at_stops << vehicle_journey_at_stop
-        
+
         offsetter = Chouette::VehicleJourneyAtStopsDayOffset.new(at_stops)
 
         offsetter.calculate!
