@@ -375,7 +375,7 @@ module Chouette
             cost = journey_pattern.costs_between encountered_empty_vjas.last.stop_point, sp
             raise "MISSING cost between #{encountered_empty_vjas.last.stop_point.stop_area.registration_number} AND #{sp.stop_area.registration_number}" unless cost.present?
             distance_between_known += cost[:distance].to_f
-            distance_between_known += encountered_empty_vjas.each_slice(2).inject(0) do |sum, slice|
+            distance_between_known += encountered_empty_vjas.each_cons(2).inject(0) do |sum, slice|
               cost = journey_pattern.costs_between slice.first.stop_point, slice.last.stop_point
               raise "MISSING cost between #{slice.first.stop_point.stop_area.registration_number} AND #{slice.last.stop_point.stop_area.registration_number}" unless cost.present?
               sum + cost[:distance].to_f
