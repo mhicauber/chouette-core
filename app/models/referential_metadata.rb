@@ -8,7 +8,7 @@ class ReferentialMetadata < ApplicationModel
 
   validates :referential, presence: true
   validates :lines, presence: true
-  validates :periodes, presence: true
+  validates :periodes, presence: { message: I18n.t('referentials.errors.missing_period') }
 
   scope :include_lines, -> (line_ids) { where('line_ids && ARRAY[?]::bigint[]', line_ids) }
   scope :include_dateranges, -> (dateranges) { where('periodes && ARRAY[?]', dateranges) }
