@@ -83,8 +83,13 @@ module InternalControl
       :name
     end
 
+    def self.lines_for compliance_check, model
+      nil
+    end
+
     def self.find_or_create_resources compliance_check, model
-      lines = [model] if model.is_a?(Chouette::Line)
+      lines = self.lines_for compliance_check, model
+      lines ||= [model] if model.is_a?(Chouette::Line)
       lines ||= model.respond_to?(:lines) ? model.lines : [model.line]
       lines.map do |line|
         compliance_check.compliance_check_set.compliance_check_resources.find_or_create_by(
