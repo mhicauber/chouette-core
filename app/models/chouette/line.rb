@@ -90,7 +90,7 @@ module Chouette
     end
 
     def display_name
-      [self.get_objectid.short_id, number, name, company.try(:name)].compact.join(' - ')
+      [self.get_objectid.short_id, number, name, company.try(:name)].compact.join(' - ').truncate(50)
     end
 
     def companies
