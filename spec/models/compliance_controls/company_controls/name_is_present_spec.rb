@@ -34,6 +34,17 @@ RSpec.describe CompanyControl::NameIsPresent, :type => :model do
     end
   end
 
+  context "when the company has lines outside of the referential" do
+    before do
+      create :line, company_id: company.id
+    end
+    it "should pass" do
+      expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
+      resource = ComplianceCheckResource.last
+      expect(resource.status).to eq "OK"
+    end
+  end
+
   context "when the company has no name" do
     let(:company_name){ "" }
 
