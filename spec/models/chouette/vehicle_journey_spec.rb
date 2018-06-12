@@ -1043,5 +1043,54 @@ describe Chouette::VehicleJourney, :type => :model do
         expect(@target_4.departure_time).to eq @target_3.arrival_time
       end
     end
+
+    context "with four holes" do
+      before do
+        @start_area = create :stop_area
+        @start_area_2 = create :stop_area
+        @border_area = create :stop_area, kind: :non_commercial, area_type: :border
+        @border_2_area = create :stop_area, kind: :non_commercial, area_type: :border
+        @border_3_area = create :stop_area, kind: :non_commercial, area_type: :border
+        @border_4_area = create :stop_area, kind: :non_commercial, area_type: :border
+        @middle_area = create :stop_area
+        @end_area = create :stop_area
+        journey_pattern = create :journey_pattern
+        journey_pattern.stop_points.destroy_all
+        journey_pattern.stop_points << start_point = create(:stop_point, stop_area: @start_area, position: 0)
+        journey_pattern.stop_points << start_point_2 = create(:stop_point, stop_area: @start_area_2, position: 1)
+        journey_pattern.stop_points << border_point = create(:stop_point, stop_area: @border_area, position: 2)
+        journey_pattern.stop_points << border_point_2 = create(:stop_point, stop_area: @border_2_area, position: 3)
+        journey_pattern.stop_points << border_point_3 = create(:stop_point, stop_area: @border_3_area, position: 4)
+        journey_pattern.stop_points << border_point_4 = create(:stop_point, stop_area: @border_4_area, position: 5)
+        journey_pattern.stop_points << middle_point = create(:stop_point, stop_area: @middle_area, position: 6)
+        journey_pattern.stop_points << end_point = create(:stop_point, stop_area: @end_area, position: 7)
+        journey_pattern.update_attribute :costs, {
+          "#{start_point.stop_area_id}-#{start_point_2.stop_area_id}" => {distance: 232},
+          "#{start_point_2.stop_area_id}-#{border_point.stop_area_id}" => {distance: 33},
+          "#{border_point.stop_area_id}-#{border_point_2.stop_area_id}" => {distance: 0},
+          "#{border_point_2.stop_area_id}-#{border_point_3.stop_area_id}" => {distance: 129},
+          "#{border_point_3.stop_area_id}-#{border_point_4.stop_area_id}" => {distance: 0},
+          "#{border_point_4.stop_area_id}-#{middle_point.stop_area_id}" => {distance: 84},
+          "#{middle_point.stop_area_id}-#{end_point.stop_area_id}" => {distance: 58}
+        }
+        @journey = create :vehicle_journey, journey_pattern: journey_pattern
+        @journey.vehicle_journey_at_stops.destroy_all
+        @start    = create :vehicle_journey_at_stop, stop_point: start_point, vehicle_journey: @journey, arrival_time: "01/01/2000 10:30 UTC".to_time, departure_time: "01/01/2000 10:30 UTC".to_time
+        @start_2  = create :vehicle_journey_at_stop, stop_point: start_point_2, vehicle_journey: @journey, arrival_time: "01/01/2000 13:25 UTC".to_time, departure_time: "01/01/2000 13:40 UTC".to_time
+        @target   = create :vehicle_journey_at_stop, stop_point: border_point, vehicle_journey: @journey, arrival_time: nil, departure_time: nil
+        @target_2 = create :vehicle_journey_at_stop, stop_point: border_point_2, vehicle_journey: @journey, arrival_time: nil, departure_time: nil
+        @target_3 = create :vehicle_journey_at_stop, stop_point: border_point_3, vehicle_journey: @journey, arrival_time: nil, departure_time: nil
+        @target_4 = create :vehicle_journey_at_stop, stop_point: border_point_4, vehicle_journey: @journey, arrival_time: nil, departure_time: nil
+        @middle   = create :vehicle_journey_at_stop, stop_point: middle_point, vehicle_journey: @journey, arrival_time: "01/01/2000 17:35 UTC".to_time, departure_time: "01/01/2000 17:55 UTC".to_time
+        @end      = create :vehicle_journey_at_stop, stop_point: end_point, vehicle_journey: @journey, arrival_time: "01/01/2000 18:55 UTC".to_time, departure_time: "01/01/2000 18:55 UTC".to_time
+      end
+
+      it "should compute passing time" do
+        p @journey.reload.vehicle_journey_at_stops.map &:checksum_source
+        @journey.reload.fill_passing_times!
+        p @journey.vehicle_journey_at_stops.map &:checksum_source
+        expect{@journey.reload.calculate_vehicle_journey_at_stop_day_offset}.to_not change{ @journey.vehicle_journey_at_stops.map(&:checksum_source).join(' ') }
+      end
+    end
   end
 end
