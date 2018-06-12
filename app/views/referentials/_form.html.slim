@@ -18,11 +18,11 @@
   = form.simple_fields_for :metadatas do |subform|
     .row
       .col-lg-12
-        - if @referential.errors.has_key? :metadatas
+        - if @referential.errors.has_key? :"metadatas.periodes"
           .row.metadatas-errors
             .col-lg-12
               .alert.alert-danger
-                - @referential.errors[:metadatas].each do |msg|
+                - @referential.errors[:"metadatas.periodes"].each do |msg|
                   p.small = "- #{msg}"
 
         .subform
