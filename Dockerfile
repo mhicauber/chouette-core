@@ -20,7 +20,7 @@ RUN mkdir /app && apt-get update &&\
     cd /app && rm config/database.yml && mv config/database.yml.docker config/database.yml && \
     cd /app && rm config/secrets.yml && mv config/secrets.yml.docker config/secrets.yml && \
     mv script/launch-cron /app && \
-    bundle exec whenever --output '/proc/1/fd/1' --update-crontab stif-boiv --set 'environment=production&bundle_command=bundle exec' --roles=app,db,web
+    bundle exec whenever --output '/proc/1/fd/1' --update-crontab chouette --set 'environment=production&bundle_command=bundle exec' --roles=app,db,web
 
 WORKDIR /app
 VOLUME /app/public/uploads
