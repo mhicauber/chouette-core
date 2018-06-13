@@ -15,6 +15,7 @@ module Cron
     end
 
     def every_5_minutes
+      Rails.logger.info "Cron.every_5_minutes"
       check_import_operations
       check_ccset_operations
     end
@@ -51,7 +52,7 @@ module Cron
       begin
         sync = LineReferential.find_by(name: 'CodifLigne').line_referential_syncs.build
         raise "Codifligne:sync aborted - There is already an synchronisation in progress" unless sync.valid?
-        sync.save 
+        sync.save
       rescue => e
         Rails.logger.warn(e.message)
       end
