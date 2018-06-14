@@ -35,7 +35,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def accept_user_creation
-    if !Rails.application.config.accept_user_creation
+    if !Subscription.enabled?
       redirect_to unauthenticated_root_path
       return false
     else

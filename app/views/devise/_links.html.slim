@@ -6,7 +6,7 @@
         br
 
     li
-      - if devise_mapping.registerable? && controller_name != 'registrations' && Rails.application.config.accept_user_creation
+      - if devise_mapping.registerable? && controller_name != 'registrations' && Subscription.enabled?
         = link_to t(".sign_up"), new_registration_path(resource_name)
         br
 

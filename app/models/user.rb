@@ -6,7 +6,7 @@ class User < ApplicationModel
   cattr_reader :authentication_type
 
   def self.more_devise_modules
-    if Rails.application.config.accept_user_creation
+    if Subscription.enabled?
       [:confirmable]
     else
       []
@@ -16,7 +16,7 @@ class User < ApplicationModel
   devise :invitable, :registerable, :validatable, :lockable,
          :recoverable, :rememberable, :trackable, :async, authentication_type, *more_devise_modules
 
-  if Devise.mappings[:user].try :confirmable?
+  if Subscription.enabled?
     self.allow_unconfirmed_access_for = 1.day
   end
 

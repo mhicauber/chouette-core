@@ -4,6 +4,10 @@ class Subscription
   include ActiveModel::Conversion
   extend ActiveModel::Naming
 
+  def self.enabled?
+    Rails.application.config.accept_user_creation
+  end
+
   attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation
 
   def initialize(attributes = {})
