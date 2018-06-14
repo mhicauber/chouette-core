@@ -32,6 +32,6 @@ class SubscriptionsController < ChouetteController
 
   private
   def check_feature_is_activated
-    not_found unless Rails.application.config.accept_user_creation
+    not_found unless Subscription.enabled?
   end
 end
