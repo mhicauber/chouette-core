@@ -1,5 +1,5 @@
 - @subscription ||= Subscription.new
-- if Rails.application.config.accept_user_creation
+- if Subscription.enabled?
   .panel.panel-default
     .panel-heading = t('devise.registrations.new.title')
     .panel-body
