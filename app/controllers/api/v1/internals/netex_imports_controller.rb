@@ -49,26 +49,16 @@ module Api
 
         def create_models
           find_workbench
-          referential = create_referential
-          create_netex_import referential
+          create_netex_import
         end
 
-        def create_netex_import new_referential
+        def create_netex_import
           attributes = netex_import_params.merge creator: "Webservice"
-
-          attributes = attributes.merge referential_id: new_referential.id
-
-          netex_import = Import::Netex.new attributes
-          netex_import.save!
-
-          unless netex_import.referential
-            Rails.logger.info "Can't create referential for import #{netex_import.id}: #{new_referential.inspect} #{new_referential.metadatas.inspect} #{new_referential.errors.full_messages}"
-            netex_import.create_message criticity: :error, message_key: "referential_creation", message_attributes: {referential_name: new_referential.name}
-            netex_import.failed!
-          end
-          netex_import
+          @netex_import = Import::Netex.new attributes
+          @netex_import.create_with_referential!
+          @netex_import
         rescue ActiveRecord::RecordInvalid
-          render json: {errors: netex_import.errors}, status: 406
+          render json: {errors: @netex_import.errors}, status: 406
           finish_action!
         end
 
