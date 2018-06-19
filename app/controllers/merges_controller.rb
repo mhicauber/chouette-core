@@ -35,12 +35,8 @@ class MergesController < ChouetteController
   # end
 
   def merge_params
-    params.require(:merge).permit(
-      referentials: []
-      # :name,
-      # :file,
-      # :type,
-      # :referential_id
-    )
+    merge_params = params.require(:merge).permit(:referential_ids)
+    merge_params[:referential_ids] = merge_params[:referential_ids].split(",")
+    merge_params
   end
 end

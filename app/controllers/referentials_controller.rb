@@ -93,6 +93,15 @@ class ReferentialsController < ChouetteController
     redirect_to workbench_path(referential.workbench_id)
   end
 
+  def autocomplete
+    if params[:q].present?
+      autocomplete_collection = collection.autocomplete(params[:q]).order(:name)
+    else
+      autocomplete_collection = collection.order('created_at desc')
+    end
+    render json: autocomplete_collection.limit(10)
+  end
+
   protected
 
   alias_method :referential, :resource

@@ -1,16 +1,50 @@
+@import 'base/config'
+
 .merge-referentials-selector
+  display: flex
+  min-height: 300px
   .col
+    padding: 0
+    flex: 3 0
+    position: relative
+    display: inline-block
+    min-height: 100%
     border: 1px solid #ccc
+    .input-group
+      margin: 0 -1px
+      & > *
+        border-radius: 0
+        border-top: none
+
+    &.middle-col
+      position: relative
+      flex: 1 0
+      border: none
+      span
+        color: $green
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
   ul
-    min-height: 200px
     padding: 0 0 10px 0
     margin: 0
+    border: none
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    &.source-referentials
+      position: relative
+
   li
     list-style-type: none
-    background-color: #eee
     padding: 10px
-    margin: 10px 0px 0 0px
+    margin: 10px 10px 0 10px
     cursor: grab
+    border: 1px solid #ccc
+    background: white
     &.ui-sortable-helper
       cursor: grabbing
       border: 1px solid #444

@@ -66,6 +66,13 @@ class Referential < ApplicationModel
   scope :archived, -> { where.not(archived_at: nil) }
 
   scope :ready, -> { where(ready: true) }
+  scope :autocomplete, ->(q) {
+    if q.present?
+      where("name ILIKE '%#{sanitize_sql_like(q)}%'")
+    else
+      all
+    end
+  }
 
   scope :in_periode, ->(periode) { where(id: referential_ids_in_periode(periode)) }
   scope :include_metadatas_lines, ->(line_ids) { where('referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids) }

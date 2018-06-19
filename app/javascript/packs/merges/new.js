@@ -1,3 +1,5 @@
-$( ".source-referentials, .target" ).sortable({
-  connectWith: ".connectedSortable"
-}).disableSelection();
+import '../../helpers/polyfills'
+
+import MergeReferentialsSelector from '../../helpers/merge_referentials_selector'
+
+new MergeReferentialsSelector(".merge-referentials-selector")
