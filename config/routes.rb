@@ -204,6 +204,7 @@ ChouetteIhm::Application.routes.draw do
         resources :netex_imports, only: :create do
           member do
             get :notify_parent
+            get :download
           end
         end
       end

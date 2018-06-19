@@ -28,6 +28,11 @@ module Api
           end
         end
 
+        def download
+          find_netex_import
+          send_file @netex_import.file.path
+        end
+
         private
 
         def find_netex_import
