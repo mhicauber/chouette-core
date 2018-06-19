@@ -63,7 +63,8 @@ module Api
 
           unless netex_import.referential
             Rails.logger.info "Can't create referential for import #{netex_import.id}: #{new_referential.inspect} #{new_referential.metadatas.inspect} #{new_referential.errors.full_messages}"
-            netex_import.messages.create criticity: :error, message_key: "referential_creation"
+            netex_import.create_message criticity: :error, message_key: "referential_creation", message_attributes: {referential_name: new_referential.name}
+            netex_import.failed!
           end
           netex_import
         rescue ActiveRecord::RecordInvalid
