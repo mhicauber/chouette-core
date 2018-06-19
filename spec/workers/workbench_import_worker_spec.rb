@@ -5,7 +5,7 @@ RSpec.describe WorkbenchImportWorker, type: [:worker, :request, :zip] do
 
     it "uploads the following entries: #{entry_names.flatten.inspect}" do
       allow( HTTPService ).to receive(:post_resource)
-        .with(host: host, path: upload_path, params: anything) { |params|
+        .with(host: host, path: upload_path, params: anything, token: Rails.application.secrets.api_token) { |params|
         name =  params[:params][:netex_import][:name]
         raise RuntimeError, "unexpected upload of entry #{name}" unless expected_upload_names.delete?(name)
         OpenStruct.new(status: 201)
@@ -26,7 +26,7 @@ RSpec.describe WorkbenchImportWorker, type: [:worker, :request, :zip] do
   # http://www.example.com/workbenches/:workbench_id/imports/:id/download
   let( :host ){ Rails.configuration.rails_host }
   let( :path ){ download_workbench_import_path(workbench, workbench_import) }
-  let( :upload_path ){ api_v1_netex_imports_path(format: :json) }
+  let( :upload_path ){ api_v1_internals_netex_imports_path(format: :json) }
 
   let( :downloaded_zip_archive ){ make_zip_from_tree zip_data_dir }
   let( :downloaded_zip_data ){ downloaded_zip_archive.data }
