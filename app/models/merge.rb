@@ -170,7 +170,7 @@ class Merge < ApplicationModel
     # - skip model if its checksum exists "in the same line"
     # - prepare attributes for a fresh model
     # - remove all primary keys
-    # - compute an ObjectId (TODO)
+    # - compute an ObjectId
     # - process children models as nested attributes
     # - associated other models (by line/checksum)
     # - save! and next one
@@ -180,6 +180,8 @@ class Merge < ApplicationModel
     end
 
     referential_routes_checksums = Hash[referential_routes.map { |r| [ r.id, r.checksum ] }]
+
+    referential_routes_lines = Hash[referential_routes.map { |r| [ r.id, r.line_id ] }]
 
     referential_stop_points = referential.switch do
       referential.stop_points.all.to_a
@@ -317,9 +319,9 @@ class Merge < ApplicationModel
     new.switch do
       referential_journey_patterns.each do |journey_pattern|
         # find parent route by checksum
-        # TODO add line_id for security
+        associated_line_id = referential_routes_lines[journey_pattern.route_id]
         associated_route_checksum = referential_routes_checksums[journey_pattern.route_id]
-        existing_associated_route = new.routes.find_by checksum: associated_route_checksum
+        existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
 
         existing_journey_pattern = new.journey_patterns.find_by route_id: existing_associated_route.id, checksum: journey_pattern.checksum
 
@@ -379,11 +381,11 @@ class Merge < ApplicationModel
     new.switch do
       referential_vehicle_journeys.each do |vehicle_journey|
         # find parent journey pattern by checksum
-        # TODO add line_id for security
+        associated_line_id = referential_routes_lines[vehicle_journey.route_id]
         associated_route_checksum = referential_routes_checksums[vehicle_journey.route_id]
         associated_journey_pattern_checksum = referential_journey_patterns_checksums[vehicle_journey.journey_pattern_id]
 
-        existing_associated_route = new.routes.find_by checksum: associated_route_checksum
+        existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
         existing_associated_journey_pattern = existing_associated_route.journey_patterns.find_by checksum: associated_journey_pattern_checksum
 
         existing_vehicle_journey = new.vehicle_journeys.find_by journey_pattern_id: existing_associated_journey_pattern.id, checksum: vehicle_journey.checksum
