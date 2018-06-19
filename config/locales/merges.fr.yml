@@ -32,6 +32,8 @@ fr:
         referentials: "Jeux de données"
         new: Jeu de données finalisé
         operator: Utilisateur
+        available_referentials: "Jeux de données disponibles"
+        selected_referentials: "Jeux de données selectionnés"
     errors:
       models:
         merge:

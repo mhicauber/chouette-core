@@ -24,14 +24,26 @@ class MergeReferentialsSelector
     ids
 
   initSortables: ->
-    @container.find( ".source-referentials, .target" ).sortable
+    @container.find(".source-referentials").sortable
       connectWith: ".connectedSortable"
+      placeholder: "placeholder"
       update: =>
         @formInput.val @selectedIds()
+      beforeStop: (event, ui)=>
+        li = ui.item.clone()
+        li.find('a').click (e)=>
+          e.preventDefault()
+          @results.find("li[data-id=#{li.data().id}]").show()
+          li.remove()
+          false
+        li.insertBefore(ui.placeholder)
+      remove: (event, ui)->
+        ui.item.hide()
+        $(this).sortable('cancel')
     .disableSelection()
+    @container.find(".target").sortable().disableSelection()
 
   searchKeyUp: ->
-    console.log "searchKeyUp"
     clearTimeout(@searchCoolDown) if @searchCoolDown
     @clearGroup.toggle(@searchInput.val().length > 0)
     @searchCoolDown = setTimeout =>
@@ -56,10 +68,11 @@ class MergeReferentialsSelector
     .then (json) =>
       @results.html ''
       _selected = @selectedIds()
-      for ref in json
-        if _selected.indexOf(ref.id) < 0
-          li = $("<li data-id='#{ref.id}'>#{ref.name}</li>")
-          li.appendTo @results
+      json.forEach (ref) =>
+        li = $("<li data-id='#{ref.id}'>#{ref.name}<a href='#' class='pull-right delete'><span class='fa fa-times'></a></li>")
+        li.appendTo @results
+        li.hide() unless _selected.indexOf(ref.id) < 0
+
       @searchInput.attr 'readonly', false
       @loader.hide()
       @initSortables()

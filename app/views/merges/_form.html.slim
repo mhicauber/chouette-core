@@ -12,17 +12,16 @@
 
   .row
     .col-lg-12
-      = form.input :creator, input_html: { disabled: true }
+      //= form.input :creator, input_html: { disabled: true }
       = form.hidden_field :referential_ids
-    .col-md-12
-      h4= Merge.tmf('referentials')
 
   .row.merge-referentials-selector
     .col
+      h4= Merge.tmf('available_referentials')
       .input-group
         .input-group-addon
           span.fa.fa-search
-        input.form-control.search type='text' placeholder=Referential.ts data={searchUrl: autocomplete_workbench_referentials_url(workbench)}
+        input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: autocomplete_workbench_referentials_url(workbench)}
         .input-group-addon.loader
           span.fa.fa-spinner.fa-spin
         .input-group-btn.clear-group
@@ -33,6 +32,7 @@
     .middle-col.col
       span.fa.fa-arrow-circle-right.fa-5x
     .col
+      h4= Merge.tmf('selected_referentials')
       ul.target.connectedSortable
 
 
