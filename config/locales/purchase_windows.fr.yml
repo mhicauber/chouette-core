@@ -79,4 +79,4 @@ fr:
               date_in_dates: Une même date ne peut pas être incluse plusieurs fois dans la liste.
               illegal_date: La date %{date} n'existe pas.
             date_ranges:
-              missing: Un calendrier commercial doit avoir au moins une période
+              blank: Un calendrier commercial doit avoir au moins une période
