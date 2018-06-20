@@ -11,11 +11,18 @@ class MergeReferentialsSelector
     @initSortables()
     @performSearch()
     @clearGroup = @container.find('.clear-group')
-    @clearGroup.hide()
+    @clearGroup.toggle(@searchInput.val().length > 0)
     @clearBt = @clearGroup.find('a')
     @formInput = $('input[name*=referential_ids]')
     @clearBt.click =>
       @clear()
+    @searchInput.on 'keyup keypress', (e)=>
+      keyCode = e.keyCode || e.which
+      if keyCode == 13
+        e.preventDefault()
+        clearTimeout(@searchCoolDown) if @searchCoolDown
+        @performSearch()
+        false
 
   selectedIds: ->
     ids = []
@@ -24,24 +31,31 @@ class MergeReferentialsSelector
     ids
 
   initSortables: ->
-    @container.find(".source-referentials").sortable
-      connectWith: ".connectedSortable"
+    @container.find(".source-referentials li").draggable
+      connectToSortable: ".target"
       placeholder: "placeholder"
-      update: =>
-        @formInput.val @selectedIds()
-      beforeStop: (event, ui)=>
-        li = ui.item.clone()
+      revert: "invalid"
+      cancel: ".disabled"
+      helper: (event)=>
+        target = event.target
+        li = $(target).clone()
+        li.width target.clientWidth
+        li.height target.clientHeight
+        li.css zIndex: 100
         li.find('a').click (e)=>
           e.preventDefault()
-          @results.find("li[data-id=#{li.data().id}]").show()
+          @results.find("li[data-id=#{li.data().id}]").removeClass('disabled')
           li.remove()
           false
-        li.insertBefore(ui.placeholder)
-      remove: (event, ui)->
-        ui.item.hide()
-        $(this).sortable('cancel')
+        li
     .disableSelection()
-    @container.find(".target").sortable().disableSelection()
+    @container.find(".target").sortable
+      axis: "y"
+      receive: (event, ui)=>
+        ui.item.addClass "disabled"
+      update: (event, ui)=>
+        @formInput.val @selectedIds()
+    .disableSelection()
 
   searchKeyUp: ->
     clearTimeout(@searchCoolDown) if @searchCoolDown
@@ -71,7 +85,7 @@ class MergeReferentialsSelector
       json.forEach (ref) =>
         li = $("<li data-id='#{ref.id}'>#{ref.name}<a href='#' class='pull-right delete'><span class='fa fa-times'></a></li>")
         li.appendTo @results
-        li.hide() unless _selected.indexOf(ref.id) < 0
+        li.addClass('disabled') unless _selected.indexOf(ref.id) < 0
 
       @searchInput.attr 'readonly', false
       @loader.hide()
