@@ -7,7 +7,7 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
   let(:journey_pattern){ create :journey_pattern, route: route }
 
   let(:time_table) {create :time_table, dates: [], periods: [ create(:time_table_period, period_start: Date.today, period_end: Date.today + 10) ]}
-  let(:purchase_window) { create :purchase_window, referential: referential, date_ranges: [(time_table.start_date+1)...(time_table.end_date-1)]}
+  let(:purchase_window) { create :purchase_window, date_ranges: [(time_table.start_date+1)...(time_table.end_date-1)]}
 
   let(:vj) { create :vehicle_journey_empty, journey_pattern: journey_pattern, route: route, time_tables: [time_table], purchase_windows: [purchase_window]}
 
