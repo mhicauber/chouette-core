@@ -22,13 +22,8 @@ const mapDispatchToProps = (dispatch) => {
     onUpdateColor: (color) => {
       dispatch(actions.updateColor(color))
     },
-    onSelect2Tags: (e) => {
-      e.preventDefault()
-      dispatch(actions.select2Tags(e.params.data))
-    },
-    onUnselect2Tags: (e) => {
-      e.preventDefault()
-      dispatch(actions.unselect2Tags(e.params.data))
+    onSetNewTags: (tags) => {
+      dispatch(actions.setNewTags(tags))
     }
   }
 }
