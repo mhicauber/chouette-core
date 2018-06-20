@@ -47,7 +47,7 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
         Chouette::PurchaseWindow.update_all(date_ranges: [(time_table.start_date)..(time_table.end_date+1)])
       end
     end
-    
+
      context "when the criticity is warning" do
       it "should set the status according to its params" do
         expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
