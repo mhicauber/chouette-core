@@ -48,7 +48,6 @@ en:
       overlapped_referential: "%{referential} cover the same perimeter"
       overlapped_period: "Another period is on the same period"
       invalid_period: The begin date must be before end date
-      missing_period: A referential must have at least one period
     overview:
       head:
         dates: Dates
@@ -63,6 +62,12 @@ en:
       archived: Archived
 
   activerecord:
+    errors:
+      models:
+        referential_metadata:
+          attributes:
+            periodes:
+              blank: A referential must have at least one period
     models:
       referential:
         zero: "data space"

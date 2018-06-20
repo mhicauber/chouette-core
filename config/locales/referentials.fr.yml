@@ -48,7 +48,6 @@ fr:
       overlapped_referential: "%{referential} couvre le même périmètre d'offre"
       overlapped_period: "Une autre période chevauche cette période"
       invalid_period: La date de début doit être antérieure à la date de fin
-      missing_period: Un jeu de données doit avoir au moins une période
     overview:
       head:
         dates: Dates
@@ -63,6 +62,12 @@ fr:
       archived: Archivé
 
   activerecord:
+    errors:
+      models:
+        referential_metadata:
+          attributes:
+            periodes:
+              blank: Un jeu de données doit avoir au moins une période
     models:
       referential:
         zero: "jeu de Données"
