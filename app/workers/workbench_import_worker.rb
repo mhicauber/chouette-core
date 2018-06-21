@@ -27,7 +27,8 @@ class WorkbenchImportWorker
     HTTPService.post_resource(
       host: export_host,
       path: export_path,
-      params: params(eg_file, eg_name))
+      params: params(eg_file, eg_name),
+      token: Rails.application.secrets.api_token)
   end
 
   def handle_corrupt_zip_file
@@ -93,7 +94,7 @@ class WorkbenchImportWorker
     Rails.application.config.rails_host
   end
   def export_path
-    api_v1_netex_imports_path(format: :json)
+    api_v1_internals_netex_imports_path(format: :json)
   end
   def export_url
     @__export_url__ ||= File.join(export_host, export_path)
