@@ -10,7 +10,7 @@ RSpec.describe VehicleJourneyControl::PurchaseWindow, :type => :model do
   let(:failing){ create :vehicle_journey, journey_pattern: journey_pattern }
   let(:failing_too){ create :vehicle_journey, journey_pattern: journey_pattern }
   let(:failing_too_too){ create :vehicle_journey }
-  let(:purchase_window){ create :purchase_window, referential: referential }
+  let(:purchase_window){ create :purchase_window }
   let(:control_attributes){
     {}
   }
