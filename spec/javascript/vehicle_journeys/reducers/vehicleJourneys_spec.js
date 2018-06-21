@@ -46,21 +46,27 @@ describe('vehicleJourneys reducer', () => {
         journey_pattern_id: 1,
         published_journey_name: "vj1",
         objectid: '11',
+        short_id: '11',
         deletable: false,
         selected: true,
         footnotes: fakeFootnotes,
         time_tables: fakeTimeTables,
-        vehicle_journey_at_stops: fakeVJAS
+        vehicle_journey_at_stops: fakeVJAS,
+        index: 0,
+        custom_fields: {foo: {value: 1}}
       },
       {
         journey_pattern_id: 2,
         published_journey_name: "vj2",
         objectid: '22',
+        short_id: '22',
         selected: false,
         deletable: false,
         footnotes: fakeFootnotes,
         time_tables: fakeTimeTables,
-        vehicle_journey_at_stops: fakeVJAS
+        vehicle_journey_at_stops: fakeVJAS,
+        index: 1,
+        custom_fields: {foo: {value: 1}}
       }
     ]
   })
@@ -631,15 +637,20 @@ describe('vehicleJourneys reducer', () => {
 
     let newVJ = Object.assign({}, state[0], {vehicle_journey_at_stops: newVJAS, selected: false})
     newVJ.published_journey_name = state[0].published_journey_name + '-0'
+    newVJ.index = 1
     delete newVJ['objectid']
+    delete newVJ['short_id']
+    let newState
     expect(
-      vjReducer(state, {
+      newState = vjReducer(state, {
         type: 'DUPLICATE_VEHICLEJOURNEY',
         addtionalTime,
         duplicateNumber,
         departureDelta
       })
     ).toEqual([state[0], newVJ, state[1]])
+    newState[1].custom_fields.foo.value = 2
+    expect(newState[0].custom_fields.foo.value).toEqual(1)
   })
 
   it('should handle EDIT_VEHICLEJOURNEY', () => {
