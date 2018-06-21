@@ -61,6 +61,10 @@ module Chouette
       end
     }
 
+    scope :for_workbench, ->(workbench){
+      where(line_referential_id: workbench.line_referential_id)
+    }
+
     def self.nullable_attributes
       [:published_name, :number, :comment, :url, :color, :text_color, :stable_id]
     end
