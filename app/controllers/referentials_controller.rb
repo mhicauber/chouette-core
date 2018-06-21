@@ -66,9 +66,9 @@ class ReferentialsController < ChouetteController
   end
 
   def validate
-    ComplianceControlSetCopyWorker.perform_async(params[:compliance_control_set], params[:id])
+    check_set = ComplianceControlSetCopier.new.copy(params[:compliance_control_set], params[:id])
     flash[:notice] = t('notice.referentials.validate')
-    redirect_to workbench_compliance_check_sets_path(referential.workbench_id)
+    redirect_to workbench_compliance_check_set_path(referential.workbench_id, check_set)
   end
 
   def destroy
