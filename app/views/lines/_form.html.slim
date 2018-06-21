@@ -2,7 +2,7 @@
   .row
     .col-lg-12
       = f.input :name
-      = f.input :network_id, as: :select, :collection => @line_referential.networks, include_blank: false
+      = f.input :network_id, as: :select, :collection => @line_referential.networks, include_blank: true
       = f.input :company_id, as: :select, :collection => @line_referential.companies, include_blank: true
       = f.input :secondary_company_ids, :collection => @line_referential.companies, include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:secondary_companies)
       = f.input :published_name
