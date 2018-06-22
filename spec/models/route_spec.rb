@@ -29,6 +29,23 @@ RSpec.describe Chouette::Route, :type => :model do
       end
     end
 
+    context "on update" do
+      before do
+        route.set_metadata! :creator_username, "john.doe"
+      end
+
+      it "should set the correct values" do
+        Timecop.freeze(Time.now) do
+          id = route.id
+          route = Chouette::Route.find id
+          route.set_metadata! :creator_username, "john.doe"
+          route = Chouette::Route.find id
+          expect(route.metadata.creator_username).to eq "john.doe"
+          expect(route.metadata.creator_username_updated_at.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.strftime('%Y-%m-%d %H:%M:%S.%3N')
+        end
+      end
+    end
+
     describe "#merge_metadata_from" do
       let(:source){ create :route }
       let(:metadata){ target.merge_metadata_from(source).metadata }
