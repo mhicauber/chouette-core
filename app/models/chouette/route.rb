@@ -232,6 +232,12 @@ module Chouette
       RouteWayCostWorker.perform_async(referential.id, id)
     end
 
+    def calculate_costs
+      way_costs = TomTom.evaluate WayCost.from(stop_areas)
+      costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
+      update_column :costs, costs
+    end
+
     protected
 
     def self.vehicle_journeys_timeless(stop_point_id)
