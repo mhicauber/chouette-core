@@ -84,12 +84,14 @@ module MetadataSupport
     end
 
     def new_ostruct_member name
+      @_initialized_members ||= []
       unless is_timestamp_attr?(name)
         timestamp_attr_name = timestamp_attr(name)
       end
 
       name = name.to_sym
-      unless respond_to?(name)
+      unless @_initialized_members.include?(name)
+        @_initialized_members << name
         if timestamp_attr_name
           define_singleton_method(timestamp_attr_name) { @table[timestamp_attr_name]&.to_time }
           define_singleton_method(name) { @table[name] }
