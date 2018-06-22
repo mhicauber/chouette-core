@@ -68,38 +68,45 @@ namespace :referential do
     end
   end
 
-  def update_checksums_for_referential referential
-    thing = %w(\\ | / —)
-    Referential.force_register_models_with_checksum
-    puts "\n \e[33m***\e[0m Referential #{referential.name}"
-    referential.switch do
-      Referential.models_with_checksum.each do |klass|
-        i = 0
-        j = 0
-        prev_size = 1
-        head =  "Updating checksums for #{klass.name}: "
-        print head
-        print "⎯"*(80-head.size)
-        print "  "
-        count = klass.count
-        klass.cache do
-          klass.find_in_batches(batch_size: 500) do |batch|
-            klass.transaction do
-              batch.each do |o|
-                o.update_checksum!
-                if j%10 == 0
-                  out = "#{"\b"*prev_size}\e[33m#{thing[i]}\e[0m (#{j}/#{count})"
-                  prev_size = out.size - prev_size - 9
-                  print out
-                  i = (i+1) % thing.size
-                end
-                j += 1
-              end
+  def update_checksums_in_referential_for_klass klass
+    i = 0
+    j = 0
+    prev_size = 1
+    head =  "Updating checksums for #{klass.name}: "
+    print head
+    print "⎯"*(80-head.size)
+    print "  "
+    count = klass.count
+    klass.cache do
+      klass.find_in_batches(batch_size: 500) do |batch|
+        klass.transaction do
+          batch.each do |o|
+            o.update_checksum!
+            if j%10 == 0
+              out = "#{"\b"*prev_size}\e[33m#{@thing[i]}\e[0m (#{j}/#{count})"
+              prev_size = out.size - prev_size - 9
+              print out
+              i = (i+1) % @thing.size
             end
+            j += 1
           end
         end
+      end
+    end
 
-        print "#{"\b"*prev_size}\e[32m✓\e[0m (#{count}/#{count})\n"
+    print "#{"\b"*prev_size}\e[32m✓\e[0m (#{count}/#{count})\n"
+  end
+
+  def update_checksums_for_referential referential, klasses=nil
+    @thing = %w(\\ | / —)
+    unless klasses
+      Referential.force_register_models_with_checksum
+      klasses = Referential.models_with_checksum
+    end
+    puts "\n \e[33m***\e[0m Referential #{referential.name}"
+    referential.switch do
+      klasses.each do |klass|
+        update_checksums_in_referential_for_klass klass
       end
     end
   end
@@ -114,6 +121,15 @@ namespace :referential do
   task :update_checksums_in_organisation, [:organisation_id] => :environment do |t, args|
     Organisation.find(args[:organisation_id]).referentials.find_each do |referential|
       update_checksums_for_referential referential
+    end
+  end
+
+  desc 'Update all relevant checksums for PurchaseWindow'
+  task :update_purchase_windows_checksums => :environment do |t, args|
+    referentials = Referential.not_in_referential_suite
+    referentials += Workbench.all.map { |w| w.output.current }.compact
+    referentials.each do |referential|
+      update_checksums_for_referential referential, [Chouette::PurchaseWindow]
     end
   end
 end
