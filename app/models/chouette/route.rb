@@ -27,7 +27,7 @@ module Chouette
     belongs_to :line
     belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id
 
-    has_many :routing_constraint_zones
+    has_many :routing_constraint_zones, :dependent => :destroy
     has_many :journey_patterns, :dependent => :destroy
     has_many :vehicle_journeys, :dependent => :destroy do
       def timeless
