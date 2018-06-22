@@ -20,11 +20,16 @@ module TomTom
     api_key.present? && /[a-zA-Z0-9]{32}/ === api_key
   end
 
+  @@instance = TomTom::Minimum.new(TomTom::Cache.new(TomTom::Batch.new(connection)))
+  def self.evaluate(way_costs)
+    @@instance.evaluate way_costs
+  end
+
   def self.batch(way_costs)
     TomTom::Batch.new(connection).batch(way_costs)
   end
 
   def self.matrix(way_costs)
-    TomTom::Matrix.new(connection).matrix(way_costs)
+    TomTom::Cache.new(connection).matrix(way_costs)
   end
 end
