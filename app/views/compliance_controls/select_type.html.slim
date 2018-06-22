@@ -11,6 +11,10 @@
                 = radio_button_tag(:sti_class, compliance_control, compliance_control.first)
                 = development_only do
                   = compliance_control.iev_enabled_check ? '( IEV ) ' : '( RUBY ) '
+                = development_only do
+                  = compliance_control.default_code
+                = development_only do
+                  = (compliance_control.instance_variable_get("@required_features") || []).join(',')
                 = I18n.t("activerecord.models.#{compliance_control.name.underscore}.one")
 
           .text-right

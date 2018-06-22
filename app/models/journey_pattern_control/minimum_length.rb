@@ -1,5 +1,7 @@
 module JourneyPatternControl
   class MinimumLength < InternalControl::Base
+    required_features :core_controls
+    
     enumerize :criticity, in: %i(error), scope: true, default: :error
 
     MINIMUM_LENGTH = 2

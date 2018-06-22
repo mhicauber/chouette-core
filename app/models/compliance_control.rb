@@ -10,7 +10,21 @@ class ComplianceControl < ApplicationModel
     end
 
     def block_class
-      self.parent.to_s.sub('Control', '').underscore 
+      self.parent.to_s.sub('Control', '').underscore
+    end
+
+    def iev_enabled_check
+      true
+    end
+
+    def available_for_organisation? organisation
+      return true unless @required_features.present?
+      (organisation.features.map(&:to_sym) & @required_features.map(&:to_sym)).size == @required_features.map(&:to_sym).size
+    end
+
+    def required_features *features
+      @required_features ||= []
+      @required_features += features
     end
 
     def subclass_patterns
@@ -26,13 +40,17 @@ class ComplianceControl < ApplicationModel
       }
     end
 
-    def subclasses_to_hash
+    def subclasses_to_hash organisation=nil
       if self.subclasses.empty?
-        return {ComplianceControl.subclass_patterns.key(self.object_type) => [self]}
+        if organisation.nil? || self.available_for_organisation?(organisation)
+          return {ComplianceControl.subclass_patterns.key(self.object_type) => [self]}
+        else
+          return {}
+        end
       else
         out = {}
         self.subclasses.each do |k|
-          sub_hash = k.subclasses_to_hash
+          sub_hash = k.subclasses_to_hash organisation
           sub_hash.each do |k, v|
             out[k] ||= []
             out[k] += v

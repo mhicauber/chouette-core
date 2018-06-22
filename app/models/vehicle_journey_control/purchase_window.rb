@@ -1,5 +1,7 @@
 module VehicleJourneyControl
   class PurchaseWindow < InternalBase
+    required_features :purchase_windows
+
     def self.default_code; "3-VehicleJourney-6" end
 
     def self.compliance_test compliance_check, vehicle_journey
