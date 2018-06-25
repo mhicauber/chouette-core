@@ -164,7 +164,12 @@ class ActiveRecord::Base
 end
 
 module ActiveModel::Naming
-  def self.extended klass
-    klass.send :extend, EnhancedModelI18n
+  class << self
+    def extended_with_i18n klass
+      self.extended_without_i18n klass
+      klass.send :extend, EnhancedModelI18n
+    end
+
+    alias_method_chain :extended, :i18n
   end
 end
