@@ -162,3 +162,9 @@ end
 class ActiveRecord::Base
   extend EnhancedModelI18n
 end
+
+module ActiveModel::Naming
+  def self.extended klass
+    klass.send :extend, EnhancedModelI18n
+  end
+end
