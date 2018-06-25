@@ -10,12 +10,15 @@ RSpec.describe ReferentialMetadata, :type => :model do
   it { is_expected.to validate_presence_of(:periodes) }
 
   describe ".new_from" do
-
-    let(:referential_metadata) { create :referential_metadata, referential_source: create(:referential) }
-    let(:new_referential_metadata) { ReferentialMetadata.new_from(referential_metadata, nil) }
+    let(:line_referential){ create :line_referential }
+    let(:workbench){ create :workbench, line_referential: line_referential}
+    let(:referential){ create :workbench_referential, workbench: workbench, line_referential: line_referential }
+    let(:referential_metadata) { create :referential_metadata, referential: referential }
+    let(:new_referential_metadata) { ReferentialMetadata.new_from(referential_metadata, referential.workbench) }
     before do
+      Workgroup.workbench_scopes_class = WorkbenchScopes::All
       referential_metadata.line_ids.each do |id|
-        Chouette::Line.find(id).update_attribute :line_referential_id, referential_metadata.referential.line_referential_id
+        Chouette::Line.find(id).update_attribute :line_referential_id, line_referential.id
       end
     end
 
@@ -41,7 +44,11 @@ RSpec.describe ReferentialMetadata, :type => :model do
 
     context "with a functional scope" do
       let(:organisation){ create :organisation, sso_attributes: {"functional_scope" => [referential_metadata.referential.lines.first.objectid]} }
-      let(:new_referential_metadata) { ReferentialMetadata.new_from(referential_metadata, organisation) }
+      let(:new_referential_metadata) { ReferentialMetadata.new_from(referential_metadata, referential.workbench) }
+      before do
+        referential.workbench.update organisation: organisation
+        Workgroup.workbench_scopes_class = Stif::WorkbenchScopes
+      end
 
       it "should scope the lines" do
         expect(new_referential_metadata.line_ids).to eq [referential_metadata.referential.lines.first.id]

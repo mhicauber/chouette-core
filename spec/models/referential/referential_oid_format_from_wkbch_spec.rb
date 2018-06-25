@@ -44,8 +44,7 @@ RSpec.describe Referential do
 
   describe 'self.new_from' do
 
-    let( :source ){ build :referential }
-    let( :functional_scope ){ double('functional scope') }
+    let( :source ){ build :workbench_referential }
 
     it 'copies objectid_format from source' do
       expect( described_class )
@@ -61,7 +60,7 @@ RSpec.describe Referential do
       metadatas: source.metadatas.map { |m| ReferentialMetadata.new_from(m, functional_scope) },
       ready: false)
 
-      described_class.new_from( source, functional_scope )
+      described_class.new_from( source, source.workbench )
     end
 
   end

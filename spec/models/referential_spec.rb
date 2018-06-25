@@ -195,7 +195,7 @@ describe Referential, :type => :model do
 
   context "Cloning referential" do
     let(:clone) do
-      Referential.new_from(ref, nil)
+      Referential.new_from(ref, ref.workbench)
     end
 
     let!(:workbench){ create :workbench }
