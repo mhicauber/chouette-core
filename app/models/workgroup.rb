@@ -61,6 +61,10 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
+  def workbench_scopes workbench
+    self.class.workbench_scopes_class.new(workbench)
+  end
+
   private
   def compliance_control_sets_labels(keys)
     keys.inject({}) do |h, k|
@@ -69,7 +73,4 @@ class Workgroup < ApplicationModel
     end
   end
 
-  def workbench_scopes workbench
-    self.class.workbench_scopes_class.new(workbench)
-  end
 end
