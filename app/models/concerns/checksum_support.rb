@@ -19,11 +19,13 @@ module ChecksumSupport
       Rails.logger.debug "Define callback in #{klass} to update checksums #{self.model_name} (via #{has_many}/#{belongs_to})"
 
       child_update_parent = Proc.new do
-        parents = []
-        parents << self.send(belongs_to) if klass.reflections[belongs_to].present?
-        parents += self.send(has_many) if klass.reflections[has_many].present?
-        Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-        parents.compact.each &:update_checksum_without_callbacks!
+        if changed? || destroyed?
+          parents = []
+          parents << self.send(belongs_to) if klass.reflections[belongs_to].present?
+          parents += self.send(has_many) if klass.reflections[has_many].present?
+          Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
+          parents.compact.each &:update_checksum_without_callbacks!
+        end
       end
 
       klass.after_save &child_update_parent
