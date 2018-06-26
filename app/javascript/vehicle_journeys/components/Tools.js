@@ -43,7 +43,7 @@ export default class Tools extends Component {
             <PurchaseWindowsEditVehicleJourney disabled={false}/>
           }
           <ConstraintExclusionEditVehicleJourney disabled={false}/>
-          <NotesEditVehicleJourney disabled={!this.hasPolicy("update")}/>
+          <NotesEditVehicleJourney disabled={false}/>
           <DeleteVehicleJourneys disabled={!this.hasPolicy("destroy") || !editMode}/>
         </ul>
 
