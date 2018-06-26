@@ -357,6 +357,34 @@ class Merge < ApplicationModel
       end
     end
 
+    # Footnotes
+
+    referential_footnotes = referential.switch do
+      # All footnotes associated to a VehicleJourney are loaded
+      referential.footnotes.associated.all.to_a
+    end
+
+    new.switch do
+      referential_footnotes.each do |footnote|
+        # If no footnote already exists in the same line with the same checksum
+        existing_footnote = new.footnotes.find_by line_id: footnote.line_id, checksum: footnote.checksum
+        if existing_footnote
+          existing_footnote.merge_metadata_from footnote
+        else
+          attributes = footnote.attributes.merge(
+            id: nil,
+          )
+          new_footnote = new.footnotes.build attributes
+
+          new_footnote.save!
+
+          if new_footnote.checksum != footnote.checksum
+            raise "Checksum has changed: \"#{footnote.checksum}\", \"#{footnote.checksum_source}\" -> \"#{new_footnote.checksum}\", \"#{new_footnote.checksum_source}\""
+          end
+        end
+      end
+    end
+
     # Vehicle Journeys
 
     referential_vehicle_journeys = referential.switch do
@@ -374,6 +402,16 @@ class Merge < ApplicationModel
       end
 
       [purchase_windows_by_checksum, vehicle_journey_purchase_window_checksums]
+    end
+
+    referential_vehicle_journey_footnote_checksums = referential.switch do
+      vehicle_journey_footnote_checksums = Hash.new { |h,k| h[k] = [] }
+
+      referential.footnotes.joins(:vehicle_journeys).pluck("vehicle_journeys.id", :checksum).each do |vehicle_journey_id, checksum|
+        vehicle_journey_footnote_checksums[vehicle_journey_id] << checksum
+      end
+
+      vehicle_journey_footnote_checksums
     end
 
     new_vehicle_journey_ids = {}
@@ -440,6 +478,12 @@ class Merge < ApplicationModel
             end
 
             new_vehicle_journey.purchase_windows << associated_purchase_window
+          end
+
+          # Associate Footnotes
+          referential_vehicle_journey_footnote_checksums[vehicle_journey.id].each do |footnote_checksum|
+            associated_footnote = new.footnotes.find_by(line_id: associated_line_id, checksum: footnote_checksum)
+            new_vehicle_journey.footnotes << associated_footnote
           end
 
           # Rewrite ignored_routing_contraint_zone_ids

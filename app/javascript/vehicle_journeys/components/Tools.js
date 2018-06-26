@@ -49,7 +49,7 @@ export default class Tools extends Component {
             <PurchaseWindowsEditVehicleJourney disabled={hasDeletedVJ()}/>
           }
           <ConstraintExclusionEditVehicleJourney disabled={hasDeletedVJ()}/>
-          <NotesEditVehicleJourney disabled={!hasPolicy("update") || hasDeletedVJ()}/>
+          <NotesEditVehicleJourney disabled={hasDeletedVJ()}/>
           <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/>
         </ul>
         <div className='pull-left'>

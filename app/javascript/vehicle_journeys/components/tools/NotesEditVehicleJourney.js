@@ -19,7 +19,7 @@ export default class NotesEditVehicleJourney extends Component {
     let fnIds = footnotes.map(fn => fn.id)
     return {
       associated: footnotes,
-      to_associate: window.line_footnotes.filter(fn => !fnIds.includes(fn.id)) 
+      to_associate: window.line_footnotes.filter(fn => !fnIds.includes(fn.id))
     }
   }
 
@@ -47,7 +47,7 @@ export default class NotesEditVehicleJourney extends Component {
     } else {
       return (
         <div>
-          <h3>{I18n.t('vehicle_journeys.form.purchase_windows')} :</h3>
+          <h3>{I18n.t('vehicle_journeys.form.footnotes')} :</h3>
           {this.footnotes().associated.map((lf, i) =>
             <div
               key={i}
@@ -71,7 +71,7 @@ export default class NotesEditVehicleJourney extends Component {
     if (window.line_footnotes.length == 0) return <h3>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.no_line_footnotes')}</h3>
 
     if (this.footnotes().to_associate.length == 0) return false
-    
+
     return (
       <div>
         <h3 className='mt-lg'>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.select_footnotes')} :</h3>
@@ -87,7 +87,7 @@ export default class NotesEditVehicleJourney extends Component {
           </div>
         )}
       </div>
-    ) 
+    )
   }
 
   render() {

@@ -234,6 +234,10 @@ class Referential < ApplicationModel
     ComplianceCheckSet.all
   end
 
+  def footnotes
+    Chouette::Footnote.all
+  end
+
   before_validation :define_default_attributes
 
   def define_default_attributes

@@ -41,6 +41,8 @@ RSpec.describe Merge do
 
     routing_constraint_zones = {}
 
+    footnotes = Hash.new { |h,k| h[k] = [nil] }
+
     referential.switch do
       line_referential.lines.each do |line|
         factor.times do
@@ -54,6 +56,10 @@ RSpec.describe Merge do
         jp = route.full_journey_pattern
         expect(route.stop_points.uniq.count).to eq route.stop_areas.uniq.count + 1
         expect(jp.stop_points.uniq.count).to eq jp.stop_areas.uniq.count + 1
+
+        factor.times do
+          footnotes[line.id] << FactoryGirl.create(:footnote, line: line)
+        end
       end
 
       referential.routes.each_with_index do |route, index|
@@ -103,6 +109,12 @@ RSpec.describe Merge do
         specific_time_table = FactoryGirl.create :time_table
         vehicle_journey.time_tables << specific_time_table
         vehicle_journey.update ignored_routing_contraint_zone_ids: routing_constraint_zones[vehicle_journey.route.id].values.map(&:id)
+
+        if footnote = footnotes[vehicle_journey.route.line.id].sample
+          vehicle_journey.footnotes << footnote
+        end
+
+        vehicle_journey.update_checksum!
       end
 
     end
