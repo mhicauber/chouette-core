@@ -48,7 +48,7 @@ bind_select2_ajax = (el, cfg = {}) ->
 
 $ ->
   select_2()
-  $('select.autocomplete-stop-area-input').each (i, e)->
+  $('select.autocomplete-async-input').each (i, e)->
     vals = $(e).data().values
     select2ed = $(e).select2
       theme: 'bootstrap',
@@ -80,7 +80,6 @@ $ ->
         type: 'GET',
         url: $(e).data().loadUrl + "/" + val + ".json"
       .then (data)->
-        console.log data
         option = new Option(data.text, data.id, true, true);
         select2ed.append(option).trigger('change');
         select2ed.trigger

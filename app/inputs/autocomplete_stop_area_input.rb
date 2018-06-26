@@ -5,8 +5,8 @@ class AutocompleteStopAreaInput < SimpleForm::Inputs::CollectionSelectInput
   end
 
   def input(wrapper_options = {})
-    _options = wrapper_options.update({
-      "class": [wrapper_options["class"], "autocomplete-stop-area-input"].compact.join(' '),
+    _options = wrapper_options.dup.update({
+      "class": [wrapper_options["class"], "autocomplete-async-input"].compact.join(' '),
       data: {
         url: options[:autocomplete_url],
         "load-url": options[:load_url],

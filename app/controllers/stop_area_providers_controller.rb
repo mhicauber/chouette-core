@@ -5,6 +5,8 @@ class StopAreaProvidersController < ChouetteController
 
   defaults :resource_class => StopAreaProvider
 
+  respond_to :html, :json
+
   def index
     index! do |format|
       format.html {
@@ -18,7 +20,20 @@ class StopAreaProvidersController < ChouetteController
   end
 
   def show
-    @stop_area_provider = resource.decorate
+    respond_to do |format|
+      format.json do
+        render json: resource.attributes.update(text: resource.name)
+      end
+      @stop_area_provider = resource.decorate
+      format.html
+    end
+  end
+
+  def autocomplete
+    scope = policy_scope(parent.stop_area_providers)
+    args  = [].tap{|arg| 2.times{arg << "%#{params[:q]}%"}}
+    @stop_area_providers = scope.where("unaccent(name) ILIKE unaccent(?) OR objectid ILIKE ?", *args).limit(50)
+    @stop_area_providers
   end
 
   def collection

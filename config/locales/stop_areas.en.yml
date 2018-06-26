@@ -147,6 +147,7 @@ en:
         city_name: "City"
         waiting_time: Waiting time (minutes)
         status: Status
+        stop_area_provider_ids: Stops Providers
   formtastic:
     titles:
       stop_area:
