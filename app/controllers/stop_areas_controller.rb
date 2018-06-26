@@ -204,7 +204,8 @@ class StopAreasController < ChouetteController
       :zip_code,
       :kind,
       :status,
-      localized_names: Chouette::StopArea::AVAILABLE_LOCALIZATIONS
+      localized_names: Chouette::StopArea::AVAILABLE_LOCALIZATIONS,
+      stop_area_provider_ids: []
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     params.require(:stop_area).permit(fields)
   end
