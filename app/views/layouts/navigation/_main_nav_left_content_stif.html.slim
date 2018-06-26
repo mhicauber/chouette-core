@@ -7,9 +7,9 @@
         span = t('layouts.navbar.workbench_outputs.organisation')
       = link_to '#', class: 'list-group-item disabled' do
         span = t('layouts.navbar.workbench_outputs.workgroup')
-        - if policy(workbench.workgroup).edit?
-          = link_to [:edit, workbench.workgroup], class: 'list-group-item' do
-            span = t('layouts.navbar.workbench_outputs.edit_workgroup')
+      - if policy(workbench.workgroup).edit?
+        = link_to [:edit, workbench.workgroup], class: 'list-group-item' do
+          span = t('layouts.navbar.workbench_outputs.edit_workgroup')
 
     = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
       = link_to workbench_path(workbench), class: "list-group-item" do
