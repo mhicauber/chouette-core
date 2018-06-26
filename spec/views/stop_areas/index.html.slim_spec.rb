@@ -39,8 +39,7 @@ describe "/stop_areas/index", :type => :view do
 
   with_permission "stop_areas.change_status" do
     common_items.call()
-    it { should have_link_for_each_item(stop_areas, "deactivate", -> (stop_area){ view.deactivate_stop_area_referential_stop_area_path(stop_area_referential, stop_area) }) }
-    it { should have_the_right_number_of_links(stop_areas, 2) }
+    it { should have_the_right_number_of_links(stop_areas, 1) }
   end
 
   with_permission "stop_areas.destroy" do
@@ -52,26 +51,6 @@ describe "/stop_areas/index", :type => :view do
       })
     }
     it { should have_the_right_number_of_links(stop_areas, 2) }
-  end
-
-  context "with a deactivated item" do
-    with_permission "stop_areas.change_status" do
-      let(:deactivated_stop_area){ create :stop_area, :deactivated, stop_area_referential: stop_area_referential }
-
-      common_items.call()
-      it "should display an activate link for the deactivated one" do
-        stop_areas.each do |stop_area|
-          if stop_area == deactivated_stop_area
-            href = view.activate_stop_area_referential_stop_area_path(stop_area_referential, stop_area)
-          else
-            href = view.deactivate_stop_area_referential_stop_area_path(stop_area_referential, stop_area)
-          end
-          selector = "tr.#{TableBuilderHelper.item_row_class_name(stop_areas)}-#{stop_area.id} .actions a[href='#{href}']"
-          expect(rendered).to have_selector(selector, count: 1)
-        end
-      end
-      it { should have_the_right_number_of_links(stop_areas, 2) }
-    end
   end
 
 end
