@@ -54,6 +54,7 @@ $ ->
       theme: 'bootstrap',
       width: '100%',
       allowClear: true,
+      placeholder: $(e).data().placeholder,
       ajax:
         url: $(e).data().url,
         dataType: 'json',
@@ -72,10 +73,13 @@ $ ->
 
     select2ed.prop("disabled", true)
     loadNext = ->
-      if vals.length == 0
+      if vals == null || vals == "" || vals.length == 0
         select2ed.prop("disabled", false)
         return
       val = vals.pop()
+      if val == null || val == ""
+        select2ed.prop("disabled", false)
+        return
       $.ajax
         type: 'GET',
         url: $(e).data().loadUrl + "/" + val + ".json"

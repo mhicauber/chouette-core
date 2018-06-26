@@ -10,7 +10,8 @@ class AutocompleteStopAreaInput < SimpleForm::Inputs::CollectionSelectInput
       data: {
         url: options[:autocomplete_url],
         "load-url": options[:load_url],
-        values: object.send(reflection_or_attribute_name)
+        values: [object.send(reflection_or_attribute_name)].flatten,
+        placeholder: options[:placeholder] || ""
       }
     })
 
