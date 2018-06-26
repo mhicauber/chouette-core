@@ -7,7 +7,8 @@ module TomTom
     def batch(way_costs)
       params = URI.encode_www_form({
         travelMode: 'bus',
-        routeType: 'shortest'
+        routeType: 'shortest',
+        traffic: 'false'
       })
       batch_items = convert_way_costs(way_costs).map do |locations|
         {
@@ -23,11 +24,14 @@ module TomTom
         }.to_json
       end
 
+      Rails.logger.info "#{self.class.name}: #{way_costs.size} evaluated"
+
       extract_costs_to_way_costs!(
         way_costs,
         JSON.parse(response.body)
       )
     end
+    alias_method :evaluate, :batch
 
     def extract_costs_to_way_costs!(way_costs, batch_json)
       calculated_routes = batch_json['batchItems']

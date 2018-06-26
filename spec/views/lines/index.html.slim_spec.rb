@@ -55,8 +55,7 @@ describe "/lines/index", :type => :view do
 
     with_permission "lines.change_status" do
       common_items.call()
-      it { should have_link_for_each_item(lines, "deactivate", -> (line){ view.deactivate_line_referential_line_path(line_referential, line) }) }
-      it { should have_the_right_number_of_links(lines, 4) }
+      it { should have_the_right_number_of_links(lines, 3) }
     end
 
     with_permission "lines.destroy" do
@@ -68,26 +67,6 @@ describe "/lines/index", :type => :view do
         })
       }
       it { should have_the_right_number_of_links(lines, 4) }
-    end
-
-    context "with a deactivated item" do
-      with_permission "lines.change_status" do
-        let(:deactivated_line){ create :line, deactivated: true }
-
-        common_items.call()
-        it "should display an activate link for the deactivated one" do
-          lines.each do |line|
-            if line == deactivated_line
-              href = view.activate_line_referential_line_path(line_referential, line)
-            else
-              href = view.deactivate_line_referential_line_path(line_referential, line)
-            end
-            selector = "tr.#{TableBuilderHelper.item_row_class_name(lines)}-#{line.id} .actions a[href='#{href}']"
-            expect(rendered).to have_selector(selector, count: 1)
-          end
-        end
-        it { should have_the_right_number_of_links(lines, 4) }
-      end
     end
   end
 end

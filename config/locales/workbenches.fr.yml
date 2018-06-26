@@ -23,7 +23,7 @@ fr:
         no_content: "Aucun contenu"
     actions:
       show_output: "Finaliser l'Offre"
-      configure: "Configurer"
+      affect_ccset: "Configurer"
   activerecord:
     models:
       workbench:

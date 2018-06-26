@@ -8,6 +8,13 @@
 
   .row
     .col-lg-12
+      - if @purchase_window.errors.has_key? :date_ranges
+          .row.metadatas-errors
+            .col-lg-12
+              .alert.alert-danger
+                - @purchase_window.errors[:date_ranges].each do |msg|
+                  p.small= msg
+
       .subform
         .nested-head
           .wrapper

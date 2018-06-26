@@ -4,7 +4,7 @@
   .row.mb-sm
     .col-lg-12.text-right
       - if policy(Workbench).edit?
-        = link_to t('workbenches.actions.configure'), edit_workbench_path(@workbench), class: 'btn btn-primary'
+        = link_to t('workbenches.actions.affect_ccset'), edit_workbench_path(@workbench), class: 'btn btn-primary'
       - if policy(Referential).create?
         = link_to t('actions.import'), workbench_imports_path(@workbench), class: 'btn btn-primary' unless @workbench.workgroup.import_types.empty?
         = link_to t('actions.export'), workbench_exports_path(@workbench), class: 'btn btn-primary' unless @workbench.workgroup.export_types.empty?
@@ -37,7 +37,8 @@
                   attribute: Proc.new {|w| "<a href='' title='#{"referentials.states.#{w.state}".t}'>#{icon_for_referential_state(w.state)}</a>".html_safe} \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: :organisation, \
+                  key: :organisation_name, \
+                  name: Referential.tmf('organisation'), \
                   attribute: Proc.new {|w| w.organisation.name} \
                 ), \
                 TableBuilderHelper::Column.new( \

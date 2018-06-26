@@ -25,6 +25,7 @@ fr:
       success: "Actualisation terminée"
     new:
       title: "Ajouter un calendrier"
+      calendar: Indiquez un modèle de calendrier
     duplicate:
       title: "Dupliquer un calendrier"
     edit:
@@ -59,6 +60,8 @@ fr:
       select2:
         tag:
           placeholder: Ajoutez ou cherchez une étiquette...
+          create_tag_label: "Créer nouvelle étiquette : '%{tag}'"
+          no_options: "Aucune étiquette disponible"
       period_form:
         begin: Début de période
         end: Fin de période
@@ -85,7 +88,7 @@ fr:
       resume_empty: "Calendrier vide"
     index:
       comment: "Recherche par nom"
-      tag_search: "Tags : vacances,jour fériés"
+      tag_search: Recherche par étiquette
       from: "De : "
       to: " à : "
       start_date: "jj/mm/aaaa"
@@ -133,6 +136,7 @@ fr:
         period_end: "au"
         tag_search: "Etiquettes"
         tag_list: "Etiquettes"
+        associated_vehicle_journeys: Nombre de courses associées
   formtastic:
     titles:
       time_table:

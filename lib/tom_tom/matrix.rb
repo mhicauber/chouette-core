@@ -32,7 +32,10 @@ module TomTom
         points_with_ids,
         JSON.parse(response.body)
       )
+
+      way_costs
     end
+    alias_method :evaluate, :matrix
 
     def points_from_way_costs(way_costs)
       points = []
@@ -61,6 +64,7 @@ module TomTom
         points << arrival
       end
 
+      Rails.logger.debug "Matrix points: #{points.inspect}"
       points
     end
 

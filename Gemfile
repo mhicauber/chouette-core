@@ -142,6 +142,9 @@ gem 'aasm'
 gem 'activerecord-nulldb-adapter' if ENV['RAILS_DB_ADAPTER'] == 'nulldb'
 gem 'puma', '~> 3.10.0'
 
+# Cache
+gem 'redis-rails'
+
 gem 'newrelic_rpm'
 gem 'letter_opener'
 

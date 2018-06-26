@@ -18,12 +18,12 @@
   = form.simple_fields_for :metadatas do |subform|
     .row
       .col-lg-12
-        - if @referential.errors.has_key? :metadatas
+        - if @referential.errors.has_key? :"metadatas.periodes"
           .row.metadatas-errors
             .col-lg-12
               .alert.alert-danger
-                - @referential.errors[:metadatas].each do |msg|
-                  p.small = "- #{msg}"
+                - @referential.errors[:"metadatas.periodes"].each do |msg|
+                  p.small= msg
 
         .subform
           .nested-head
@@ -49,7 +49,7 @@
     .separator
     .row
       .col-lg-11
-        = subform.input :lines, as: :select, collection: Chouette::Line.includes(:company).order(:name).for_organisation(current_organisation), selected: subform.object.line_ids, label_method: :display_name, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', style: 'width: 100%' }
+        = subform.input :lines, as: :select, collection: @workbench.lines, selected: subform.object.line_ids, label_method: :display_name, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', style: 'width: 100%' }
       .col-lg-1
         a.clear-lines.btn.btn-default href='#'
           .fa.fa-trash

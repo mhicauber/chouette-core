@@ -1,25 +1,38 @@
-$ ->
+stickyActions = []
+ptitleCont = ""
+mainNav = $('#main_nav')
+navMenu = $('#menu_left.nav-menu')
 
-  stickyActions = []
-  ptitleCont = ""
+@handleOpenMenu = ->
+  mainNav.find('.openMenu').on 'click', (e) ->
+    navMenu.addClass 'open'
+
+@handleCloseMenu = ->
+  closeMenu = ->
+    navMenu.removeClass 'open'
+    
+  mainNav.find('.closeMenu').on 'click', (e) ->
+    closeMenu()
+
+  $(document).on 'keyup', (e) ->
+    closeMenu() if  navMenu.hasClass('open') && e.keyCode == 27
+
+  $(document).on 'click', (e) ->
+    closeMenu() unless mainNav.is(e.target) || mainNav.has(e.target).length > 0
+
+@handleResetMenu = ->
   $(document).on 'page:before-change', ->
     stickyActions = []
     ptitleCont = ""
 
-  $el = $('#main_nav')
-    # Opening/closing left-side menu
-  $el.find('.openMenu').on 'click', (e) ->
-    $(this).parent().addClass 'open'
-
-  $el.find('.closeMenu').on 'click', (e) ->
-    $(this).closest('.nav-menu').removeClass 'open'
-
-  # Opening menu panel according to current url
-  selectedItem = $el.find('.active')
+@handleOpenMenuPanel = ->
+  selectedItem = mainNav.find('.active')
   selectedItem.closest('.panel-collapse').addClass 'in'
   selectedItem.closest('.panel-title').children('a').attr('aria-expanded') == true
 
-  sticker = () ->
+@sticker = ->
+  # Sticky behavior
+  $(document).on 'scroll', () ->
     limit = 51
     offset = 30
 
@@ -45,7 +58,7 @@ $ ->
       stickyContent = $('<div class="sticky-content"></div>')
       stickyContent.append $("<div class='sticky-ptitle'>#{ptitleCont}</div>")
       stickyContent.append $('<div class="sticky-paction"></div>')
-      $('#main_nav').addClass 'sticky'
+      mainNav.addClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length == 0
         if ptitleCont.length > 0
@@ -55,7 +68,7 @@ $ ->
             child.appendTo $('.sticky-paction')
 
     else if $(window).scrollTop() <= limit - offset
-      $('#main_nav').removeClass 'sticky'
+      mainNav.removeClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length > 0
         for item in stickyActions
@@ -63,6 +76,15 @@ $ ->
             child.appendTo item.originalParent
         $('.sticky-content').remove()
 
+$ ->
+
+  stickyActions = []
+  ptitleCont = ""
+  mainNav = $('#main_nav')
+  navMenu = $('#menu_left.nav-menu')
+
+  handleOpenMenu()
+  handleCloseMenu()
+  handleResetMenu()
+  handleOpenMenuPanel()
   sticker()
-  # Sticky behavior
-  $(document).on 'scroll', sticker

@@ -62,6 +62,12 @@ fr:
       archived: Archivé
 
   activerecord:
+    errors:
+      models:
+        referential_metadata:
+          attributes:
+            periodes:
+              blank: Un jeu de données doit avoir au moins une période
     models:
       referential:
         zero: "jeu de Données"

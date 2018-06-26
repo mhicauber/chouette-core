@@ -142,7 +142,7 @@ class ReferentialsController < ChouetteController
   def build_referential
     if params[:from]
       source_referential = Referential.find(params[:from])
-      @referential = Referential.new_from(source_referential, current_organisation)
+      @referential = Referential.new_from(source_referential, current_workbench)
     end
 
     @referential.data_format = current_organisation.data_format

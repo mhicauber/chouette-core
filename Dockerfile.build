@@ -4,6 +4,8 @@ ENV RAILS_ENV test
 ENV KEEP_DATABASE_CONFIG true
 ENV IGNORE_YARN_INSTALL true
 
+ARG WEEK
+
 # Prepare nodejs 6.x and yarn package installation
 RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-certificates apt-transport-https && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
@@ -19,7 +21,7 @@ RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
 
 # Install bundler packages
 COPY Gemfile Gemfile.lock /app/
-RUN apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev git-core&& \
+RUN apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core&& \
     cd /app && bundle install --deployment
 
 # Install yarn packages

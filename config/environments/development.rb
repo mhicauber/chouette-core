@@ -107,6 +107,8 @@ Rails.application.configure do
     }
   }
 
+  # config.cache_store = :redis_store, "redis://localhost:6379/0/cache", { expires_in: 90.minutes }
+
   config.development_toolbar = false
   if ENV['TOOLBAR'] && File.exists?("config/development_toolbar.rb")
     config.development_toolbar = OpenStruct.new

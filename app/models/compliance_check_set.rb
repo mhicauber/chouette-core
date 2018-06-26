@@ -32,6 +32,10 @@ class ComplianceCheckSet < ApplicationModel
     status.to_s == "successful"
   end
 
+  def should_call_iev?
+    compliance_checks.externals.exists?
+  end
+
   def self.abort_old
     where(
       'created_at < ? AND status NOT IN (?)',
@@ -81,5 +85,9 @@ class ComplianceCheckSet < ApplicationModel
     referential&.import_resources.main_resources.last
   end
 
-
+  def perform_internal_checks
+    update status: :pending
+    compliance_checks.internals.each &:process
+    update_status
+  end
 end

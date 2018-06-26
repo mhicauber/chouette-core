@@ -98,7 +98,7 @@ class Merge < ApplicationModel
     new =
       if workbench.output.current
         Rails.logger.debug "Clone current output"
-        Referential.new_from(workbench.output.current, workbench.organisation).tap do |clone|
+        Referential.new_from(workbench.output.current, workbench).tap do |clone|
           clone.inline_clone = true
         end
       else

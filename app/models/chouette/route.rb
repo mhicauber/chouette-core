@@ -27,7 +27,7 @@ module Chouette
     belongs_to :line
     belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id
 
-    has_many :routing_constraint_zones
+    has_many :routing_constraint_zones, :dependent => :destroy
     has_many :journey_patterns, :dependent => :destroy
     has_many :vehicle_journeys, :dependent => :destroy do
       def timeless
@@ -230,6 +230,12 @@ module Chouette
 
     def calculate_costs!
       RouteWayCostWorker.perform_async(referential.id, id)
+    end
+
+    def calculate_costs
+      way_costs = TomTom.evaluate WayCost.from(stop_areas)
+      costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
+      update_column :costs, costs
     end
 
     protected

@@ -77,3 +77,5 @@ en:
               date_in_date_ranges: A date can not be in Dates and in Date ranges.
               date_in_dates: A date can appear only once in the list of dates.
               illegal_date: The date %{date} does not exist.
+            date_ranges:
+              blank: A purchase window must have at least one period

@@ -121,6 +121,7 @@ module AF83::Decorator::EnhancedDecorator
       link_options[:_if] = options.delete(:if)
       link_options[:_policy] = options.delete(:policy)
       link_options[:_feature] = options.delete(:feature)
+
       [options, link_options]
     end
   end

@@ -6,7 +6,7 @@ describe Chouette::TimeTable, :type => :model do
 
   it { is_expected.to validate_presence_of :comment }
   it { is_expected.to validate_uniqueness_of :objectid }
-  
+
 
     def create_time_table_periode time_table, start_date, end_date
       create(:time_table_period, time_table: time_table, :period_start => start_date, :period_end => end_date)
@@ -315,7 +315,7 @@ describe Chouette::TimeTable, :type => :model do
     it 'should save new tags' do
       subject.tag_list = "awesome, great"
       subject.save
-      state['tags'] << {'id' => false, 'name' => 'new_tag'}
+      state['tags'] << {'value' => false, 'label' => 'new_tag'}
 
       subject.state_update state
       expect(subject.reload.tags.map(&:name)).to include('new_tag')

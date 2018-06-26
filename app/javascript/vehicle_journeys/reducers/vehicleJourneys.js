@@ -7,6 +7,8 @@ const vehicleJourney= (state = {}, action, keep) => {
       return _.assign({}, state, {selected: !state.selected})
     case 'CANCEL_SELECTION':
       return _.assign({}, state, {selected: false})
+    case 'CANCEL_DELETION':
+      return _.assign({}, state, {deletable: false})
     case 'ADD_VEHICLEJOURNEY':
       let pristineVjasList = []
       let prevSp
@@ -143,7 +145,9 @@ const vehicleJourney= (state = {}, action, keep) => {
           return vjas
         }
       })
-      return _.assign({}, state, {vehicle_journey_at_stops: shiftedArray})
+
+      let custom_fields = JSON.parse(JSON.stringify(state.custom_fields))
+      return _.assign({}, state, {vehicle_journey_at_stops: shiftedArray, custom_fields: custom_fields})
     case 'UPDATE_TIME':
       let vj, vjas, vjasArray, newSchedule
       let val = action.val
@@ -298,13 +302,17 @@ export default function vehicleJourneys(state = [], action) {
             dupeVj.published_journey_name = dupeVj.published_journey_name + '-' + i
             dupeVj.selected = false
             delete dupeVj['objectid']
+            delete dupeVj['short_id']
             dupes.push(dupeVj)
           }
         }
       })
       let concatArray = state.slice(0, selectedIndex + 1).concat(dupes)
       concatArray = concatArray.concat(state.slice(selectedIndex + 1))
-      return concatArray
+      return concatArray.map((vj, i) => {
+        vj.index = i
+        return vj
+      })
     case 'DELETE_VEHICLEJOURNEYS':
       return state.map((vj, i) =>{
         if (vj.selected){
@@ -324,6 +332,14 @@ export default function vehicleJourneys(state = [], action) {
     case 'CANCEL_SELECTION':
       return state.map((vj) => {
         return vehicleJourney(vj, action)
+      })
+    case 'CANCEL_DELETION':
+      return state.map((vj) => {
+        if (vj.selected && vj.deletable) {
+          return vehicleJourney(vj, action)
+        } else {
+          return vj
+        }
       })
     case 'UPDATE_TIME':
       return state.map((vj, i) =>{
