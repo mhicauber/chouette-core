@@ -29,7 +29,7 @@ class ComplianceControlSet < ApplicationModel
   def assignments current_user
     out = []
     current_user.organisation.workbenches.each do |workbench|
-      vals = workbench.owner_compliance_control_set_ids.select{|k, v| v == self.id.to_s}.keys
+      vals = workbench.owner_compliance_control_set_ids&.select{|k, v| v == self.id.to_s}&.keys || []
       out += Workgroup.send(:compliance_control_sets_labels, vals).values
     end
     out
