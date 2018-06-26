@@ -48,3 +48,45 @@ bind_select2_ajax = (el, cfg = {}) ->
 
 $ ->
   select_2()
+  $('select.autocomplete-stop-area-input').each (i, e)->
+    vals = $(e).data().values
+    select2ed = $(e).select2
+      theme: 'bootstrap',
+      width: '100%',
+      allowClear: true,
+      ajax:
+        url: $(e).data().url,
+        dataType: 'json',
+        delay: '500',
+        processResults: (data) ->
+          {
+            results: data
+          }
+        data:  (params) ->
+          {
+            q: params.term
+          }
+
+      templateResult: (props) -> $('<span>').html(props.text)
+      templateSelection:  (props) -> $('<span>').html(props.text)
+
+    select2ed.prop("disabled", true)
+    loadNext = ->
+      if vals.length == 0
+        select2ed.prop("disabled", false)
+        return
+      val = vals.pop()
+      $.ajax
+        type: 'GET',
+        url: $(e).data().loadUrl + "/" + val + ".json"
+      .then (data)->
+        console.log data
+        option = new Option(data.text, data.id, true, true);
+        select2ed.append(option).trigger('change');
+        select2ed.trigger
+          type: 'select2:select',
+          params: {
+              data: data
+          }
+        loadNext()
+    loadNext()
