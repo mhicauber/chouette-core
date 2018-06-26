@@ -85,6 +85,23 @@ class ComplianceCheckSet < ApplicationModel
     referential&.import_resources.main_resources.last
   end
 
+  def perform_async
+    ComplianceCheckSetWorker.perform_async self.id
+  end
+
+  def perform
+    if should_call_iev?
+      begin
+        Net::HTTP.get(URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{id}"))
+      rescue Exception => e
+        logger.error "IEV server error : #{e.message}"
+        logger.error e.backtrace.inspect
+      end
+    else
+      perform_internal_checks
+    end
+  end
+
   def perform_internal_checks
     update status: :pending
     compliance_checks.internals.each &:process

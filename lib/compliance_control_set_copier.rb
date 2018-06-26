@@ -6,9 +6,11 @@ class ComplianceControlSetCopier
 
   attr_reader :cc_set_id, :referential_id
 
-  def copy cc_set_id, referential_id
+  def copy cc_set_id, referential_id, parent_type=nil, parent_id=nil
     @cc_set_id      = cc_set_id
     @referential_id = referential_id
+    @parent_type    = parent_type
+    @parent_id      = parent_id
     check_organisation_coherence!
     copy_set
 
@@ -33,6 +35,8 @@ class ComplianceControlSetCopier
     make_ccks_from_ccs
     # Copy all cc_blocks -> cck_blocks
     make_cck_blocks
+
+    cck_set.perform_async
   end
 
   # Copy Blocks:
@@ -89,7 +93,9 @@ class ComplianceControlSetCopier
       referential_id: referential_id,
       workbench_id: referential.workbench_id,
       name: name_with_refid(cc_set.name),
-      status: 'new'
+      status: 'new',
+      parent_type: @parent_type,
+      parent_id: @parent_id,
     )
   end
   def control_id_to_check

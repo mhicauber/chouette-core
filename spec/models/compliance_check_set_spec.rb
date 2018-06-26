@@ -13,6 +13,41 @@ RSpec.describe ComplianceCheckSet, type: :model do
   it { should have_many :compliance_checks }
   it { should have_many :compliance_check_blocks }
 
+
+  describe '#perform' do
+    let(:stub_validation_request) do
+      stub_request(
+        :get,
+        "#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{check_set.id }"
+      )
+    end
+    let(:check_set){create :compliance_check_set}
+    context "when JAVA is needed" do
+      before do
+        expect(check_set).to receive(:should_call_iev?).and_return(true)
+        stub_validation_request
+      end
+
+      it "calls the Java API to launch validation" do
+        check_set.perform
+        expect(stub_validation_request).to have_been_requested
+      end
+    end
+
+    context "when JAVA is not needed" do
+      before do
+        stub_validation_request
+        expect(check_set).to receive(:should_call_iev?).and_return(false)
+      end
+
+      it "should not call it" do
+        expect(stub_validation_request).to_not have_been_requested
+        expect(check_set).to receive :perform_internal_checks
+        check_set.perform
+      end
+    end
+  end
+
   describe "#update_status" do
     it "updates :status to successful when all resources are OK" do
       check_set = create(:compliance_check_set)
