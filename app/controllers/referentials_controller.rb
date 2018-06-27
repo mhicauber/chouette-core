@@ -99,6 +99,8 @@ class ReferentialsController < ChouetteController
     else
       autocomplete_collection = collection.order('created_at desc')
     end
+
+    autocomplete_collection = autocomplete_collection.mergeable if params[:target] == "merge"
     render json: autocomplete_collection.limit(10)
   end
 

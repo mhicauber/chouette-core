@@ -6,8 +6,6 @@ class MergesController < ChouetteController
 
   respond_to :html
 
-  before_action :set_mergeable_controllers, only: [:new]
-
   protected
 
   def begin_of_association_chain
@@ -15,11 +13,6 @@ class MergesController < ChouetteController
   end
 
   private
-
-  def set_mergeable_controllers
-    @mergeable_referentials ||= parent.referentials.mergeable
-    Rails.logger.debug "Mergeables: #{@mergeable_referentials.inspect}"
-  end
 
   def build_resource
     super.tap do |merge|

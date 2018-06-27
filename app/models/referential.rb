@@ -553,7 +553,7 @@ class Referential < ApplicationModel
   end
 
   def self.mergeable
-    ready.not_merged.not_in_referential_suite
+    active.not_merged.not_in_referential_suite
   end
 
   ### STATE

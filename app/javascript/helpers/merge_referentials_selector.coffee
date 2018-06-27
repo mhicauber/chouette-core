@@ -48,14 +48,14 @@ class MergeReferentialsSelector
           li.remove()
           false
         li
-    .disableSelection()
+
     @container.find(".target").sortable
       axis: "y"
       receive: (event, ui)=>
         ui.item.addClass "disabled"
       update: (event, ui)=>
         @formInput.val @selectedIds()
-    .disableSelection()
+
 
   searchKeyUp: ->
     clearTimeout(@searchCoolDown) if @searchCoolDown
@@ -75,7 +75,7 @@ class MergeReferentialsSelector
       @url = @searchInput.data().searchurl
     @loader.show()
     @searchInput.attr 'readonly', true
-    fetch("#{@url}?q=#{search}", {
+    fetch("#{@url}&q=#{search}", {
       credentials: 'same-origin'
     }).then (response) =>
       response.json()

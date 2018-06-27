@@ -1,18 +1,14 @@
 = simple_form_for merge, as: :merge, url: workbench_merges_path(workbench), html: {class: 'form-horizontal', id: 'wb_merge_form'}, wrapper: :horizontal_form do |form|
-  .row
-    .col-lg-12
-      .alert.alert-warning
-        = form.error :base
+  - if form.error(:base).present?
+    .row
+      .col-lg-12
+        .alert.alert-warning
+          strong= form.error(:base)
 
-  .separator
-
-  //.row
-  //  .col-lg-12
-  //    = form.input :referentials, :collection => @mergeable_referentials, include_blank: false, input_html: { multiple: true, 'data-select2ed': true }
+    .separator
 
   .row
     .col-lg-12
-      //= form.input :creator, input_html: { disabled: true }
       = form.hidden_field :referential_ids
 
   .row.merge-referentials-selector
@@ -21,7 +17,7 @@
       .input-group
         .input-group-addon
           span.fa.fa-search
-        input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: autocomplete_workbench_referentials_url(workbench)}
+        input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: autocomplete_workbench_referentials_url(workbench, target: :merge)}
         .input-group-addon.loader
           span.fa.fa-spinner.fa-spin
         .input-group-btn.clear-group
