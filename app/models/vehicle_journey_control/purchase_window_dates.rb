@@ -1,5 +1,7 @@
 module VehicleJourneyControl
   class PurchaseWindowDates < InternalBase
+    required_features :purchase_windows
+    
     def self.default_code; "3-VehicleJourney-7" end
 
     def self.collection referential

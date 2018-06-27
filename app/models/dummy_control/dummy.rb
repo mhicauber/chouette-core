@@ -1,5 +1,7 @@
 module DummyControl
   class Dummy < InternalControl::Base
+    required_features :core_controls
+    
     store_accessor :control_attributes, :status
 
     enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK

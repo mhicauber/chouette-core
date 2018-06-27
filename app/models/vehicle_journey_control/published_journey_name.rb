@@ -1,12 +1,14 @@
 module VehicleJourneyControl
   class PublishedJourneyName < InternalBase
+    required_features :core_controls
+
     store_accessor :control_attributes, :minimum, :maximum, :company_id
     validates_presence_of :company_id
 
     include MinMaxValuesValidation
 
     def self.default_code; "3-VehicleJourney-8" end
-    
+
     def self.compliance_test compliance_check, vj
       if vj.company_id == compliance_check.control_attributes['company_id'].to_i
         vj&.published_journey_name&.to_i.between?(compliance_check.control_attributes["minimum"].to_i, compliance_check.control_attributes["maximum"].to_i)

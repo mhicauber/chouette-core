@@ -10,6 +10,63 @@ RSpec.describe ComplianceControl, type: :model do
     end
   end
 
+  context '#available_for_organisation?' do
+    context "without required_features" do
+      let(:control) { Class.new(ComplianceControl) }
+      let(:organisation) { build_stubbed :organisation, features: %w() }
+      it "should be true" do
+        expect(control.available_for_organisation?(organisation)).to be_truthy
+      end
+    end
+
+    context "with one required feature" do
+      let(:control) {
+        control = Class.new(ComplianceControl)
+        control.required_features :foo
+        control
+      }
+      context "when the organisation does not have the feature" do
+        let(:organisation) { build_stubbed :organisation, features: %w() }
+        it "should be false" do
+          expect(control.available_for_organisation?(organisation)).to be_falsy
+        end
+      end
+      context "when the organisation has the feature" do
+        let(:organisation) { build_stubbed :organisation, features: %w(foo bar) }
+        it "should be true" do
+          expect(control.available_for_organisation?(organisation)).to be_truthy
+        end
+      end
+    end
+
+    context "with two required feature" do
+      let(:control) {
+        control = Class.new(ComplianceControl)
+        control.required_features :foo, :bar
+        control
+      }
+      context "when the organisation does not have any feature" do
+        let(:organisation) { build_stubbed :organisation, features: %w() }
+        it "should be false" do
+          expect(control.available_for_organisation?(organisation)).to be_falsy
+        end
+      end
+      context "when the organisation has one of the features" do
+        let(:organisation) { build_stubbed :organisation, features: %w(foo) }
+        it "should be false" do
+          expect(control.available_for_organisation?(organisation)).to be_falsy
+        end
+      end
+
+      context "when the organisation has both features" do
+        let(:organisation) { build_stubbed :organisation, features: %w(bar foo) }
+        it "should be true" do
+          expect(control.available_for_organisation?(organisation)).to be_truthy
+        end
+      end
+    end
+  end
+
   context 'standard validation' do
 
     let(:compliance_control) { build_stubbed :compliance_control }

@@ -5,7 +5,7 @@ class ComplianceControlsController < ChouetteController
   actions :all, :except => [:index]
 
   def select_type
-    @compliance_controls_by_group = ComplianceControl.subclasses.group_by {|compliance_control| compliance_control.block_class}
+    @sti_subclasses = ComplianceControl.subclasses_to_hash(current_organisation)
   end
 
   def show
