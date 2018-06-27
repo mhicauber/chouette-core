@@ -27,11 +27,17 @@ class ComplianceControlSetsController < ChouetteController
     redirect_to(compliance_control_sets_path)
   end
 
+  def create
+    @compliance_control_set = ComplianceControlSet.new(params[:compliance_control_set].permit(:name))
+    @compliance_control_set.organisation = current_organisation
+    create!
+  end
+
   protected
 
   def end_of_association_chain
-    organisation_ids = [current_organisation.id] + current_organisation.workbenches.map{|w| w.workgroup.owner_id}.uniq
-    ComplianceControlSet.where(organisation_id: organisation_ids)
+    organisation_ids = [current_organisation.id] + current_organisation.workbenches.map{|w| w.workgroup.owner_id}
+    ComplianceControlSet.where(organisation_id: organisation_ids.uniq)
   end
 
   private
