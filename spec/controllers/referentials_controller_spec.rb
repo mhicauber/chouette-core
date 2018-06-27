@@ -68,9 +68,8 @@ describe ReferentialsController, :type => :controller do
 
   describe "POST #validate" do
     it "displays a flash message" do
-      post :validate, id: referential.id, params: {
-        compliance_control_set: create(:compliance_control_set).id
-      }
+      compliance_control_set = create(:compliance_control_set, organisation: @user.organisation)
+      post :validate, id: referential.id, compliance_control_set: compliance_control_set.id
 
       expect(controller).to set_flash[:notice].to(
         I18n.t('notice.referentials.validate')
