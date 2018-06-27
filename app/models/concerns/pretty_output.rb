@@ -121,7 +121,11 @@ module PrettyOutput
         kind = colorize(kind, kind == :error ? :red : :orange)
         kind = "[#{kind}]"
         kind += " "*(25 - kind.size)
-        encode_string("#{kind}L#{j[:line]}\t#{j[:error]}\t\t#{j[:message]}").truncate(status_width)
+        line = kind
+        line << "L#{j[:line]}\t" if j[:line]
+        line << "#{j[:error]}\t\t" if j[:error]
+        line << "#{j[:message]}" if j[:message]
+        encode_string(line).truncate(status_width)
       end.join("\n")
     end
     custom_print msg, clear: true

@@ -153,11 +153,10 @@ namespace :referential do
 
   task :audit, [:id] => :environment do |t, args|
     referential = Referential.find(args[:id])
-    audit = ReferentialAudit.new(referential)
-    audit2 = ReferentialAudit.new(referential)
-    group = SimpleInterfacesGroup.new "Audit du JDD #{referential.name}"
-    group.add_interface audit, "Dummy", :perform
-    group.add_interface audit2, "Dummy 2", :perform
-    group.run
+    # group = SimpleInterfacesGroup.new "Audit du JDD #{referential.name}"
+    # group.add_interface ReferentialAudit::Dummy.new(referential), "Dummy", :perform
+    # group.add_interface ReferentialAudit::PurchaseWindowsChecksums.new(referential), "Purchase Windows Checksums", :perform
+    # group.run
+    ReferentialAudit::Full.new(referential).perform
   end
 end
