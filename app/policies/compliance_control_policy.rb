@@ -10,7 +10,7 @@ class ComplianceControlPolicy < ApplicationPolicy
   end
 
   def create?
-    can_update_control_set? && user.has_permission?('compliance_controls.create')
+    user.has_permission?('compliance_controls.create')
   end
 
   def update?

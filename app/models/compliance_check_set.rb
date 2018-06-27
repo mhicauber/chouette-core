@@ -24,6 +24,10 @@ class ComplianceCheckSet < ApplicationModel
 
   scope :unfinished, -> { where 'status NOT IN (?)', finished_statuses }
 
+  scope :assigned_to_slots, ->(organisation, slots) do
+    joins(:compliance_control_set).merge(ComplianceControlSet.assigned_to_slots(organisation, slots))
+  end
+
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
   end

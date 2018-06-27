@@ -7,9 +7,9 @@
           span.fa.fa-search
 
   .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :parent_type_eq_any)
-      = f.label t('activerecord.attributes.compliance_check_set.assigned_to'), required: false, class: 'control-label'
-      = f.input :parent_type_eq_any, collection: ComplianceCheckSet.order('parent_type'), as: :check_boxes, label: false, label_method: lambda {|w| ("<span>#{w}</span>").html_safe}, required: false, wrapper_html: {class: 'checkbox_list'}
+    .form-group.togglable class=filter_item_class(params[:q], :assigned_to_slots)
+      = f.label ComplianceControlSet.tmf(:assigned_to), required: false, class: 'control-label'
+      = f.input :assigned_to_slots, collection: Workgroup.compliance_control_sets_by_workgroup.update(Workgroup.compliance_control_sets_by_workbench).to_a, as: :check_boxes, value_method: :first, label: false, label_method: lambda {|w| ("<span>#{w.last}</span>").html_safe}, required: false, wrapper_html: {class: 'checkbox_list'}, checked: ->(val){params[:q].try(:[], :assigned_to_slots).try(:include?, val.first.to_s)}
     .form-group.togglable class=filter_item_class(params[:q], :created_at)
       = f.label ComplianceCheckSet.human_attribute_name(:created_at), required: false, class: 'control-label'
       .filter_menu

@@ -9,6 +9,7 @@ class ComplianceCheckSetsController < ChouetteController
   def index
     index! do |format|
       scope = self.ransack_period_range(scope: @compliance_check_sets, error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
+      scope = scope.assigned_to_slots(current_organisation, params[:q].try(:[], :assigned_to_slots))
       @q_for_form = scope.ransack(params[:q])
       format.html {
         @compliance_check_sets = ComplianceCheckSetDecorator.decorate(
