@@ -31,7 +31,9 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :assigned_to, \
-                  attribute: 'parent_type' \
+                  attribute: Proc.new {|n| \
+                    n.compliance_control_set.assignments(current_user).to_sentence\
+                  }, \
                 ), \
                 TableBuilderHelper::Column.new(\
                   key: :compliance_control_set, \
@@ -43,7 +45,7 @@
               ],
               sortable: true,
               cls: 'table has-filter has-search'
-              
+
             = new_pagination @compliance_check_sets, 'pull-right'
     - unless @compliance_check_sets.any?
       .row.mt-xs

@@ -36,8 +36,8 @@ class ComplianceControlSetsController < ChouetteController
   protected
 
   def end_of_association_chain
-    organisation_ids = [current_organisation.id] + current_organisation.workbenches.map{|w| w.workgroup.owner_id}
-    ComplianceControlSet.where(organisation_id: organisation_ids.uniq)
+    assigned_to_my_workbenches = current_organisation.workbenches.map{|w| (w.owner_compliance_control_set_ids || {}).values}.flatten.uniq.select(&:present?)
+    ComplianceControlSet.where("compliance_control_sets.organisation_id = ? OR compliance_control_sets.id IN (?)", current_organisation.id, assigned_to_my_workbenches)
   end
 
   private
