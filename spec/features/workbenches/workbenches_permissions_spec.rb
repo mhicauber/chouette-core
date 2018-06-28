@@ -23,7 +23,7 @@ describe 'Workbenches', type: :feature do
 
         it 'shows the corresponding button' do
           expected_href = new_workbench_referential_path(workbench)
-          expect( page ).to have_link(I18n.t('actions.add'), href: expected_href)
+          expect( page ).to have_link(I18n.t('actions.new'), href: expected_href)
         end
       end
 
@@ -31,7 +31,7 @@ describe 'Workbenches', type: :feature do
         let( :permission ){ false }
 
         it 'does not show the corresponding button' do
-          expect( page ).not_to have_link(I18n.t('actions.add'))
+          expect( page ).not_to have_link(I18n.t('actions.new'))
         end
       end
       # let!(:ready_referential) { create :referential, workbench: workbench, metadatas: referential_metadatas, ready: true, organisation: @user.organisation }

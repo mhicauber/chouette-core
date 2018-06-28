@@ -250,7 +250,7 @@ RSpec.describe 'Workbenches', type: :feature do
 
         context 'user has the permission to create referentials' do
           it 'shows the link for a new referetnial' do
-            expect(page).to have_link(I18n.t('actions.add'), href: new_workbench_referential_path(workbench))
+            expect(page).to have_link(I18n.t('actions.new'), href: new_workbench_referential_path(workbench))
           end
         end
 
@@ -258,7 +258,7 @@ RSpec.describe 'Workbenches', type: :feature do
           it 'does not show the clone link for referential' do
             @user.update_attribute(:permissions, [])
             visit referential_path(referential)
-            expect(page).not_to have_link(I18n.t('actions.add'), href: new_workbench_referential_path(workbench))
+            expect(page).not_to have_link(I18n.t('actions.new'), href: new_workbench_referential_path(workbench))
           end
         end
       end
@@ -275,7 +275,7 @@ RSpec.describe 'Workbenches', type: :feature do
 
             referential.destroy
             visit workbench_path(workbench)
-            click_link I18n.t('actions.add')
+            click_link I18n.t('actions.new')
             fill_in "referential[name]", with: "Referential to test creation"
             select ref_metadata.line_ids.first, from: 'referential[metadatas_attributes][0][lines][]'
 
