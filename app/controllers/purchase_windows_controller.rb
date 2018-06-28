@@ -31,7 +31,7 @@ class PurchaseWindowsController < ChouetteController
   private
 
   def purchase_window_params
-    params.require(:purchase_window).permit(:id, :name, :color, :referential_id, periods_attributes: [:id, :begin, :end, :_destroy])
+    params.require(:purchase_window).permit(:id, :name, :color, periods_attributes: [:id, :begin, :end, :_destroy])
   end
 
   def decorate_purchase_windows(purchase_windows)
