@@ -62,7 +62,7 @@ class Merge < ApplicationModel
   end
 
   def create_compliance_check_set(control_set, referential)
-    ComplianceControlSetCopyWorker.perform_async control_set.id, referential.id, self.class.name, id
+    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id
   end
 
   def name
