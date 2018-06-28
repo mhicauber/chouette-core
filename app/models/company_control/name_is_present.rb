@@ -1,7 +1,7 @@
 module CompanyControl
   class NameIsPresent < InternalControl::Base
     required_features :core_controls
-    
+
     def self.default_code; "3-Company-1" end
 
     def self.object_path compliance_check, company
@@ -17,7 +17,7 @@ module CompanyControl
     end
 
     def self.compliance_test compliance_check, company
-      company.name.present?
+      company.custom_fields[:public_name]&.display_value.present?
     end
   end
 end
