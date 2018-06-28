@@ -42,7 +42,11 @@ class ComplianceControlsController < ChouetteController
   alias_method :compliance_control, :resource
 
   def build_resource
-    get_resource_ivar || set_resource_ivar(compliance_control_class.send(:new, *resource_params))
+    get_resource_ivar || begin
+      res = set_resource_ivar(compliance_control_class.send(:new, *resource_params))
+      res.iev_enabled_check = compliance_control_class.iev_enabled_check
+      res
+    end
   end
 
   private
