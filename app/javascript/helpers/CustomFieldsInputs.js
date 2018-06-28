@@ -18,7 +18,8 @@ export default class CustomFieldsInputs extends Component {
   }
 
   listInput(cf){
-    let keys = _.orderBy(_.keys(this.options(cf).list_values), function(i){ return parseInt(i)})
+    let list_values = this.options(cf).list_values
+    let keys = _.orderBy(_.keys(list_values), function(key){ return list_values[key] })
     return(
       <Select2
         data={_.map(keys, (k) => {
