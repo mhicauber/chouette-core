@@ -121,7 +121,7 @@ class CleanUp < ApplicationModel
   end
 
   def destroy_routes
-    Chouette::Route.where("id not in (select distinct route_id from journey_patterns)").destroy_all
+    Chouette::Route.where("id not in (select distinct route_id from journey_patterns)").find_each &:clean!
   end
 
   def destroy_empty
