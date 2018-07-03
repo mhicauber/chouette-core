@@ -44,11 +44,6 @@ module Chouette
       ]
     end
 
-    def update_route_checksum
-      route.update_checksum!
-    end
-    after_commit :update_route_checksum
-
     def stop_points_belong_to_route
       return unless route
 
