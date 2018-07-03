@@ -8,7 +8,7 @@ describe Chouette::RoutingConstraintZone, type: :model do
   it { is_expected.to validate_presence_of :route_id }
   # shoulda matcher to validate length of array ?
   xit { is_expected.to validate_length_of(:stop_point_ids).is_at_least(2) }
-  
+
 
   describe 'checksum' do
     it_behaves_like 'checksum support'
@@ -46,4 +46,12 @@ describe Chouette::RoutingConstraintZone, type: :model do
     end
   end
 
+  describe 'stop_points' do
+    it 'should respect the positions' do
+      stop_points = subject.stop_points.sort_by(&:position).reverse
+      subject.stop_points = stop_points
+      subject.save!
+      expect(subject.stop_points).to eq stop_points.sort_by(&:position)
+    end
+  end
 end
