@@ -132,4 +132,21 @@ namespace :referential do
       update_checksums_for_referential referential, [Chouette::PurchaseWindow]
     end
   end
+
+  desc 'Update all relevant checksums for RoutingConstraintZone'
+  task :update_routing_constraint_zones_checksums => :environment do |t, args|
+    referentials = Referential.not_in_referential_suite
+    referentials += Workbench.all.map { |w| w.output.current }.compact
+    referentials.sort_by(&:created_at).reverse.each do |referential|
+      faulty = []
+      referential.switch do
+        Chouette::RoutingConstraintZone.find_each do |rcz|
+          if rcz.stop_point_ids != rcz.stop_points.map(&:id)
+            faulty << rcz.id
+          end
+        end
+        update_checksums_for_referential referential, [Chouette::RoutingConstraintZone.where(id: faulty)]
+      end
+    end
+  end
 end
