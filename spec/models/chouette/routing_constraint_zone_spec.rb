@@ -12,6 +12,12 @@ describe Chouette::RoutingConstraintZone, type: :model do
 
   describe 'checksum' do
     it_behaves_like 'checksum support'
+
+    it "changes when a stop_point is updated" do
+      stop_point = subject.stop_points.first
+
+      expect{stop_point.update(position: subject.stop_points.last.position + 1)}.to change{subject.reload.checksum}
+    end
   end
 
   describe 'validations' do

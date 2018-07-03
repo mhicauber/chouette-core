@@ -21,8 +21,8 @@ module ChecksumSupport
 
       load_parents = ->(child){
         parents = []
-        parents << child.send(belongs_to) if child.class.reflections[belongs_to].present?
-        parents += child.send(has_many) if child.class.reflections[has_many].present?
+        parents << child.send(belongs_to) if child.respond_to? belongs_to
+        parents += child.send(has_many) if child.respond_to? has_many
         parents.compact
       }
 

@@ -44,6 +44,8 @@ module Chouette
       ]
     end
 
+    has_checksum_children StopPoint
+
     def stop_points_belong_to_route
       return unless route
 

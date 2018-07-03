@@ -16,6 +16,8 @@ module Chouette
     has_many :vehicle_journey_at_stops, :dependent => :destroy
     has_many :vehicle_journeys, -> {uniq}, :through => :vehicle_journey_at_stops
 
+    belongs_to_array_in_many :routing_constraint_zones, class_name: "Chouette::RoutingConstraintZone", array_name: :stop_points
+
     acts_as_list :scope => :route, top_of_list: 0
 
     validates_presence_of :stop_area
