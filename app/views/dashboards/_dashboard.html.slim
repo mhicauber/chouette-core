@@ -5,11 +5,11 @@
         .panel-heading
           h3.panel-title.with_actions
             div
-              = link_to t('dashboards.workbench.title', organisation: workbench.organisation.name), workbench_path(workbench)
+              = link_to t('dashboards.workbench_output.title', organisation: workbench.organisation.name), workbench_output_path(workbench)
               span.badge.ml-xs = workbench.output.referentials.count if workbench.output.referentials.present?
 
             div
-              = link_to '', workbench_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+              = link_to '', workbench_output_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
 
         - if workbench.output.referentials.present?
           .list-group
@@ -17,7 +17,7 @@
               = link_to referential.name, referential_path(referential), class: 'list-group-item'
         - else
           .panel-body
-            em.small.text-muted = t('workbenches.index.offers.no_content')
+            em.small.text-muted = t('dashboards.workbench_output.none')
 
       .panel.panel-default
         .panel-heading

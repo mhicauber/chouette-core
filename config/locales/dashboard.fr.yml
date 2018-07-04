@@ -5,6 +5,9 @@ fr:
       title: "Tableau de bord %{organisation}"
     workbench:
       title: Offre de transport %{organisation}
+    workbench_output:
+      title: Offres finalisées %{organisation}
+      none: Aucune offre mergée
     calendars:
       title: Modèles de calendrier
       none: Aucun calendrier défini

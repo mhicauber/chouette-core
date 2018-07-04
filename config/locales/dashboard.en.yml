@@ -5,6 +5,9 @@ en:
       title: "Dashboard %{organisation}"
     workbench:
       title: Transport offer %{organisation}
+    workbench_output:
+      title: Finalized offers %{organisation}
+      none: No finalized offer created
     calendars:
       title: Calendars
       none: No calendar created
