@@ -5,7 +5,7 @@ module Chouette
     include ObjectidSupport
 
     belongs_to :route
-    has_array_of :stop_points, class_name: 'Chouette::StopPoint'
+    has_array_of :stop_points, class_name: 'Chouette::StopPoint', order_by: :position
 
     belongs_to_array_in_many :vehicle_journeys, class_name: 'Chouette::VehicleJourney', array_name: :ignored_routing_contraint_zones
 
@@ -44,10 +44,7 @@ module Chouette
       ]
     end
 
-    def update_route_checksum
-      route.update_checksum!
-    end
-    after_commit :update_route_checksum
+    has_checksum_children StopPoint
 
     def stop_points_belong_to_route
       return unless route
