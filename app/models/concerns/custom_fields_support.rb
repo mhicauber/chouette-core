@@ -7,9 +7,12 @@ module CustomFieldsSupport
 
     def self.custom_fields workgroup
       return CustomField.none unless workgroup
-      fields = CustomField.where(resource_type: self.name.split("::").last)
-      fields = fields.where(workgroup_id: workgroup.id)
-      fields
+      @_custom_fields ||= {}
+      @_custom_fields[workgroup.id] ||= begin
+        fields = CustomField.where(resource_type: self.name.split("::").last)
+        fields = fields.where(workgroup_id: workgroup.id)
+        fields
+      end
     end
 
     def self.custom_fields_definitions workgroup
