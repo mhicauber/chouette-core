@@ -109,7 +109,7 @@ module Chouette
     end
 
     def time_zone
-      stop_point.stop_area_light.time_zone && ActiveSupport::TimeZone[stop_point.stop_area_light.time_zone]
+      ActiveSupport::TimeZone[stop_point.stop_area_light.time_zone || "UTC"]
     end
 
     def time_zone_offset
