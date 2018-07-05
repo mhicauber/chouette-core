@@ -66,7 +66,9 @@ namespace :ci do
 
   desc "Check security aspects"
   task :check_security do
-    sh "bundle exec bundle-audit check --update"
+    unless ENV["CI_CHECKSECURITY_DISABLED"]
+      sh "bundle exec bundle-audit check --update"
+    end
   end
 
   task :assets do
