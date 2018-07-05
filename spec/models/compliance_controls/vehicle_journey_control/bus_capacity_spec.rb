@@ -27,6 +27,7 @@ RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
   before(:each) do
     referential.switch do
       custom_field
+      Chouette::VehicleJourney.reset_custom_fields
       failing
       failing_too
       failing_too_too

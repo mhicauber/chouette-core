@@ -505,11 +505,13 @@ describe Chouette::VehicleJourney, :type => :model do
       state['published_journey_identifier'] = 'edited_identifier'
       state['custom_fields'] = {energy: {value: 99}}
       create :custom_field, field_type: :integer, code: :energy, name: :energy
+      Chouette::VehicleJourney.reset_custom_fields
 
       Chouette::VehicleJourney.state_update(route, collection)
       expect(state['errors']).to be_nil
       expect(vehicle_journey.reload.published_journey_name).to eq state['published_journey_name']
       expect(vehicle_journey.reload.published_journey_identifier).to eq state['published_journey_identifier']
+
       expect(vehicle_journey.reload.custom_field_value("energy")).to eq 99
     end
 

@@ -321,7 +321,6 @@ module Chouette
           .map { |k, v| [k, v["value"]] }
           .flatten
       ]
-
       attrs
     end
 
