@@ -3,7 +3,9 @@ require 'spec_helper'
 
 describe Chouette::VehicleJourney, :type => :model do
   subject { create(:vehicle_journey) }
-
+  before(:each){
+    Chouette::VehicleJourney.reset_custom_fields
+  }
 
   it { should have_and_belong_to_many(:purchase_windows) }
 

@@ -5,6 +5,10 @@ module CustomFieldsSupport
     validate :custom_fields_values_are_valid
     after_initialize :initialize_custom_fields
 
+    def self.reset_custom_fields
+      @_custom_fields = nil
+    end
+
     def self.custom_fields workgroup
       return CustomField.none unless workgroup
       @_custom_fields ||= {}
