@@ -3,7 +3,7 @@ module Stif
 
     def lines_scope(initial_scope)
       ids = parse_functional_scope
-      ids ? initial_scope.where(objectid: ids) : initial_scope
+      ids ? initial_scope.where(objectid: ids) : initial_scope.none
     end
 
     def stop_areas_scope(initial_scope)
@@ -12,7 +12,7 @@ module Stif
         ids = initial_scope.joins(:stop_area_providers).where("stop_area_providers.objectid" => stop_areas_provider_objectids).select('stop_areas.id').to_sql
         initial_scope.where("stop_areas.id IN (#{ids})")
       else
-        initial_scope
+        initial_scope.none
       end
     end
 
