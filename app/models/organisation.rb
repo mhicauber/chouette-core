@@ -34,8 +34,6 @@ class Organisation < ApplicationModel
     end
 
     def sync_update code, name, scopes
-      p "scopes: "
-      p scopes
       org = Organisation.find_or_initialize_by(code: code)
       scopes.symbolize_keys!
       functional_scope = scopes[:functional_scope]
