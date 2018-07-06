@@ -8,6 +8,14 @@ class CustomField < ApplicationModel
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}, presence: true
   validates :workgroup, :resource_type, :field_type, presence: true
 
+  after_create do
+    if resource_type
+      resource_class = resource_type.safe_constantize
+      resource_class ||= "Chouette::#{resource_type}".constantize
+      resource_class.reset_custom_fields
+    end
+  end
+
   class Collection < HashWithIndifferentAccess
     def initialize object, workgroup=nil
       vals = object.class.custom_fields(workgroup).map do |v|
