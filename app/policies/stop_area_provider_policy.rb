@@ -1,19 +1,15 @@
 class StopAreaProviderPolicy < ApplicationPolicy
 
-  def update?
-    update_stop_area_referential?
-  end
-
-  def edit?
-    update?
+  def create?
+    user.has_permission?('stop_area_providers.create')
   end
 
   def destroy?
-    update_stop_area_referential?
+    user.has_permission?('stop_area_providers.destroy')
   end
 
-  def update_stop_area_referential?
-    StopAreaReferentialPolicy.new(@user_context, @record.stop_area_referential).synchronize?
+  def update?
+    user.has_permission?('stop_area_providers.update')
   end
 
   class Scope < Scope
