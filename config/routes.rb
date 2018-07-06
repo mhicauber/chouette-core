@@ -25,7 +25,11 @@ ChouetteIhm::Application.routes.draw do
     resource :output, controller: :workbench_outputs
     resources :merges
 
-    resources :referentials, only: %w(new create)
+    resources :referentials, only: %w(new create) do
+      collection do
+        get :autocomplete
+      end
+    end
   end
 
   resources :workgroups do

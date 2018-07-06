@@ -1,0 +1,69 @@
+@import 'base/config'
+
+.merge-referentials-selector
+  display: flex
+  min-height: 300px
+  .col
+    padding: 0
+    flex: 3 0
+    position: relative
+    display: inline-block
+    min-height: 100%
+    border: 1px solid #ccc
+    h4
+      background-color: #eee
+      padding: 10px
+      margin: 0
+    .input-group
+      margin: 0 -1px
+      & > *
+        border-radius: 0
+        // border-top: none
+
+    .target
+      .delete
+        display: block
+        padding: 9px 10px 10px
+        margin: -10px
+        &:hover
+          color: white
+          background-color: $red
+
+    &.middle-col
+      position: relative
+      flex: 1 0
+      border: none
+      span
+        color: $green
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+  ul
+    padding: 0 0 10px 0
+    margin: 0
+    border: none
+    position: relative
+    min-height: 100%
+    .placeholder
+      height: 44px
+      border: 1px dotted #ccc
+      background: #FAFAFA
+
+  li
+    list-style-type: none
+    padding: 10px
+    margin: 10px 10px 0 10px
+    cursor: grab
+    border: 1px solid #ccc
+    background: white
+    .delete
+      color: $red
+      display: none
+    &.ui-sortable-helper
+      cursor: grabbing
+      border: 1px solid #444
+    &.disabled
+      opacity: 0.5
+      cursor: not-allowed
+      background: repeating-linear-gradient(-45deg, #ecf5cf,#ecf5cf 12px,#cdf563 12px,#cdf563 25px)

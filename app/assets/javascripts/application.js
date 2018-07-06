@@ -25,6 +25,9 @@
 //= require "i18n"
 //= require "i18n/extended"
 //= require "i18n/translations"
+//= require jquery-ui/widgets/draggable
+//= require jquery-ui/widgets/droppable
+//= require jquery-ui/widgets/sortable
 
 $(document).ready(function() {
     $('a[disabled=disabled]').click(function(event){
