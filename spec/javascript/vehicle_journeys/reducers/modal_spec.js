@@ -198,18 +198,18 @@ describe('modal reducer', () => {
   })
 
   it('should handle ADD_SELECTED_PURCHASE_WINDOW', () => {
-    let fakeWindows = [{'test': 'test'}, {'test 2': 'test 2'}]
-    let newWindows = [{'test': 'test'}, {'test 2': 'test 2'}, {'add': 'add'}]
+    let fakeWindows = [{'id': 'test'}, {'id': 'test 2'}]
+    let newWindows = [{'id': 'test'}, {'id': 'test 2'}, {'id': 'add'}]
     let fakeVehicleJourneys= [{purchase_windows: fakeWindows}, {purchase_windows: newWindows}]
     state.modalProps.vehicleJourneys = fakeVehicleJourneys
     state.modalProps.purchase_windows = fakeWindows
-    state.modalProps.selectedPurchaseWindow = {'add': 'add'}
+    state.modalProps.selectedPurchaseWindow = {'id': 'add'}
     let newState = {
       type: '',
       modalProps:{
         vehicleJourneys: fakeVehicleJourneys,
-        purchase_windows: [{'test': 'test'},{'test 2': 'test 2'},{'add': 'add'}],
-        selectedPurchaseWindow: {'add': 'add'}
+        purchase_windows: newWindows,
+        selectedPurchaseWindow: {'id': 'add'}
       },
       confirmModal: {}
     }

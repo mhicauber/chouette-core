@@ -154,11 +154,11 @@ export default function modal(state = {}, action) {
       let { modalProps } = state
       notAlreadyPresent = !modalProps.purchase_windows.find(({ id }) => id == modalProps.selectedPurchaseWindow.id)
 
+      newModalProps = JSON.parse(JSON.stringify(modalProps))
       if (modalProps.selectedPurchaseWindow && notAlreadyPresent){
-        newModalProps = JSON.parse(JSON.stringify(modalProps))
         newModalProps.purchase_windows.push(newModalProps.selectedPurchaseWindow)
-        return _.assign({}, state, {modalProps: newModalProps})
       }
+      return _.assign({}, state, {modalProps: newModalProps})
     case 'DELETE_CALENDAR_MODAL':
       newModalProps = JSON.parse(JSON.stringify(state.modalProps))
       let timetablesModal = state.modalProps.timetables.slice(0)
