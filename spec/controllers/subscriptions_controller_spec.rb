@@ -62,7 +62,7 @@ RSpec.describe SubscriptionsController, type: :controller do
         end
         context 'after_create' do
           it 'should schedule mailer' do
-            expect(MailerJob).to receive(:perform_later).with 'UserMailer', 'created', anything
+            expect(MailerJob).to receive(:perform_later).with 'SubscriptionMailer', 'created', anything
             post :create, subscription: params
           end
         end
@@ -78,7 +78,7 @@ RSpec.describe SubscriptionsController, type: :controller do
         end
         context 'after_create' do
           it 'should not schedule mailer' do
-            expect(MailerJob).to_not receive(:perform_later).with 'UserMailer', 'created', anything
+            expect(MailerJob).to_not receive(:perform_later).with 'SubscriptionMailer', 'created', anything
             post :create, subscription: params
           end
         end
