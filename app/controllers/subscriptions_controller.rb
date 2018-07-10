@@ -3,6 +3,7 @@ class SubscriptionsController < ChouetteController
 
   skip_before_action :authenticate_user!
   before_action :check_feature_is_activated
+  after_action :notify_subscription, only: [:create]
 
   def devise_mapping
     Devise.mappings[:user]
@@ -33,5 +34,11 @@ class SubscriptionsController < ChouetteController
   private
   def check_feature_is_activated
     not_found unless Subscription.enabled?
+  end
+
+  def notify_subscription
+    return unless SubscriptionMailer.enabled?
+    return unless resource.user.persisted?
+    MailerJob.perform_later("SubscriptionMailer", "created", resource.user.id)
   end
 end

@@ -51,6 +51,38 @@ RSpec.describe SubscriptionsController, type: :controller do
           expect(v).to eq(counts[i] + 1), "#{counted[i].t} count is wrong (#{counts[i] + 1} expected, got #{v})"
         end
       end
+
+      context "when notifications are enabled" do
+        before(:each) do
+          allow(Rails.configuration)
+            .to receive(:enable_subscriptions_notifications)
+            .and_return( true )
+
+          expect(Rails.configuration.enable_subscriptions_notifications).to be_truthy
+        end
+        context 'after_create' do
+          it 'should schedule mailer' do
+            expect(MailerJob).to receive(:perform_later).with 'UserMailer', 'created', anything
+            post :create, subscription: params
+          end
+        end
+      end
+
+      context "when notifications are disabled" do
+        before(:each) do
+          allow(Rails.configuration)
+            .to receive(:enable_subscriptions_notifications)
+            .and_return( false )
+
+          expect(Rails.configuration.enable_subscriptions_notifications).to be_falsy
+        end
+        context 'after_create' do
+          it 'should not schedule mailer' do
+            expect(MailerJob).to_not receive(:perform_later).with 'UserMailer', 'created', anything
+            post :create, subscription: params
+          end
+        end
+      end
     end
   end
 end

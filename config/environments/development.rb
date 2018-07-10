@@ -58,7 +58,7 @@ Rails.application.configure do
   config.company_name = "STIF"
   config.company_theme = "#66b4e0"
   config.company_contact = "http://www.chouette.mobi/club-utilisateurs/contact-support/"
-  config.accept_user_creation = false
+  config.accept_user_creation = ENV.fetch('ACCEPT_USER_CREATION','0')=='1'?true:false
 
   # Reflex api url
   config.reflex_api_url = "https://pprod.reflex.stif.info/ws/reflex/V1/service=getData"
