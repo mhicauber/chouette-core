@@ -37,8 +37,8 @@ class SubscriptionsController < ChouetteController
   end
 
   def notify_subscription
+    return unless SubscriptionMailer.enabled?
     return unless resource.user.persisted?
-    return unless !!Rails.configuration.enable_subscriptions_notifications
-    MailerJob.perform_later("UserMailer", "created", resource.user.id)
+    MailerJob.perform_later("SubscriptionMailer", "created", resource.user.id)
   end
 end
