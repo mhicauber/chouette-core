@@ -91,11 +91,13 @@ describe Chouette::VehicleJourneyAtStop do
 
     context "with stops in a different timezone" do
       before do
-        allow_any_instance_of(Chouette::VehicleJourneyAtStop).to receive(:local_time).and_wrap_original {|m, t| m.call(t - 12.hours)}
+        allow_any_instance_of(Chouette::VehicleJourneyAtStop).to receive(:time_zone) {
+          # UTC + 12
+          ActiveSupport::TimeZone["Antarctica/South_Pole"]
+        }
       end
 
-      # FIXME
-      xit "should apply the TZ" do
+      it "should apply the TZ" do
         at_stops = []
         [
           ['22:30', '22:35'],
