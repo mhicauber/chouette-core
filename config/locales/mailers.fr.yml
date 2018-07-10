@@ -8,3 +8,7 @@ fr:
       updated:
         subject: Un nouveau calendrier partagé à été mis à jour
         body: "Un calendrier partagé %{cal_name} a été mis à jour par le STIF. Vous pouvez maintenant le consulter dans la <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>liste des calendriers partagés</a>."
+    user_mailer:
+      created:
+        subject: Un nouvel utilisateur s'est inscrit
+        body: "Un nouvel utilisateur a rejoint la plateforme:"

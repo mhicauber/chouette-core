@@ -141,6 +141,8 @@ Rails.application.configure do
   config.iev_url = ENV.fetch('IEV_URL',"http://iev:8080")
   config.rails_host = ENV.fetch('RAILS_HOST','http://front:3000')
 
+  config.subscriptions_notifications_recipients = %w{support@enroute.paris chouette-marcom@af83.com}
+
   # FIXME See #5896
   # config.middleware.insert_before ActionDispatch::Static, CacheSettings, {
   #   /\/assets\/.*/ => {

@@ -30,7 +30,7 @@ module ChouetteIhm
     # Configure Browserify to use babelify to compile ES6
     # config.browserify_rails.commandline_options = "-t [ babelify --presets [ react es2015 ] ]"
 
-    config.active_record.observers = [:route_observer, :calendar_observer]
+    config.active_record.observers = [:route_observer, :calendar_observer, :user_observer]
     config.active_record.raise_in_transactional_callbacks = true
 
     config.active_job.queue_adapter = :sidekiq
@@ -41,6 +41,9 @@ module ChouetteIhm
 
     config.development_toolbar = false
     config.enable_calendar_observer = true
+    config.enable_subscriptions_notifications = !!ENV['SUBSCRIPTION_NOTIFIER_ENABLED']
+    config.subscriptions_notifications_recipients = []
+
     config.vehicle_journeys_extra_headers = []
 
     unless Rails.env.production?
