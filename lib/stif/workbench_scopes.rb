@@ -30,7 +30,10 @@ module Stif
     def parse_stop_areas_providers
       return false unless @workbench.organisation.sso_attributes
       begin
-        JSON.parse @workbench.organisation.sso_attributes['stop_area_providers']
+        # Sesame returns '77', when objectid is 'STIF-REFLEX:Operator:77:LOC'
+        JSON.parse(@workbench.organisation.sso_attributes['stop_area_providers']).map do |local_id|
+          "STIF-REFLEX:Operator:#{local_id}:LOC"
+        end
       rescue Exception => e
         Rails.logger.error "WorkbenchScopes : #{e}"
       end
