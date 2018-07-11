@@ -1,9 +1,11 @@
 FROM debian:stable-slim
 
 ENV RAILS_ENV=production RAILS_SERVE_STATIC_FILES=true RAILS_LOG_TO_STDOUT=true SIDEKIQ_REDIS_URL=redis://redis:6379/12
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
 RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
-    apt-get install -y --no-install-recommends ruby2.3 && \
+    apt-get install -y --no-install-recommends ruby2.3 locales && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
     apt-get install -y --no-install-recommends libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 && \
     apt-get install -y --no-install-recommends cron && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \

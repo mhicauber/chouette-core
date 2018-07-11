@@ -4,6 +4,8 @@ ENV RAILS_ENV test
 ENV KEEP_DATABASE_CONFIG true
 ENV IGNORE_YARN_INSTALL true
 
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+
 ARG WEEK
 
 # Prepare nodejs 6.x and yarn package installation
@@ -15,7 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-c
 
 # Install ruby, native dependencies, bundler and yarn
 RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
-    apt-get install -y --no-install-recommends ruby2.3 && \
+    apt-get install -y --no-install-recommends ruby2.3 locales && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
     apt-get install -y --no-install-recommends libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 yarn nodejs && \
     gem2.3 install --no-ri --no-rdoc bundler
 
