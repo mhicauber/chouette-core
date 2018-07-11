@@ -192,7 +192,7 @@ module Stif
 
         if entry["dataSourceRef"]
           stop_area_provider = get_stop_area_provider entry["dataSourceRef"]
-          stop_area_provider.stop_areas << stop
+          stop_area_provider.stop_areas << stop unless stop_area_provider.stop_areas.include?(stop)
         end
         # Create AccessPoint from StopPlaceEntrance
         if entry[:stop_place_entrances]
