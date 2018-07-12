@@ -2,11 +2,15 @@ RSpec.describe 'Workbenches', type: :feature do
   login_user
 
   let(:line_ref) { create :line_referential }
-  let(:line) { create :line, line_referential: line_ref }
-  let(:ref_metadata) { create(:referential_metadata, lines: [line]) }
+  let(:line) { create :line, line_referential: line_ref, referential: referential }
+  let(:ref_metadata) { create(:referential_metadata) }
 
   let!(:workbench) { create(:workbench, line_referential: line_ref, organisation: @user.organisation) }
   let!(:referential) { create :workbench_referential, workbench: workbench, metadatas: [ref_metadata], organisation: @user.organisation }
+
+  before(:each) do
+    ref_metadata.update lines: [line]
+  end
 
   describe 'show' do
     context 'ready' do
@@ -32,13 +36,19 @@ RSpec.describe 'Workbenches', type: :feature do
         :workbench_referential,
         workbench: other_workbench,
         organisation: other_workbench.organisation,
-        metadatas: [
-          create(
-            :referential_metadata,
-            lines: [create(:line, line_referential: line_ref)]
-          )
-        ]
+        metadatas: []
       )
+
+      other_referential_metadata = create(
+        :referential_metadata,
+        lines: [create(:line, line_referential: line_ref, referential: referential)]
+      )
+
+      other_referential.metadatas = [other_referential_metadata]
+      other_referential.save
+
+      # We can see referentials in the same workgroup,
+      # and containing lines associated to the workbench
 
       hidden_referential = create(
         :workbench_referential,
@@ -65,7 +75,7 @@ RSpec.describe 'Workbenches', type: :feature do
     end
 
     it "prevents pending referentials from being selected" do
-      line = create(:line, line_referential: line_ref)
+      line = create(:line, line_referential: line_ref, referential: referential)
       metadata = create(:referential_metadata, lines: [line])
       pending_referential = create(
         :workbench_referential,
@@ -88,7 +98,7 @@ RSpec.describe 'Workbenches', type: :feature do
 
     context 'filtering' do
       let!(:another_organisation) { create :organisation }
-      let(:another_line) { create :line, line_referential: line_ref }
+      let(:another_line) { create :line, line_referential: line_ref, referential: referential }
       let(:another_ref_metadata) { create(:referential_metadata, lines: [another_line]) }
       let(:other_workbench) do
         create(

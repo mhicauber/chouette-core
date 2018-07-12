@@ -45,8 +45,7 @@ module Stif
 
       def synchronize
         reset_counts
-        # ['getOR', 'getOP'].each do |method|
-        ['getOP'].each do |method|
+        ['getOR', 'getOP'].each do |method|
           start   = Time.now
           results = Reflex::API.new().process(method)
           log_processing_time("Process #{method}", Time.now - start)
