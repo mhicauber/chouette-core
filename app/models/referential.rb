@@ -337,7 +337,7 @@ class Referential < ApplicationModel
   before_save :lock_table, on: [:create, :update]
 
   before_create :create_schema
-  after_create :clone_schema, if: :created_from
+  after_commit :clone_schema, if: :created_from
   after_create :active!, unless: :created_from
 
   before_destroy :destroy_schema
@@ -576,24 +576,24 @@ class Referential < ApplicationModel
   end
 
   def pending!
-    update ready: false, failed_at: nil, archived_at: nil
+    update_columns ready: false, failed_at: nil, archived_at: nil
   end
 
   def failed!
-    update ready: false, failed_at: Time.now, archived_at: nil
+    update_columns ready: false, failed_at: Time.now, archived_at: nil
   end
 
   def active!
-    update ready: true, failed_at: nil, archived_at: nil
+    update_columns ready: true, failed_at: nil, archived_at: nil
   end
 
   def archived!
-    update failed_at: nil, archived_at: Time.now
+    update_columns failed_at: nil, archived_at: Time.now
   end
 
   def merged!
     now = Time.now
-    update failed_at: nil, archived_at: now, merged_at: now
+    update_columns failed_at: nil, archived_at: now, merged_at: now
   end
 
   STATES.each do |s|
