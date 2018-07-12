@@ -161,8 +161,8 @@ module Chouette
         invalid_times = false
         costs.values.each do |val|
           break if invalid_distances || invalid_times
-          invalid_distances = true if val['distance'] < 0
-          invalid_times = true if val['time'] < 0
+          invalid_distances = val['distance'].to_i < 0
+          invalid_times = val['time'].to_i < 0
         end
         errors.add(:costs, I18n.t('activerecord.errors.models.journey_pattern.attributes.costs.distance')) if invalid_distances
         errors.add(:costs, I18n.t('activerecord.errors.models.journey_pattern.attributes.costs.time')) if invalid_times
