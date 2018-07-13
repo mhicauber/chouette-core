@@ -2,9 +2,9 @@
 class Organisation < ApplicationModel
   include DataFormatEnumerations
 
-  has_many :users, :dependent => :destroy
-  has_many :referentials, :dependent => :destroy
-  has_many :compliance_control_sets, :dependent => :destroy
+  has_many :users, dependent: :destroy
+  has_many :referentials, dependent: :destroy
+  has_many :compliance_control_sets, dependent: :destroy
 
   has_many :stop_area_referential_memberships
   has_many :stop_area_referentials, through: :stop_area_referential_memberships
@@ -12,7 +12,7 @@ class Organisation < ApplicationModel
   has_many :line_referential_memberships
   has_many :line_referentials, through: :line_referential_memberships
 
-  has_many :workbenches
+  has_many :workbenches, dependent: :destroy
   has_many :workgroups, through: :workbenches
 
   has_many :calendars
