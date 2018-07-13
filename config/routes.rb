@@ -2,6 +2,8 @@ ChouetteIhm::Application.routes.draw do
   resource :dashboard
   resource :subscriptions, only: :create
 
+  get "/uploads/*path.:extension", :controller => "downloads", :action => "download"
+
   resources :exports, only: :upload do
     post :upload, on: :member, controller: :export_uploads
   end
