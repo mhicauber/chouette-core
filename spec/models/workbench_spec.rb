@@ -43,7 +43,7 @@ RSpec.describe Workbench, :type => :model do
     end
     context "with the default scope policy" do
       before do
-        Workgroup.workbench_scopes_class = WorkbenchScopes::All
+        allow(Workgroup).to receive(:workbench_scopes_class).and_return(WorkbenchScopes::All)
       end
 
       it 'should retrieve all lines' do
@@ -53,7 +53,7 @@ RSpec.describe Workbench, :type => :model do
 
     context "with a scope policy based on the sso_attributes" do
       before do
-        Workgroup.workbench_scopes_class = Stif::WorkbenchScopes
+        allow(Workgroup).to receive(:workbench_scopes_class).and_return(Stif::WorkbenchScopes)
       end
 
       it 'should filter lines based on my organisation functional_scope' do
@@ -74,22 +74,16 @@ RSpec.describe Workbench, :type => :model do
     let(:stop_2){ create :stop_area, stop_area_referential: stop_area_referential }
 
     before(:each) do
-      Workgroup.workbench_scopes_class = WorkbenchScopes::All
       stop
       stop_area_provider.stop_areas << stop_2
       stop_area_provider.save
     end
 
-    context 'with a functional_scope' do
-      it 'should filter stops based on the stop_area_referential' do
-        stops = workbench.stop_areas
-        expect(stops.count).to eq 2
-        expect(stops).to include stop_2
-        expect(stops).to include stop
-      end
-    end
-
     context 'without a functional_scope' do
+      before do
+        allow(Workgroup).to receive(:workbench_scopes_class).and_return(WorkbenchScopes::All)
+      end
+
       it 'should filter stops based on the stop_area_referential' do
         stops = workbench.stop_areas
         expect(stops.count).to eq 2
@@ -100,7 +94,7 @@ RSpec.describe Workbench, :type => :model do
 
     context "with a scope policy based on the sso_attributes" do
       before do
-        Workgroup.workbench_scopes_class = Stif::WorkbenchScopes
+        allow(Workgroup).to receive(:workbench_scopes_class).and_return(Stif::WorkbenchScopes)
       end
 
       it 'should filter lines based on my organisation stop_area_providers' do
