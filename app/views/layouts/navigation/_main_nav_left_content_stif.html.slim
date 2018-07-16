@@ -45,6 +45,8 @@
       - if policy(workbench.workgroup).edit?
         = link_to [:edit, workbench.workgroup], class: 'list-group-item' do
           span = t('layouts.navbar.workgroup_configuration')
+      = link_to organisation_path, class: 'list-group-item' do
+        span = 'layouts.navbar.organisation_configuration'.t
 
     = main_nav_menu_item 'layouts.navbar.tools'.t do
       = link_to Rails.application.config.try(:portal_url), target: '_blank', class: 'list-group-item' do
