@@ -1,6 +1,9 @@
 class Merge < ApplicationModel
   extend Enumerize
 
+  @@keep_merges = 20
+  mattr_accessor :keep_merges
+
   belongs_to :workbench
   belongs_to :new, class_name: 'Referential'
 
@@ -15,6 +18,10 @@ class Merge < ApplicationModel
   delegate :output, to: :workbench
 
   after_commit :merge, :on => :create
+
+  def self.keep_merges=(value)
+    @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
+  end
 
   def merge
     # Step 1 : Before
@@ -599,8 +606,13 @@ class Merge < ApplicationModel
     output.update current: new, new: nil
     output.current.update referential_suite: output, ready: true
     referentials.each &:merged!
+    clean_previous_merges
 
     update status: :successful, ended_at: Time.now
+  end
+
+  def clean_previous_merges
+    workbench.merges.order("created_at desc").offset(Merge.keep_merges).each { |m| m.new&.destroy ; m.destroy }
   end
 
   def child_change
@@ -676,8 +688,5 @@ class Merge < ApplicationModel
     def empty_metadatas
       merge_metadatas.select { |m| m.periodes.empty? }
     end
-
-
   end
-
 end
