@@ -24,6 +24,10 @@ class ComplianceCheckSet < ApplicationModel
 
   scope :unfinished, -> { where 'status NOT IN (?)', finished_statuses }
 
+  scope :assigned_to_slots, ->(organisation, slots) do
+    joins(:compliance_control_set).merge(ComplianceControlSet.assigned_to_slots(organisation, slots))
+  end
+
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
   end
@@ -96,6 +100,7 @@ class ComplianceCheckSet < ApplicationModel
       rescue Exception => e
         logger.error "IEV server error : #{e.message}"
         logger.error e.backtrace.inspect
+        update status: 'failed'
       end
     else
       perform_internal_checks
@@ -106,5 +111,9 @@ class ComplianceCheckSet < ApplicationModel
     update status: :pending
     compliance_checks.internals.each &:process
     update_status
+  end
+
+  def context_i18n
+    context.present? ? Workgroup.compliance_control_sets_label(context) : Workgroup.compliance_control_sets_label(:manual)
   end
 end

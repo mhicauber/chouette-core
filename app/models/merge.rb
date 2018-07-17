@@ -44,32 +44,34 @@ class Merge < ApplicationModel
 
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, label|
-      workbench.compliance_control_set(key)
+      cc_set = workbench.compliance_control_set(key)
+      cc_set.present? ? [key, cc_set] : nil
     end.compact
   end
 
   def after_merge_compliance_control_sets
     workbench.workgroup.after_merge_compliance_control_sets.map do |key, label|
-      workbench.compliance_control_set(key)
+      cc_set = workbench.compliance_control_set(key)
+      cc_set.present? ? [key, cc_set] : nil
     end.compact
   end
 
   def create_before_merge_compliance_check_sets
     referentials.each do |referential|
-      before_merge_compliance_control_sets.each do |compliance_control_set|
-        create_compliance_check_set compliance_control_set, referential
+      before_merge_compliance_control_sets.each do |key, compliance_control_set|
+        create_compliance_check_set key, compliance_control_set, referential
       end
     end
   end
 
   def create_after_merge_compliance_check_sets
-    after_merge_compliance_control_sets.each do |compliance_control_set|
-      create_compliance_check_set compliance_control_set, new
+    after_merge_compliance_control_sets.each do |key, compliance_control_set|
+      create_compliance_check_set key, compliance_control_set, new
     end
   end
 
-  def create_compliance_check_set(control_set, referential)
-    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id
+  def create_compliance_check_set(context, control_set, referential)
+    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id, context
   end
 
   def name
