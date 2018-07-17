@@ -16,14 +16,8 @@
       = f.input :organizational_unit
       = f.input :operating_department_name
       = f.input :email, as: :email
-      .col-xs-6
-        .form-group.mr-xs
-          label= "company.phone".tmf
-          = f.phone_field :phone, class: 'form-control'
-      .col-xs-6
-        .form-group
-          label= "company.fax".tmf
-          = f.phone_field :fax, class: 'form-control'
+      = f.input :phone
+      = f.input :fax
       = custom_fields_for_section(f, "contact")
 
   .separator.section_separator
@@ -36,8 +30,8 @@
 
       = custom_fields_for_section(f, "general")
 
-      - if custom_fields.without_section.present?
-        - custom_fields.without_section.each do |_code, field|
+      - if resource.custom_fields.without_section.present?
+        - resource.custom_fields.without_section.each do |_code, field|
           = field.input(f).to_s
 
   - other_custom_fields = resource.custom_fields.except_for_sections(%w(identification contact general))
