@@ -1,9 +1,11 @@
 class ApiKeysController < ChouetteController
-  defaults resource_class: Api::V1::ApiKey
+  defaults resource_class: ApiKey
+
+  belongs_to :workbench
   include PolicyChecker
 
   def create
-    @api_key = Api::V1::ApiKey.new(api_key_params.merge(organisation: current_organisation))
+    @api_key = @workbench.api_keys.new(api_key_params.merge(workbench: current_workbench))
     create! do |format|
       format.html {
         redirect_to dashboard_path
@@ -28,7 +30,8 @@ class ApiKeysController < ChouetteController
   end
 
   private
+
   def api_key_params
-    params.require(:api_key).permit(:name, :referential_id)
+    params.require(:api_key).permit(:name)
   end
 end

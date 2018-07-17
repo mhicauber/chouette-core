@@ -2,7 +2,7 @@
 - content_for :page_header_content do
   .row.mb-sm
    .col-lg-12.text-right
-     - if policy(Api::V1::ApiKey).create?
+     - if policy(ApiKey).create?
        = link_to t('actions.create_api_key'), new_api_key_path, class: 'btn btn-primary'
 
 

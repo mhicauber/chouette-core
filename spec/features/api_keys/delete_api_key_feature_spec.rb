@@ -20,7 +20,7 @@ RSpec.describe 'New API Key', type: :feature do
       # click_link(destroy_label)
 
       # # check impact on DB
-      # expect(Api::V1::ApiKey.where(id: api_key.id)).to be_empty
+      # expect(ApiKey.where(id: api_key.id)).to be_empty
 
       # # check redirect and changed display
       # expect(page.current_path).to eq(dashboard_path)

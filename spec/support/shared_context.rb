@@ -1,13 +1,15 @@
 shared_context 'iboo authenticated api user' do
-  let(:api_key) { create(:api_key, organisation: organisation) }
+  let(:workbench) { create(:workbench) }
+  let(:api_key) { create(:api_key, workbench: workbench) }
 
   before do
-    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(api_key.organisation.code, api_key.token)
+    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(api_key.workbench.organisation.code, api_key.token)
   end
 end
 
 shared_context 'iboo wrong authorisation api user' do
-  let(:api_key) { create(:api_key, organisation: organisation) }
+  let(:workbench) { create(:workbench) }
+  let(:api_key) { create(:api_key, workbench: workbench) }
 
   before do
     request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('fake code', api_key.token)

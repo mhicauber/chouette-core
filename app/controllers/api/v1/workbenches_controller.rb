@@ -1,3 +1,3 @@
-class Api::V1::WorkbenchesController < Api::V1::IbooController
-  defaults :resource_class => Workbench
+class Api::V1::WorkbenchesController < Api::V1::WorkbenchController
+  defaults resource_class: Workbench
 end

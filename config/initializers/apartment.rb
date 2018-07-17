@@ -18,7 +18,7 @@ Apartment.configure do |config|
   # config.excluded_models = %w{Tenant}
   #
   config.excluded_models = [
-    'Api::V1::ApiKey',
+    'ApiKey',
     'Calendar',
     'Chouette::Company',
     'Chouette::GroupOfLine',

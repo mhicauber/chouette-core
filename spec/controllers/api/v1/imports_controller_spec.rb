@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ImportsController, type: :controller do
-  let(:workbench) { create :workbench, organisation: organisation }
-
   context 'unauthenticated' do
     include_context 'iboo wrong authorisation api user'
 
@@ -19,7 +17,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
 
     describe 'GET #index' do
       it 'should be successful' do
-        get :index, workbench_id: workbench.id
+        get :index, workbench_id: workbench.id, format: :json
         expect(response).to be_success
       end
     end
