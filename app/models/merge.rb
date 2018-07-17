@@ -1,7 +1,7 @@
 class Merge < ApplicationModel
   extend Enumerize
 
-  @@keep_merges = 10
+  @@keep_merges = 20
   mattr_accessor :keep_merges
 
   belongs_to :workbench
