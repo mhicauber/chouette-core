@@ -25,7 +25,6 @@ class Referential < ApplicationModel
   attr_accessor :lower_corner
 
   has_one :user
-  has_many :api_keys, class_name: 'Api::V1::ApiKey', dependent: :destroy
   has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
 
   belongs_to :organisation

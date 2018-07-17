@@ -154,28 +154,10 @@ ChouetteIhm::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :workbenches, except: [:destroy] do
+      resources :workbenches, except: %i(destroy) do
         resources :imports, only: [:index, :show, :create]
       end
-      resources :access_links, only: [:index, :show]
-      resources :access_points, only: [:index, :show]
-      resources :connection_links, only: [:index, :show]
-      resources :companies, only: [:index, :show]
-      resources :group_of_lines, only: [:index, :show]
-      resources :journey_patterns, only: :show
-      resources :lines, only: [:index, :show] do
-        resources :journey_patterns, only: [:index, :show]
-        resources :routes, only: [:index, :show] do
-          resources :vehicle_journeys, only: [:index, :show]
-          resources :journey_patterns, only: [:index, :show]
-          resources :stop_areas, only: [:index, :show]
-        end
-      end
-      resources :networks, only: [:index, :show]
-      resources :routes, only: :show
-      resources :stop_areas, only: [:index, :show]
-      resources :time_tables, only: [:index, :show]
-      resources :vehicle_journeys, only: :show
+
       namespace :internals do
         get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
 

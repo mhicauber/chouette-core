@@ -19,6 +19,7 @@ class Workbench < ApplicationModel
   has_many :compliance_check_sets, dependent: :destroy
   has_many :compliance_control_sets, dependent: :destroy
   has_many :merges, dependent: :destroy
+  has_many :api_keys
 
   validates :name, presence: true
   validates :organisation, presence: true

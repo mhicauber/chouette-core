@@ -9,7 +9,7 @@ RSpec.describe 'New API Key', type: :feature do
     let( :validate_label ){ "Valider" }
 
     let( :unique_name ){ SecureRandom.uuid }
-    let( :last_api_key ){ Api::V1::ApiKey.last }
+    let( :last_api_key ){ ApiKey.last }
 
 
     it 'complete workflow' do

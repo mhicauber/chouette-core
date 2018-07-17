@@ -16,7 +16,6 @@ class Organisation < ApplicationModel
   has_many :workgroups, through: :workbenches
 
   has_many :calendars, dependent: :destroy
-  has_many :api_keys, class_name: 'Api::V1::ApiKey'
 
   validates_presence_of :name
   validates_uniqueness_of :code
