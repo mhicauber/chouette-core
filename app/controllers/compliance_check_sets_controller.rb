@@ -8,12 +8,12 @@ class ComplianceCheckSetsController < ChouetteController
 
   def index
     index! do |format|
-      scope = self.ransack_period_range(scope: @compliance_check_sets, error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
-      scope = scope.assigned_to_slots(current_organisation, params[:q].try(:[], :assigned_to_slots))
+      scope = self.ransack_period_range(scope: @compliance_check_sets.joins(:compliance_control_set), error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
+      scope = scope.order(sort_column + ' ' + sort_direction) if sort_column && sort_direction
       @q_for_form = scope.ransack(params[:q])
       format.html {
         @compliance_check_sets = ComplianceCheckSetDecorator.decorate(
-          @q_for_form.result.order(created_at: :desc).paginate(page: params[:page], per_page: 30)
+          @q_for_form.result.paginate(page: params[:page], per_page: 30)
         )
       }
     end
@@ -32,6 +32,17 @@ class ComplianceCheckSetsController < ChouetteController
     end
   end
 
+  def sort_column
+    ComplianceCheckSet.column_names.include?(params[:sort]) ? params[:sort] : 'lower(compliance_check_sets.name)'
+  end
+
+  def joins_with_associated_objects(collection)
+    collection
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+  end
 
   private
 

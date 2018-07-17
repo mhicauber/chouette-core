@@ -30,10 +30,8 @@
                   end \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: :assigned_to, \
-                  attribute: Proc.new {|n| \
-                    n.compliance_control_set.assignments(current_user).to_sentence\
-                  }, \
+                  key: :context, \
+                  attribute: :context_i18n \
                 ), \
                 TableBuilderHelper::Column.new(\
                   key: :compliance_control_set, \

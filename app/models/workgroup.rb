@@ -56,7 +56,7 @@ class Workgroup < ApplicationModel
   def self.import_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_import/)
   end
-  
+
   def before_merge_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^before_merge/)
   end
@@ -86,9 +86,13 @@ class Workgroup < ApplicationModel
   end
 
   private
+  def self.compliance_control_sets_label(key)
+    "workgroups.compliance_control_sets.#{key}".t.capitalize
+  end
+
   def self.compliance_control_sets_labels(keys)
     keys.inject({}) do |h, k|
-      h[k] = "workgroups.compliance_control_sets.#{k}".t.capitalize
+      h[k] = compliance_control_sets_label(k)
       h
     end
   end

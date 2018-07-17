@@ -38,6 +38,8 @@ fr:
         assigned_to: Affectations
         compliance_control_set: Jeu de contrôle exécuté
         name: Nom
+        context: Contexte
+        context_i18n: Contexte
       compliance_check_resource:
         name: Nom de la ligne
         status: État

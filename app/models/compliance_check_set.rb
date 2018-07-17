@@ -111,4 +111,8 @@ class ComplianceCheckSet < ApplicationModel
     compliance_checks.internals.each &:process
     update_status
   end
+
+  def context_i18n
+    context.present? ? Workgroup.compliance_control_sets_label(context) : Workgroup.compliance_control_sets_label(:manual)
+  end
 end
