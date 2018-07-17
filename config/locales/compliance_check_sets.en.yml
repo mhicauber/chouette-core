@@ -43,6 +43,7 @@ en:
         assigned_to: Assigned to
         compliance_control_set: Compliance control set
         name: Name
+        status: Status
       compliance_check_resources:
         name: Name of the line
         status: Status

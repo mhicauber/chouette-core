@@ -100,6 +100,7 @@ class ComplianceCheckSet < ApplicationModel
       rescue Exception => e
         logger.error "IEV server error : #{e.message}"
         logger.error e.backtrace.inspect
+        update status: 'failed'
       end
     else
       perform_internal_checks

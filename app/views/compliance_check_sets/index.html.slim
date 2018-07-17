@@ -22,6 +22,10 @@
                   attribute: Proc.new { |n| l(n.created_at, format: :long) if n.created_at } \
                 ), \
                 TableBuilderHelper::Column.new( \
+                  key: :status, \
+                  attribute: Proc.new { |n| import_status(n.status) } \
+                ), \
+                TableBuilderHelper::Column.new( \
                   key: :associated_object, \
                   if: ->(compliance_check_set){ compliance_check_set.referential.present? }, \
                   attribute: Proc.new{|n| n.referential.name}, \
