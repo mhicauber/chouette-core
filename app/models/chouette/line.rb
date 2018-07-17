@@ -54,14 +54,6 @@ module Chouette
         )
     }
 
-    scope :for_organisation, ->(organisation){
-      if objectids = organisation&.lines_scope
-        where(objectid: objectids)
-      else
-        all
-      end
-    }
-
     scope :for_workbench, ->(workbench){
       where(line_referential_id: workbench.line_referential_id)
     }
