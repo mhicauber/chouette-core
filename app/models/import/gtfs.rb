@@ -174,6 +174,8 @@ class Import::Gtfs < Import::Base
         stop_area.parent = stop_area_referential.stop_areas.find_by!(registration_number: stop.parent_station) if stop.parent_station.present?
         stop_area.latitude, stop_area.longitude = stop.lat, stop.lon
         stop_area.kind = "commercial"
+        stop_area.deleted_at = nil
+        stop_area.confirmed_at = Time.now
 
         # TODO correct default timezone
 
