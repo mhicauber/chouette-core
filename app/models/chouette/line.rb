@@ -19,16 +19,16 @@ module Chouette
 
     has_array_of :secondary_companies, class_name: 'Chouette::Company'
 
-    has_many :routes
+    has_many :routes, dependent: :destroy
     has_many :journey_patterns, :through => :routes
     has_many :vehicle_journeys, :through => :journey_patterns
     has_many :routing_constraint_zones, through: :routes
-    has_many :time_tables, -> { distinct }, :through => :vehicle_journeys
+    has_many :time_tables, -> { distinct }, through: :vehicle_journeys, dependent: :destroy
 
     has_and_belongs_to_many :group_of_lines, :class_name => 'Chouette::GroupOfLine', :order => 'group_of_lines.name'
 
-    has_many :footnotes, :inverse_of => :line, :validate => :true
-    accepts_nested_attributes_for :footnotes, :reject_if => :all_blank, :allow_destroy => true
+    has_many :footnotes, inverse_of: :line, validate: true, dependent: :destroy
+    accepts_nested_attributes_for :footnotes, reject_if: :all_blank, :allow_destroy => true
 
     attr_reader :group_of_line_tokens
 
