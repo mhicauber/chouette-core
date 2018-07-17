@@ -33,6 +33,7 @@ fr:
     attributes:
       compliance_check_set:
         ref: Ref
+        id: Ref
         creation_date: Date et heure de création
         associated_object: Objet associé
         assigned_to: Affectations

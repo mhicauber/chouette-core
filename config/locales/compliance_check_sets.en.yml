@@ -37,6 +37,7 @@ en:
     attributes:
       compliance_check_set:
         ref: ref
+        id: ref
         creation_date: Created at
         associated_object: Associated object
         assigned_to: Assigned to

@@ -11,7 +11,7 @@
             = table_builder_2 @compliance_check_sets,
               [ \
                 TableBuilderHelper::Column.new( \
-                  key: :ref, \
+                  key: :id, \
                   attribute: 'id', \
                   link_to: lambda do |compliance_check_set| \
                     workbench_compliance_check_set_path(compliance_check_set.workbench_id, compliance_check_set.id) \
