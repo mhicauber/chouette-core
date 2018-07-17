@@ -57,11 +57,11 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_import/)
   end
 
-  def before_merge_compliance_control_sets
+  def self.before_merge_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^before_merge/)
   end
 
-  def after_merge_compliance_control_sets
+  def self.after_merge_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
@@ -83,6 +83,14 @@ class Workgroup < ApplicationModel
 
   def compliance_control_sets_by_workbench
     self.class.compliance_control_sets_by_workbench
+  end
+
+  def before_merge_compliance_control_sets
+    self.class.before_merge_compliance_control_sets
+  end
+
+  def after_merge_compliance_control_sets
+    self.class.after_merge_compliance_control_sets
   end
 
   private
