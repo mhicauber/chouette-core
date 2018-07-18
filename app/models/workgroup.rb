@@ -3,8 +3,8 @@ class Workgroup < ApplicationModel
   belongs_to :stop_area_referential
   belongs_to :owner, class_name: "Organisation"
 
-  has_many :workbenches
-  has_many :calendars
+  has_many :workbenches, dependent: :destroy
+  has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
 

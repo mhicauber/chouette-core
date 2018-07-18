@@ -6,16 +6,16 @@ class Organisation < ApplicationModel
   has_many :referentials, dependent: :destroy
   has_many :compliance_control_sets, dependent: :destroy
 
-  has_many :stop_area_referential_memberships
+  has_many :stop_area_referential_memberships, dependent: :destroy
   has_many :stop_area_referentials, through: :stop_area_referential_memberships
 
-  has_many :line_referential_memberships
+  has_many :line_referential_memberships, dependent: :destroy
   has_many :line_referentials, through: :line_referential_memberships
 
   has_many :workbenches, dependent: :destroy
   has_many :workgroups, through: :workbenches
 
-  has_many :calendars
+  has_many :calendars, dependent: :destroy
   has_many :api_keys, class_name: 'Api::V1::ApiKey'
 
   validates_presence_of :name

@@ -13,7 +13,7 @@ class Merge < ApplicationModel
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
   has_array_of :referentials, class_name: 'Referential'
-  has_many :compliance_check_sets, foreign_key: :parent_id
+  has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
 
   delegate :output, to: :workbench
 
