@@ -24,7 +24,7 @@ RSpec.describe ComplianceControlSetsController, type: :controller do
       get :index
       expect(response).to be_success
       expect(assigns(:compliance_control_sets)).to include(same_organisation_cc_set)
-      expect(assigns(:compliance_control_sets)).to include(workgroups_owner_cc_set)
+      expect(assigns(:compliance_control_sets)).to_not include(workgroups_owner_cc_set)
       expect(assigns(:compliance_control_sets)).to_not include(different_organisation_cc_set)
     end
 
@@ -35,7 +35,7 @@ RSpec.describe ComplianceControlSetsController, type: :controller do
         get :index, q: {assigned_to_slots: assigned_to_slots}
         expect(response).to be_success
         expect(assigns(:compliance_control_sets)).to include(same_organisation_cc_set)
-        expect(assigns(:compliance_control_sets)).to include(workgroups_owner_cc_set)
+        expect(assigns(:compliance_control_sets)).to_not include(workgroups_owner_cc_set)
         expect(assigns(:compliance_control_sets)).to_not include(different_organisation_cc_set)
       end
 
