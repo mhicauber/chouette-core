@@ -45,11 +45,11 @@ module Chouette
       t: "%#{text.downcase}%") }
 
     scope :by_name, ->(name) {
-      joins('LEFT OUTER JOIN public.companies ON companies.id = lines.company_id')
+      joins('LEFT OUTER JOIN public.companies by_name_companies ON by_name_companies.id = lines.company_id')
         .where('
           lines.number LIKE :q
           OR unaccent(lines.name) ILIKE unaccent(:q)
-          OR unaccent(companies.name) ILIKE unaccent(:q)',
+          OR unaccent(by_name_companies.name) ILIKE unaccent(:q)',
           q: "%#{sanitize_sql_like(name)}%"
         )
     }
