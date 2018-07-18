@@ -69,7 +69,7 @@ RSpec.describe 'Workbenches', type: :feature do
       expect(page).to have_content(referential.name),
         "Couldn't find `referential`: `#{referential.inspect}`"
       expect(page).to have_content(other_referential.name),
-        "Couldn't find `other_referential`: `#{other_referential.inspect}`"  
+        "Couldn't find `other_referential`: `#{other_referential.inspect}`"
       # expect(page).to_not have_content(other_referential.name),
       #  "Couldn't find `other_referential`: `#{other_referential.inspect}`"
       expect(page).to_not have_content(hidden_referential.name),
@@ -101,7 +101,7 @@ RSpec.describe 'Workbenches', type: :feature do
     context 'filtering' do
       let!(:another_organisation) { create :organisation }
       let(:another_line) { create :line, line_referential: line_ref, referential: referential }
-      let(:another_ref_metadata) { create(:referential_metadata, lines: [another_line]) }
+      let(:another_ref_metadata) { create(:referential_metadata, lines: [another_line], periodes: [ Date.new(2000,1,1)..Date.new(2000,12,31) ]) }
       let(:other_workbench) do
         create(
           :workbench,
