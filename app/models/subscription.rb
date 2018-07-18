@@ -25,7 +25,7 @@ class Subscription
   end
 
   def organisation
-    @organisation ||= Organisation.new name: organisation_name, code: organisation_name.parameterize
+    @organisation ||= Organisation.new name: organisation_name, code: organisation_name.parameterize, features: Feature.all
   end
 
   def valid?
