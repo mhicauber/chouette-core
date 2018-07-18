@@ -180,6 +180,9 @@ export default class VehicleJourneys extends Component {
     this._allPurchaseWindows = null
     let detailed_calendars = this.hasFeature('detailed_calendars') && !this.isReturn() && (this.allTimeTables().length > 0)
     let detailed_purchase_windows = this.hasFeature('detailed_purchase_windows') && !this.isReturn() && (this.allPurchaseWindows().length > 0)
+    requestAnimationFrame(function(){
+      $(document).trigger("table:updated")
+    })
     if(this.props.status.isFetching == true) {
       return (
         <div className="isLoading" style={{marginTop: 80, marginBottom: 80}}>
