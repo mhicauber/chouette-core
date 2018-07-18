@@ -68,8 +68,10 @@ RSpec.describe 'Workbenches', type: :feature do
 
       expect(page).to have_content(referential.name),
         "Couldn't find `referential`: `#{referential.inspect}`"
-      expect(page).to_not have_content(other_referential.name),
-        "Couldn't find `other_referential`: `#{other_referential.inspect}`"
+      expect(page).to have_content(other_referential.name),
+        "Couldn't find `other_referential`: `#{other_referential.inspect}`"  
+      # expect(page).to_not have_content(other_referential.name),
+      #  "Couldn't find `other_referential`: `#{other_referential.inspect}`"
       expect(page).to_not have_content(hidden_referential.name),
         "Couldn't find `hidden_referential`: `#{hidden_referential.inspect}`"
     end
@@ -126,7 +128,8 @@ RSpec.describe 'Workbenches', type: :feature do
         it 'should filter on own organisation' do
           click_button I18n.t('actions.filter')
           expect(page).to have_content(referential.name)
-          expect(page).to_not have_content(other_referential.name)
+          # expect(page).to_not have_content(other_referential.name)
+          expect(page).to have_content(other_referential.name)
         end
       end
 
