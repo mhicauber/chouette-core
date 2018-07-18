@@ -384,7 +384,7 @@ class Merge < ApplicationModel
           )
           new_footnote = new.footnotes.build attributes
 
-          new_footnote.save!
+          save_model! new_footnote
 
           if new_footnote.checksum != footnote.checksum
             raise "Checksum has changed: \"#{footnote.checksum}\", \"#{footnote.checksum_source}\" -> \"#{new_footnote.checksum}\", \"#{new_footnote.checksum_source}\""
@@ -476,7 +476,7 @@ class Merge < ApplicationModel
                 objectid: objectid
               )
               new_purchase_window = new.purchase_windows.build attributes
-              new_purchase_window.save!
+              save_model! new_purchase_window
 
               if new_purchase_window.checksum != purchase_window.checksum
                 raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
@@ -579,7 +579,7 @@ class Merge < ApplicationModel
             objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
             candidate_time_table.objectid = objectid
 
-            candidate_time_table.save!
+            save_model! candidate_time_table
 
             # Checksum is changed by #intersect_periods
             # if new_time_table.checksum != time_table.checksum
