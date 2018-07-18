@@ -1,9 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe CompanyControl::NameIsPresent, :type => :model do
-  let!(:line_referential){ create :line_referential }
+  let!(:workgroup) { create :workgroup }
+  let!(:line_referential){ workgroup.line_referential }
   let!(:referential){ create :referential, line_referential: line_referential }
-  let!(:company){ create :company, line_referential: line_referential }
+  let!(:company) do
+    create :company, line_referential: line_referential, custom_field_values: { public_name: company_name }
+  end
+
+  let!(:custom_field_public_name) { create :custom_field, field_type: :string, code: :public_name, name: "Name", workgroup: workgroup, resource_type: "Company" }
+
+  let!(:line) { create :line, company: company, line_referential: line_referential }
+
   let(:control_attributes){
     {}
   }
@@ -17,13 +25,6 @@ RSpec.describe CompanyControl::NameIsPresent, :type => :model do
       control_attributes: control_attributes,
       compliance_check_set: compliance_check_set,
       criticity: criticity
-  }
-
-  before(:each){
-    referential.switch do
-      Chouette::Company.where(id: company.id).update_all(name: company_name)
-      create :line, company: company, line_referential: line_referential
-    end
   }
 
   context "when the company has a name" do
