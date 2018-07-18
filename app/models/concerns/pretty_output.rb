@@ -44,7 +44,7 @@ module PrettyOutput
     else
       @messages << [time, msg]
     end
-    print_state true
+    print_state true unless opts[:silent]
   end
 
   def colorize txt, color
@@ -130,6 +130,44 @@ module PrettyOutput
     end
     custom_print msg, clear: true
     @last_repaint = Time.now
+  end
+
+  def full_state
+    msg = ""
+    full_width = 200
+
+    if @banner.present?
+      msg += @banner
+      msg += "\n" + "-"*full_width
+    end
+
+    return msg if @status == :success
+
+    if @messages.any?
+      msg += "\n\n"
+      msg += colorize "=== MESSAGES (#{@messages.count}) ===\n", :green
+      msg += @messages.map do |m|
+        "[#{"%.5f" % m[0]}]\t" + m[1].truncate(full_width - 10)
+      end.join("\n")
+    end
+
+    if @_errors.any?
+      msg += "\n\n"
+      msg += colorize "=== ERRORS (#{@_errors.count}) ===\n", :red
+      msg += @_errors.map do |j|
+        kind = j[:kind]
+        kind = colorize(kind, kind == :error ? :red : :orange)
+        kind = "[#{kind}]"
+        kind += " "*(25 - kind.size)
+        line = kind
+        line << "L#{j[:line]}\t" if j[:line]
+        line << "#{j[:error]}\t\t" if j[:error]
+        line << "#{j[:message]}" if j[:message]
+        encode_string(line).truncate(full_width)
+      end.join("\n")
+    end
+    msg += "\n\n"
+    msg
   end
 
   def custom_print msg, opts={}

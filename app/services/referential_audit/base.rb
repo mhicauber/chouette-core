@@ -3,7 +3,7 @@ class ReferentialAudit
     attr_reader :status
 
     def self.inherited klass
-      ReferentialAudit::Full.register klass
+      ReferentialAudit::FullReferential.register klass
     end
 
     def initialize referential
@@ -15,16 +15,26 @@ class ReferentialAudit
     end
 
     def perform logger
+      faulty.each do |record|
+        logger.add_error full_message(record)
+      end
       if faulty.size == 0 || faulty == [nil]
         @status = :success
       else
-        logger.add_error message()
         @status = :error
       end
     end
 
-    def name
-      self.class.name
+    def full_message record
+      message(record)
+    end
+
+    def self.pretty_name
+      self.name.split("::").last
+    end
+
+    def pretty_name
+      self.class.pretty_name
     end
   end
 end
