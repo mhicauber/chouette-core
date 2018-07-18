@@ -577,20 +577,28 @@ class Referential < ApplicationModel
     ready? ? :active : :pending
   end
 
+  def light_update vals
+    if self.persisted?
+      update_columns vals
+    else
+      assign_attributes vals
+    end
+  end
+
   def pending!
-    update_columns ready: false, failed_at: nil, archived_at: nil
+    light_update ready: false, failed_at: nil, archived_at: nil
   end
 
   def failed!
-    update_columns ready: false, failed_at: Time.now, archived_at: nil
+    light_update ready: false, failed_at: Time.now, archived_at: nil
   end
 
   def active!
-    update_columns ready: true, failed_at: nil, archived_at: nil
+    light_update ready: true, failed_at: nil, archived_at: nil
   end
 
   def archived!
-    update_columns failed_at: nil, archived_at: Time.now
+    light_update failed_at: nil, archived_at: Time.now
   end
 
   def merged!
