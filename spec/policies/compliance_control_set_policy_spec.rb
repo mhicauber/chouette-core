@@ -50,6 +50,17 @@ RSpec.describe ComplianceControlSetPolicy do
   end
 
   permissions :destroy? do
-    it_behaves_like 'permitted policy outside referential', 'compliance_control_sets.destroy'
+    it 'denies user' do
+      expect_it.to_not permit(user_context, record)
+      add_permissions('compliance_control_sets.destroy', to_user: user)
+      expect_it.to_not permit(user_context, record)
+    end
+
+    context "when owned by the user's organisation" do
+      before {
+        record.organisation = user.organisation
+      }
+      it_behaves_like 'permitted policy outside referential', 'compliance_control_sets.destroy'
+    end
   end
 end
