@@ -14,7 +14,7 @@ class Sidekiq::Middleware::Server::Logging
   private
 
   def queue_name queue
-    "\e[33m#{'%-20.20s' % queue}\e[0m"
+    '%-20.20s' % queue
   end
 end
 
