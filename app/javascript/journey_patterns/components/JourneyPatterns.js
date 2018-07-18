@@ -71,7 +71,9 @@ export default class JourneyPatterns extends Component {
 
   render() {
     this.previousCity = undefined
-
+    requestAnimationFrame(function(){
+      $(document).trigger("table:updated")
+    })
     if(this.props.status.isFetching == true) {
       return (
         <div className="isLoading" style={{marginTop: 80, marginBottom: 80}}>
