@@ -1190,4 +1190,347 @@ describe Chouette::VehicleJourney, :type => :model do
       end
     end
   end
+
+  describe "#flattened_circulation_periods" do
+    let(:origin){
+      1.month.from_now.beginning_of_month.beginning_of_week.to_date
+    }
+
+    let(:time_table){
+      time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY | ApplicationDaysSupport::TUESDAY
+      time_table.periods.destroy_all
+      time_table.dates.destroy_all
+      time_table.periods.create period_start: origin, period_end: origin + 14.days
+      time_table.periods.create period_start: origin + 19.days, period_end: origin + 29.days
+      time_table.dates.destroy_all
+      time_table
+    }
+    let(:time_table_2){
+      time_table_2 = create :time_table, int_day_types: ApplicationDaysSupport::WEDNESDAY
+      time_table_2.periods.destroy_all
+      time_table_2.dates.destroy_all
+      time_table_2.periods.create period_start: origin + 9.days, period_end: origin + 24.days
+      time_table_2
+    }
+    let(:time_tables){ [time_table, time_table_2] }
+    subject(:result){
+      vehicle_journey.reload.flattened_circulation_periods.map{|r|
+        [r.period_start.to_s, r.period_end.to_s, r.weekdays]
+      }
+    }
+    let(:vehicle_journey){ create :vehicle_journey, time_tables: time_tables, published_journey_name: "Test" }
+    let(:expected){
+      [
+        [origin.to_s, (origin+8.days).to_s, "1,1,0,0,0,0,0"],
+        [(origin+9.days).to_s,  (origin+14.days).to_s, "1,1,1,0,0,0,0"],
+        [(origin+16.days).to_s, (origin+16.days).to_s, "0,0,1,0,0,0,0"],
+        [(origin+21.days).to_s, (origin+23.days).to_s, "1,1,1,0,0,0,0"],
+        [(origin+28.days).to_s, (origin+29.days).to_s, "1,1,0,0,0,0,0"],
+      ]
+    }
+
+    it { should eq expected }
+
+    context "with dates exclusion" do
+      let(:time_tables){ [time_table] }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY | ApplicationDaysSupport::TUESDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 14.days
+        time_table.dates.create date: origin + 7.days, in_out: false
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.to_s, (origin+1.days).to_s, "1,1,0,0,0,0,0"],
+          [(origin+8.days).to_s, (origin+14.days).to_s, "1,1,0,0,0,0,0"],
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with dates exclusion on a single time_table" do
+      let(:time_tables){ [time_table, time_table_2] }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY | ApplicationDaysSupport::TUESDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 14.days
+        time_table.dates.create date: origin + 9.days, in_out: false
+        time_table
+      }
+      let(:time_table_2){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::WEDNESDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 14.days
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.to_s, (origin+8.days).to_s, "1,1,1,0,0,0,0"],
+          [(origin+9.days).to_s, (origin+9.days).to_s, "0,0,1,0,0,0,0"],
+          [(origin+14.days).to_s, (origin+14.days).to_s, "1,1,1,0,0,0,0"],
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with dates inclusion" do
+      let(:time_tables){ [time_table] }
+      let(:origin){
+        1.month.from_now.beginning_of_month.to_date.beginning_of_week  # a monday
+      }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY | ApplicationDaysSupport::TUESDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 14.days
+        time_table.dates.create date: origin + 1.days, in_out: true
+        time_table.dates.create date: origin + 17.days, in_out: true
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.to_s, (origin+14.days).to_s, "1,1,0,0,0,0,0"],
+          [(origin+17.days).to_s, (origin+17.days).to_s, "1,1,0,1,0,0,0"],
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with dates inclusion and exclusion" do
+      let(:time_tables){ [time_table, time_table_2] }
+      let(:origin){
+        1.month.from_now.beginning_of_month.to_date.beginning_of_week  # a monday
+      }
+
+      let(:time_table_2){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY | ApplicationDaysSupport::TUESDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 14.days
+        time_table.dates.create date: origin + 30.days, in_out: false
+        time_table.dates.create date: origin + 32.days, in_out: false
+        time_table
+      }
+
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY | ApplicationDaysSupport::TUESDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 14.days
+        time_table.periods.create period_start: origin + 24.days, period_end: origin + 34.days
+        time_table.dates.create date: origin + 1.days, in_out: true
+        time_table.dates.create date: origin + 17.days, in_out: true
+        time_table.dates.create date: origin + 30.days, in_out: false
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.to_s, (origin+14.days).to_s, "1,1,0,0,0,0,0"],
+          [(origin+17.days).to_s, (origin+17.days).to_s, "1,1,0,1,0,0,0"],
+          [(origin+28.days).to_s, (origin+29.days).to_s, "1,1,0,0,0,0,0"]
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with only dates inclusions" do
+      let(:time_tables){ [time_table] }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: 0
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.dates.create date: origin.beginning_of_week, in_out: true
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.beginning_of_week.to_s, origin.beginning_of_week.to_s, "1,0,0,0,0,0,0"]
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with empty resulting periods" do
+      let(:time_tables){ [time_table] }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin.beginning_of_week, period_end: origin.beginning_of_week + 30.days
+        time_table.dates.create date: origin.beginning_of_week + 7.days, in_out: false
+        time_table.dates.create date: origin.beginning_of_week + 14.days, in_out: false
+        time_table.dates.create date: origin.beginning_of_week + 21.days, in_out: false
+        time_table.dates.create date: origin.beginning_of_week + 28.days, in_out: false
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.beginning_of_week.to_s, origin.beginning_of_week.to_s, "1,0,0,0,0,0,0"]
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with a single resulting day" do
+      let(:time_tables){ [time_table] }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::MONDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 6.days
+        time_table
+      }
+      let(:expected){
+        [
+          [origin.to_s, origin.to_s, "1,0,0,0,0,0,0"]
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with 2 resulting days" do
+      let(:time_tables){ [time_table] }
+      let(:time_table){
+        time_table = create :time_table, int_day_types: ApplicationDaysSupport::TUESDAY | ApplicationDaysSupport::THURSDAY
+        time_table.dates.destroy_all
+        time_table.periods.destroy_all
+        time_table.periods.create period_start: origin, period_end: origin + 6.days
+        time_table
+      }
+      let(:expected){
+        [
+          [(origin+1.day).to_s, (origin.+3.days).to_s, "0,1,0,1,0,0,0"]
+        ]
+      }
+      it { should eq expected }
+    end
+  end
+
+  describe "#flattened_sales_periods" do
+    let(:origin){
+      1.month.from_now.beginning_of_month.to_date
+    }
+
+    let(:referential){ create :referential, objectid_format: :netex }
+
+    let(:purchase_window){
+      purchase_window = create :purchase_window
+      purchase_window.date_ranges = [(origin..origin+8.days)]
+      purchase_window
+    }
+
+    let(:purchase_windows){
+      [purchase_window]
+    }
+
+    subject(:result){
+      vehicle_journey.flattened_sales_periods.map{|r|
+        [r.period_start.to_s, r.period_end.to_s, r.weekdays]
+      }
+    }
+    let(:vehicle_journey){ create :vehicle_journey, purchase_windows: purchase_windows }
+    let(:expected){
+      [
+        [origin.to_s, (origin+8.days).to_s, "1,1,1,1,1,1,1"],
+      ]
+    }
+
+    it { should eq expected }
+
+    context "with disjoined periods" do
+      let(:purchase_window){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin..origin+8.days), (origin+10.days..origin+12.days)]
+        purchase_window
+      }
+      let(:expected){
+        [
+          [origin.to_s, (origin+8.days).to_s, "1,1,1,1,1,1,1"],
+          [(origin+10.days).to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"],
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with overlapping periods" do
+      let(:purchase_window){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin..origin+8.days), (origin+10.days..origin+12.days)]
+        purchase_window
+      }
+
+      let(:purchase_window_2){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin+7.days..origin+12.days)]
+        purchase_window
+      }
+
+      let(:purchase_windows){
+        [purchase_window, purchase_window_2]
+      }
+
+      let(:expected){
+        [
+          [origin.to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"]
+        ]
+      }
+      it { should eq expected }
+    end
+
+    context "with joined periods" do
+      let(:purchase_window){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin..origin+8.days), (origin+11.days..origin+12.days)]
+        purchase_window
+      }
+
+      let(:purchase_window_2){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin+9.days..origin+10.days)]
+        purchase_window
+      }
+
+      let(:purchase_windows){
+        [purchase_window, purchase_window_2]
+      }
+
+      let(:expected){
+        [
+          [origin.to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"]
+        ]
+      }
+      it { should eq expected }
+
+    end
+
+    context "with included periods" do
+      let(:purchase_window){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin..origin+20.days)]
+        purchase_window
+      }
+
+      let(:purchase_window_2){
+        purchase_window = create :purchase_window
+        purchase_window.date_ranges = [(origin+9.days..origin+10.days)]
+        purchase_window
+      }
+
+      let(:purchase_windows){
+        [purchase_window, purchase_window_2]
+      }
+
+      let(:expected){
+        [
+          [origin.to_s, (origin+20.days).to_s, "1,1,1,1,1,1,1"]
+        ]
+      }
+      it { should eq expected }
+
+    end
+  end
 end

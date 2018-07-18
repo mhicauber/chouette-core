@@ -489,22 +489,39 @@ module Chouette
         .where('"time_tables_vehicle_journeys"."vehicle_journey_id" IS NULL')
     end
 
+    def trim_period period
+      return unless period
+      period.period_start = period.range.find{|date| Chouette::TimeTable.day_by_mask period.int_day_types, Chouette::TimeTable::RUBY_WEEKDAYS[date.wday] }
+      period.period_end = period.range.reverse_each.find{|date| Chouette::TimeTable.day_by_mask period.int_day_types, Chouette::TimeTable::RUBY_WEEKDAYS[date.wday] }
+      period
+    end
+
     def merge_flattened_periods periods
-      return periods unless periods.size > 1
+      return [trim_period(periods.last)].compact unless periods.size > 1
 
       merged = []
       current = periods[0]
+      any_day_matching = Proc.new {|period|
+        period.range.any? do |date|
+          Chouette::TimeTable.day_by_mask period.int_day_types, Chouette::TimeTable::RUBY_WEEKDAYS[date.wday]
+        end
+      }
       periods[1..-1].each do |period|
         if period.int_day_types == current.int_day_types \
           && (period.period_start - 1.day) <= current.period_end
 
           current.period_end = period.period_end if period.period_end > current.period_end
         else
-          merged << current
+          if any_day_matching.call(current)
+            merged << trim_period(current)
+          end
+
           current = period
         end
       end
-      merged << current
+      if any_day_matching.call(current)
+        merged << trim_period(current)
+      end
       merged
     end
 
@@ -592,6 +609,11 @@ module Chouette
     end
 
     class FlattennedSalesPeriod < FlattennedCirculationPeriod
+      def initialize _start, _end, _days=nil
+        super
+        @int_day_types = ApplicationDaysSupport::EVERYDAY
+      end
+
       def weekdays
         ([1] * 7).join(',')
       end
