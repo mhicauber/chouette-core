@@ -337,7 +337,9 @@ class Referential < ApplicationModel
   before_save :lock_table, on: [:create, :update]
 
   before_create :create_schema
-  after_commit :clone_schema, if: :created_from
+
+  # Don't use after_commit because of inline_clone (cf created_from)
+  after_create :clone_schema, if: :created_from
   after_create :active!, unless: :created_from
 
   before_destroy :destroy_schema
