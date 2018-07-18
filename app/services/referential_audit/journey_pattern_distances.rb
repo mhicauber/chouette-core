@@ -7,7 +7,7 @@ class ReferentialAudit
 
     def find_faulty
       faulty = []
-      Chouette::JourneyPattern.find_each do |jp|
+      Chouette::JourneyPattern.select(:id, :route_id, :costs).find_each do |jp|
         faulty << jp if jp.costs && jp.costs.any? {|k, v| v["distance"] && v["distance"].to_i < 0}
       end
       faulty
