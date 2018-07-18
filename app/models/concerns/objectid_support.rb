@@ -53,10 +53,10 @@ module ObjectidSupport
         vanilla_search
       end
       alias_method_chain :search, :objectid
-    end
 
-    def self.ransackable_scopes(auth_object = nil)
-      [:with_short_id]
+      def ransackable_scopes(auth_object = nil)
+        [:with_short_id]
+      end
     end
 
     def objectid_formatter
@@ -72,7 +72,7 @@ module ObjectidSupport
     end
 
     def get_objectid
-      objectid_formatter.get_objectid read_attribute(:objectid) if self.referential.objectid_format && read_attribute(:objectid)
+      objectid_formatter.get_objectid read_attribute(:objectid) if referential.objectid_format && read_attribute(:objectid)
     end
 
     def objectid

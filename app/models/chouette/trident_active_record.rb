@@ -4,7 +4,7 @@ module Chouette
     self.abstract_class = true
 
     def self.current_referential
-      Referential.where(:slug => Apartment::Tenant.current).first!
+      Referential.where(slug: Apartment::Tenant.current).first!
     end
 
     def referential
