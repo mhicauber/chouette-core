@@ -2,7 +2,7 @@ module PrettyOutput
   extend ActiveSupport::Concern
 
   included do
-    def self.colorize txt, color, output
+    def self.colorize txt, color, output = :console
       if output == :html
         "<span style='color: #{color}'>#{txt}</span>"
       else
