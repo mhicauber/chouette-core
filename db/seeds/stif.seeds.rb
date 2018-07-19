@@ -7,7 +7,7 @@ stif = Organisation.seed_by(code: "STIF") do |o|
 end
 
 stop_area_referential = StopAreaReferential.seed_by(name: "Reflex") do |r|
-  r.objectid_format = "stif_netex"
+  r.objectid_format = "stif_reflex"
   r.add_member stif, owner: true
 end
 
