@@ -38,14 +38,14 @@ task :pkg4docker do
 #  sh "RAILS_DB_ADAPTER=nulldb bundle exec rake assets:clobber RAILS_ENV=production"
 #  sh "RAILS_DB_ADAPTER=nulldb bundle exec rake assets:precompile RAILS_ENV=production"
   sh "bundle exec rake assets:clobber RAILS_ENV=production"
-  sh "bundle exec rake assets:precompile RAILS_ENV=production"
+  sh "bundle exec rake ci:fix_webpacker assets:precompile RAILS_ENV=production"
   sh "bundle exec rake i18n:js:export RAILS_ENV=production"
   sh "tar -rf tmp/package/stif-boiv-release-#{release_name}.tar vendor/cache"
   sh "tar -rf tmp/package/stif-boiv-release-#{release_name}.tar public/assets"
   sh "tar -rf tmp/package/stif-boiv-release-#{release_name}.tar public/packs"
   sh "tar -rf tmp/package/stif-boiv-release-#{release_name}.tar public/javascripts"
 
-  sh "gzip -c tmp/package/stif-boiv-release-#{release_name}.tar > tmp/stif-boiv-release.tar.gz"
+  sh "gzip -c tmp/package/stif-boiv-release-#{release_name}.tar > stif-boiv-release.tar.gz"
 
   sh "rm -rf tmp/package vendor/cache"
 end
