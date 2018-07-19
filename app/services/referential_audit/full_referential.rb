@@ -27,6 +27,7 @@ class ReferentialAudit
 
     def perform opts={}
       plain_output = !!opts.delete(:plain_output)
+      @output = opts.delete(:output) || :console
       @status = :success
       referential.switch do
         self.class.items.each do |item|

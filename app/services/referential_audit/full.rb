@@ -16,7 +16,7 @@ class ReferentialAudit
 
       referentials.each do |referential|
         audit = ReferentialAudit::FullReferential.new referential
-        out << audit.perform(plain_output: true)
+        out << audit.perform(opts.dup.update({plain_output: true}))
       end
 
       out

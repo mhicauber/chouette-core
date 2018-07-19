@@ -2,13 +2,17 @@ module PrettyOutput
   extend ActiveSupport::Concern
 
   included do
-    def self.colorize txt, color
-      color = {
-        red: "31",
-        green: "32",
-        orange: "33",
-      }[color] || "33"
-      "\e[#{color}m#{txt}\e[0m"
+    def self.colorize txt, color, output
+      if output == :html
+        "<span style='color: #{color}'>#{txt}</span>"
+      else
+        color = {
+          red: "31",
+          green: "32",
+          orange: "33",
+        }[color] || "33"
+        "\e[#{color}m#{txt}\e[0m"
+      end
     end
 
     def self.status_color status
@@ -25,6 +29,12 @@ module PrettyOutput
     @messages ||= []
     @current_line ||= 0
     @statuses ||= ""
+    @output = :console
+  end
+
+  def new_line count=1
+    one_line = @output == :html ? '<br />' : "\n"
+    one_line * count
   end
 
   def log msg, opts={}
@@ -48,7 +58,7 @@ module PrettyOutput
   end
 
   def colorize txt, color
-    SimpleInterface.colorize txt, color
+    SimpleInterface.colorize txt, color, @output
   end
 
   def term_width
@@ -90,7 +100,7 @@ module PrettyOutput
 
     if @banner.present?
       msg += @banner
-      msg += "\n" + "-"*term_width + "\n"
+      msg += new_line + "-"*term_width + new_line
     end
 
     full_status = @statuses || ""
@@ -103,19 +113,19 @@ module PrettyOutput
     lines_count = [(status_height / 2) - 3, 1].max
 
     if @messages.any?
-      msg += "\n\n"
-      msg += colorize "=== MESSAGES (#{@messages.count}) ===\n", :green
-      msg += "[...]\n" if @messages.count > lines_count
+      msg += new_line(2)
+      msg += colorize "=== MESSAGES (#{@messages.count}) ===#{new_line}", :green
+      msg += "[...]#{new_line}" if @messages.count > lines_count
       msg += @messages.last(lines_count).map do |m|
         "[#{"%.5f" % m[0]}]\t" + m[1].truncate(status_width - 10)
-      end.join("\n")
-      msg += "\n"*[lines_count-@messages.count, 0].max
+      end.join(new_line)
+      msg += new_line*[lines_count-@messages.count, 0].max
     end
 
     if @_errors.any?
-      msg += "\n\n"
-      msg += colorize "=== ERRORS (#{@_errors.count}) ===\n", :red
-      msg += "[...]\n" if @_errors.count > lines_count
+      msg += new_line(2)
+      msg += colorize "=== ERRORS (#{@_errors.count}) ===#{new_line}", :red
+      msg += "[...]#{new_line}" if @_errors.count > lines_count
       msg += @_errors.last(lines_count).map do |j|
         kind = j[:kind]
         kind = colorize(kind, kind == :error ? :red : :orange)
@@ -126,7 +136,7 @@ module PrettyOutput
         line << "#{j[:error]}\t\t" if j[:error]
         line << "#{j[:message]}" if j[:message]
         encode_string(line).truncate(status_width)
-      end.join("\n")
+      end.join(new_line)
     end
     custom_print msg, clear: true
     @last_repaint = Time.now
@@ -134,39 +144,39 @@ module PrettyOutput
 
   def full_state
     msg = ""
-    full_width = 200
+    full_width = 150
 
     if @banner.present?
       msg += @banner
-      msg += "\n" + "-"*full_width
+      msg += @output == :html ? "<hr>" : new_line + "-"*term_width + new_line
     end
 
     return msg if @status == :success
 
     if @messages.any?
-      msg += "\n\n"
-      msg += colorize "=== MESSAGES (#{@messages.count}) ===\n", :green
+      msg += new_line(2)
+      msg += colorize "=== MESSAGES (#{@messages.count}) ===#{new_line}", :green
       msg += @messages.map do |m|
         "[#{"%.5f" % m[0]}]\t" + m[1].truncate(full_width - 10)
-      end.join("\n")
+      end.join(new_line)
     end
 
     if @_errors.any?
-      msg += "\n\n"
-      msg += colorize "=== ERRORS (#{@_errors.count}) ===\n", :red
+      msg += new_line(2)
+      msg += colorize "=== ERRORS (#{@_errors.count}) ===#{new_line}", :red
       msg += @_errors.map do |j|
         kind = j[:kind]
-        kind = colorize(kind, kind == :error ? :red : :orange)
-        kind = "[#{kind}]"
-        kind += " "*(25 - kind.size)
-        line = kind
+        colorized_kind = colorize(kind, kind == :error ? :red : :orange)
+        colorized_kind = "[#{kind}]"
+        colorized_kind += " "*(25 - kind.size)
+        line = colorized_kind
         line << "L#{j[:line]}\t" if j[:line]
         line << "#{j[:error]}\t\t" if j[:error]
         line << "#{j[:message]}" if j[:message]
         encode_string(line).truncate(full_width)
-      end.join("\n")
+      end.join(new_line)
     end
-    msg += "\n\n"
+    msg += new_line(2)
     msg
   end
 
@@ -174,7 +184,7 @@ module PrettyOutput
     return unless @verbose
     out = ""
     msg = colorize(msg, opts[:color]) if opts[:color]
-    puts "\e[H\e[2J" if opts[:clear]
+    puts "\e[H\e[2J" if opts[:clear] && @output == :console
     out += msg
     print out
   end
