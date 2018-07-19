@@ -31,9 +31,24 @@ class Import::Gtfs < Import::Base
   rescue Exception => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
-    create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).any?
+      overlapped = Referential.find overlapped_referential_ids.last
+      create_message(
+        criticity: :error,
+        message_key: "referential_creation_overlapping_existing_referential",
+        message_attributes: {
+          referential_name: referential.name,
+          overlapped_name: overlapped.name,
+          overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
+        }
+      )
+    else
+      create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+    end
     referential&.failed!
   ensure
+    main_resource&.save
+    save
     notify_parent
   end
 
@@ -47,12 +62,13 @@ class Import::Gtfs < Import::Base
   end
 
   def create_referential
-    self.referential ||= Referential.create!(
+    self.referential ||=  Referential.new(
       name: "GTFS Import",
       organisation_id: workbench.organisation_id,
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
     )
+    self.referential.save!
     main_resource.update referential: referential if main_resource
   end
 
@@ -133,11 +149,12 @@ class Import::Gtfs < Import::Base
   delegate :line_referential, :stop_area_referential, to: :workbench
 
   def prepare_referential
+    create_referential
+    
     import_agencies
     import_stops
     import_routes
 
-    create_referential
     referential.switch
   end
 
