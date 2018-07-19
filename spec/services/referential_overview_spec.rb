@@ -142,7 +142,7 @@ RSpec.describe ReferentialOverview::Line::Period do
 
   describe "#width" do
     it "should have the right value" do
-      expect(line_period.width).to eq ReferentialOverview::Day::WIDTH * 2
+      expect(line_period.width).to eq ReferentialOverview::Day::WIDTH * period.count
     end
   end
 

@@ -136,17 +136,20 @@ describe Chouette::TimeTable, :type => :model do
       end
 
       it 'should build new period without common dates in periods' do
-        subject.periods.clear
-        another_tt.periods.clear
+        t = Time.local(2018, 1, 1, 12, 0, 0)
+        Timecop.freeze(t) do
+          subject.periods.clear
+          another_tt.periods.clear
 
-        subject.periods << create_time_table_periode(subject, Date.today, Date.today + 10.day)
-        another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Date.today + 3.day)
+          subject.periods << create_time_table_periode(subject, Date.today, Date.today + 10.day)
+          another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Date.today + 3.day)
 
-        subject.disjoin!(another_tt)
-        expected_range = Date.tomorrow..Date.today + 3.day
+          subject.disjoin!(another_tt)
+          expected_range = Date.tomorrow..Date.today + 3.day
 
-        expect(subject_periods_to_range).to_not include(expected_range)
-        expect(subject.periods.count).to eq 1
+          expect(subject_periods_to_range).to_not include(expected_range)
+          expect(subject.periods.count).to eq 1
+        end
       end
     end
   end
