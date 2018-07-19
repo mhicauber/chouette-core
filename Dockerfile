@@ -29,4 +29,4 @@ VOLUME /app/public/uploads
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "bundle exec rake db:migrate && bundle exec rails server -b 0.0.0.0"]
+CMD ["sh", "-c", "bundle exec rake db:migrate db:seed && bundle exec rails server -b 0.0.0.0"]
