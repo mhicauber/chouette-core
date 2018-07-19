@@ -75,7 +75,7 @@ class MergeReferentialsSelector
       @url = @searchInput.data().searchurl
     @loader.show()
     @searchInput.attr 'readonly', true
-    fetch("#{@url}&q=#{search}", {
+    fetch("#{@url}?q=#{search}", {
       credentials: 'same-origin'
     }).then (response) =>
       response.json()

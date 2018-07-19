@@ -6,6 +6,17 @@ class MergesController < ChouetteController
 
   respond_to :html
 
+  def available_referentials
+    autocomplete_collection = parent.referentials.mergeable
+    if params[:q].present?
+      autocomplete_collection = autocomplete_collection.autocomplete(params[:q]).order(:name)
+    else
+      autocomplete_collection = autocomplete_collection.order('created_at desc')
+    end
+
+    render json: autocomplete_collection.limit(10)
+  end
+
   protected
 
   def begin_of_association_chain
