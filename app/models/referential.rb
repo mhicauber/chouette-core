@@ -27,7 +27,7 @@ class Referential < ApplicationModel
   has_one :user
   has_many :api_keys, class_name: 'Api::V1::ApiKey', dependent: :destroy
   has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
-  has_many :compliance_check_sets, dependent: :destroy
+  has_many :compliance_check_sets, dependent: :nullify
 
   belongs_to :organisation
   validates_presence_of :organisation

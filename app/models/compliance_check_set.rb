@@ -33,7 +33,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def self.objects_pending_notification
-    scope = self.where(notified_parent_at: nil)
+    scope = self.where(notified_parent_at: nil).where.not(status: :aborted)
   end
 
   def successful?
@@ -113,6 +113,10 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def perform only_internals=false
+    if referential.nil?
+      update status: 'aborted'
+      return
+    end
     if should_call_iev? && !only_internals
       begin
         Net::HTTP.get(URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{id}"))
