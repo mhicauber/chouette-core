@@ -62,7 +62,7 @@ namespace :deploy do
 
   desc "Run yarn install"
   task :yarn do
-    run "cd #{release_path} && yarn --production --no-progress install"
+    run "cd #{release_path} && yarn --frozen-lockfile --production --no-progress install"
   end
   after "bundle:install", "deploy:yarn"
 
