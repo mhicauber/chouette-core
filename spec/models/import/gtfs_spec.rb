@@ -20,6 +20,21 @@ RSpec.describe Import::Gtfs do
     Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file)
   end
 
+  context "when the file is not directly accessible" do
+    let(:import) {
+      Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture("google-sample-feed.zip")
+    }
+
+    before(:each) do
+      allow(import).to receive(:file).and_return(nil)
+    end
+
+    it "should still be able to update the import" do
+      import.update status: :failed
+      expect(import.reload.status).to eq "failed"
+    end
+  end
+
   describe "#import_agencies" do
     let(:import) { create_import "google-sample-feed.zip" }
     it "should create a company for each agency" do
