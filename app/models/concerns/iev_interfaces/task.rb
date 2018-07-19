@@ -110,6 +110,10 @@ module IevInterfaces::Task
     status.to_s == "successful"
   end
 
+  def warning?
+    status.to_s == "warning"
+  end
+
   def child_change
     return if self.class.finished_statuses.include?(status)
     update_status
