@@ -579,7 +579,6 @@ class Merge < ApplicationModel
             objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
             candidate_time_table.objectid = objectid
 
-            puts "candidate_time_table.periods: #{candidate_time_table.periods.inspect}"
             save_model! candidate_time_table
 
             # Checksum is changed by #intersect_periods
