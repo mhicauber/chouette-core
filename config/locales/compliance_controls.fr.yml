@@ -258,6 +258,8 @@ fr:
         one: "Les arrêts non-commerciaux ont une montée / descente interdites"
       route_control/border_count:
         one: "Nombre de frontières en fonction du nombre de pays dans l'itinéraire"
+      route_control/valid_stop_areas:
+        one: Appartenance d'un arret aux sites de saisie de l'organisation
       journey_pattern_control/duplicates:
         one: "Doublon de missions dans une ligne"
       journey_pattern_control/vehicle_journey:

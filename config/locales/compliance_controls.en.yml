@@ -262,7 +262,7 @@ en:
       journey_pattern_control/minimum_length:
         one: "Minimum length of a journey pattern"
       vehicle_journey_control/waiting_time:
-        one: "The wating time at a stop point should'nt be too long"
+        one: "The wating time at a stop point shouldn't be too long"
       vehicle_journey_control/speed:
         one: "The speed between 2 stop points should be confined between thresholds"
       vehicle_journey_control/delta:
@@ -270,7 +270,7 @@ en:
       vehicle_journey_control/time_table:
         one: "A vehicle journey must have at least one timetable"
       vehicle_journey_control/vehicle_journey_at_stops:
-        one: "Incresing chronology of the vehicle journey at stops"
+        one: "Increasing chronology of the vehicle journey at stops"
       vehicle_journey_control/bus_capacity:
         one: "Présence of bus capacity"
       vehicle_journey_control/published_journey_name:
@@ -279,8 +279,6 @@ en:
         one: All vehicle journeys must have a purchase window
       vehicle_journey_control/purchase_window_dates:
         one: The end of sales must be before end of circulation
-      routing_constraint_zone_control/vehicle_journey_at_stops:
-        one: "Increasing chronology of the vehicle journey at stops"
       routing_constraint_zone_control/maximum_length:
         one: "Maximum length of a routing contraint zone"
       routing_constraint_zone_control/minimum_length:
