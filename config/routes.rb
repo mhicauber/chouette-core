@@ -4,6 +4,7 @@ ChouetteIhm::Application.routes.draw do
 
   resources :workbenches, except: [:destroy] do
     delete :referentials, on: :member, action: :delete_referentials
+    resources :api_keys, :only => [:edit, :update, :new, :create, :destroy]
     resources :imports do
       get :download, on: :member
       resources :import_resources, only: [:index, :show] do
@@ -177,8 +178,6 @@ ChouetteIhm::Application.routes.draw do
   resource :organisation, :only => [:show, :edit, :update] do
     resources :users
   end
-
-  resources :api_keys, :only => [:edit, :update, :new, :create, :destroy]
 
   resources :compliance_control_sets do
     get :simple, on: :member
