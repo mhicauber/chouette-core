@@ -20,7 +20,9 @@ export default function Metas({ metas, onUpdateDayTypes, onUpdateComment, onUpda
             <div className="col-sm-8">
               <input
                 type='text'
+                id='time_table_comment'
                 className='form-control'
+                name='time_table[comment]'
                 value={metas.comment}
                 required='required'
                 onChange={(e) => (onUpdateComment(e.currentTarget.value))}
