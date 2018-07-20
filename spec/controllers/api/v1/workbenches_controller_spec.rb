@@ -6,7 +6,7 @@ RSpec.describe Api::V1::WorkbenchesController, type: :controller do
 
     describe 'GET #index' do
       it 'should not be successful' do
-        get :index
+        get :index, format: :json
         expect(response).not_to be_success
       end
     end
@@ -17,7 +17,7 @@ RSpec.describe Api::V1::WorkbenchesController, type: :controller do
 
     describe 'GET #index' do
       it 'should be successful' do
-        get :index
+        get :index, format: :json
         expect(response).to be_success
       end
     end
