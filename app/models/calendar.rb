@@ -17,6 +17,7 @@ class Calendar < ApplicationModel
   has_many :time_tables, class_name: "Chouette::TimeTable" , dependent: :nullify
 
   scope :contains_date, ->(date) { where('date ? = any (dates) OR date ? <@ any (date_ranges)', date, date) }
+  scope :order_by_organisation_name, ->(dir) { joins(:organisation).order("lower(organisations.name) #{dir}") }
 
   after_initialize :set_defaults
 
