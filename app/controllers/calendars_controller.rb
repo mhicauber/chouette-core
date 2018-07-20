@@ -69,12 +69,16 @@ class CalendarsController < ChouetteController
     params.require(:calendar).permit(*permitted_params)
   end
 
-  def sort_column
-    Calendar.column_names.include?(params[:sort]) ? params[:sort] : 'name'
-  end
+  def sort_results collection
+    dir =  %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+    extra_cols = %w(organisation_name)
+    col = (Calendar.column_names + extra_cols).include?(params[:sort]) ? params[:sort] : 'name'
 
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+    if extra_cols.include?(col)
+      collection.send("order_by_#{col}", dir)
+    else
+      collection.order("#{col} #{dir}")
+    end
   end
 
   protected
@@ -98,8 +102,7 @@ class CalendarsController < ChouetteController
       scope = workgroup.calendars.where('(organisation_id = ? OR shared = ?)', current_organisation.id, true)
       scope = shared_scope(scope)
       @q = scope.ransack(params[:q])
-      calendars = @q.result
-      calendars = calendars.order(sort_column + ' ' + sort_direction) if sort_column && sort_direction
+      calendars = sort_results(@q.result)
       calendars = calendars.paginate(page: params[:page])
     end
   end
