@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180717092218) do
+ActiveRecord::Schema.define(version: 20180717124110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,16 +73,13 @@ ActiveRecord::Schema.define(version: 20180717092218) do
   add_index "access_points", ["objectid"], name: "access_points_objectid_key", unique: true, using: :btree
 
   create_table "api_keys", id: :bigserial, force: :cascade do |t|
-    t.integer  "referential_id",  limit: 8
     t.string   "token"
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "organisation_id", limit: 8
-    t.jsonb    "metadata",                  default: {}
+    t.jsonb    "metadata",               default: {}
+    t.integer  "workbench_id", limit: 8
   end
-
-  add_index "api_keys", ["organisation_id"], name: "index_api_keys_on_organisation_id", using: :btree
 
   create_table "calendars", id: :bigserial, force: :cascade do |t|
     t.string    "name"
@@ -1090,7 +1087,6 @@ ActiveRecord::Schema.define(version: 20180717092218) do
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
-  add_foreign_key "api_keys", "organisations"
   add_foreign_key "compliance_check_blocks", "compliance_check_sets"
   add_foreign_key "compliance_check_messages", "compliance_check_resources"
   add_foreign_key "compliance_check_messages", "compliance_check_sets"
