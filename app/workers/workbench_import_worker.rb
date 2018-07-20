@@ -35,6 +35,7 @@ class WorkbenchImportWorker
 
   def handle_corrupt_zip_file
     workbench_import.messages.create(criticity: :error, message_key: 'corrupt_zip_file', message_attributes: {source_filename: workbench_import.file.file.file})
+    workbench_import.update( current_step: @entries, status: 'failed' )
   end
 
   def upload zip_service
@@ -49,7 +50,10 @@ class WorkbenchImportWorker
 
   def upload_entry_group entry, element_count
     update_object_state entry, element_count.succ
-    return unless entry.ok?
+    unless entry.ok?
+      workbench_import.update( current_step: @entries, status: 'failed' )
+      return
+    end
     # status = retry_service.execute(&upload_entry_group_proc(entry))
     upload_entry_group_stream entry.name, entry.stream
   end

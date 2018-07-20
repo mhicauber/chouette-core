@@ -18,7 +18,7 @@ class Import::Resource < ApplicationModel
   def next_step
     if root_import.class == Import::Workbench
 
-      return unless netex_import&.successful?
+      return unless netex_import&.successful? || netex_import&.warning?
 
       workbench.workgroup.import_compliance_control_sets.map do |key, label|
         next unless (control_set = workbench.compliance_control_set(key)).present?
