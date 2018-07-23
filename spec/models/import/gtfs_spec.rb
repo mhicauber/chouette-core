@@ -40,7 +40,7 @@ RSpec.describe Import::Gtfs do
     it "should create a company for each agency" do
       import.import_agencies
 
-      expect(workbench.line_referential.companies.pluck(:registration_number, :name)).to eq([["DTA","Demo Transit Authority"]])
+      expect(workbench.line_referential.companies.pluck(:registration_number, :name, :url, :time_zone)).to eq([["DTA","Demo Transit Authority","http://google.com","America/Los_Angeles"]])
     end
   end
 
