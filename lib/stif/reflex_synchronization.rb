@@ -27,6 +27,10 @@ module Stif
         self.send("#{prop_name}=", self.send(prop_name) + value)
       end
 
+      def reset_defaut_referential
+        @defaut_referential = nil
+      end
+
       def defaut_referential
         @defaut_referential ||= StopAreaReferential.find_by(name: "Reflex")
       end
@@ -45,6 +49,7 @@ module Stif
 
       def synchronize
         reset_counts
+        reset_defaut_referential
         ['getOR', 'getOP'].each do |method|
           start   = Time.now
           results = Reflex::API.new().process(method)
