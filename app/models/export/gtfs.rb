@@ -8,7 +8,7 @@ class Export::Gtfs < Export::Base
   end
 
   def zip_file_name
-    "chouette-its-#{Time.now.to_i}"
+    @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
   end
 
   def journeys
