@@ -1,12 +1,13 @@
 module DeviseRequestHelper
   include Warden::Test::Helpers
 
-  def login_user
+  def login_user permissions=nil
+    permissions ||= Support::Permissions.all_permissions
     organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
     @user ||=
       create(:user,
              :organisation => organisation,
-             :permissions => Support::Permissions.all_permissions)
+             :permissions => permissions)
 
     login_as @user, :scope => :user
     # post_via_redirect user_session_path, 'user[email]' => @user.email, 'user[password]' => @user.password
@@ -20,9 +21,9 @@ module DeviseRequestHelper
 
   module ClassMethods
 
-    def login_user
+    def login_user permissions=nil
       before(:each) do
-        login_user
+        login_user permissions
       end
       after(:each) do
         Warden.test_reset!
@@ -35,18 +36,19 @@ end
 
 module DeviseControllerHelper
 
-  def setup_user
+  def setup_user permissions=nil
     before do
       @request.env["devise.mapping"] = Devise.mappings[:user]
+      permissions ||= Support::Permissions.all_permissions
       organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
       @user = create(:user,
                      organisation: organisation,
-                     permissions: Support::Permissions.all_permissions)
+                     permissions: permissions)
     end
   end
 
-  def login_user()
-    setup_user
+  def login_user permissions=nil
+    setup_user permissions
     before do
       sign_in @user
     end
