@@ -62,15 +62,22 @@ ol.inherits RoutesLayersControl, ol.control.Control
 
 class RoutesMap
   constructor: (@target)->
-    @initMap()
-    @area = []
-    @seenStopIds = []
-    @routes = {}
+
+  prepare: ()->
+    new Promise (resolve)=>
+      $(document).on 'mapSourceLoaded', =>
+        @initMap()
+        @area = []
+        @seenStopIds = []
+        @routes = {}
+        resolve(this)
 
   initMap: ->
+    layer = window.mapBackgroundSource
+
     @map = new ol.Map
       target: @target,
-      layers:   [ new ol.layer.Tile(source: new ol.source.OSM()) ]
+      layers:   [ layer ]
       controls: [ new ol.control.ScaleLine(), new ol.control.Zoom(), new ol.control.ZoomSlider() ],
       interactions: ol.interaction.defaults(zoom: true)
       view: new ol.View()
