@@ -131,8 +131,12 @@ module ApplicationHelper
   end
 
   def permitted_custom_fields_params custom_fields
-    [{
+    res = [{
       custom_field_values: custom_fields.map(&:code)
     }]
+    custom_fields.where(field_type: :attachment).each do |cf|
+      res << "remove_custom_field_#{cf.code}"
+    end
+  res
   end
 end
