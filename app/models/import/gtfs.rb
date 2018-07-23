@@ -155,6 +155,8 @@ class Import::Gtfs < Import::Base
       source.agencies.each do |agency|
         company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
         company.attributes = { name: agency.name }
+        company.url = agency.url
+        company.time_zone = agency.timezone
 
         save_model company
         count += 1
