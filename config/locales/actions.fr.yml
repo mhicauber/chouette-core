@@ -29,6 +29,7 @@ fr:
     select: Sélectionner
     wait_for_submission: "Validation..."
     cancel_destroy: Annuler suppresion
+    add_referential: Ajoutez un jeu de données
   or: "ou"
   cancel: "Annuler"
   back: "Retour"

@@ -31,13 +31,6 @@ class MergesController < ChouetteController
     end
   end
 
-  # def build_resource
-  #   @import ||= WorkbenchImport.new(*resource_params) do |import|
-  #     import.workbench = parent
-  #     import.creator   = current_user.name
-  #   end
-  # end
-
   def merge_params
     merge_params = params.require(:merge).permit(:referential_ids)
     merge_params[:referential_ids] = merge_params[:referential_ids].split(",")

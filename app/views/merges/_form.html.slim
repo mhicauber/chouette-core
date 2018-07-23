@@ -13,23 +13,27 @@
 
   .row.merge-referentials-selector
     .col
-      h4= Merge.tmf('available_referentials')
-      .input-group
-        .input-group-addon
-          span.fa.fa-search
-        input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: available_referentials_workbench_merges_url(workbench)}
-        .input-group-addon.loader
-          span.fa.fa-spinner.fa-spin
-        .input-group-btn.clear-group
-          a.btn.clear
-            span.fa.fa-times
+      .head
+        h4= Merge.tmf('available_referentials')
+        .input-group
+          input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: available_referentials_workbench_merges_url(workbench)}
+          .input-group-btn.clear-group
+            a.btn.clear
+              span.fa.fa-times
+          .input-group-btn.search-group
+            a.btn.search
+              span.fa.fa-search
+          .input-group-addon.loader
+            span.fa.fa-spinner.fa-spin
       ul.source-referentials.connectedSortable
 
     .middle-col.col
-      span.fa.fa-arrow-circle-right.fa-5x
+
     .col
-      h4= Merge.tmf('selected_referentials')
+      .head
+        h4= Merge.tmf('selected_referentials')
       ul.target.connectedSortable
+        li.remaining-placeholder= "actions.add_referential".t
 
 
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_merge_form'
