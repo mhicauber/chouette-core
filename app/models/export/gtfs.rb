@@ -243,7 +243,7 @@ class Export::Gtfs < Export::Base
             trip_id: trip_id,
             arrival_time: GTFS::Time.format_datetime(vehicle_journey_at_stop.arrival_time, vehicle_journey_at_stop.arrival_day_offset),
             departure_time: GTFS::Time.format_datetime(vehicle_journey_at_stop.departure_time, vehicle_journey_at_stop.departure_day_offset),
-            stop_id: stop_area_stop_hash[vehicle_journey_at_stop.stop_point.id],
+            stop_id: stop_area_stop_hash[vehicle_journey_at_stop.stop_point.stop_area_id],
             stop_sequence: vehicle_journey_at_stop.stop_point.position # NOT SURE TO DO,
             # stop_headsign: TO STORE IN IMPORT,
             # pickup_type: TO STORE IN IMPORT,
