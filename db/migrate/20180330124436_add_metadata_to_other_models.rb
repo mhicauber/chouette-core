@@ -1,7 +1,7 @@
 class AddMetadataToOtherModels < ActiveRecord::Migration
   def change
     [
-      Api::V1::ApiKey,
+      ApiKey,
       Calendar,
       Chouette::AccessLink,
       Chouette::AccessPoint,
