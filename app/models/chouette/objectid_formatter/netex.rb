@@ -1,6 +1,11 @@
 module Chouette
   module ObjectidFormatter
-    class Netex
+    class Netex < Base
+
+      def short_id_sql_expr
+        "lower(split_part(split_part(objectid, ':', 3), '-', 1))"
+      end
+
       def before_validation(model)
         oid = Chouette::Objectid::Netex.new(local_id: SecureRandom.uuid, object_type: model.class.name.gsub('Chouette::',''))
         model.update(objectid: oid.to_s) if oid.valid?

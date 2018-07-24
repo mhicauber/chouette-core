@@ -1,7 +1,12 @@
 module Chouette
   module ObjectidFormatter
-    class StifCodifligne
-      def before_validation(model) 
+    class StifCodifligne < Base
+
+      def short_id_sql_expr
+        "lower(split_part(objectid, ':', 3))"
+      end
+
+      def before_validation(model)
         # unused method in this context
       end
 

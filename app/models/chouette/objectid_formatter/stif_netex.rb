@@ -1,6 +1,11 @@
 module Chouette
   module ObjectidFormatter
-    class StifNetex
+    class StifNetex < Base
+
+      def short_id_sql_expr
+        "lower(split_part(split_part(objectid, ':', 3), '-', 1))"
+      end
+
       def before_validation(model)
         model.attributes = {objectid: "__pending_id__#{SecureRandom.uuid}"}
       end

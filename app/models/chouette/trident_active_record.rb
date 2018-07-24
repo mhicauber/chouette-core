@@ -3,8 +3,12 @@ module Chouette
 
     self.abstract_class = true
 
+    def self.current_referential
+      Referential.where(:slug => Apartment::Tenant.current).first!
+    end
+
     def referential
-      @referential ||= Referential.where(:slug => Apartment::Tenant.current).first!
+      @referential ||= self.class.current_referential
     end
 
     def workgroup

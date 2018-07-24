@@ -27,10 +27,10 @@ fr:
               all_stop_points_selected: "Une ITL ne peut pas couvrir tous les arrêts d'un itinéraire."
   routing_constraint_zones:
     filters:
-      associated_route: 
+      associated_route:
         title: Itinéraire associé
         placeholder: Indiquez un itinéraire...
-      name_or_objectid_cont:  Indiquez un nom d'ITL ou un ID...
+      name_or_short_id_cont:  Indiquez un nom d'ITL ou un ID...
     actions:
       destroy_confirm: Etes vous sûr de supprimer cette ITL ?
     new:

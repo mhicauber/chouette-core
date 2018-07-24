@@ -3,7 +3,7 @@
     = search_form_for overview.search, as: overview.search_param_name, url: "##{overview.pagination_param_name}", html: {method: :get}, class: 'form form-filter' do |f|
       .ffg-row
         .form-group.input-group.search_bar
-          = f.search_field :name_or_number_or_objectid_cont, placeholder: t('lines.index.name_or_number_or_objectid'), class: 'form-control'
+          = f.search_field :name_or_number_or_short_id_cont, placeholder: t('lines.index.name_or_number_or_short_id'), class: 'form-control'
           span.input-group-btn
             button.btn.btn-default#search-btn type='submit'
               span.fa.fa-search
