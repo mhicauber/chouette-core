@@ -30,15 +30,15 @@ class CalendarsController < ChouetteController
     @calendar = resource
   end
 
-  def create
-    create! do |success, failure|
-      if has_feature?('application_days_on_calendars')
-        success.html do
-          redirect_to([:edit, @workgroup, @calendar])
-        end
-      end
-    end
-  end
+  # def create
+  #   create! do |success, failure|
+  #     if has_feature?('application_days_on_calendars')
+  #       success.html do
+  #         redirect_to([:edit, @workgroup, @calendar])
+  #       end
+  #     end
+  #   end
+  # end
 
   def update
     if params[:calendar]
