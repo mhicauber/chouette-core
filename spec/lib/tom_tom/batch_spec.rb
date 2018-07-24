@@ -1,6 +1,20 @@
 RSpec.describe TomTom::Batch do
   let(:batch) { TomTom::Batch.new(nil) }
 
+  describe "#batch" do
+    it "should call get_sub_batch!" do
+      expect(batch).to receive(:get_sub_batch).and_return(nil)
+      batch.batch []
+    end
+
+    context "with more than SUB_BATCH_SIZE waycosts" do
+      it "should call get_sub_batch! twice" do
+        expect(batch).to receive(:get_sub_batch).twice.and_return(nil)
+        batch.batch [{}]*51
+      end
+    end
+  end
+
   describe "#extract_costs_to_way_costs" do
     it "puts distance & time costs in way_costs" do
       way_costs = [
