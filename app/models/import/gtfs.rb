@@ -145,6 +145,7 @@ class Import::Gtfs < Import::Base
     prepare_referential
 
     import_calendars
+    import_calendar_dates
     import_trips
     import_stop_times
   end
