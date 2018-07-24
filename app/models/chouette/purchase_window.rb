@@ -17,8 +17,8 @@ module Chouette
     validates :date_ranges, presence: true
 
     scope :contains_date, ->(date) { where('date ? <@ any (date_ranges)', date) }
-    scope :overlap_dates, ->(date_range) { where('daterange(?, ?) && any (date_ranges)', date_range.first, date_range.last + 1.day) }
-    scope :matching_dates, ->(date_range) { where('ARRAY[daterange(?, ?)] = date_ranges', date_range.first, date_range.last + 1.day) }
+    scope :overlap_dates, ->(date_range) { where('daterange(?, ?) && any (date_ranges)', date_range.first, date_range.max + 1.day) }
+    scope :matching_dates, ->(date_range) { where('ARRAY[daterange(?, ?)] = date_ranges', date_range.first, date_range.max + 1.day) }
 
     # VehicleJourneys include PurchaseWindow checksums in their checksums
     # OPTIMIZEME
