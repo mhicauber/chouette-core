@@ -19,7 +19,7 @@ const makeDaysOptions = (daySelected) => {
 const makeMonthsOptions = (monthSelected) => {
   let arr = []
   for(let i = 1; i < 13; i++) {
-    arr.push(<option value={formatNumber(i)} key={i}>{monthsArray[i - 1]}</option>)
+    arr.push(<option value={formatNumber(i)} key={i}>{I18n.t('calendars.months.' + i)}</option>)
   }
   return arr
 }

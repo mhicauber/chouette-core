@@ -271,7 +271,7 @@ const actions = {
     let strDayTypes = actions.arrayToStrDayTypes(metas.day_types)
     metas.day_types = strDayTypes
     let sentState = assign({}, timetable, metas)
-    let urlJSON = window.timetablesUrl || window.location.pathname.split('/', 5).join('/')
+    let urlJSON = window.timetablesUrl
     let hasError = false
     fetch(urlJSON + '.json', {
       credentials: 'same-origin',
