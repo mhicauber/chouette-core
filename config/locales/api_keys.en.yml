@@ -1,5 +1,6 @@
 en:
   api_keys:
+    search_no_results: "No API key found"
     actions:
       new: "Add a new api key"
       edit: "Edit this api key"

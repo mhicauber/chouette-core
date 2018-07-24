@@ -28,6 +28,7 @@ fr:
       workgroup_configuration:  Application
       workbench_configuration: Espace de travail
       organisation_configuration: Mon organisation
+      security_configuration: Sécurité
       tools: Outils
       sync: Synchronisation
       sync_icar: Synchronisation iCAR

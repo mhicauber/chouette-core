@@ -1,0 +1,27 @@
+- breadcrumb :api_keys, @workbench
+
+.page_content
+  .container-fluid
+    - if @api_keys.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @api_keys,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :token, \
+                attribute: :token, \
+                sortable: false \
+              ), \
+            ],
+            cls: 'table'
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg 'api_keys.search_no_results'.t
+

@@ -1,5 +1,6 @@
 fr:
   api_keys:
+    search_no_results: "Aucune clé d'API"
     actions:
       new: "Ajouter une clé d'accès API"
       edit: "Editer la clé d'accès API"
