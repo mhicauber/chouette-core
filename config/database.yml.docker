@@ -1,7 +1,7 @@
 <%= ENV.fetch 'RAILS_ENV', 'production' %>:
   adapter: <%= ENV.fetch 'RAILS_DB_ADAPTER', 'postgis' %>
   encoding: unicode
-  pool: <%= ENV.fetch 'RAILS_DB_POOLSIZE', '5' %>
+  pool: <%= ENV.fetch 'RAILS_DB_POOLSIZE', '40' %>
   host: <%= ENV.fetch 'RAILS_DB_HOST', 'db' %>
   port: <%= ENV.fetch 'RAILS_DB_PORT', '5432' %>
   schema_search_path: 'public,shared_extensions'
