@@ -9,6 +9,11 @@ module Chouette
       joins(:vehicle_journeys).where("vehicle_journeys.id is not null")
     }
 
+    scope :not_associated, -> {
+      joins('LEFT JOIN "footnotes_vehicle_journeys" ON footnotes_vehicle_journeys.footnote_id = footnotes.id')
+      .where("footnotes_vehicle_journeys.vehicle_journey_id is null")
+    }
+
     validates_presence_of :line
 
     def checksum_attributes

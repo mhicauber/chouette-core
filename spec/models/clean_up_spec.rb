@@ -298,6 +298,22 @@ RSpec.describe CleanUp, :type => :model do
     end
   end
 
+  describe "#destroy_unassociated_footnotes" do
+    let(:cleaner) { create(:clean_up) }
+    it "should destroy all footnotes that are not associated with a vehicle joruney" do
+      footnote = create(:footnote)
+      expect{cleaner.destroy_unassociated_footnotes
+      }.to change { Chouette::Footnote.count }.by(-1)
+    end
+
+    it "should not destroy all footnotes that are associated with a vehicle joruney" do
+      vj = create(:vehicle_journey)
+      vj.footnotes << create(:footnote)
+      expect{cleaner.destroy_unassociated_footnotes
+      }.to_not change { Chouette::Footnote.count }
+    end
+  end
+
   describe "#destroy_empty" do
     it "calls the appropriate destroy methods" do
       cleaner = create(:clean_up)
@@ -305,6 +321,7 @@ RSpec.describe CleanUp, :type => :model do
       expect(cleaner).to receive(:destroy_vehicle_journeys)
       expect(cleaner).to receive(:destroy_journey_patterns)
       expect(cleaner).to receive(:destroy_routes)
+      expect(cleaner).to receive(:destroy_unassociated_footnotes)
 
       cleaner.destroy_empty
     end
