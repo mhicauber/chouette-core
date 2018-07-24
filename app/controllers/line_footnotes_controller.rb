@@ -3,8 +3,8 @@ class LineFootnotesController < ChouetteController
   defaults resource_class: Chouette::Line, collection_name: 'lines', instance_name: 'line'
   belongs_to :referential
 
-  before_action :authorize_resource, only: [:destroy_footnote, :edit_footnote, :show_footnote, :update_footnote]
-  before_action :authorize_resource_class, only: [:create_footnote, :index_footnote, :new_footnote]
+  before_action :authorize_resource, only: [:destroy, :edit, :show, :update]
+  before_action :authorize_resource_class, only: [:create, :index, :new]
 
   def update
     update! do |success, failure|
