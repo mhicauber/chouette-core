@@ -55,8 +55,7 @@ class TimeTablesController < ChouetteController
 
     create! do |success, failure|
       success.html do
-        path = @time_table.created_from ? 'referential_time_table_path' : 'edit_referential_time_table_path'
-        redirect_to send(path, @referential, @time_table)
+        redirect_to referential_time_table_path(@referential, @time_table)
       end
       failure.html { render :new }
     end
