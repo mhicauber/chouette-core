@@ -124,10 +124,15 @@ class CleanUp < ApplicationModel
     Chouette::Route.where("id not in (select distinct route_id from journey_patterns)").find_each &:clean!
   end
 
+  def destroy_unassociated_footnotes
+    Chouette::Footnote.not_associated.destroy_all
+  end
+
   def destroy_empty
     destroy_vehicle_journeys
     destroy_journey_patterns
     destroy_routes
+    destroy_unassociated_footnotes
   end
 
   def overlapping_periods
