@@ -9,5 +9,6 @@
 = javascript_tag do
   | window.actionType = "#{raw params[:action]}";
   // | window.I18n = #{(I18n.backend.send(:translations)[I18n.locale].to_json).html_safe};
+  | window.timetablesUrl = "#{referential_time_table_url(@referential, @time_table).html_safe}";
 
 = javascript_pack_tag 'time_tables/edit.js'
