@@ -14,7 +14,14 @@ class ApiKeyPolicy < ApplicationPolicy
   end
 
   def update?
-    record.try(:organisation_id) == user.organisation_id &&
-      user.has_permission?('api_keys.update')
+    organisation_match? && user.has_permission?('api_keys.update')
+  end
+
+  def edit?
+    update?
+  end
+
+  def organisation_match?
+    record.workbench.organisation_id == user.organisation_id
   end
 end

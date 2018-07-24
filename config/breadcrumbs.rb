@@ -280,6 +280,11 @@ crumb :workgroup do |w|
   link I18n.t('workgroups.edit.title')
 end
 
+crumb :api_keys do |workbench|
+  link I18n.t('api_keys.index.title'), workbench_api_keys_path(workbench)
+  parent :workbench, workbench
+end
+
 # crumb :compliance_controls do|compliance_control_sets|
 #   link
 #   parent :compliance_control_sets, compliance_control_sets

@@ -1,9 +1,5 @@
 - page_header_content_for @api_key
 - content_for :page_header_content do
-  - if policy(@api_key).destroy?
-  .row.mb-sm
-    .col-lg-12.text-right
-      = link_to(t('actions.destroy'), api_key_path(@api_key), :method => :delete, class: 'btn btn-default')
 
 .page_content
   .container-fluid
