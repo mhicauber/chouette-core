@@ -43,7 +43,7 @@ en:
     attributes:
       compliance_check_message:
         criticity: Criticity
-        message_key: Message key
+        message_key: Controle code
         resource_objectid: Resource objectid
         link: Link
         message: Message
