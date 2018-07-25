@@ -18,14 +18,14 @@ describe "Networks", type: :feature do
 
     context 'filtering' do
       it 'supports filtering by name' do
-        fill_in 'q[name_or_objectid_cont]', with: networks.first.name
+        fill_in 'q[name_or_short_id_cont]', with: networks.first.name
         click_button 'search-btn'
         expect(page).to have_content(networks.first.name)
         expect(page).not_to have_content(networks.last.name)
       end
 
       it 'supports filtering by objectid' do
-        fill_in 'q[name_or_objectid_cont]', with: networks.first.objectid
+        fill_in 'q[name_or_short_id_cont]', with: networks.first.get_objectid.short_id
         click_button 'search-btn'
         expect(page).to have_content(networks.first.name)
         expect(page).not_to have_content(networks.last.name)

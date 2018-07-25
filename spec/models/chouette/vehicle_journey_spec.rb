@@ -26,7 +26,7 @@ describe Chouette::VehicleJourney, :type => :model do
   end
 
   describe "search by short_id" do
-    let(:referential){ create :referential}
+    let(:referential){ create :referential }
     let(:route){ create :route, referential: referential }
     let(:journey_pattern){ create :journey_pattern, route: route }
     let(:vehicle_journey){ create( :vehicle_journey, objectid: objectid, journey_pattern: journey_pattern)}
@@ -34,6 +34,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
     before(:each){
       referential.switch
+      vehicle_journey
     }
     context "with a netex referential" do
       before(:each) do
@@ -60,6 +61,8 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     context "with a stif_codifligne referential" do
+      let(:objectid){ "STIF:CODIFLIGNE:Line:CCC-EEE" }
+
       before(:each) do
         referential.update objectid_format: "stif_codifligne"
       end
@@ -72,6 +75,8 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     context "with a stif_reflex referential" do
+      let(:objectid){ "FR:33000:Line:CCC-EEE:LOC" }
+
       before(:each) do
         referential.update objectid_format: "stif_reflex"
       end

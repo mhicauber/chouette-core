@@ -8,22 +8,49 @@ module ObjectidSupport
     validates_uniqueness_of :objectid, skip_validation: Proc.new {|model| model.read_attribute(:objectid).nil?}
 
     scope :with_short_id, ->(q){
+      return self.none unless self.exists?
       referential = self.last.referential
       self.all.merge referential.objectid_formatter.with_short_id(self, q)
     }
 
     ransacker :short_id do |parent|
-      parent.table[:objectid]
+      nil
+    end
+
+    ransacker :actual_short_id, args: [:parent, :ransacker_args] do |parent, referential|
+      Arel.sql referential.objectid_formatter.short_id_sql_expr
     end
 
     class << self
-      def search_with_objectid args
-        scope = self
-        args ||= {}
-        args.each do |k, v|
-          scope = scope.with_short_id(v) if k =~ /short_id/
+      def search_with_objectid args={}
+        vanilla_search = self.search_without_objectid args
+        base = vanilla_search.base
+
+        if args.is_a? Hash
+          args.each do |k, v|
+            if k =~ /short_id/
+              referential = self.last&.referential
+              if referential
+                condition = Ransack::Nodes::Condition.new(base.context).build({
+                  'a' => {
+                    '0' => {
+                      'name' => 'actual_short_id',
+                      'ransacker_args' => referential
+                    }
+                  },
+                  'p' => 'cont',
+                  'v' => { '0' => { 'value' => v } }
+                })
+
+                base.conditions << condition
+                base.combinator = "or"
+              end
+            end
+          end
         end
-        scope.search_without_objectid args
+
+        vanilla_search.instance_variable_set "@base", base
+        vanilla_search
       end
       alias_method_chain :search, :objectid
     end

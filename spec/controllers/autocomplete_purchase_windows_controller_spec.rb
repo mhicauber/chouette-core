@@ -22,7 +22,7 @@ RSpec.describe AutocompletePurchaseWindowsController, type: :controller do
       end
 
       context 'search by name' do
-        let(:request){ get :index, referential_id: referential.id, q: {name_or_objectid_cont_any: 'écolà'}, :format => :json }
+        let(:request){ get :index, referential_id: referential.id, q: {name_or_short_id_cont_any: 'écolà'}, :format => :json }
         it 'should be successful' do
           expect(response).to be_success
           expect(assigns(:purchase_windows)).to eq([window])

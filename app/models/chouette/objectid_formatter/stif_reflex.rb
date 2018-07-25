@@ -3,7 +3,7 @@ module Chouette
     class StifReflex < Base
 
       def short_id_sql_expr
-        "lower(split_part(objectid, ':', 3))"
+        "lower(split_part(objectid, ':', 4))"
       end
 
       def before_validation(model)

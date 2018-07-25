@@ -22,6 +22,15 @@ RSpec.describe AutocompleteLinesController, type: :controller do
       )
     end
 
+    let!(:other_line) do
+      create(
+        :line,
+        number: '16',
+        name: 'Foo Bar',
+        company: nil
+      )
+    end
+
     before(:each) do
       excluded_company = create(:company, name: 'excluded company')
       create(
