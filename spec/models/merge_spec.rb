@@ -49,8 +49,28 @@ RSpec.describe Merge do
     expect(Merge.count).to eq 5
   end
 
-  it "should work" do
+  context "with before_merge compliance_control_sets" do
+    let(:merge) { Merge.create(workbench: workbench, referentials: [referential, referential]) }
+    before do
+      @control_set = create :compliance_control_set, organisation: workbench.organisation
+      workbench.update owner_compliance_control_set_ids: {before_merge: @control_set.id}
+    end
 
+    it "should run checks" do
+      expect{merge.merge}.to change{ComplianceCheckSet.count}.by 2
+    end
+
+    context "when the control_set has been destroyed" do
+      before do
+        @control_set.destroy
+      end
+      it "should not fail" do
+        expect{merge.merge}.to change{ComplianceCheckSet.count}.by 0
+      end
+    end
+  end
+
+  it "should work" do
     factor = 2
     stop_points_positions = {}
 
