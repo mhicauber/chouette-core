@@ -15,6 +15,9 @@
       display: block
       padding: 10px
       margin: -10px
+      span
+        padding-right: 5px
+        transition: padding 0.3s
       &:hover
         color: white
         background-color: $primary-color
@@ -99,8 +102,18 @@
     border: 1px solid #ccc
     background: white
     position: relative
-    transition: opacity 0.3s
+    transition: opacity 0.3s, height 0.3s, padding 0.3s, margin 0.3s, opacity 0.3s
     height: 40px
+    overflow: hidden
+    &:hover
+      .add span
+        padding: 0
+    &.masked
+      height: 0
+      padding: 0 10px
+      margin: -1px 10px
+      opacity: 0
+
     & > span
       position: absolute
       white-space: nowrap

@@ -52,7 +52,7 @@ class MergeReferentialsSelector
       revert: "invalid"
       cancel: ".disabled"
       helper: (event)=>
-        target = event.target
+        target = event.currentTarget
         li = $(target).clone()
         li.width target.clientWidth
         li.height target.clientHeight
@@ -69,15 +69,20 @@ class MergeReferentialsSelector
         $(".target").removeClass 'sorting'
       receive: (event, ui)=>
         ui.item.addClass "disabled"
+        ui.helper.css "height", ""
+
       update: (event, ui)=>
         @updateValue()
 
   addDeleteAction: (container)->
     container.find('a.delete').click (e)=>
-      e.preventDefault()
+      container.addClass "masked"
       @results.find("li[data-id=#{container.data().id}]").removeClass('disabled')
-      container.remove()
-      @updateValue()
+      e.preventDefault()
+      setTimeout =>
+        container.remove()
+        @updateValue()
+      , 500
       false
 
   updateValue: ->
@@ -120,6 +125,11 @@ class MergeReferentialsSelector
           @updateValue()
           @addDeleteAction(clone)
           li.addClass "disabled"
+          clone.addClass "masked"
+          setTimeout =>
+            clone.removeClass "masked"
+          , 100
+
           false
 
       @hideLoader()
