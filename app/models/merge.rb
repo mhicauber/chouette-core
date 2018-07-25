@@ -30,6 +30,8 @@ class Merge < ApplicationModel
     update_column :started_at, Time.now
     update_column :status, :running
 
+    referentials.each &:pending!
+
     if before_merge_compliance_control_sets.present?
       create_before_merge_compliance_check_sets
     else
@@ -100,9 +102,14 @@ class Merge < ApplicationModel
     end
   rescue => e
     Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
+    failed!
+    raise e if Rails.env.test?
+  end
+
+  def failed!
     update status: :failed, ended_at: Time.now
     new&.failed!
-    raise e if Rails.env.test?
+    referentials.each &:active!
   end
 
   def prepare_new

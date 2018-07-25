@@ -71,6 +71,27 @@ RSpec.describe Merge do
       end
     end
   end
+  
+  it "should set source refererentials state to pending" do
+    merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+    merge.merge
+    expect(referential.reload.state).to eq :pending
+  end
+
+  context "when it fails" do
+    let(:merge) { Merge.create!(workbench: referential.workbench, referentials: [referential, referential]) }
+    before(:each){
+      allow(merge).to receive(:prepare_new).and_raise
+    }
+    it "should reset source refererentials state to active" do
+      merge.merge
+      begin
+        merge.merge!
+      rescue
+      end
+      expect(referential.reload.state).to eq :active
+    end
+  end
 
   it "should work" do
     factor = 2
