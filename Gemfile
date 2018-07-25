@@ -144,7 +144,6 @@ gem 'rake'
 gem 'devise-async'
 gem 'apartment', '~> 1.0.0'
 gem 'aasm'
-gem 'activerecord-nulldb-adapter' if ENV['RAILS_DB_ADAPTER'] == 'nulldb'
 gem 'puma', '~> 3.10.0'
 
 # Cache
