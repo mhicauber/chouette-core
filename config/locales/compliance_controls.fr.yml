@@ -84,7 +84,7 @@ fr:
       messages:
         3_route_8: "l'arrêt %{target_0_label} (%{target_0_objectid}) de l'itinéraire %{source_objectid} n'est desservi par aucune mission"
       description: "Les arrêts de l'itinéraire doivent être desservis par au moins une mission"
-      prerequisite: "Aucun"
+      prerequisite: "Un itinéraire doit avoir au moins une mission"
     route_control/omnibus_journey_pattern:
       messages:
         3_route_9: "L'itinéraire %{source_objectid} n'a aucune mission desservant l'ensemble de ses arrêts"
