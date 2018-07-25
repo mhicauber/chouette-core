@@ -26,8 +26,8 @@ RSpec.describe FootnotesController, :type => :controller do
     end
   end
 
-  describe "POST update_all" do
-    let(:request){ post :update_all, line_id: line.id, referential_id: referential.id, line: {footnotes_attributes: {}} }
+  describe "PATCH update_all" do
+    let(:request){ patch :update_all, line_id: line.id, referential_id: referential.id, line: {footnotes_attributes: {}} }
 
     it 'should respond with 403' do
       expect(request).to have_http_status 403

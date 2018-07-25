@@ -65,7 +65,7 @@ ChouetteIhm::Application.routes.draw do
       resources :footnotes do
         collection do
           get 'edit_all'
-          post 'update_all'
+          patch 'update_all'
         end
       end
       delete :index, on: :collection, action: :delete_all
