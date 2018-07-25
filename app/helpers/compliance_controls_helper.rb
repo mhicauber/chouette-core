@@ -12,12 +12,12 @@ module ComplianceControlsHelper
   def display_control_attribute(key, value)
     if key == "target"
       parts = value.match(%r((?'object_type'\w+)#(?'attribute'\w+)))
-      object_type = ComplianceControl.tmf("subclasses.#{parts[:object_type]}")
+      object_type = "activerecord.models.#{parts[:object_type]}".t(count: 1).capitalize
       target = I18n.t("activerecord.attributes.#{parts[:object_type]}.#{parts[:attribute]}")
       "#{object_type} - #{target}"
     else
       value
-    end 
+    end.html_safe
   end
 
   def compliance_control_metadatas(compliance_control)
