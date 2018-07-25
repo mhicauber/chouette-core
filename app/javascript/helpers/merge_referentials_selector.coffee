@@ -77,6 +77,7 @@ class MergeReferentialsSelector
       e.preventDefault()
       @results.find("li[data-id=#{container.data().id}]").removeClass('disabled')
       container.remove()
+      @updateValue()
       false
 
   updateValue: ->
@@ -109,7 +110,7 @@ class MergeReferentialsSelector
       @results.html ''
       _selected = @selectedIds()
       json.forEach (ref) =>
-        li = $("<li data-id='#{ref.id}'>#{ref.name}<a href='#' class='pull-right delete'><span class='fa fa-times'></a><a href='#' class='pull-right add'><span class='fa fa-arrow-right'></a></li>")
+        li = $("<li data-id='#{ref.id}'><span>#{ref.name}</span><a href='#' class='pull-right delete'><span class='fa fa-times'></a><a href='#' class='pull-right add'><span class='fa fa-arrow-right'></a></li>")
         li.appendTo @results
         li.addClass('disabled') unless _selected.indexOf(ref.id) < 0
         li.find('a.add').click (e)=>

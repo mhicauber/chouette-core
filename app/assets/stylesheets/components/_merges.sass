@@ -5,7 +5,7 @@
   min-height: 300px
   .col
     padding: 0
-    flex: 3 0
+    flex: 0 0 45%
     position: relative
     display: inline-block
     min-height: 100%
@@ -17,7 +17,7 @@
       margin: -10px
       &:hover
         color: white
-        background-color: $green
+        background-color: $primary-color
     .head
       padding: 10px
       background-color: #eee
@@ -69,7 +69,7 @@
 
     &.middle-col
       position: relative
-      flex: 1 0
+      flex: 1 0 10%
       border: none
       span
         color: $green
@@ -100,6 +100,16 @@
     background: white
     position: relative
     transition: opacity 0.3s
+    height: 40px
+    & > span
+      position: absolute
+      white-space: nowrap
+      text-overflow: ellipsis
+      overflow: hidden
+      left: 10px
+      top: 10px
+      bottom: 10px
+      right: 50px
     &:after
       content: ""
       position: absolute
