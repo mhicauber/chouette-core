@@ -2,32 +2,23 @@ RSpec.describe 'New API Key', type: :feature do
   login_user
 
   describe "api_keys#destroy" do
+    let(:workbench) { @user.organisation.workbenches.first }
+    let!(:api_key){ create :api_key, name: SecureRandom.uuid, workbench: workbench }
 
-    let!( :api_key ){ create :api_key, name: SecureRandom.uuid, organisation: @user.organisation }
+    let(:destroy_label){ "Supprimer" }
 
-    let( :edit_label ){ "#{api_key.name} : #{api_key.token}" }
-    let( :destroy_label ){ "Supprimer" }
+    it 'complete workflow' do
+      # /workbenches/1/api_keys
+      visit workbench_api_keys_path(workbench)
 
-    xit 'complete workflow' do
-      # /workbenches
-      visit dashboard_path
       # the api_key is visible
-      click_link edit_label
+      expect(page).to have_content(api_key.token)
 
-      # brings us to correct page
-      expect(page.current_path).to eq(edit_api_key_path(api_key))
-      expect(page).to have_content("Supprimer")
-      # click_link(destroy_label)
+      find(".dropdown-toggle").click
+      click_link destroy_label
 
-      # # check impact on DB
-      # expect(ApiKey.where(id: api_key.id)).to be_empty
-
-      # # check redirect and changed display
-      # expect(page.current_path).to eq(dashboard_path)
-      # # deleted api_key's not shown anymore
-      # expect( page ).not_to have_content(edit_label)
+      expect(page.current_path).to eq(workbench_api_keys_path(workbench))
+      expect(page).to have_content("Aucune")
     end
-
   end
-
 end
