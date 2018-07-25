@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe ApiKey, type: :model do
   subject { create(:api_key) }
 
-  it { should validate_presence_of :organisation }
+  it { should validate_presence_of :workbench }
+  it { should validate_uniqueness_of :token }
 
 
   it 'should have a valid factory' do

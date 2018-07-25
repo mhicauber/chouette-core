@@ -16,6 +16,8 @@ class ApiKey < ApplicationModel
   private
 
   def generate_access_token
+    return if token.present?
+
     loop do
       self.token = SecureRandom.hex
       break token if self.class.where(token: token).blank?
