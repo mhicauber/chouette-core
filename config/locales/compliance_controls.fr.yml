@@ -89,7 +89,7 @@ fr:
       messages:
         3_route_9: "L'itinéraire %{source_objectid} n'a aucune mission desservant l'ensemble de ses arrêts"
       description: "Une mission de l'itinéraire devrait desservir l'ensemble des arrêts de celui-ci"
-      prerequisite: "Un itinéraire doit exister avec au moins une mission"
+      prerequisite: "Aucun"
     route_control/unactivated_stop_point:
       messages:
         3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
@@ -199,8 +199,8 @@ fr:
       prerequisite: "Aucun"
     generic_attribute_control/pattern:
       messages:
-        3_generic_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} qui ne respecte pas le motif %{reference_value}"
-      description: "l'attribut de l'objet doit respecter un motif (expression régulière)"
+        3_generic_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} qui ne respecte pas l'expression régulière %{reference_value}"
+      description: "L'attribut de l'objet doit respecter une expression régulière"
       prerequisite: "Aucun"
     generic_attribute_control/min_max:
       messages:
