@@ -18,7 +18,7 @@ class Import::Netex < Import::Base
   end
 
   def notify_parent
-    compute_footnote_checksums! # See #7728
+    compute_faulty_checksums! # See #7728
     if super
       main_resource.update_status_from_importer self.status
       update_referential
@@ -120,7 +120,7 @@ class Import::Netex < Import::Base
     metadata
   end
 
-  def compute_footnote_checksums!
+  def compute_faulty_checksums!
     return unless referential.present?
     referential.switch do
       faulty = Chouette::Footnote.where(checksum: nil); nil
@@ -130,6 +130,9 @@ class Import::Netex < Import::Base
         footnote.update_column :checksum, Digest::SHA256.new.hexdigest(footnote.checksum_source)
       end
       Chouette::VehicleJourney.where(id: vj_ids).find_each do |vj|
+        vj.update_checksum!
+      end
+      Chouette::RoutingConstraintZone.find_each do |vj|
         vj.update_checksum!
       end
     end
