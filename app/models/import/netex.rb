@@ -132,9 +132,8 @@ class Import::Netex < Import::Base
       Chouette::VehicleJourney.where(id: vj_ids).find_each do |vj|
         vj.update_checksum!
       end
-      Chouette::RoutingConstraintZone.find_each do |vj|
-        vj.update_checksum!
-      end
+      Chouette::RoutingConstraintZone.find_each &:update_checksum!
+      Chouette::JourneyPattern.find_each &:update_checksum!
     end
   end
 end
