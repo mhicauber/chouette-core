@@ -475,6 +475,12 @@ module Chouette
           mask_periods_with_common_part.each do |mask_period|
             intersection = (mask_period & period.range)
             period.period_start, period.period_end = intersection.begin, intersection.end
+            if period.period_start == period.period_end
+              if applicable_date?(period.period_start)
+                dates.build in_out: true, date: period.period_start
+              end
+              periods.delete period
+            end
           end
         end
       end

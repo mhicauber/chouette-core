@@ -166,6 +166,10 @@ RSpec.describe Merge do
         distant_future_table = FactoryGirl.create :time_table, dates_count: 0, periods_count: 0, comment: "distant_future_table"
         distant_future_table.periods << create(:time_table_period, time_table: distant_future_table, period_start: 10.years.from_now, period_end: 11.years.from_now)
         @distant_future_table_name = distant_future_table.comment
+        one_day_remanining_table = FactoryGirl.create :time_table, dates_count: 0, periods_count: 0, comment: "one_day_remanining"
+        period_start = referential_metadata.periodes.last.max
+        one_day_remanining_table.periods << create(:time_table_period, time_table: one_day_remanining_table, period_start: period_start, period_end: period_start+1.week)
+        @one_day_remanining_table_name = one_day_remanining_table.comment
 
         referential.vehicle_journeys.each do |vehicle_journey|
           vehicle_journey.time_tables << shared_time_table
@@ -173,6 +177,7 @@ RSpec.describe Merge do
           specific_time_table = FactoryGirl.create :time_table
           vehicle_journey.time_tables << specific_time_table
           vehicle_journey.time_tables << distant_future_table
+          vehicle_journey.time_tables << one_day_remanining_table
           vehicle_journey.update ignored_routing_contraint_zone_ids: @routing_constraint_zones[vehicle_journey.route.id].values.map(&:id)
 
           if footnote = footnotes[vehicle_journey.route.line.id].sample
@@ -194,6 +199,13 @@ RSpec.describe Merge do
         output.switch
 
         expect(Chouette::TimeTable.where("comment LIKE '%#{@distant_future_table_name}'").count).to be_zero
+        Chouette::TimeTable.where("comment LIKE '%#{@one_day_remanining_table_name}'").each do |tt|
+          expect(tt.periods).to be_empty
+          expect(tt.dates.count).to eq 1
+          date = tt.dates.last
+          expect(date.in_out).to be_truthy
+          expect(date.date).to eq referential_metadata.periodes.last.max
+        end
       end
     end
 
