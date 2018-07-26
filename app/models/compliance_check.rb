@@ -7,6 +7,8 @@ class ComplianceCheck < ApplicationModel
   belongs_to :compliance_check_set
   belongs_to :compliance_check_block
 
+  has_many :compliance_check_messages, dependent: :destroy
+
   enumerize :criticity, in: %i(warning error), scope: true, default: :warning
   validates :criticity, presence: true
   validates :name, presence: true
