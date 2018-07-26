@@ -14,7 +14,7 @@ class StopAreaProvidersController < ChouetteController
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers)
+        @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {referential: parent})
       }
     end
   end
