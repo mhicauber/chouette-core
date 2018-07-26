@@ -1,12 +1,3 @@
-class ActiveRecord::Base
-  def self.seed_by(key_attribute, &block)
-    model = find_or_initialize_by key_attribute
-    print "Seed #{name} #{key_attribute.inspect} "
-    yield model
-
-    puts "[#{(model.changed? ? 'updated' : 'no change')}]"
-    model.save!
-
-    model
-  end
-end
+require_relative "./helpers/active_record"
+require_relative "./helpers/permissions"
+require_relative "./helpers/workgroups"
