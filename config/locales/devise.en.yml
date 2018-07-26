@@ -13,7 +13,7 @@ validating conformance of data wrt Neptune (French standard NFP 99 506)."
         introduction2: "The application is deployed in Saas mode and supports :"
         introduction_item1: "several data exchange formats (Neptune, GTFS, CSV ... Netex coming soon)"
         introduction_item2: "and also several base map backgrounds (Google, OSM, IGN)."
-        unauthorized: "Failed to connect due to missing IBOO connection rights"
+        unauthorized: "Failed to connect due to missing Chouette connection rights"
     confirmations:
       new:
         title: Resend confirmation instructions

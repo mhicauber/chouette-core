@@ -14,7 +14,7 @@ norme Neptune (NFP 99 506)"
         introduction2: "Déployé en mode Saas, ce logiciel est ouvert et peut gérer"
         introduction_item1: "plusieurs formats (Neptune, GTFS, CSV, prochainement Netex)"
         introduction_item2: "plusieurs fonds cartographiques, notamment IGN, OSM et Google."
-        unauthorized: "Vous ne pouvez pas vous connecter car vous n'avez pas les permissions pour accéder à IBOO"
+        unauthorized: "Vous ne pouvez pas vous connecter car vous n'avez pas les permissions pour accéder à Chouette"
     confirmations:
       new:
         title: Renvoyer le mail de confirmation

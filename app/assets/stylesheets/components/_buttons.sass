@@ -18,7 +18,7 @@
     position: relative
     top: 50%
     transform: translateY(-50%)
-    border: 1px solid $blue
+    border: 1px solid $brand-color-secondary
     background-color: transparent
     width: 22px
     height: 22px
@@ -47,31 +47,31 @@
   &.btn-default
     background-color: #fff
     border-color: rgba(#fff, 0.5)
-    color: $blue
+    color: $brand-color-secondary
 
     &:hover, &:focus, &.focus, &:active, &.active,
     .open > .btn-primary.dropdown-toggle
       background-color: darken(#fff, 2.5%)
 
   &.btn-primary
-    background-color: $darkblue
-    border-color: darken($darkblue, 2.5%)
+    background-color: $brand-color-primary
+    border-color: darken($brand-color-primary, 2.5%)
     color: #fff
 
     &:hover, &:focus, &.focus, &:active, &.active,
     .open > .btn-primary.dropdown-toggle
-      background-color: darken($darkblue, 2.5%)
-      border-color: darken($darkblue, 2.5%)
+      background-color: darken($brand-color-primary, 2.5%)
+      border-color: darken($brand-color-primary, 2.5%)
       color: #fff
 
   &.btn-outline-primary
     background-color: transparent
-    border-color: $darkblue
-    color: $darkblue
+    border-color: $brand-color-primary
+    color: $brand-color-primary
 
     &:hover, &:focus, &.focus, &:active, &.active,
     .open > .btn-primary.dropdown-toggle
-      background-color: $darkblue
+      background-color: $brand-color-primary
       color: #fff
 
   &.btn-outline-danger
@@ -101,14 +101,14 @@ table, .table
       width: 100%
       min-height: 28px
       min-width: 28px
-      color: $blue
-      background-color: rgba($blue, 0)
+      color: $brand-color-secondary
+      background-color: rgba($brand-color-secondary, 0)
       transition: 0.2s
       position: relative
       cursor: pointer
 
       &:hover, &:focus, &.open
-        background-color: rgba($blue, 0.5)
+        background-color: rgba($brand-color-secondary, 0.5)
         color: #fff
         transition: 0.2s
 
@@ -116,8 +116,8 @@ table, .table
         cursor: not-allowed
 
         &, &:hover, &:focus
-          color: rgba($blue, 0.5)
-          background-color: rgba($blue, 0)
+          color: rgba($brand-color-secondary, 0.5)
+          background-color: rgba($brand-color-secondary, 0)
 
           > .btn.disabled
             opacity: 1
