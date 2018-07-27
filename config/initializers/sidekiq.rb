@@ -3,6 +3,7 @@ class Sidekiq::Middleware::Server::Logging
     begin
       start = Time.now
       logger.info("#{queue_name queue} # start")
+      logger.info("#{queue_name queue} # #{item["class"]} | #{item["args"]}")
       yield
       logger.info("#{queue_name queue} # done: #{elapsed(start)} sec")
     rescue Exception
