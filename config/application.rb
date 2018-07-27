@@ -45,6 +45,8 @@ module ChouetteIhm
     config.subscriptions_notifications_recipients = []
 
     config.vehicle_journeys_extra_headers = []
+    config.osm_backgrounds_source = :osm
+    config.osm_backgrounds_esri_token = "your_token_here"
 
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:

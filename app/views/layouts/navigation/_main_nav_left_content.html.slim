@@ -8,9 +8,6 @@
           span = 'layouts.navbar.workbench_outputs.organisation'.t
         = link_to '#', class: 'list-group-item disabled' do
           span = 'layouts.navbar.workbench_outputs.workgroup'.t
-        - if policy(workbench.workgroup).edit?
-          = link_to [:edit, workbench.workgroup], class: 'list-group-item' do
-            span = 'layouts.navbar.workbench_outputs.edit_workgroup'.t
 
     .menu-item.panel
       = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
@@ -26,9 +23,6 @@
           span = 'activerecord.models.compliance_check_set.other'.t.capitalize
         = link_to compliance_control_sets_path, class: 'list-group-item' do
           span = 'activerecord.models.compliance_control_set.other'.t.capitalize
-        - if policy(workbench).edit?
-          = link_to [:edit, workbench], class: 'list-group-item' do
-            span = 'workbenches.edit.link'.t
 
     .menu-item.panel
       = main_nav_menu_item 'layouts.navbar.line_referential'.t do

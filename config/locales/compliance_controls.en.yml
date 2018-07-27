@@ -84,12 +84,12 @@ en:
       messages:
         3_route_8: "The stop point %{target_0_label} (%{target_0_objectid}) of the route %{source_objectid} is not used by any journey pattern"
       description: "The stop points of a route must be used by at least one journey pattern"
-      prerequisite: "None"
+      prerequisite: "A route must have at least on journey pattern"
     route_control/omnibus_journey_pattern:
       messages:
         3_route_9: "The route with %{source_objectid} objectid does not have a journey pattern that connect all of its stop points"
       description: "A journey pattern of a route should connect all of a route's stop points"
-      prerequisite: "None"
+      prerequisite: "A route must be linked with at least one journey pattern"
     route_control/unactivated_stop_point:
       messages:
         3_route_10: "The route with %{source_objectid} objectid references a deactivated stop area %{target_0_label} (%{target_0_objectid})"

@@ -387,12 +387,19 @@ class CustomField < ApplicationModel
         def form_input
           out = "<div class = 'custom_field_attachment_wrapper form-group'>"
           out += @form_helper.label form_input_id, name, class: "file optional col-sm-4 col-xs-5 control-label"
-          out += "<div class = 'col-sm-8 col-xs-7'>"
-          out += "<div class='btn btn-success'>"
+          out += "<div class='col-sm-8 col-xs-7'>"
+          out += "<div class='btn btn-success col-sm-8'>"
           out += "<span class='fa fa-upload'></span>"
           out += preview
           out += "</div>"
+          if @instance.value.file&.present?
+            out += "<div class='col-sm-4'>"
+            out += @form_helper.input "remove_custom_field_#{code}".to_sym, as: :boolean, label: "actions.delete".t
+            out += "</div>"
+          end
+          # out += "<div class='row'>"
           out += @form_helper.input form_input_id, form_input_options
+          # out += "</div>"
           out += "</div>"
           out += "</div>"
           out.html_safe
@@ -402,6 +409,7 @@ class CustomField < ApplicationModel
           super.update({
             as: :file,
             wrapper: :horizontal_file_input,
+            wrapper_html: {class: 'col-sm-12'},
             label: false,
             input_html: {value: value, name: form_input_name, style: "display: none", class: "file custom_field_attachment"},
             hint: options["extension_whitelist"]&.to_sentence

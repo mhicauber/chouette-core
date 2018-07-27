@@ -73,7 +73,7 @@ en:
     attributes:
       import_message:
         criticity: Criticity
-        message_key: Message key
+        message_key: Control code
         message: Message
         filename: Filename
         line: Line

@@ -26,6 +26,10 @@ class ComplianceControlSet < ApplicationModel
     end
   end
 
+  def truncated_name
+    name&.truncate(150)
+  end
+
   def assignments current_user
     out = []
     current_user.organisation.workbenches.each do |workbench|

@@ -32,14 +32,14 @@
     "redux-thunk": "2.2.0",
     "ssri": "~> 5.2.2",
     "uglify-js": "3.3.2",
-    "whatwg-fetch": "^2.0.4"
+    "whatwg-fetch": "^2.0.4",
+    "babel-loader": "^7.1.5"
   },
   "license": "MIT",
   "engines": {
     "node": "^6.12.3"
   },
   "devDependencies": {
-    "babel-loader": "^7.1.5",
     "es6-object-assign": "1.1.0",
     "grunt": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
