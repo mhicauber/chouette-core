@@ -262,7 +262,7 @@ en:
       journey_pattern_control/minimum_length:
         one: "Minimum length of a journey pattern"
       vehicle_journey_control/waiting_time:
-        one: "The wating time at a stop point shouldn't be too long"
+        one: "The waiting time at a stop point shouldn't be too long"
       vehicle_journey_control/speed:
         one: "The speed between 2 stop points should be confined between thresholds"
       vehicle_journey_control/delta:
