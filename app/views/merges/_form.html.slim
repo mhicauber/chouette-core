@@ -16,7 +16,7 @@
       .head
         h4= Merge.tmf('available_referentials')
         .input-group
-          input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: available_referentials_workbench_merges_url(workbench)}
+          input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: available_referentials_workbench_merges_path(workbench)}
           .input-group-btn.clear-group
             a.btn.clear
               span.fa.fa-times
