@@ -20,7 +20,7 @@
             wrapper: :horizontal_form,
             disabled: !@stop_area.new_record?
         .slave data-master="[name='stop_area[kind]']" data-value="commercial"
-          = f.input :parent_id, as: :select, :collection => [f.object.parent_id], input_html: { data: { select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:full_name)}}}
+          = f.input :parent_id, as: :select, :collection => [f.object.parent_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:full_name)}}}
         - %i(non_commercial commercial).each do |kind|
           .slave data-master="[name='stop_area[kind]']" data-value=kind
             = f.input :area_type, as: :select, :input_html => {id: kind, :disabled => !@stop_area.new_record?}, :collection => Chouette::AreaType.options(kind), :include_blank => false, disabled: !@stop_area.new_record?
