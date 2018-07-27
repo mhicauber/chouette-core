@@ -20,7 +20,7 @@ class ApiKey < ApplicationModel
 
     loop do
       self.token = SecureRandom.hex
-      break token if self.class.where(token: token).blank?
+      break token unless self.class.where(token: token).exists?
     end
   end
 end
