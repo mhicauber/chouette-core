@@ -15,8 +15,8 @@ ActiveRecord::Schema.define(version: 20180717124110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -89,9 +89,9 @@ ActiveRecord::Schema.define(version: 20180717124110) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -790,6 +790,13 @@ ActiveRecord::Schema.define(version: 20180717124110) do
     t.datetime "updated_at",                         null: false
   end
 
+  create_table "stop_area_providers_areas", id: :bigserial, force: :cascade do |t|
+    t.integer "stop_area_provider_id", limit: 8
+    t.integer "stop_area_id",          limit: 8
+  end
+
+  add_index "stop_area_providers_areas", ["stop_area_provider_id", "stop_area_id"], name: "stop_areas_stop_area_providers_compound", using: :btree
+
   create_table "stop_area_referential_memberships", id: :bigserial, force: :cascade do |t|
     t.integer "organisation_id",          limit: 8
     t.integer "stop_area_referential_id", limit: 8
@@ -865,17 +872,10 @@ ActiveRecord::Schema.define(version: 20180717124110) do
   end
 
   add_index "stop_areas", ["name"], name: "index_stop_areas_on_name", using: :btree
-  add_index "stop_areas", ["objectid"], name: "stop_areas_objectid_key", unique: true, using: :btree
+  add_index "stop_areas", ["objectid"], name: "stop_areas_objectid_key", using: :btree
   add_index "stop_areas", ["parent_id"], name: "index_stop_areas_on_parent_id", using: :btree
   add_index "stop_areas", ["stop_area_referential_id", "registration_number"], name: "index_stop_areas_on_referential_id_and_registration_number", using: :btree
   add_index "stop_areas", ["stop_area_referential_id"], name: "index_stop_areas_on_stop_area_referential_id", using: :btree
-
-  create_table "stop_areas_stop_area_providers", id: :bigserial, force: :cascade do |t|
-    t.integer "stop_area_provider_id", limit: 8
-    t.integer "stop_area_id",          limit: 8
-  end
-
-  add_index "stop_areas_stop_area_providers", ["stop_area_provider_id", "stop_area_id"], name: "stop_areas_stop_area_providers_compound", using: :btree
 
   create_table "stop_areas_stop_areas", id: false, force: :cascade do |t|
     t.integer "child_id",  limit: 8
