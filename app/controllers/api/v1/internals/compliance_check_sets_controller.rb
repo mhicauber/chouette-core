@@ -25,7 +25,7 @@ module Api
           if res
             render json: {
               status: "ok",
-              message:"#{@compliance_check_set.parent_type} (id: #{@compliance_check_set.parent_id}) successfully notified at #{l(@Time.now)}"
+              message:"#{@compliance_check_set.parent_type} (id: #{@compliance_check_set.parent_id}) successfully notified at #{l(Time.now)}"
             }
           else
             render json: {status: "error", message: @compliance_check_set.errors.full_messages }
