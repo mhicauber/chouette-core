@@ -37,6 +37,6 @@ en:
       compliance_control_set:
         name: Name
         assigned_to: Assigned to
-        owner_jdc: Owner of the control game
+        owner_jdc: Owner of the control set
         control_numbers: Nb of controls
         updated_at: Update at
