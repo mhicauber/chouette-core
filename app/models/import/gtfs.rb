@@ -68,7 +68,12 @@ class Import::Gtfs < Import::Base
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
     )
-    self.referential.save!
+    begin
+      self.referential.save!
+    rescue => e
+      Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
+      raise
+    end
     main_resource.update referential: referential if main_resource
   end
 
@@ -149,12 +154,11 @@ class Import::Gtfs < Import::Base
   delegate :line_referential, :stop_area_referential, to: :workbench
 
   def prepare_referential
-    create_referential
-    
     import_agencies
     import_stops
     import_routes
 
+    create_referential
     referential.switch
   end
 
