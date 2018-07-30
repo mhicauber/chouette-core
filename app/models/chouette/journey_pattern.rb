@@ -27,6 +27,7 @@ module Chouette
     def checksum_attributes
       values = self.slice(*['name', 'published_name', 'registration_number']).values
       values << self.stop_points.sort_by(&:position).map(&:stop_area).map(&:user_objectid)
+      values << self.cleaned_costs
       values.flatten
     end
 
@@ -171,6 +172,16 @@ module Chouette
 
     def costs
       read_attribute(:costs) || {}
+    end
+
+    def cleaned_costs
+      out = {}
+      costs.each do |k, v|
+        out[k] = v.select do |kk, vv|
+          vv.present? && vv.to_i > 0
+        end
+      end
+      out.select{|k, v| v.present?}
     end
 
     def costs_between start, finish

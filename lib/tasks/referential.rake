@@ -111,6 +111,14 @@ namespace :referential do
     end
   end
 
+  def each_relevant_referential
+    referentials = Referential.not_in_referential_suite
+    referentials += Workbench.all.map { |w| w.output.current }.compact
+    referentials.sort_by(&:created_at).reverse.each do |referential|
+      yield referential
+    end
+  end
+
   desc 'Update all the checksums in the given referential'
   task :update_checksums_in_referential, [:id] => :environment do |t, args|
     referential = Referential.find(args[:id])
@@ -126,18 +134,21 @@ namespace :referential do
 
   desc 'Update all relevant checksums for PurchaseWindow'
   task :update_purchase_windows_checksums => :environment do |t, args|
-    referentials = Referential.not_in_referential_suite
-    referentials += Workbench.all.map { |w| w.output.current }.compact
-    referentials.each do |referential|
+    each_relevant_referential do |referential|
       update_checksums_for_referential referential, [Chouette::PurchaseWindow]
+    end
+  end
+
+  desc 'Update all relevant checksums for JourneyPattern'
+  task :update_journey_patterns_checksums => :environment do |t, args|
+    each_relevant_referential do |referential|
+      update_checksums_for_referential referential, [Chouette::JourneyPattern]
     end
   end
 
   desc 'Update all relevant checksums for RoutingConstraintZone'
   task :update_routing_constraint_zones_checksums => :environment do |t, args|
-    referentials = Referential.not_in_referential_suite
-    referentials += Workbench.all.map { |w| w.output.current }.compact
-    referentials.sort_by(&:created_at).reverse.each do |referential|
+    each_relevant_referential do |referential|
       faulty = []
       referential.switch do
         Chouette::RoutingConstraintZone.find_each do |rcz|
