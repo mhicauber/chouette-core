@@ -14,6 +14,30 @@ describe Chouette::JourneyPattern, :type => :model do
         end.to change{subject.reload.checksum}
       end
     end
+
+    context "when the costs are updated" do
+      it "should update checksum" do
+        expect do
+          subject.update costs:  {"1-2" => {distance: 12}}
+        end.to change{subject.reload.checksum}
+      end
+    end
+
+    context "when the costs are updated but do not actually change" do
+      it "should not update checksum" do
+        subject.update costs:  {"1-2" => {distance: 12}}
+
+        [
+          {"1-2" => {distance: 12, time: nil}},
+          {"1-2" => {distance: 12, time: 0}},
+          {"1-2" => {distance: 12, time: "0"}},
+          {"1-2" => {distance: 12, time: nil}, "3-4" => {}},
+          {"1-2" => {distance: 12, time: nil}, "3-4" => {distance: 0}},
+        ].each do |costs|
+          expect{ subject.update(costs:  costs) }.to_not change{ subject.reload.checksum }
+        end
+      end
+    end
   end
 
   # context 'validate minimum stop_points size' do
