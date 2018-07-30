@@ -71,7 +71,14 @@ RSpec.describe Merge do
         jp = route.full_journey_pattern
         expect(route.stop_points.uniq.count).to eq route.stop_areas.uniq.count + 1
         expect(jp.stop_points.uniq.count).to eq jp.stop_areas.uniq.count + 1
+        jp2 = route.journey_patterns.build
+        jp2.stop_points = route.stop_points[1..-1]
+        jp2.registration_number = route.name + "-partial"
+        jp2.name = route.name + "-partial"
+        jp2.save!
+        expect(jp2.stop_points.count).to eq jp.stop_points.count - 1
 
+        route.update_checksum!
         factor.times do
           footnotes[line.id] << FactoryGirl.create(:footnote, line: line)
         end
