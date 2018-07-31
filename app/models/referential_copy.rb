@@ -8,7 +8,12 @@ class ReferentialCopy < ActiveRecord::Base
 
   def copy
     copy_metadatas
-    copy_routes
+    source.switch do
+      lines.includes(:footnotes, :routes).each do |line|
+        copy_footnotes line
+        copy_routes line
+      end
+    end
     update status: :successful
   rescue SaveError => e
     Rails.logger.error e.message
@@ -38,14 +43,18 @@ class ReferentialCopy < ActiveRecord::Base
     end
   end
 
+  # FOOTNOTES
+
+  def copy_footnotes line
+    line.footnotes.each do |footnote|
+      copy_item_to_target_collection footnote, line.footnotes
+    end
+  end
+
   # ROUTES
 
-  def copy_routes
-    lines.each do |line|
-      source.switch do
-        line.routes.each &method(:copy_route)
-      end
-    end
+  def copy_routes line
+    line.routes.each &method(:copy_route)
   end
 
   def copy_route route

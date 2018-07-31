@@ -78,15 +78,27 @@ RSpec.describe ReferentialCopy do
     end
   end
 
-  context "#copy_routes" do
+  context "#copy_footnotes" do
+    let!(:footnote){
+      referential.switch do
+        create(:footnote, line: line_referential.lines.first)
+      end
+    }
+
+    it "should copy the footnotes" do
+      referential.switch
+      expect{ referential_copy.send(:copy_footnotes, footnote.line.reload) }.to change{ target.switch{ Chouette::Footnote.count } }.by 1
+      new_footnote = target.switch{ Chouette::Footnote.last }
+      expect(referential_copy.send(:clean_attributes_for_copy, footnote)).to eq referential_copy.send(:clean_attributes_for_copy, new_footnote)
+    end
+  end
+
+  context "#copy_route" do
     let!(:route){
       referential.switch do
         create(:route, line: line_referential.lines.first)
       end
     }
-    before(:each) do
-      expect(referential_copy).to receive(:lines).at_least(:once).and_return(line_referential.lines)
-    end
 
     context "without stop_points" do
       before(:each){
@@ -95,7 +107,7 @@ RSpec.describe ReferentialCopy do
         end
       }
       it "should copy the routes" do
-        expect{ referential_copy.send(:copy_routes) }.to change{ target.switch{ Chouette::Route.count } }.by 1
+        expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::Route.count } }.by 1
         former_route = referential.switch{ Chouette::Route.last }
         new_route = target.switch{ Chouette::Route.last }
         expect(referential_copy.send(:clean_attributes_for_copy, former_route)).to eq referential_copy.send(:clean_attributes_for_copy, new_route)
@@ -103,10 +115,10 @@ RSpec.describe ReferentialCopy do
 
       context "when the route already exists" do
         before(:each) do
-          referential_copy.send(:copy_routes)
+          referential_copy.send(:copy_route, route)
         end
         it "should fail" do
-          expect{ referential_copy.send(:copy_routes) }.to raise_error ReferentialCopy::SaveError
+          expect{ referential_copy.send(:copy_route, route) }.to raise_error ReferentialCopy::SaveError
         end
       end
     end
@@ -115,7 +127,7 @@ RSpec.describe ReferentialCopy do
       it "should copy the stop_points" do
         stop_points_count = referential.switch { route.stop_points.count }
         stop_areas = referential.switch { route.stop_points.map{|sp| sp.stop_area.objectid} }
-        expect{ referential_copy.send(:copy_routes) }.to change{ target.switch{ Chouette::StopPoint.count } }.by stop_points_count
+        expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::StopPoint.count } }.by stop_points_count
         target.switch do
           new_route = Chouette::Route.last
           expect(new_route.stop_points.count).to eq stop_points_count
@@ -142,7 +154,7 @@ RSpec.describe ReferentialCopy do
           end
         end
 
-        expect{ referential_copy.send(:copy_routes) }.to change{ target.switch{ Chouette::JourneyPattern.count } }.by journey_patterns_count
+        expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::JourneyPattern.count } }.by journey_patterns_count
         target.switch do
           new_route = Chouette::Route.last
           expect(new_route.journey_patterns.count).to eq journey_patterns_count
@@ -169,7 +181,7 @@ RSpec.describe ReferentialCopy do
             stop_areas[rcz.objectid] = rcz.stop_points.map{|sp| sp.stop_area.objectid}
           end
         end
-        expect{ referential_copy.send(:copy_routes) }.to change{ target.switch{ Chouette::RoutingConstraintZone.count } }.by rcz_count
+        expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::RoutingConstraintZone.count } }.by rcz_count
         target.switch do
           new_route = Chouette::Route.last
           expect(new_route.routing_constraint_zones.count).to eq rcz_count
