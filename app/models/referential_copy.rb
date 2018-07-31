@@ -30,7 +30,8 @@ class ReferentialCopy < ActiveRecord::Base
       candidate = target.metadatas.with_lines(metadata.line_ids).last
       if candidate
         candidate.periodes += metadata.periodes
-        candidate.save
+        candidate.merge_periodes
+        controlled_save! candidate
       else
         target.metadatas.create line_ids: metadata.line_ids, periodes: metadata.periodes
       end

@@ -123,6 +123,25 @@ class ReferentialMetadata < ApplicationModel
     end
   end
 
+  def merge_periodes
+    return unless periods.any?
+    sorted_periods = periodes.sort_by(&:min)
+    merged_periods = []
+    current = sorted_periods.first
+    sorted_periods[1..-1].each do |period|
+      if current & period
+        current = (current.min..[current.max, period.max].max)
+      else
+        merged_periods << current
+        current = period
+      end
+    end
+    merged_periods << current
+
+    self.periodes = merged_periods
+    clear_periods
+  end
+
   def periods_attributes=(attributes = {})
     @periods = []
     attributes.each do |index, period_attribute|
