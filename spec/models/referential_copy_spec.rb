@@ -102,13 +102,33 @@ RSpec.describe ReferentialCopy do
     end
 
     context "with stop_points" do
-      it "should copy_the_stop_points" do
+      it "should copy the stop_points" do
         stop_points_count = referential.switch { route.stop_points.count }
         expect(referential_copy).to receive(:copy_route_stop_point).exactly(stop_points_count).times.and_call_original
         expect{ referential_copy.send(:copy_routes) }.to change{ target.switch{ Chouette::StopPoint.count } }.by stop_points_count
         target.switch do
-          new_route =  Chouette::Route.last
+          new_route = Chouette::Route.last
           expect(new_route.stop_points.count).to eq stop_points_count
+        end
+      end
+    end
+
+
+    context "with journey_patterns" do
+      before(:each) do
+        referential.switch do
+          2.times do
+            create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+          end
+        end
+      end
+      it "should copy the journey_patterns" do
+        journey_patterns_count = referential.switch { route.journey_patterns.count }
+        expect(referential_copy).to receive(:copy_route_journey_pattern).exactly(journey_patterns_count).times.and_call_original
+        expect{ referential_copy.send(:copy_routes) }.to change{ target.switch{ Chouette::JourneyPattern.count } }.by journey_patterns_count
+        target.switch do
+          new_route = Chouette::Route.last
+          expect(new_route.journey_patterns.count).to eq journey_patterns_count
         end
       end
     end

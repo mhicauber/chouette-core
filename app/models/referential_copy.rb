@@ -53,6 +53,7 @@ class ReferentialCopy < ActiveRecord::Base
     target.switch do
       new_route = line.routes.build attributes
       copy_route_stop_points route, new_route
+      copy_route_journey_patterns route, new_route
       controlled_save! new_route
     end
   end
@@ -60,19 +61,25 @@ class ReferentialCopy < ActiveRecord::Base
   # STOP POINTS
 
   def copy_route_stop_points source_route, target_route
-    source.switch do
-      source_route.stop_points.each do |stop_point|
-        copy_route_stop_point stop_point, target_route
-      end
+    each_item_in_source_collection(source_route.stop_points) do |stop_point|
+      copy_route_stop_point stop_point, target_route
     end
   end
 
   def copy_route_stop_point stop_point, target_route
-    attributes = clean_attributes_for_copy stop_point
-    target.switch do
-      new_stop_point = target_route.stop_points.build attributes
-      controlled_save! new_stop_point
+    copy_item_to_target_collection stop_point, target_route.stop_points
+  end
+
+  # JOURNEY PATTERNS
+
+  def copy_route_journey_patterns source_route, target_route
+    each_item_in_source_collection(source_route.journey_patterns) do |journey_pattern|
+      copy_route_journey_pattern journey_pattern, target_route
     end
+  end
+
+  def copy_route_journey_pattern journey_pattern, target_route
+    copy_item_to_target_collection journey_pattern, target_route.journey_patterns
   end
 
   #  _  _ ___ _    ___ ___ ___  ___
@@ -80,6 +87,22 @@ class ReferentialCopy < ActiveRecord::Base
   # | __ | _|| |__|  _/ _||   /\__ \
   # |_||_|___|____|_| |___|_|_\|___/
   #
+
+  def each_item_in_source_collection collection
+    source.switch do
+      collection.each do |item|
+        yield item
+      end
+    end
+  end
+
+  def copy_item_to_target_collection source_item, target_collection
+    attributes = clean_attributes_for_copy source_item
+    target.switch do
+      new_item = target_collection.build attributes
+      controlled_save! new_item
+    end
+  end
 
   def clean_attributes_for_copy model
     model.attributes.dup.except(*%w(id created_at updated_at))
