@@ -18,7 +18,7 @@ FactoryGirl.define do
         end
 
         after(:create) do |vehicle_journey, evaluator|
-          vehicle_journey.journey_pattern.stop_points.each_with_index do |stop_point, index|
+          vehicle_journey.journey_pattern.stop_points.order(:position).each_with_index do |stop_point, index|
             prev_stop = vehicle_journey.vehicle_journey_at_stops[index - 1]
 
             arrival_time   = prev_stop ? prev_stop[:departure_time] + 1.minute : evaluator.stop_arrival_time

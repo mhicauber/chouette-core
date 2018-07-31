@@ -8,6 +8,7 @@ class ReferentialCopy < ActiveRecord::Base
 
   def copy
     copy_metadatas
+    copy_time_tables
     source.switch do
       lines.includes(:footnotes, :routes).each do |line|
         copy_footnotes line
@@ -43,6 +44,37 @@ class ReferentialCopy < ActiveRecord::Base
     end
   end
 
+  # TIMETABLES
+
+  def copy_time_tables
+    source.switch do
+      Chouette::TimeTable.find_each do |tt|
+        attributes = clean_attributes_for_copy tt
+        target.switch do
+          new_tt = Chouette::TimeTable.new attributes
+          copy_collection tt, new_tt, :dates
+          copy_collection tt, new_tt, :periods
+          controlled_save! new_tt
+        end
+      end
+    end
+  end
+
+  # PURCHASE WINDOWS
+
+  def copy_purchase_windows
+    purchase_window_attributes = source.switch do
+      Chouette::PurchaseWindow.find_each.map do |purchase_window|
+        clean_attributes_for_copy purchase_window
+      end
+    end
+    target.switch do
+      purchase_window_attributes.each do |attributes|
+        controlled_save! Chouette::PurchaseWindow.new attributes
+      end
+    end
+  end
+
   # FOOTNOTES
 
   def copy_footnotes line
@@ -66,12 +98,24 @@ class ReferentialCopy < ActiveRecord::Base
 
       controlled_save! new_route
 
+      # we copy the journey_patterns
       copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
-        copy_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid, :position], [:objectid, :position]
+        retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid, :position], [:objectid, :position]
+        copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
+          new_vj.route = new_route
+          retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables, [:checksum], [:checksum]
+          retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows, [:checksum], [:checksum, :date_ranges]
+          copy_collection vj, new_vj, :vehicle_journey_at_stops do |vjas, new_vjas|
+            query = source.switch { vjas.stop_point.slice(:position, :objectid) }
+            new_vjas.stop_point = new_journey_pattern.stop_points.find_by(query)
+          end
+        end
       end
+
+      # we copy the routing_constraint_zones
       copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
         new_rcz.stop_point_ids = []
-        copy_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points, [:objectid, :position]
+        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points, [:objectid, :position]
       end
     end
   end
@@ -95,12 +139,12 @@ class ReferentialCopy < ActiveRecord::Base
   # keys: the keys used to identify the objects across both referentials
   # select (optional): the fields to query on the source collection
 
-  def copy_collection_with_mapping from, to, find_collection, collection_name, keys, select=nil
+  def retrieve_collection_with_mapping from, to, find_collection, collection_name, keys, select=nil
     queries = []
     from_collection = from.send(collection_name)
     from_collection = from_collection.select(*select) if select.present?
     each_item_in_source_collection(from_collection) do |item|
-      queries << Hash[keys.map{|k| [k, item.send(k)]}]
+      queries << item.slice(*keys)
     end
 
     to_collection = to.send(collection_name)
