@@ -1,9 +1,7 @@
-
-
 module Seed
 
   def self.all_features
-    %w{application_days_on_calendars change_locale consolidated_offers core_controls costs_in_journey_patterns create_opposite_routes detailed_calendars detailed_purchase_windows journey_length_in_vehicle_journeys long_distance_routes purchase_windows referential_vehicle_journeys route_stop_areas_all_types stop_area_localized_names stop_area_waiting_time vehicle_journeys_return_route}
+    Feature.all
   end
 
   def self.edit_permissions
