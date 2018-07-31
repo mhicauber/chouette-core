@@ -683,6 +683,15 @@ ActiveRecord::Schema.define(version: 20180914100755) do
   add_index "referential_clonings", ["source_referential_id"], name: "index_referential_clonings_on_source_referential_id", using: :btree
   add_index "referential_clonings", ["target_referential_id"], name: "index_referential_clonings_on_target_referential_id", using: :btree
 
+  create_table "referential_copies", id: :bigserial, force: :cascade do |t|
+    t.integer  "source_id",  limit: 8
+    t.integer  "target_id",  limit: 8
+    t.string   "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text     "last_error"
+  end
+
   create_table "referential_metadata", id: :bigserial, force: :cascade do |t|
     t.integer   "referential_id",        limit: 8
     t.integer   "line_ids",              limit: 8, array: true
