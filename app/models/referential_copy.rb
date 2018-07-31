@@ -52,34 +52,18 @@ class ReferentialCopy < ActiveRecord::Base
     attributes = clean_attributes_for_copy route
     target.switch do
       new_route = line.routes.build attributes
-      copy_route_stop_points route, new_route
-      copy_route_journey_patterns route, new_route
+      copy_collection route, new_route, :stop_points
+
       controlled_save! new_route
+
+      copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
+        copy_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid, :position], [:objectid, :position]
+      end
+      copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
+        new_rcz.stop_point_ids = []
+        copy_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points, [:objectid, :position]
+      end
     end
-  end
-
-  # STOP POINTS
-
-  def copy_route_stop_points source_route, target_route
-    each_item_in_source_collection(source_route.stop_points) do |stop_point|
-      copy_route_stop_point stop_point, target_route
-    end
-  end
-
-  def copy_route_stop_point stop_point, target_route
-    copy_item_to_target_collection stop_point, target_route.stop_points
-  end
-
-  # JOURNEY PATTERNS
-
-  def copy_route_journey_patterns source_route, target_route
-    each_item_in_source_collection(source_route.journey_patterns) do |journey_pattern|
-      copy_route_journey_pattern journey_pattern, target_route
-    end
-  end
-
-  def copy_route_journey_pattern journey_pattern, target_route
-    copy_item_to_target_collection journey_pattern, target_route.journey_patterns
   end
 
   #  _  _ ___ _    ___ ___ ___  ___
@@ -87,6 +71,33 @@ class ReferentialCopy < ActiveRecord::Base
   # | __ | _|| |__|  _/ _||   /\__ \
   # |_||_|___|____|_| |___|_|_\|___/
   #
+
+  def copy_collection source_item, target_item, collection_name, &block
+    each_item_in_source_collection(source_item.send(collection_name)) do |item|
+      copy_item_to_target_collection item, target_item.send(collection_name), &block
+    end
+  end
+
+  # from: the object you read the collection from
+  # to: the object owning the collection you want to fill
+  # find_collection: the collection used to find the objects in the source referential
+  # collection_name: the name of the collection
+  # keys: the keys used to identify the objects across both referentials
+  # select (optional): the fields to query on the source collection
+
+  def copy_collection_with_mapping from, to, find_collection, collection_name, keys, select=nil
+    queries = []
+    from_collection = from.send(collection_name)
+    from_collection = from_collection.select(*select) if select.present?
+    each_item_in_source_collection(from_collection) do |item|
+      queries << Hash[keys.map{|k| [k, item.send(k)]}]
+    end
+
+    to_collection = to.send(collection_name)
+    queries.each do |q|
+      to_collection << find_collection.find_by(q)
+    end
+  end
 
   def each_item_in_source_collection collection
     source.switch do
@@ -96,10 +107,11 @@ class ReferentialCopy < ActiveRecord::Base
     end
   end
 
-  def copy_item_to_target_collection source_item, target_collection
+  def copy_item_to_target_collection source_item, target_collection, &block
     attributes = clean_attributes_for_copy source_item
     target.switch do
       new_item = target_collection.build attributes
+      block.call(source_item, new_item) if block.present?
       controlled_save! new_item
     end
   end
