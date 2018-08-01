@@ -130,7 +130,12 @@ class Merge < ApplicationModel
       Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
     end
 
-    new.save!
+    begin
+      new.save!
+    rescue
+      Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
+      raise
+    end
 
     output.update new: new
     update new: new
@@ -315,7 +320,7 @@ class Merge < ApplicationModel
 
       journey_patterns_stop_areas_objectids = Hash[
         journey_patterns.map do |journey_pattern|
-          [ journey_pattern.id, journey_pattern.stop_points.map(&:stop_area).map(&:raw_objectid)]
+          [ journey_pattern.id, journey_pattern.stop_points.map{|sp| [sp.position, sp.stop_area.raw_objectid]} ]
         end
       ]
 
@@ -350,7 +355,9 @@ class Merge < ApplicationModel
 
           stop_areas_objectids = referential_journey_patterns_stop_areas_objectids[journey_pattern.id]
 
-          stop_points = existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": stop_areas_objectids).order(:position)
+          stop_points = stop_areas_objectids.map do |position, object_id|
+            existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id, position: position).last
+          end
           if stop_points.count != stop_areas_objectids.count
             raise "Can't find StopPoints for #{stop_areas_objectids} : #{stop_points.inspect} #{existing_associated_route.stop_points.inspect}"
           end
