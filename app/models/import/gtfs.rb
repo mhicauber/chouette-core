@@ -11,7 +11,7 @@ class Import::Gtfs < Import::Base
   end
 
   def main_resource
-    @resource ||= parent.resources.find_or_create_by(name: self.name, resource_type: "referential", reference: self.name) if parent
+    @resource ||= parent.resources.find_or_create_by(name: referential_name, resource_type: "referential", reference: self.name) if parent
   end
 
   def next_step
@@ -63,7 +63,7 @@ class Import::Gtfs < Import::Base
 
   def create_referential
     self.referential ||=  Referential.new(
-      name: self.name,
+      name: referential_name,
       organisation_id: workbench.organisation_id,
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
@@ -75,6 +75,10 @@ class Import::Gtfs < Import::Base
       raise
     end
     main_resource.update referential: referential if main_resource
+  end
+
+  def referential_name
+    name.presence || File.basename(local_file.to_s)
   end
 
   def referential_metadata
@@ -98,10 +102,6 @@ class Import::Gtfs < Import::Base
   attr_accessor :download_host
   def download_host
     @download_host ||= Rails.application.config.rails_host
-  end
-
-  def name
-    self[:name].presence || local_file.basename.to_s
   end
 
   def local_temp_directory

@@ -35,6 +35,18 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe "created referential" do
+
+    let(:import) { create_import "google-sample-feed.zip" }
+
+    it "is named with the import name" do
+      import.name = "Import Name"
+      import.prepare_referential
+      expect(import.referential.name).to eq(import.name)
+    end
+
+  end
+
   describe "#import_agencies" do
     let(:import) { create_import "google-sample-feed.zip" }
     it "should create a company for each agency" do
