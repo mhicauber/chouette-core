@@ -1,4 +1,6 @@
 class Import::Gtfs < Import::Base
+  include BenchmarkSupport
+
   after_commit :launch_worker, :on => :create
 
   after_commit do
@@ -158,9 +160,9 @@ class Import::Gtfs < Import::Base
   delegate :line_referential, :stop_area_referential, to: :workbench
 
   def prepare_referential
-    import_agencies
-    import_stops
-    import_routes
+    Import::Gtfs.benchmark(self, :import_agencies)
+    Import::Gtfs.benchmark(self, :import_stops)
+    Import::Gtfs.benchmark(self, :import_routes)
 
     create_referential
     referential.switch
@@ -169,10 +171,10 @@ class Import::Gtfs < Import::Base
   def import_without_status
     prepare_referential
 
-    import_calendars
-    import_calendar_dates
-    import_trips
-    import_stop_times
+    Import::Gtfs.benchmark(self, :import_calendars)
+    Import::Gtfs.benchmark(self, :import_calendar_dates)
+    Import::Gtfs.benchmark(self, :import_trips)
+    Import::Gtfs.benchmark(self, :import_stop_times)
   end
 
   def import_agencies
