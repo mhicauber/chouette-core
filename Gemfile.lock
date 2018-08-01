@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/af83/gtfs.git
-  revision: 9be8a7b1f3c091bc8606b87edf52e1b11ef5f70e
+  revision: 67794a189584078234555b294a9a1b97201b0824
   specs:
-    gtfs (0.2.5)
+    gtfs (0.2.6)
       multi_json
       rake
       rubyzip (~> 1.1)
