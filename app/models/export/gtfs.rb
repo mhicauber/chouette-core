@@ -149,9 +149,10 @@ class Export::Gtfs < Export::Base
     line_ids = journeys.joins(:route).pluck(:line_id).uniq
     Chouette::Line.where(id: line_ids).each do |line|
       route_id = line.registration_number.presence || line.id
+      company_id = (line.company.registration_number.presence || line.company.id) if line.company
       target.routes << {
         id: route_id,
-        agency_id: (line.company.registration_number.presence || line.company.id),
+        agency_id: company_id,
         long_name: line.published_name,
         short_name: line.number,
         type: gtfs_line_type(line),
@@ -239,10 +240,14 @@ class Export::Gtfs < Export::Base
       vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
         vehicule_journey_service_trip_hash[vehicle_journey.id].each do |trip_id|
           vehicle_journey_at_stop.departure_time
+
+          arrival_time = GTFS::Time.format_datetime(vehicle_journey_at_stop.arrival_time, vehicle_journey_at_stop.arrival_day_offset) if vehicle_journey_at_stop.arrival_time
+          departure_time = GTFS::Time.format_datetime(vehicle_journey_at_stop.departure_time, vehicle_journey_at_stop.departure_day_offset) if vehicle_journey_at_stop.departure_time
+
           target.stop_times << {
             trip_id: trip_id,
-            arrival_time: GTFS::Time.format_datetime(vehicle_journey_at_stop.arrival_time, vehicle_journey_at_stop.arrival_day_offset),
-            departure_time: GTFS::Time.format_datetime(vehicle_journey_at_stop.departure_time, vehicle_journey_at_stop.departure_day_offset),
+            arrival_time: arrival_time,
+            departure_time: departure_time,
             stop_id: stop_area_stop_hash[vehicle_journey_at_stop.stop_point.stop_area_id],
             stop_sequence: vehicle_journey_at_stop.stop_point.position # NOT SURE TO DO,
             # stop_headsign: TO STORE IN IMPORT,
