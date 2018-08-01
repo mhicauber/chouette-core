@@ -61,7 +61,7 @@ class Workbench < ApplicationModel
 
   def compliance_control_set key
     id = (owner_compliance_control_set_ids || {})[key.to_s]
-    ComplianceControlSet.find(id) if id.present?
+    ComplianceControlSet.where(id: id).last if id.present?
   end
 
   def compliance_control_set_ids=(compliance_control_set_ids)

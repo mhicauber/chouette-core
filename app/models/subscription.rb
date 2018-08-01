@@ -71,6 +71,7 @@ class Subscription
     @workgroup ||= Workgroup.create!(name: "#{Workgroup.ts} #{organisation.name}") do |w|
       w.line_referential      = line_referential
       w.stop_area_referential = stop_area_referential
+      w.owner = organisation
     end
   end
 

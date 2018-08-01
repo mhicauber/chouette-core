@@ -7,6 +7,8 @@ class ComplianceCheck < ApplicationModel
   belongs_to :compliance_check_set
   belongs_to :compliance_check_block
 
+  has_many :compliance_check_messages, dependent: :destroy
+
   enumerize :criticity, in: %i(warning error), scope: true, default: :warning
   validates :criticity, presence: true
   validates :name, presence: true
@@ -24,6 +26,14 @@ class ComplianceCheck < ApplicationModel
 
   delegate :predicate, to: :control_class, allow_nil: true
   delegate :prerequisite, to: :control_class, allow_nil: true
+
+  def method_missing m_name, *args
+    if self.control_attributes.has_key?(m_name.to_s)
+      self.control_attributes[m_name.to_s]
+    else
+      super m_name, *args
+    end
+  end
 
   def internal?
     !iev_enabled_check

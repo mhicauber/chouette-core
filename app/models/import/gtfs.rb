@@ -31,9 +31,24 @@ class Import::Gtfs < Import::Base
   rescue Exception => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
-    create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).any?
+      overlapped = Referential.find overlapped_referential_ids.last
+      create_message(
+        criticity: :error,
+        message_key: "referential_creation_overlapping_existing_referential",
+        message_attributes: {
+          referential_name: referential.name,
+          overlapped_name: overlapped.name,
+          overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
+        }
+      )
+    else
+      create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+    end
     referential&.failed!
   ensure
+    main_resource&.save
+    save
     notify_parent
   end
 
@@ -47,12 +62,18 @@ class Import::Gtfs < Import::Base
   end
 
   def create_referential
-    self.referential ||= Referential.create!(
+    self.referential ||=  Referential.new(
       name: "GTFS Import",
       organisation_id: workbench.organisation_id,
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
     )
+    begin
+      self.referential.save!
+    rescue => e
+      Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
+      raise
+    end
     main_resource.update referential: referential if main_resource
   end
 
@@ -156,6 +177,8 @@ class Import::Gtfs < Import::Base
       source.agencies.each do |agency|
         company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
         company.attributes = { name: agency.name }
+        company.url = agency.url
+        company.time_zone = agency.timezone
 
         save_model company
         count += 1
