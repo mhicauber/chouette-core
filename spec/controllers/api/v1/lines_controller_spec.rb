@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Api::V1::LinesController, :type => :controller do
-  let!(:line) { create(:line, referential: referential) }
-  let!(:other_line) { create(:line) }
+  let!(:line) { create(:line, line_referential: referential.line_referential) }
+  let!(:other_line) { create(:line, line_referential: create(:line_referential)) }
 
   it_behaves_like "api key protected controller" do
     let(:data){line}
@@ -10,7 +10,7 @@ describe Api::V1::LinesController, :type => :controller do
   describe "GET #index" do
     context "when authorization provided and request.accept is json" do
       before :each do
-        config_formatted_request_with_authorization( "application/json")
+        config_formatted_request_with_authorization("application/json")
         get :index
       end
 
