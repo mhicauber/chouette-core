@@ -19,7 +19,7 @@ class Workgroup < ApplicationModel
 
   accepts_nested_attributes_for :workbenches
 
-  @@workbench_scopes_class = Stif::WorkbenchScopes
+  @@workbench_scopes_class = WorkbenchScopes::All
   mattr_accessor :workbench_scopes_class
 
   def custom_fields_definitions
