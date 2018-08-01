@@ -1,10 +1,6 @@
 require "rails_helper"
 
 RSpec.describe ReferentialCopy do
-
-  # XXX THIS IS A BIG COPY/PASTA FROM MERGE SPEC
-  # We'll rewrite this as soon as the test DSL is available
-
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
@@ -33,6 +29,42 @@ RSpec.describe ReferentialCopy do
       route = create :route, line: line_referential.lines.last
       journey_pattern = route.full_journey_pattern
       create :vehicle_journey, journey_pattern: journey_pattern
+    end
+  end
+
+  context "#copy" do
+    context "with no data" do
+      it "should succeed" do
+        referential_copy.copy
+        expect(referential_copy.status).to eq :successful
+        expect(referential_copy.last_error).to be_nil
+      end
+    end
+
+    context "with data" do
+      before(:each){
+        referential.switch do
+          create(:route, line: line_referential.lines.first)
+        end
+      }
+      it "should succeed" do
+        referential_copy.copy
+        expect(referential_copy.status).to eq :successful
+        expect(referential_copy.last_error).to be_nil
+      end
+
+      context "with an error" do
+        before(:each){
+          allow_any_instance_of(Chouette::Route).to receive(:save!).and_raise("boom")
+        }
+
+        it "should fail" do
+          referential_copy.copy
+          expect(referential_copy.status).to eq :failed
+          expect(referential_copy.last_error).to match /boom/
+          expect(referential_copy.last_error).to match /Chouette::Route/
+        end
+      end
     end
   end
 
