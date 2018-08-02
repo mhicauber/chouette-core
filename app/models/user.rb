@@ -4,6 +4,7 @@ class User < ApplicationModel
 
   @@authentication_type = "#{Rails.application.config.chouette_authentication_settings[:type]}_authenticatable".to_sym
   cattr_reader :authentication_type
+  cattr_accessor :cas_updater
 
   def self.more_devise_modules
     if Subscription.enabled?
@@ -48,34 +49,7 @@ class User < ApplicationModel
 
   # Callback invoked by DeviseCasAuthenticable::Model#authernticate_with_cas_ticket
   def cas_extra_attributes=(extra_attributes)
-    extra             = extra_attributes.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-    self.name         = extra[:full_name]
-    self.email        = extra[:email]
-    self.organisation = Organisation.sync_update extra[:organisation_code], extra[:organisation_name], extra
-    self.permissions  = Stif::PermissionTranslator.translate(extra[:permissions], self.organisation)
-  end
-
-  def self.portail_api_request
-    conf = Rails.application.config.try(:stif_portail_api)
-    raise 'Rails.application.config.stif_portail_api configuration is not defined' unless conf
-
-    HTTPService.get_json_resource(
-      host: conf[:url],
-      path: '/api/v1/users',
-      token: conf[:key])
-  end
-
-  def self.portail_sync
-    self.portail_api_request.each do |el|
-      user              = User.find_or_initialize_by(username: el['username'])
-      user.name         = "#{el['firstname']} #{el['lastname']}"
-      user.email        = el['email']
-      user.locked_at    = el['locked_at']
-      user.organisation = Organisation.sync_update el['organization_code'], el['organization_name'], el
-      user.synced_at    = Time.now
-      user.permissions  = Stif::PermissionTranslator.translate(el['permissions'])
-      user.save
-    end
+     self.class.cas_updater&.update self, extra_attributes 
   end
 
   def has_permission?(permission)
