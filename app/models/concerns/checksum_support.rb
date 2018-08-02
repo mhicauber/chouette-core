@@ -62,6 +62,9 @@ module ChecksumSupport
     self.attributes.values
   end
 
+  # /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
+  #  Checksum output inconsistency regarding boolean values : true -> 'true' whereas false -> '-'
+  # /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
   def checksum_replace_nil_or_empty_values values
     # Replace empty array by nil & nil by VALUE_FOR_NIL_ATTRIBUTE
     values
