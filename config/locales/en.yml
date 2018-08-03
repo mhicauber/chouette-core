@@ -4,7 +4,6 @@ en:
   "unknown": "Unknown"
   label_with_colon: "%{label}: "
 
-
   time:
     formats:
       hour: "%Hh%M"
