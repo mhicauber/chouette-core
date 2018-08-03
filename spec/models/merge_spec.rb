@@ -42,11 +42,13 @@ RSpec.describe Merge do
       m.update status: :successful
       m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
       m.update status: :successful
+      m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+      m.update status: :failed
     end
-    expect(Merge.count).to eq 6
+    expect(Merge.count).to eq 9
     Merge.keep_merges = 2
     Merge.last.clean_previous_merges
-    expect(Merge.count).to eq 5
+    expect(Merge.count).to eq 8
   end
 
   context "with before_merge compliance_control_sets" do

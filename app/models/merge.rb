@@ -19,6 +19,8 @@ class Merge < ApplicationModel
 
   after_commit :merge, :on => :create
 
+  scope :successful, ->{ where status: :successful }
+
   def self.keep_merges=(value)
     @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
   end
@@ -620,7 +622,9 @@ class Merge < ApplicationModel
   end
 
   def clean_previous_merges
-    workbench.merges.order("created_at desc").offset(Merge.keep_merges).each { |m| m.new&.destroy ; m.destroy }
+    while workbench.merges.successful.count > [Merge.keep_merges, 0].max do
+      workbench.merges.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }
+    end
   end
 
   def child_change
