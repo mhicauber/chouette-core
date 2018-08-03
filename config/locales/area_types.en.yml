@@ -5,3 +5,8 @@ en:
       zdlp: "Monomodal Stop Place"
       lda: "Stop Place"
       gdl: "Group of Stop Places"
+      deposit: Deposit
+      border: Border
+      service_area: Service Area
+      relief: Relief point
+      other: Other

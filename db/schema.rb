@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180625090623) do
+ActiveRecord::Schema.define(version: 20180717092218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -207,6 +207,7 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.datetime "ended_at"
     t.datetime "notified_parent_at"
     t.jsonb    "metadata",                            default: {}
+    t.string   "context"
   end
 
   add_index "compliance_check_sets", ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id", using: :btree
@@ -788,7 +789,6 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.string   "objectid"
     t.string   "name"
     t.integer  "stop_area_referential_id", limit: 8
-    t.integer  "workgroup_id",             limit: 8
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
   end
@@ -865,7 +865,6 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.datetime "confirmed_at"
     t.jsonb    "custom_field_values"
     t.jsonb    "metadata",                                                            default: {}
-    t.string   "local_code"
   end
 
   add_index "stop_areas", ["name"], name: "index_stop_areas_on_name", using: :btree

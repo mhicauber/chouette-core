@@ -5,3 +5,8 @@ fr:
       zdlp: "Zone de Lieu"
       lda: "Lieu d'Arrêt"
       gdl: "Groupe de Lieux"
+      deposit: Dépôt
+      border: Frontière
+      service_area: Aire de service / Pause
+      relief: Point de relève
+      other: Autre
