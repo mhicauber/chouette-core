@@ -48,7 +48,9 @@ export default class Tools extends Component {
           { hasFeature('purchase_windows') &&
             <PurchaseWindowsEditVehicleJourney disabled={hasDeletedVJ()}/>
           }
-          <ConstraintExclusionEditVehicleJourney disabled={hasDeletedVJ()}/>
+          {hasFeature('routing_constraint_zone_exlusion_in_vehicle_journey') &&
+            <ConstraintExclusionEditVehicleJourney disabled={hasDeletedVJ()} />
+          }
           <NotesEditVehicleJourney disabled={hasDeletedVJ()}/>
           <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/>
         </ul>
