@@ -27,6 +27,43 @@ describe Referential, :type => :model do
         expect(ref.slug).to eq(expected_slug)
       end
     end
+
+    context "without concurent referential on same lines and dates" do
+      it { should be_valid }
+    end
+
+    context "with concurent referential on same lines and dates" do
+      let(:other){
+        metadatas = create :referential_metadata
+        metadatas.line_ids = ref.metadatas.first.line_ids
+        metadatas.periodes = ref.metadatas.first.periodes
+        build :workbench_referential, metadatas: [metadatas], workbench: ref.workbench, organisation: ref.organisation
+      }
+
+      it "should not be_valid" do
+        expect(other).to_not be_valid
+      end
+
+      context "when the other is not active" do
+        before{
+          ref.failed!
+        }
+
+        it "should be_valid" do
+          expect(other).to be_valid
+        end
+      end
+
+      context "with metadatas on a single day" do
+        before{
+          ref.metadatas.first.update periodes: [(Time.now.to_date..Time.now.to_date)]
+        }
+
+        it "should not be_valid" do
+          expect(other).to_not be_valid
+        end
+      end
+    end
   end
 
   context "creation" do

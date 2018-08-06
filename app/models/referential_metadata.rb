@@ -22,13 +22,7 @@ class ReferentialMetadata < ApplicationModel
   end
 
   def adapted_periods(periods)
-    periods.map do | period |
-      if period.try(:exclude_end?)
-        period.begin .. (period.end - 1)
-      else
-        period
-      end
-    end
+    periods.map {| period | (period.min .. period.max)}
   end
   private :adapted_periods
 

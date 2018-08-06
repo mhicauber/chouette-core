@@ -410,7 +410,7 @@ class Referential < ApplicationModel
     not_myself = "and referential_id != #{id}" if persisted?
 
     periods_query = periodes.map do |periode|
-      "period && '[#{periode.begin},#{periode.end})'"
+      "period && '[#{periode.begin},#{periode.end + 1.day})'"
     end.join(" OR ")
 
     query = "select distinct(public.referential_metadata.referential_id) FROM public.referential_metadata, unnest(line_ids) line, LATERAL unnest(periodes) period
