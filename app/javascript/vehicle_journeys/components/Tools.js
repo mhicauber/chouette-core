@@ -48,7 +48,7 @@ export default class Tools extends Component {
           { hasFeature('purchase_windows') &&
             <PurchaseWindowsEditVehicleJourney disabled={hasDeletedVJ()}/>
           }
-          {hasFeature('routing_constraint_zone_exlusion_in_vehicle_journey') &&
+          {hasFeature('routing_constraint_zone_exclusion_in_vehicle_journey') &&
             <ConstraintExclusionEditVehicleJourney disabled={hasDeletedVJ()} />
           }
           <NotesEditVehicleJourney disabled={hasDeletedVJ()}/>
@@ -57,7 +57,7 @@ export default class Tools extends Component {
         <div className='pull-left'>
           <span className='info-msg left-span'>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.selected_journeys', { count: actions.getSelected(vehicleJourneys).length })}</span>
         </div>
-        <button className='btn btn-xs btn-link' 
+        <button className='btn btn-xs btn-link'
                 disabled={actions.getSelected(vehicleJourneys).length == 0}
                 onClick={onCancelSelection}>
                 {I18n.t('vehicle_journeys.vehicle_journeys_matrix.cancel_selection')}
