@@ -48,8 +48,8 @@ class Import::Netex < Import::Base
 
     if self.referential.valid?
       main_resource.update referential: referential
-      call_iev_callback
       save!
+      call_iev_callback
     else
       Rails.logger.info "Can't create referential for import #{self.id}: #{referential.inspect} #{referential.metadatas.inspect} #{referential.errors.messages}"
       metadata = referential.metadatas.first
