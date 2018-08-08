@@ -139,7 +139,6 @@ RSpec.describe ReferentialMetadata, :type => :model do
   end
 
   describe "#periodes" do
-
     let(:referential_metadata) { create(:referential_metadata).reload }
 
     it "should not exclude end" do
@@ -148,7 +147,17 @@ RSpec.describe ReferentialMetadata, :type => :model do
         expect(periode).to_not be_exclude_end
       end
     end
+  end
 
+  describe "#adapted_periods" do
+    let(:referential_metadata) { create(:referential_metadata).reload }
+
+    it "should not exclude end" do
+      period = (Time.now.to_date..1.month.from_now.to_date)
+      expect(referential_metadata.send(:adapted_periods, [period]).first).to eq period
+      exclude_end_period = (Time.now.to_date...(1.month.from_now + 1.day).to_date)
+      expect(referential_metadata.send(:adapted_periods, [exclude_end_period]).first).to eq period
+    end
   end
 
   describe "before_validation" do
