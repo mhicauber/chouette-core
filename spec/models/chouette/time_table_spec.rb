@@ -1226,7 +1226,7 @@ end
   end
 
   describe "#intersect_periods!" do
-    let(:time_table) { Chouette::TimeTable.new }
+    let(:time_table) { Chouette::TimeTable.new int_day_types: Chouette::TimeTable::EVERYDAY }
     let(:periods) do
       [
         Date.new(2018, 1, 1)..Date.new(2018, 2, 1),
@@ -1267,6 +1267,24 @@ end
       expect{time_table.intersect_periods! periods}.to_not change(time_table, :periods)
     end
 
+    it "transforms single-day periods into dates" do
+      time_table.periods.build period_start: Date.new(2018,2,1), period_end: Date.new(2018,3,1)
+      time_table.intersect_periods! periods
+      expect(time_table.periods).to be_empty
+      expect(time_table.dates.size).to eq 1
+      expect(time_table.dates.last.date).to eq Date.new(2018,2,1)
+      expect(time_table.dates.last.in_out).to be_truthy
+    end
+
+    it "doesn't duplicate dates" do
+      time_table.periods.build period_start: Date.new(2018,2,1), period_end: Date.new(2018,3,1)
+      time_table.dates.build date: Date.new(2018,2,1), in_out: true
+      time_table.intersect_periods! periods
+      expect(time_table.periods).to be_empty
+      expect(time_table.dates.size).to eq 1
+      expect(time_table.dates.last.date).to eq Date.new(2018,2,1)
+      expect(time_table.dates.last.in_out).to be_truthy
+    end
   end
 
   describe "#remove_periods!" do
@@ -1331,6 +1349,18 @@ end
 
     it "creates a two included Dates if two days remain from a period" do
       time_table.periods.build period_start: Date.new(2017, 12, 31), period_end: Date.new(2018, 2, 2)
+      time_table.remove_periods! periods
+
+      expect(time_table.periods).to be_empty
+      expect(time_table.dates.size).to eq(2)
+
+      expect(time_table.dates.map(&:date)).to eq([Date.new(2017, 12, 31), Date.new(2018, 2, 2)])
+      expect(time_table.dates.map(&:in_out).uniq).to eq([true])
+    end
+
+    it "doesn't duplicate dates" do
+      time_table.periods.build period_start: Date.new(2017, 12, 31), period_end: Date.new(2018, 2, 2)
+      time_table.dates.build date: Date.new(2017, 12, 31), in_out: true
       time_table.remove_periods! periods
 
       expect(time_table.periods).to be_empty

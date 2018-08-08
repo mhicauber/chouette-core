@@ -474,7 +474,11 @@ module Chouette
         else
           mask_periods_with_common_part.each do |mask_period|
             intersection = (mask_period & period.range)
-            period.period_start, period.period_end = intersection.begin, intersection.end
+            period.period_start, period.period_end = intersection.min, intersection.max
+            if period.period_start == period.period_end
+              build_date_if_relevant period.period_start
+              periods.delete period
+            end
           end
         end
       end
@@ -500,16 +504,19 @@ module Chouette
               new_period.period_start, new_period.period_end =
                                        modified_range.min, modified_range.max
             else
-              remaining_date = modified_range.min
-              if applicable_date?(remaining_date)
-                dates.build in_out: true, date: modified_range.min
-              end
+              build_date_if_relevant modified_range.min
               periods.delete period if index == 0
             end
           end
         else
           periods.delete period
         end
+      end
+    end
+
+    def build_date_if_relevant date
+      if applicable_date?(date) && !dates.any?{|d| d.date == date}
+        dates.build in_out: true, date: date
       end
     end
 

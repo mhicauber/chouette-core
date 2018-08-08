@@ -46,5 +46,8 @@ module Chouette
       period_start..period_end
     end
 
+    def single_day?
+      period_start == period_end
+    end
   end
 end

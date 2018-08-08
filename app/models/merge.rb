@@ -579,41 +579,43 @@ class Merge < ApplicationModel
           end
 
           candidate_time_table.intersect_periods! line_periods.periods(line_id)
+          unless candidate_time_table.empty?
 
-          # FIXME
-          candidate_time_table.set_current_checksum_source
-          candidate_time_table.update_checksum
+            # FIXME
+            candidate_time_table.set_current_checksum_source
+            candidate_time_table.update_checksum
 
-          # after intersect_periods!, the checksum is the expected one
-          # we can search an existing TimeTable
+            # after intersect_periods!, the checksum is the expected one
+            # we can search an existing TimeTable
 
-          existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
+            existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
 
-          if existing_time_table
-            existing_time_table.merge_metadata_from candidate_time_table
-          else
-            objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
-            candidate_time_table.objectid = objectid
+            if existing_time_table
+              existing_time_table.merge_metadata_from candidate_time_table
+            else
+              objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
+              candidate_time_table.objectid = objectid
 
-            save_model! candidate_time_table
+              save_model! candidate_time_table
 
-            # Checksum is changed by #intersect_periods
-            # if new_time_table.checksum != time_table.checksum
-            #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
-            # end
+              # Checksum is changed by #intersect_periods
+              # if new_time_table.checksum != time_table.checksum
+              #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
+              # end
 
-            existing_time_table = candidate_time_table
+              existing_time_table = candidate_time_table
+            end
+
+            # associate VehicleJourney
+
+            new_vehicle_journey_id = new_vehicle_journey_ids[properties[:vehicle_journey_id]]
+            unless new_vehicle_journey_id
+              raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
+            end
+
+            associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
+            associated_vehicle_journey.time_tables << existing_time_table
           end
-
-          # associate VehicleJourney
-
-          new_vehicle_journey_id = new_vehicle_journey_ids[properties[:vehicle_journey_id]]
-          unless new_vehicle_journey_id
-            raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
-          end
-
-          associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
-          associated_vehicle_journey.time_tables << existing_time_table
         end
       end
     end
