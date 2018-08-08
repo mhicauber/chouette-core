@@ -5,18 +5,6 @@ RSpec.describe ComplianceControlSetCopier do
   let( :cc_set ){ create :compliance_control_set }
 
   context 'Copying empty set' do
-    context 'incorrect organisation' do
-      # Assuring the organisation missmatch
-      before { referential.organisation_id = cc_set.organisation_id.succ }
-      it 'fails' do
-        expect{ subject.copy(cc_set.id, referential.id) }.to raise_error(ArgumentError)
-      end
-      it 'does not create any objects in the database' do
-        expect{ subject.copy(cc_set.id, referential.id) rescue nil }.to_not change{ComplianceCheckSet.count}
-        expect{ subject.copy(cc_set.id, referential.id) rescue nil }.to_not change{ComplianceCheckBlock.count}
-        expect{ subject.copy(cc_set.id, referential.id) rescue nil }.to_not change{ComplianceCheck.count}
-      end
-    end
 
     context 'correct organisation' do
       let(:ref){ create :referential, organisation_id: cc_set.organisation_id }

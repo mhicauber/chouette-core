@@ -12,7 +12,6 @@ class ComplianceControlSetCopier
     @parent_type    = parent_type
     @parent_id      = parent_id
     @context        = context || :manual
-    check_organisation_coherence!
     copy_set
 
     cck_set
@@ -21,12 +20,6 @@ class ComplianceControlSetCopier
 
   private
 
-  # Workers
-  # -------
-  def check_organisation_coherence!
-    return true if cc_set.organisation_id == referential.organisation_id
-    raise ArgumentError, "Incoherent organisation of referential"
-  end
 
   # Copy Set:
   def copy_set
