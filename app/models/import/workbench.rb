@@ -19,7 +19,6 @@ class Import::Workbench < Import::Base
   def import_gtfs
     update_column :status, 'running'
     update_column :started_at, Time.now
-    notify_state
     Import::Gtfs.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
 
     # update_column :status, 'successful'
