@@ -188,6 +188,8 @@ class Import::Gtfs < Import::Base
   def import_resources(*resources)
     resources.each do |resource|
       Chouette::Benchmark.log "ImportGTFS import #{resource}" do
+        @progress += 0.2
+        notify_progress @progress
         send "import_#{resource}"
       end
     end
@@ -204,6 +206,7 @@ class Import::Gtfs < Import::Base
     prepare_referential
     referential.pending!
 
+    @progress = 0
     import_resources :calendars, :calendar_dates
     import_resources :trips, :stop_times
   end
