@@ -20,6 +20,12 @@ export default class ShiftVehicleJourney extends Component {
 
   handleAdditionalTimeChange() {
     this.setState((state, props) => {
+      console.log(this.refs.additional_time.value)
+      if(this.refs.additional_time.value == "-" || this.refs.additional_time.value == ""){
+        return {
+          additional_time: this.refs.additional_time.value
+        }
+      }
       return {
         additional_time: parseInt(this.refs.additional_time.value)
       }
