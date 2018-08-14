@@ -5,7 +5,7 @@ class ComplianceControlSetCloner
   #                    compliance_check to cck iff used as prefixes.
 
   attr_reader :organisation_id, :source_set_id
-  
+
   def copy source_set_id, organisation_id
     @source_set_id = source_set_id
     @organisation_id = organisation_id
@@ -22,7 +22,7 @@ class ComplianceControlSetCloner
   def copy_set
     # Force lazy creation of target_set, just in case source_set is _empty_.
     target_set
-    copy_controls 
+    copy_controls
     copy_blocks
   end
 
@@ -31,7 +31,7 @@ class ComplianceControlSetCloner
     target_set.compliance_control_blocks.create(
       name: name_of_copy(:compliance_control_blocks, source_block.name),
       condition_attributes: source_block.condition_attributes).tap do | target_block |
-        relink_checks_to_block source_block, target_block 
+        relink_checks_to_block source_block, target_block
       end
   end
   def copy_blocks
@@ -52,14 +52,9 @@ class ComplianceControlSetCloner
     source_set.compliance_controls.order(:id).each(&method(:copy_control))
   end
   def copy_control(compliance_control)
+    copied_attrs = [:code, :comment, :control_attributes, :criticity, :name, :origin_code, :type, :iev_enabled_check]
     target_set.compliance_controls.create(
-      code: compliance_control.code,
-      comment: compliance_control.comment,
-      control_attributes: compliance_control.control_attributes,
-      criticity: compliance_control.criticity,
-      name: compliance_control.name,
-      origin_code: compliance_control.origin_code,
-      type: compliance_control.type
+      compliance_control.slice(*copied_attrs)
     ).tap do | control |
       control_id_map.update compliance_control.id => control
     end
