@@ -52,7 +52,9 @@ RSpec.describe ComplianceControlSetCloner do
           3.times.map{ |n| create :compliance_control_block, compliance_control_set: source_set, transport_mode: NetexTransportModeEnumerations.transport_modes[n], transport_submode: NetexTransportSubmodeEnumerations.transport_submodes[n]   }
         }
         let(:direct_ccs){
-          3.times.map{ |n| create :generic_attribute_control_min_max, compliance_control_set: source_set, name: "direct #{n.succ}", code: "direct-#{n.succ}" }
+          out = 3.times.map{ |n| create :generic_attribute_control_min_max, compliance_control_set: source_set, name: "direct #{n.succ}", code: "direct-#{n.succ}" }
+          out.last.update iev_enabled_check: false
+          out
         }
         # Needed to check we do not dulicate a node (compliance_control) twice
         let(:indirect_ccs){
@@ -98,6 +100,7 @@ RSpec.describe ComplianceControlSetCloner do
             expect( target.name ).to eq(source.name)
             expect( target.origin_code ).to eq(source.origin_code )
             expect( target.type ).to eq(source.type)
+            expect( target.iev_enabled_check ).to eq(source.iev_enabled_check)
           end
           # Check correctly copied blocks
           target_blox.zip(source_blox).each do | target_block, source_block |
