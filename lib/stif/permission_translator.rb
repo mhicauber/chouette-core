@@ -2,6 +2,7 @@ module Stif
   module PermissionTranslator extend self
 
     def translate(sso_extra_permissions, organisation=nil)
+      sso_extra_permissions = JSON.parse(sso_extra_permissions) if sso_extra_permissions.is_a?(String)
       permissions = sso_extra_permissions.sort
         .flat_map(&method(:extra_permission_translation))
       permissions += extra_organisation_permissions(organisation)
