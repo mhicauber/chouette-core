@@ -14,6 +14,10 @@ module Chouette
       .where("footnotes_vehicle_journeys.vehicle_journey_id is null")
     }
 
+    scope :for_vehicle_journey, -> (vehicle_journey){
+      joins('INNER JOIN "footnotes_vehicle_journeys" ON footnotes_vehicle_journeys.footnote_id = footnotes.id').where("footnotes_vehicle_journeys.vehicle_journey_id = ?", vehicle_journey.id)
+    }
+
     validates_presence_of :line
 
     def checksum_attributes
