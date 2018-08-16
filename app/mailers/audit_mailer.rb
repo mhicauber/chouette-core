@@ -1,6 +1,6 @@
 class AuditMailer < ApplicationMailer
   def self.enabled?
-    Rails.configuration.automated_audits_recipients.present?
+    !!Rails.configuration.enable_automated_audits
   end
 
   def audit opts={}
