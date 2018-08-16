@@ -1,67 +1,25 @@
 class ReferentialAudit
   class Full
-    include PrettyOutput
-
-    attr_reader :referential
-    attr_accessor :interfaces_group
-    attr_accessor :status
-
-    def self.register klass
-      @items ||= []
-      @items << klass
-    end
-
-    def self.items
-      @items ||= []
-    end
-
-    def initialize referential
-      @referential = referential
-      @banner = "Full Audit on referential \"#{referential.name}\""
-      @verbose = true
-      @status = :new
-      @number_of_lines = self.class.items.size
-      @left_part = self.class.items.map(&:name).map(&:size).max + 10
-      init_output
-    end
-
     def perform opts={}
-      referential.switch do
-        self.class.items.each do |item|
-          instance = item.new(referential)
-          instance.perform(self)
-          res = send("#{instance.status}_status")
-          @statuses += res
-          log instance.name + " " + "." * (@left_part - instance.name.size) + " "
-          log res, append: true
-
-          print_state
-          @current_line += 1
+      limit = opts.delete(:limit)
+      referentials = Referential.not_in_referential_suite.uniq
+      referentials += Workbench.all.map { |w| w.output.current }.compact
+      referentials = referentials.uniq.sort_by(&:created_at).reverse
+      out = []
+      if limit
+        if limit.is_a? Integer
+          referentials = referentials[0..limit]
+        elsif limit.is_a?(Time) || limit.is_a?(Date)
+          referentials = referentials.select{|r| r.created_at > limit }
         end
       end
-    end
 
-    def encode_string s
-      s
-    end
+      referentials.each do |referential|
+        audit = ReferentialAudit::FullReferential.new referential
+        out << audit.perform(opts.dup.update({plain_output: true}))
+      end
 
-    def add_error error, criticity=:error
-      @_errors ||= []
-      @_errors << {kind: criticity, message: error}
-    end
-
-    def success_status
-      colorize("✓", :green)
-    end
-
-    def warning_status
-      colorize("-", :orange)
-    end
-
-    def error_status
-      colorize("x", :red)
+      out
     end
   end
 end
-
-require_dependency 'referential_audit/base'

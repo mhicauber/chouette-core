@@ -43,6 +43,8 @@ module ChouetteIhm
     config.enable_calendar_observer = true
     config.enable_subscriptions_notifications = !!ENV['SUBSCRIPTION_NOTIFIER_ENABLED']
     config.subscriptions_notifications_recipients = []
+    config.enable_automated_audits = !!ENV['AUTOMATED_AUDITS_ENABLED']
+    config.automated_audits_recipients = []
 
     config.vehicle_journeys_extra_headers = []
     config.osm_backgrounds_source = :osm

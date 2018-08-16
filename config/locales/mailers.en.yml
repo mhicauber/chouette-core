@@ -1,5 +1,9 @@
 en:
   mailers:
+    audit_mailer:
+      audit:
+        subject: "Audit automatique du %{date}"
+    
     calendar_mailer:
       sent_by: "Sent by"
       created:
@@ -8,7 +12,7 @@ en:
       updated:
         subject: A shared calendar has been updated
         body: "A new shared calendar %{cal_name} has been updated by STIF. You can now view it in the <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>list of shared calendars</a>."
-    user_mailer:
+    subscription_mailer:
       created:
         subject: A new user signed up
         body: "A new user signed up:"

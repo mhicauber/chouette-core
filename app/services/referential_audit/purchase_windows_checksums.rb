@@ -1,11 +1,15 @@
 class ReferentialAudit
   class PurchaseWindowsChecksums < Base
     def find_faulty
-      Chouette::PurchaseWindow.all.map{|p| p.update_checksum}.uniq
+      faulty = []
+      Chouette::PurchaseWindow.find_each do |p|
+        faulty << p if p.set_current_checksum_source && p.update_checksum
+      end
+      faulty
     end
 
-    def message
-      "Found #{faulty.size - 1} PurchaseWindows with inconsistent Checksums"
+    def message record
+      "PurchaseWindow ##{record.id} has inconsistent checksum"
     end
   end
 end

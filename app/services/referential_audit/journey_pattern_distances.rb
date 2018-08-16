@@ -1,8 +1,8 @@
 class ReferentialAudit
   class JourneyPatternDistances < Base
 
-    def message
-      "Found #{faulty.size - 1} JourneyPattern with negative distances"
+    def message record
+      "JourneyPattern ##{record.id} has negative distances"
     end
 
     def find_faulty
