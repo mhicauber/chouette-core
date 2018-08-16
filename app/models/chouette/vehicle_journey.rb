@@ -143,7 +143,9 @@ module Chouette
         attrs << self.published_journey_name
         attrs << self.published_journey_identifier
         attrs << self.try(:company).try(:get_objectid).try(:local_id)
-        attrs << self.footnotes.map(&:checksum).sort
+        footnotes = self.footnotes
+        footnotes += Footnote.for_vehicle_journey(self) unless self.new_record?
+        attrs << footnotes.uniq.map(&:checksum).sort
 
         vjas =  self.vehicle_journey_at_stops
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) unless self.new_record?
@@ -268,6 +270,7 @@ module Chouette
 
           vj.update_attributes(state_permited_attributes(item))
           vj.update_has_and_belongs_to_many_from_state(item)
+          vj.update_checksum!
           item['errors']   = vj.errors.full_messages.uniq if vj.errors.any?
           item['checksum'] = vj.checksum
         end
