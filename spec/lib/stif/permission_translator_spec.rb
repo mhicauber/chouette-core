@@ -11,6 +11,10 @@ RSpec.describe Stif::PermissionTranslator do
       expect( described_class.translate(%w{boiv:read-offer}) ).to eq(%w{sessions.create})
     end
 
+    it "sessions.create only" do
+      expect( described_class.translate(%w{boiv:read-offer}.to_json) ).to eq(%w{sessions.create})
+    end
+
   end
 
   context "SSO Permission boiv:edit-offer →" do
