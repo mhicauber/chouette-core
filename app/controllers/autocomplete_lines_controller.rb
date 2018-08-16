@@ -12,7 +12,7 @@ class AutocompleteLinesController < ChouetteController
 
     @lines = @lines
       .by_name(params[:q])
-      .search(number_or_comany_name_cont: params[:q])
+      .search(number_or_company_name_cont: params[:q])
       .result
       .paginate(page: params[:page])
   end
