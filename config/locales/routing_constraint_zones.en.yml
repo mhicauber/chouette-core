@@ -27,10 +27,10 @@ en:
               all_stop_points_selected: 'All stop points from route cannot be selected.'
   routing_constraint_zones:
     filters:
-      associated_route: 
+      associated_route:
         title: Associated route
         placeholder: Put the name of a route...
-      name_or_objectid_cont:  Search by name or ID...
+      name_or_short_id_cont:  Search by name or ID...
     actions:
       destroy_confirm: Are you sure you want to delete this routing constraint zone?
     new:

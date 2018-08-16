@@ -21,7 +21,7 @@ fr:
       show_company: 'Voir le transporteur principal'
     search_no_results: "Aucun résultat"
     filters:
-      name_or_objectid_cont: "Indiquez un nom d'itinéraire ou un ID..."
+      name_or_short_id_cont: "Indiquez un nom d'itinéraire ou un ID..."
     new:
       title: "Ajouter une ligne"
     create:
@@ -41,7 +41,7 @@ fr:
       deactivated: "Ligne désactivée"
       title: "Lignes"
       line: "Ligne %{line}"
-      name_or_number_or_objectid: "Recherche par nom, nom court ou ID..."
+      name_or_number_or_short_id: "Recherche par nom, nom court ou ID..."
       no_networks: "Aucun réseaux"
       no_companies: "Aucun transporteurs"
       no_group_of_lines: "Aucun groupes de ligne"

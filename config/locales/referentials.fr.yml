@@ -1,7 +1,7 @@
 fr:
   referentials:
     filters:
-      name_or_number_or_objectid: 'Indiquez un nom de ligne, nom court ou objectid'
+      name_or_number_or_short_id: 'Indiquez un nom de ligne, nom court ou objectid'
       name: 'Indiquez un nom de jeu de données...'
       line: 'Indiquez une ligne...'
     search_no_results: 'Aucun jeu de données ne correspond à votre recherche'

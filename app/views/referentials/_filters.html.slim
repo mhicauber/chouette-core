@@ -1,7 +1,7 @@
 = search_form_for @q, url: referential_path(@referential.id), class: 'form form-filter' do |f|
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_objectid_cont)
-      = f.search_field :name_or_number_or_objectid_cont, class: 'form-control', placeholder: t('.name_or_number_or_objectid')
+    .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_short_id_cont)
+      = f.search_field :name_or_number_or_short_id_cont, class: 'form-control', placeholder: t('.name_or_number_or_short_id')
       span.input-group-btn
         button.btn.btn-default type='submit'
           span.fa.fa-search

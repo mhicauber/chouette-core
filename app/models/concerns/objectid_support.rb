@@ -7,16 +7,72 @@ module ObjectidSupport
     validates_presence_of :objectid
     validates_uniqueness_of :objectid, skip_validation: Proc.new {|model| model.read_attribute(:objectid).nil?}
 
+    scope :with_short_id, ->(q){
+      return self.none unless self.exists?
+      referential = self.last.referential
+      self.all.merge referential.objectid_formatter.with_short_id(self, q)
+    }
+
+    ransacker :short_id do |parent|
+      nil
+    end
+
+    ransacker :actual_short_id, args: [:parent, :ransacker_args] do |parent, referential|
+      Arel.sql referential.objectid_formatter.short_id_sql_expr
+    end
+
+    class << self
+      def search_with_objectid args={}
+        vanilla_search = self.search_without_objectid args
+        base = vanilla_search.base
+
+        if args.is_a? Hash
+          args.each do |k, v|
+            if k =~ /short_id/
+              referential = self.last&.referential
+              if referential
+                condition = Ransack::Nodes::Condition.new(base.context).build({
+                  'a' => {
+                    '0' => {
+                      'name' => 'actual_short_id',
+                      'ransacker_args' => referential
+                    }
+                  },
+                  'p' => 'cont',
+                  'v' => { '0' => { 'value' => v } }
+                })
+
+                base.conditions << condition
+                base.combinator = "or"
+              end
+            end
+          end
+        end
+
+        vanilla_search.instance_variable_set "@base", base
+        vanilla_search
+      end
+      alias_method_chain :search, :objectid
+
+      def ransackable_scopes(auth_object = nil)
+        [:with_short_id]
+      end
+    end
+
+    def objectid_formatter
+      self.referential.objectid_formatter
+    end
+
     def before_validation_objectid
-      self.referential.objectid_formatter.before_validation self
+      objectid_formatter.before_validation self
     end
 
     def after_commit_objectid
-      self.referential.objectid_formatter.after_commit self
+      objectid_formatter.after_commit self
     end
 
     def get_objectid
-      self.referential.objectid_formatter.get_objectid read_attribute(:objectid) if self.referential.objectid_format && read_attribute(:objectid)
+      objectid_formatter.get_objectid read_attribute(:objectid) if referential.objectid_format && read_attribute(:objectid)
     end
 
     def objectid

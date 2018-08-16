@@ -7,7 +7,7 @@
         .col-lg-12
           = search_form_for @q, url: line_referential_companies_path(@line_referential), html: {method: :get}, class: 'form form-filter' do |f|
             .input-group.search_bar
-              = f.search_field :name_or_objectid_cont, placeholder: t('.name_or_objectid'), class: 'form-control'
+              = f.search_field :name_or_short_id_cont, placeholder: t('.name_or_short_id_cont'), class: 'form-control'
 
               span.input-group-btn
                 button.btn.btn-default#search-btn type='submit'

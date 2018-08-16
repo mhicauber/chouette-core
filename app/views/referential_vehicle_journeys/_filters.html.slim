@@ -2,7 +2,7 @@
   input type="hidden" name="display" value=params[:display]
   .ffg-row
     .input-group.search_bar
-      = f.search_field :published_journey_name_or_objectid_cont, placeholder: t('.published_journey_name_or_objectid'), class: 'form-control'
+      = f.search_field :published_journey_name_or_short_id_cont, placeholder: t('.published_journey_name_or_objectid'), class: 'form-control'
       span.input-group-btn
         button.btn.btn-default#search-btn type='submit'
           span.fa.fa-search

@@ -5,7 +5,7 @@ describe "Lines", type: :feature do
   let(:line_referential) { create :line_referential, member: @user.organisation }
   let!(:network) { create(:network) }
   let!(:company) { create(:company) }
-  let!(:lines) { Array.new(2) { create :line_with_stop_areas, network: network, company: company, line_referential: line_referential } }
+  let!(:lines) { Array.new(2) { |i| l = create :line_with_stop_areas, network: network, company: company, line_referential: line_referential } }
   let!(:group_of_line) { create(:group_of_line) }
   subject { lines.first }
 
@@ -27,21 +27,21 @@ describe "Lines", type: :feature do
 
       context 'filtering' do
         it 'supports filtering by name' do
-          fill_in 'q[name_or_number_or_objectid_cont]', with: lines.first.name
+          fill_in 'q[name_or_number_or_short_id_cont]', with: lines.first.name
           click_button 'search-btn'
           expect(page).to have_content(lines.first.name)
           expect(page).not_to have_content(lines.last.name)
         end
 
         it 'supports filtering by number' do
-          fill_in 'q[name_or_number_or_objectid_cont]', with: lines.first.number
+          fill_in 'q[name_or_number_or_short_id_cont]', with: lines.first.number
           click_button 'search-btn'
           expect(page).to have_content(lines.first.name)
           expect(page).not_to have_content(lines.last.name)
         end
 
         it 'supports filtering by objectid' do
-          fill_in 'q[name_or_number_or_objectid_cont]', with: lines.first.objectid
+          fill_in 'q[name_or_number_or_short_id_cont]', with: lines.first.get_objectid.short_id
           click_button 'search-btn'
           expect(page).to have_content(lines.first.name)
           expect(page).not_to have_content(lines.last.name)
