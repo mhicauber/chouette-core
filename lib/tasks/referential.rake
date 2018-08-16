@@ -164,6 +164,6 @@ namespace :referential do
 
   task :audit, [:id] => :environment do |t, args|
     referential = Referential.find(args[:id])
-    ReferentialAudit::Full.new(referential).perform
+    ReferentialAudit::FullReferential.new(referential).perform
   end
 end
