@@ -27,8 +27,8 @@ RSpec.describe ReferentialCloning, :type => :model do
   end
 
   describe '#clone!' do
-    let(:source_referential) { Referential.new slug: "source"}
-    let(:target_referential) { Referential.new slug: "target"}
+    let(:source_referential) { Referential.new slug: "source", organisation: build(:organisation)}
+    let(:target_referential) { Referential.new slug: "target", organisation: source_referential.organisation}
     let(:referential_cloning) do
       ReferentialCloning.new source_referential: source_referential,
                              target_referential: target_referential
@@ -50,7 +50,7 @@ RSpec.describe ReferentialCloning, :type => :model do
 
   describe '#clone_with_status!' do
     let(:referential_cloning) do
-      ReferentialCloning.new(target_referential: Referential.new(slug: "target"))
+      ReferentialCloning.new(target_referential: Referential.new(slug: "target", organisation: build(:organisation)))
     end
 
     before do
