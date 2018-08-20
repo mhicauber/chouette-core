@@ -1,12 +1,11 @@
 class Permission
 
-  def self.edit
-    # FIXME
-    Stif::PermissionTranslator.translate(["boiv:edit-offer"])
+  def self.base
+    all_destructive_permissions + %w{sessions.create workbenches.update}
   end
 
-  def self.base
-    permissions = edit
+  def self.extended
+    permissions = base
 
     %w{purchase_windows exports}.each do |resources|
       actions = %w{edit update create destroy}
@@ -31,8 +30,7 @@ class Permission
     permissions
   end
 
-  def self.all
-    base + referentials
+  def self.full
+    extended + referentials
   end
-
 end
