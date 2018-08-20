@@ -130,7 +130,7 @@ module PrettyOutput
         kind = j[:kind]
         kind = colorize(kind, kind == :error ? :red : :orange)
         kind = "[#{kind}]"
-        kind += " "*(25 - kind.size)
+        kind += " "*[0, (25 - j[:kind].size)].max
         line = kind
         line << "L#{j[:line]}\t" if j[:line]
         line << "#{j[:error]}\t\t" if j[:error]
