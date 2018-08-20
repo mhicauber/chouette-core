@@ -32,6 +32,9 @@ module ApplicationDaysSupport
   end
 
   def valid_day? wday
+    wday = wday.wday if wday.respond_to?(:wday)
+    wday = wday % 7
+    wday = 7 if wday == 0 # 0-6 -> 1-7
     valid_days.include?(wday)
   end
 
