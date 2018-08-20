@@ -7,7 +7,7 @@ module MetadataControllerSupport
   end
 
   def user_for_metadata
-    current_user ? current_user.username : ''
+    current_user ? (current_user.username.presence || current_user.name) : ''
   end
 
   def set_creator_metadata
