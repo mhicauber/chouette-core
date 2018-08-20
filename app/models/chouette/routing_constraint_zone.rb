@@ -39,7 +39,7 @@ module Chouette
 
     def checksum_attributes
       [
-        self.stop_points.map(&:stop_area).map(&:user_objectid)
+        self.stop_points.map(&:stop_area).map(&:local_id)
       ]
     end
 

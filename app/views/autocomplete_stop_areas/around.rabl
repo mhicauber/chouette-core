@@ -17,7 +17,7 @@ child @stop_areas, root: :features, object_root: false do
       stoparea_id: s.id,
       stoparea_kind: s.kind,
       text: "#{s.name}, #{s.zip_code} #{s.city_name}",
-      user_objectid: s.user_objectid,
+      user_objectid: s.local_id,
       zip_code: s.zip_code,
       latitude: s.latitude,
       longitude: s.longitude,
