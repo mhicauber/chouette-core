@@ -211,7 +211,7 @@ class Merge < ApplicationModel
       Hash[referential.routes.where('opposite_route_id is not null').pluck(:id, :opposite_route_id)]
     end
 
-    referential_routing_constraint_zones_new_ids = {}
+    vehicle_journey_routing_constraint_zones_checksums = {}
 
     new.switch do
       route_ids_mapping = {}
@@ -285,15 +285,6 @@ class Merge < ApplicationModel
 
               if new_route.routing_constraint_zones.map(&:checksum).sort != routing_constraint_zones.keys.sort
                 raise "Checksum has changed in RoutingConstraintZones: \"#{new_route.routing_constraint_zones.map(&:checksum).sort}\" -> \"#{route.routing_constraint_zones.map(&:checksum).sort}\""
-              end
-
-              new_route.routing_constraint_zones.each do |new_routing_constraint_zone|
-                routing_constraint_zone = routing_constraint_zones[new_routing_constraint_zone.checksum]
-                if routing_constraint_zone
-                  referential_routing_constraint_zones_new_ids[routing_constraint_zone.id] = new_routing_constraint_zone.id
-                else
-                  raise "Can't find RoutingConstraintZone for checksum #{new_routing_constraint_zone.checksum} into #{routing_constraint_zones.inspect}"
-                end
               end
             end
           end
@@ -407,9 +398,14 @@ class Merge < ApplicationModel
     end
 
     # Vehicle Journeys
+    referential_vehicle_journeys = nil
 
-    referential_vehicle_journeys = referential.switch do
-      referential.vehicle_journeys.includes(:vehicle_journey_at_stops).all.to_a
+    referential.switch do
+      referential_vehicle_journeys = referential.vehicle_journeys.includes(:vehicle_journey_at_stops).all.to_a
+
+      referential.vehicle_journeys.each do |vehicle_journey|
+        vehicle_journey_routing_constraint_zones_checksums[vehicle_journey.id] = vehicle_journey.ignored_routing_contraint_zones.map(&:checksum)
+      end
     end
 
     referential_purchase_windows_by_checksum, referential_vehicle_journey_purchase_window_checksums = referential.switch do
@@ -510,8 +506,8 @@ class Merge < ApplicationModel
               end
 
               # Rewrite ignored_routing_contraint_zone_ids
-              new_vehicle_journey.ignored_routing_contraint_zone_ids = referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
-              save_model! new_vehicle_journey
+              ignored_routing_contraint_zone_checksums = vehicle_journey_routing_constraint_zones_checksums[vehicle_journey.id]
+              new_vehicle_journey.ignored_routing_contraint_zone_ids = new_vehicle_journey.route.routing_constraint_zones.where(checksum: ignored_routing_contraint_zone_checksums).pluck(:id)
 
               if new_vehicle_journey.checksum != vehicle_journey.checksum
                 raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""

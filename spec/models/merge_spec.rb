@@ -301,6 +301,8 @@ RSpec.describe Merge do
           end
         end
 
+        duplicate_constraint_zones = {}
+
         referential.routes.each_with_index do |route, index|
           route.stop_points.each do |sp|
             sp.set_list_position 0
@@ -315,6 +317,10 @@ RSpec.describe Merge do
             end
             @routing_constraint_zones[route.id][constraint_zone.checksum] = constraint_zone
           end
+          constraint_zone = @routing_constraint_zones[route.id].values.last
+          duplicate_constraint_zones[route.id] = create(:routing_constraint_zone, route_id: route.id)
+          duplicate_constraint_zones[route.id].update stop_points: constraint_zone.stop_points.to_a
+          expect(duplicate_constraint_zones[route.id].checksum).to eq constraint_zone.checksum
 
           if index.even?
             route.wayback = :outbound
@@ -350,21 +356,27 @@ RSpec.describe Merge do
         one_day_remanining_table.periods << create(:time_table_period, time_table: one_day_remanining_table, period_start: period_start, period_end: period_start+1.week)
         @one_day_remanining_table_name = one_day_remanining_table.comment
 
-        referential.vehicle_journeys.each do |vehicle_journey|
-          vehicle_journey.time_tables << shared_time_table
+        referential.routes.each do |route|
+          route.vehicle_journeys.each do |vehicle_journey|
+            vehicle_journey.time_tables << shared_time_table
 
-          specific_time_table = FactoryGirl.create :time_table
-          vehicle_journey.time_tables << specific_time_table
-          vehicle_journey.time_tables << distant_future_table
-          vehicle_journey.time_tables << one_day_remanining_table
-          vehicle_journey.update ignored_routing_contraint_zone_ids: @routing_constraint_zones[vehicle_journey.route.id].values.map(&:id)
+            specific_time_table = FactoryGirl.create :time_table
+            vehicle_journey.time_tables << specific_time_table
+            vehicle_journey.time_tables << distant_future_table
+            vehicle_journey.time_tables << one_day_remanining_table
+            vehicle_journey.update ignored_routing_contraint_zone_ids: @routing_constraint_zones[vehicle_journey.route.id].values.map(&:id)
 
-          if footnote = footnotes[vehicle_journey.route.line.id].sample
-            vehicle_journey.footnotes << footnote
+            if footnote = footnotes[vehicle_journey.route.line.id].sample
+              vehicle_journey.footnotes << footnote
+            end
+
+            vehicle_journey.update_checksum!
           end
-
-          vehicle_journey.update_checksum!
+          vehicle_journey = route.vehicle_journeys.last
+          vehicle_journey.update ignored_routing_contraint_zone_ids: [duplicate_constraint_zones[route.id].id]
+          vehicle_journey.reload.update_checksum!
         end
+        @vehicle_journey_rcz = Hash[*referential.vehicle_journeys.map{|vj| [vj.checksum, vj.ignored_routing_contraint_zones.map(&:checksum)]}.flatten(1)]
       end
     end
 
@@ -433,6 +445,12 @@ RSpec.describe Merge do
       output.journey_patterns.each do |journey_pattern|
         journey_pattern.stop_points.each do |sp|
           expect(sp.stop_area_id).to eq @stop_points_positions[journey_pattern.name][sp.position]
+        end
+      end
+
+      @vehicle_journey_rcz.each do |vj, checksums|
+        if (vehicle_journey = Chouette::VehicleJourney.find_by(checksum: vj)).present?
+          expect(vehicle_journey.ignored_routing_contraint_zones.map(&:checksum)).to eq checksums
         end
       end
 
