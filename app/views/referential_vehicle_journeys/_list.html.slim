@@ -40,7 +40,7 @@
           }, \
           TableBuilderHelper::Column.new( \
             key: :arrival_time, \
-            attribute: Proc.new {|v| v.vehicle_journey_at_stops.last&.arrival_local }, \
+            attribute: Proc.new {|v| display_time_with_day_offset(v.vehicle_journey_at_stops.last&.arrival_local, v.vehicle_journey_at_stops.last&.arrival_day_offset) }, \
             sortable: true, \
           ), \
         ].flatten.compact,

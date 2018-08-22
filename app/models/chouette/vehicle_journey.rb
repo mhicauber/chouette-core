@@ -98,6 +98,20 @@ module Chouette
       where("vehicle_journeys.id IN (#{sql})")
     }
 
+    scope :order_by_departure_time, -> (dir) {
+      joins(:vehicle_journey_at_stops)
+      .select("id", "MIN(current_date + departure_day_offset * interval '24 hours' + departure_time) AS departure_time_with_day_offset")
+      .group(:id)
+      .order("departure_time_with_day_offset #{dir}")
+    }
+
+    scope :order_by_arrival_time, -> (dir) {
+      joins(:vehicle_journey_at_stops)
+      .select("id", "MAX(current_date + arrival_day_offset * interval '24 hours' + arrival_time) AS arrival_time")
+      .group(:id)
+      .order("arrival_time #{dir}")
+    }
+
     # We need this for the ransack object in the filters
     ransacker :purchase_window_date_gt
     ransacker :stop_area_ids

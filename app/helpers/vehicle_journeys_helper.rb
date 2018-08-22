@@ -81,4 +81,13 @@ module VehicleJourneysHelper
     end
   end
 
+  def display_time_with_day_offset(time, offset)
+    case offset
+    when 1..Chouette::VehicleJourneyAtStop::DAY_OFFSET_MAX
+      I18n.t('vehicle_journeys.index.vjas.arrival_time', time: time, offset: offset)
+    else
+      time
+    end
+  end
+
 end

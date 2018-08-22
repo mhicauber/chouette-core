@@ -50,16 +50,15 @@ class ReferentialVehicleJourneysController < ChouetteController
   def parse_order scope
     return scope.order(:published_journey_name) unless params[:sort].present?
     direction = params[:direction] || "asc"
-    attributes = Chouette::VehicleJourney.column_names.map{|n| "vehicle_journeys.#{n}"}.join(',')
     case params[:sort]
       when "line"
         scope.order("lines.name #{direction}").joins(route: :line)
       when "route"
         scope.order("routes.name #{direction}").joins(:route)
       when "departure_time"
-        scope.joins(:vehicle_journey_at_stops).group(attributes).select(attributes).order("MIN(vehicle_journey_at_stops.departure_time) #{direction}")
+        scope.order_by_departure_time(direction)
       when "arrival_time"
-        scope.joins(:vehicle_journey_at_stops).group(attributes).select(attributes).order("MAX(vehicle_journey_at_stops.departure_time) #{direction}")
+        scope.order_by_arrival_time(direction)
       else
         scope.order "#{params[:sort]} #{direction}"
       end
