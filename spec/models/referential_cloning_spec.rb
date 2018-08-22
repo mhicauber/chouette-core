@@ -50,7 +50,7 @@ RSpec.describe ReferentialCloning, :type => :model do
 
   describe '#clone_with_status!' do
     let(:referential_cloning) do
-      ReferentialCloning.new(target_referential: Referential.new(slug: "target", organisation: build(:organisation)))
+      ReferentialCloning.new(target_referential: Referential.new(slug: "target", organisation: build(:organisation), prefix: "target"))
     end
 
     before do

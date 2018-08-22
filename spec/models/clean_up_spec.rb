@@ -98,7 +98,7 @@ RSpec.describe CleanUp, :type => :model do
   end
 
   context '#clean' do
-    let(:referential) { Referential.new organisation: build(:organisation)}
+    let(:referential) { Referential.new prefix: "prefix"}
     let(:cleaner) { create(:clean_up, date_type: :before, referential: referential) }
 
     before do

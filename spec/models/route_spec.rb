@@ -105,6 +105,7 @@ RSpec.describe Chouette::Route, :type => :model do
       order = [0, 3, 2, 1]
       new = Referential.new
       new.name = "mkmkm"
+      new.prefix= "mkmkm"
       new.organisation = create(:organisation)
       new.line_referential = create(:line_referential)
       create(:line, line_referential: new.line_referential)
