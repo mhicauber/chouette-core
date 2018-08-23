@@ -110,7 +110,9 @@ export default class JourneyPattern extends Component{
       return cost
     }
 
-    this.props.fetchRouteCosts(costsKey)
+    if(this.props.value.id == undefined){
+      this.props.fetchRouteCosts(costsKey)
+    }
 
     return { distance: 0, time: 0 }
   }
