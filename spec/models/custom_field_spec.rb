@@ -22,6 +22,32 @@ RSpec.describe CustomField, type: :model do
     end
   end
 
+  context "cache" do
+    let(:workgroup){ create :workgroup, updated_at: 1.hour.ago}
+    let(:klass) do
+      k = Class.new ActiveRecord::Base do
+        def self.name
+          "DummyName"
+        end
+      end
+      k.include CustomFieldsSupport
+      k
+    end
+
+    it "should cache custom_fields" do
+      expect(CustomField).to receive(:where).once.and_call_original
+      klass.custom_fields(workgroup)
+      klass.custom_fields(workgroup)
+    end
+
+    it "should flush cache when needed" do
+      expect(CustomField).to receive(:where).twice.and_call_original
+      klass.custom_fields(workgroup)
+      workgroup.touch
+      klass.custom_fields(workgroup)
+    end
+  end
+
   context "custom fields for a resource" do
     let!( :fields ){ [create(:custom_field, workgroup: workgroup), create(:custom_field, code: :energy, workgroup: workgroup)] }
     let!( :instance_fields ){

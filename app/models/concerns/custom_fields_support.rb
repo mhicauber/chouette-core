@@ -9,14 +9,19 @@ module CustomFieldsSupport
       @_custom_fields = nil
     end
 
+    def self._get_custom_fields(workgroup)
+      fields = CustomField.where(resource_type: self.name.split("::").last)
+      fields = fields.where(workgroup_id: workgroup.id)
+      fields
+    end
+
     def self.custom_fields workgroup
       return CustomField.none unless workgroup
       @_custom_fields ||= {}
-      @_custom_fields[workgroup.id] ||= begin
-        fields = CustomField.where(resource_type: self.name.split("::").last)
-        fields = fields.where(workgroup_id: workgroup.id)
-        fields
+      unless @_custom_fields.has_key?(workgroup.id) && @_custom_fields[workgroup.id].first == workgroup.updated_at
+        @_custom_fields[workgroup.id] = [workgroup.updated_at, _get_custom_fields(workgroup)]
       end
+      @_custom_fields[workgroup.id].last
     end
 
     def self.custom_fields_definitions workgroup
