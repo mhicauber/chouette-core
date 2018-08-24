@@ -6,3 +6,6 @@
     .brandname = t('brandname')
 
     = render_custom_view 'layouts/navigation/main_nav_left_content'
+
+    - if Version.current
+      .version= "v. #{Version.current}"
