@@ -1087,8 +1087,7 @@ describe Chouette::VehicleJourney, :type => :model do
         @middle.update arrival_time: offset_passing_time(@start.departure_time, 11.hours), departure_time: offset_passing_time(@start.departure_time, 13.hours), departure_day_offset: 1, arrival_day_offset: 0
       end
 
-      # see #7275
-      xit "should set the following stop day offset" do
+      it "should set the following stop day offset" do
         @journey.reload.fill_passing_times!
         expect(@target_3.reload.arrival_day_offset).to eq 1
         expect(@target_3.departure_day_offset).to eq 1
