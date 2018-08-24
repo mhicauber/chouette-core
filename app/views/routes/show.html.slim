@@ -24,7 +24,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 name: t('id_reflex'), \
-                attribute: Proc.new { |s| s.try(:stop_area).try(:user_objectid) } \
+                attribute: Proc.new { |s| s.try(:stop_area).try(:local_id) } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

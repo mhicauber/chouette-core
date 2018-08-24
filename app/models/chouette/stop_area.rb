@@ -125,18 +125,12 @@ module Chouette
     end
 
     def full_name
-      "#{name} #{zip_code} #{city_name} - #{user_objectid}"
+      "#{name} #{zip_code} #{city_name} - #{local_id}"
     end
 
-    def user_objectid
-      if objectid =~ /^.*:([0-9A-Za-z_-]+):STIF$/
-        $1
-      else
-        id.to_s
-      end
+    def local_id
+      get_objectid.short_id
     end
-
-    alias_method :local_id, :user_objectid
 
     def children_in_depth
       return [] if self.children.empty?
