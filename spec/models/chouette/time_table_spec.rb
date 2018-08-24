@@ -824,6 +824,20 @@ end
     end
   end
 
+  describe "valid_day?" do
+    it "should work properly" do
+      subject.int_day_types = ApplicationDaysSupport::SUNDAY
+      expect(subject.valid_day?(1)).to be_falsy
+      expect(subject.valid_day?(0)).to be_truthy
+      expect(subject.valid_day?(7)).to be_truthy
+      expect(subject.valid_day?(Time.now.beginning_of_week - 1.day)).to be_truthy
+      subject.int_day_types = ApplicationDaysSupport::MONDAY
+      expect(subject.valid_day?(1)).to be_truthy
+      expect(subject.valid_day?(0)).to be_falsy
+      expect(subject.valid_day?(Time.now.beginning_of_week)).to be_truthy
+    end
+  end
+
   describe "#intersects" do
     it "should return day if a date equal day" do
       time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc")
