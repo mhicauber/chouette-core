@@ -444,7 +444,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
     it 'should expect local times' do
       new_vj = build(:vehicle_journey, objectid: nil, published_journey_name: 'dummy', route: route, journey_pattern: journey_pattern)
-      stop_area = create(:stop_area, time_zone: "Mexico City")
+      stop_area = create(:stop_area, time_zone: "America/Mexico_City")
       stop_point = create(:stop_point, stop_area: stop_area)
       new_vj.vehicle_journey_at_stops << build(:vehicle_journey_at_stop, vehicle_journey: vehicle_journey, stop_point: stop_point)
       data = vehicle_journey_to_state(new_vj)
@@ -1096,13 +1096,13 @@ describe Chouette::VehicleJourney, :type => :model do
 
     context "with timezones" do
       before do
-        @start_area.update time_zone: "Paris"
-        @border_area.update time_zone: "Paris"
-        @border_2_area.update time_zone: "Paris"
-        @middle_area.update time_zone: "Paris"
-        @border_3_area.update time_zone: "Paris"
-        @border_4_area.update time_zone: "Paris"
-        @end_area.update time_zone: "Paris"
+        @start_area.update time_zone: "Europe/Paris"
+        @border_area.update time_zone: "Europe/Paris"
+        @border_2_area.update time_zone: "Europe/Paris"
+        @middle_area.update time_zone: "Europe/Paris"
+        @border_3_area.update time_zone: "Europe/Paris"
+        @border_4_area.update time_zone: "Europe/Paris"
+        @end_area.update time_zone: "Europe/Paris"
 
         departure_time = Time.now.utc.noon + 10.hour + 30.minutes
         @start.update departure_time: departure_time, arrival_time: departure_time

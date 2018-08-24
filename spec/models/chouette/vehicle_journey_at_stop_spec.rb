@@ -55,7 +55,7 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     describe "with a TimeZone" do
       before(:each) do
         stop = at_stop.stop_point.stop_area
-        stop.update time_zone: "Mexico City"
+        stop.update time_zone: "America/Mexico_City"
       end
 
       it "should offset times" do
