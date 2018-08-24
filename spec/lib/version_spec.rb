@@ -14,10 +14,10 @@ RSpec.describe Version do
 
   it { should be_nil }
 
-  context "with a valid version.yml" do
+  context "with a valid version.json" do
     let(:version_file){ read_fixture('valid_version.json') }
 
-    it "should read config/version.yml" do
+    it "should read config/version.json" do
       expect(subject).to eq "Toto"
     end
 
@@ -30,7 +30,7 @@ RSpec.describe Version do
     end
   end
 
-  context "with a invalid version.yml" do
+  context "with a invalid version.json" do
     let(:version_file){ read_fixture('invalid_version.json') }
 
     it "should be nil" do
