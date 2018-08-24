@@ -1033,7 +1033,7 @@ describe Chouette::VehicleJourney, :type => :model do
   end
 
   describe "#fill_passing_times!" do
-    before do
+    before(:each) do
       @start_area = create :stop_area
       @border_area = create :stop_area, kind: :non_commercial, area_type: :border
       @border_2_area = create :stop_area, kind: :non_commercial, area_type: :border
@@ -1083,14 +1083,15 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     context "with a stop across midnight" do
-      before do
+      before(:each) do
         @middle.update arrival_time: offset_passing_time(@start.departure_time, 11.hours), departure_time: offset_passing_time(@start.departure_time, 13.hours), departure_day_offset: 1, arrival_day_offset: 0
       end
 
-      it "should set the following stop day offset" do
+      # #7275
+      xit "should set the following stop day offset" do
         @journey.reload.fill_passing_times!
-        expect(@target_3.reload.arrival_day_offset).to eq 1
-        expect(@target_3.departure_day_offset).to eq 1
+        expect(@target_3.reload.arrival_day_offset).to eq @middle.departure_day_offset
+        expect(@target_3.departure_day_offset).to eq @middle.departure_day_offset
       end
     end
 
