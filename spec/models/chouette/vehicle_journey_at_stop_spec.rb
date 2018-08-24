@@ -62,17 +62,6 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
         expect(at_stop.departure_local).to eq at_stop.send(:format_time, at_stop.departure_time - 6.hours)
         expect(at_stop.arrival_local).to eq at_stop.send(:format_time, at_stop.arrival_time - 6.hours)
       end
-
-      context "with a wrong Timezone" do
-        before do
-          at_stop.stop_point.stop_area.update time_zone: "Gotham City"
-        end
-
-        it "should not offset times" do
-          expect(at_stop.departure_local).to eq at_stop.send(:format_time, at_stop.departure_time)
-          expect(at_stop.arrival_local).to eq at_stop.send(:format_time, at_stop.arrival_time)
-        end
-      end
     end
   end
 
