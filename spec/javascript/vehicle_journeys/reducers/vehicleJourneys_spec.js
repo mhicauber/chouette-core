@@ -161,6 +161,108 @@ describe('vehicleJourneys reducer', () => {
     }, ...state])
   })
 
+  it('should handle ADD_VEHICLEJOURNEY with a loop in the route', () => {
+    let pristineVjasList = [{
+      delta : 0,
+      arrival_time : {
+        hour: 0,
+        minute: 0
+      },
+      departure_time : {
+        hour: 0,
+        minute: 0
+      },
+      stop_point_objectid: 'test',
+      stop_area_cityname: 'city',
+      dummy: false
+    },
+    {
+      delta : 0,
+      arrival_time : {
+        hour: 0,
+        minute: 0
+      },
+      departure_time : {
+        hour: 0,
+        minute: 0
+      },
+      stop_point_objectid: 'test2',
+      stop_area_cityname: 'city',
+      dummy: false
+    },
+    {
+      delta : 0,
+      arrival_time : {
+        hour: "00",
+        minute: "00"
+      },
+      departure_time : {
+        hour: "00",
+        minute: "00"
+      },
+      stop_point_objectid: 'test',
+      stop_area_cityname: 'city',
+      dummy: true
+    }]
+    let fakeData = {
+      published_journey_name: {value: 'test'},
+      published_journey_identifier: {value : ''},
+      custom_fields: {
+        foo: {
+          value: 12
+        }
+      }
+    }
+    let fakeSelectedJourneyPattern = {
+      id: "1",
+      stop_areas: [
+        {
+          position: 0,
+          stop_area_short_description: {
+            id: 'test'
+          }
+        },
+        {
+          position: 1,
+          stop_area_short_description: {
+            id: 'test2'
+          }
+        }
+      ]
+    }
+    let fakeSelectedCompany = {name: "ALBATRANS"}
+    expect(
+      vjReducer(state, {
+        type: 'ADD_VEHICLEJOURNEY',
+        data: fakeData,
+        selectedJourneyPattern: fakeSelectedJourneyPattern,
+        stopPointsList: [{object_id: 'test', city_name: 'city', id: 'test'}, {object_id: 'test2', city_name: 'city', id: 'test2'}, {object_id: 'test', city_name: 'city', id: 'test'}],
+        selectedCompany: fakeSelectedCompany
+      })
+    ).toEqual([{
+      ignored_routing_contraint_zone_ids: [],
+      journey_pattern: fakeSelectedJourneyPattern,
+      company: fakeSelectedCompany,
+      published_journey_name: 'test',
+      published_journey_identifier: '',
+      short_id: '',
+      objectid: '',
+      footnotes: [],
+      time_tables: [],
+      purchase_windows: [],
+      vehicle_journey_at_stops: pristineVjasList,
+      selected: false,
+      deletable: false,
+      transport_mode: 'undefined',
+      transport_submode: 'undefined',
+      custom_fields: {
+        foo: {
+          value: 12
+        }
+      }
+    }, ...state])
+  })
+
   it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP', () => {
     let pristineVjasList = [{
       delta : 0,
@@ -228,9 +330,9 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {stop_area_short_description: {id: 1}},
-        {stop_area_short_description: {id: 2}},
-        {stop_area_short_description: {id: 4}},
+        {position: 0, stop_area_short_description: {id: 1}},
+        {position: 1, stop_area_short_description: {id: 2}},
+        {position: 3, stop_area_short_description: {id: 4}},
       ],
       costs: {
         "1-2": {
@@ -446,9 +548,9 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {stop_area_short_description: {id: 1}},
-        {stop_area_short_description: {id: 2}},
-        {stop_area_short_description: {id: 4}},
+        {position: 0, stop_area_short_description: {id: 1}},
+        {position: 1, stop_area_short_description: {id: 2}},
+        {position: 3, stop_area_short_description: {id: 4}},
       ],
       costs: {
         "1-2": {
@@ -529,8 +631,8 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {stop_area_short_description: {id: 1}},
-        {stop_area_short_description: {id: 2}},
+        {position: 0, stop_area_short_description: {id: 1}},
+        {position: 1, stop_area_short_description: {id: 2}}
       ],
       costs: {
         "1-2": {
@@ -607,8 +709,8 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {stop_area_short_description: {id: 1}},
-        {stop_area_short_description: {id: 2}},
+        {position: 0, stop_area_short_description: {id: 1}},
+        {position: 1, stop_area_short_description: {id: 2}},
       ],
       costs: {
         "1-2": {

@@ -27,7 +27,9 @@ const vehicleJourney= (state = {}, action, keep) => {
           current_time.minute = parseInt(action.data["start_time.minute"].value) + (initTZOffet - 60 * parseInt(initTZOffet / 60))
         }
       }
+      let i = -1
       _.each(action.stopPointsList, (sp) =>{
+        i += 1
         let inJourney = false
         let newVjas
 
@@ -94,12 +96,12 @@ const vehicleJourney= (state = {}, action, keep) => {
         }
 
         _.each(action.selectedJourneyPattern.stop_areas, (jp) =>{
-          if (jp.stop_area_short_description.id == sp.id){
+          if (jp.position == i){
             newVjas.dummy = false
             return
           }
         })
-
+      
         let lastStop = action.selectedJourneyPattern.stop_areas && action.selectedJourneyPattern.stop_areas[action.selectedJourneyPattern.stop_areas.length - 1]
         if(lastStop && lastStop.stop_area_short_description.id == sp.id){
           newVjas.departure_time = newVjas.arrival_time

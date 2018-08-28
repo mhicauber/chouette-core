@@ -211,6 +211,7 @@ class VehicleJourneysController < ChouetteController
           journey_length: item.journey_length,
           stop_area_short_descriptions: item.stop_points.map do |stop|
             {
+              position: stop.position,
               stop_area_short_description: {
                 id: stop.stop_area_id,
                 name: stop.stop_area.name,
