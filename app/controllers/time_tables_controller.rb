@@ -150,6 +150,8 @@ class TimeTablesController < ChouetteController
       elsif sort_column == "vehicle_journeys_count"
         time_tables = time_tables.joins("LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.time_table_id = time_tables.id LEFT JOIN vehicle_journeys ON vehicle_journeys.id = time_tables_vehicle_journeys.vehicle_journey_id")\
           .group("time_tables.id").select('time_tables.*, COUNT(vehicle_journeys.id) as vehicle_journeys_count').order("#{sort_column} #{sort_direction}")
+      elsif sort_column == "calendar"
+        time_tables = time_tables.includes(:calendar).order("calendars.name #{sort_direction}")
       else
         time_tables = time_tables.order("#{sort_column} #{sort_direction}")
       end
@@ -181,6 +183,7 @@ class TimeTablesController < ChouetteController
       valid_cols = %w(id color comment)
       valid_cols << "bounding_dates"
       valid_cols << "vehicle_journeys_count"
+      valid_cols << "calendar"
       valid_cols
     end
     @@valid_cols.include?(params[:sort]) ? params[:sort] : 'comment'
