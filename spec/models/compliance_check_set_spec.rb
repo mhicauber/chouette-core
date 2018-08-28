@@ -22,6 +22,19 @@ RSpec.describe ComplianceCheckSet, type: :model do
       )
     end
     let(:check_set){create :compliance_check_set, parent: create(:netex_import)}
+    context "when the referential no longer exists" do
+      let(:check_set){create :compliance_check_set, parent: create(:netex_import), referential: create(:referential)}
+      before do
+        check_set.referential.destroy
+        check_set.reload
+        check_set.perform
+      end
+
+      it "should abort" do
+        expect(check_set.status).to eq "aborted"
+      end
+    end
+
     context "when JAVA is needed" do
       before do
         allow(check_set).to receive(:should_call_iev?).and_return(true)
