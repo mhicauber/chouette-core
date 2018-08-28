@@ -60,6 +60,6 @@ VOLUME /app/public/uploads
 
 EXPOSE 3000
 
-ENTRYPOINT ["./bin/docker-entrypoint.sh"]
+ENTRYPOINT ["./script/docker-entrypoint.sh"]
 # Use front by default. async and sync 'modes' are available
 CMD ["front"]
