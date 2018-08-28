@@ -100,16 +100,16 @@ module Chouette
 
     scope :order_by_departure_time, -> (dir) {
       joins(:vehicle_journey_at_stops)
-      .select("id", "MIN(current_date + departure_day_offset * interval '24 hours' + departure_time) AS departure_time_with_day_offset")
+      .select("id")
       .group(:id)
-      .order("departure_time_with_day_offset #{dir}")
+      .order("MIN(current_date + departure_day_offset * interval '24 hours' + departure_time) #{dir}")
     }
 
     scope :order_by_arrival_time, -> (dir) {
       joins(:vehicle_journey_at_stops)
-      .select("id", "MAX(current_date + arrival_day_offset * interval '24 hours' + arrival_time) AS arrival_time")
+      .select("id")
       .group(:id)
-      .order("arrival_time #{dir}")
+      .order("MAX(current_date + arrival_day_offset * interval '24 hours' + arrival_time) #{dir}")
     }
 
     # We need this for the ransack object in the filters

@@ -350,6 +350,71 @@ describe Chouette::VehicleJourney, :type => :model do
 
   end
 
+  describe 'order by time' do
+    let(:referential){ create :referential }
+    let(:route){ create :route, referential: referential }
+    let(:journey_pattern){ create :journey_pattern, route: route }
+    let(:vj1) { create(
+      :vehicle_journey,
+      journey_pattern: journey_pattern,
+      stop_arrival_time: '10:00:00',
+      stop_departure_time: '10:00:00'
+    ) }
+    let(:vj2) { create(
+      :vehicle_journey,
+      journey_pattern: journey_pattern,
+      stop_arrival_time: '11:00:00',
+      stop_departure_time: '11:00:00'
+    ) }
+    let(:vj3) { create(
+      :vehicle_journey,
+      journey_pattern: journey_pattern,
+      stop_arrival_time: '23:00:00',
+      stop_departure_time: '00:10:00'
+    ) }
+
+    before(:each){
+      referential.switch
+      referential.vehicle_journeys.push(vj1, vj2, vj3)
+    }
+
+    context '#order_by_departure_time' do
+      it 'should order vehicle journeys by vjas departure time' do
+        vj3.vehicle_journey_at_stops.each do |vjas|
+          vjas.update(departure_day_offset: 1)
+        end
+
+        asc_result = Chouette::VehicleJourney.order_by_departure_time('asc')
+        expect(asc_result.length).to eq(3)
+        expect(asc_result.first.id).to eq(vj1.id)
+        expect(asc_result.last.id).to eq(vj3.id)
+
+        desc_result = Chouette::VehicleJourney.order_by_departure_time('desc')
+        expect(desc_result.length).to eq(3)
+        expect(desc_result.first.id).to eq(vj3.id)
+        expect(desc_result.last.id).to eq(vj1.id)
+      end
+    end
+
+    context '#order_by_arrival_time' do
+      it 'should order vehicle journeys by vjas arrival time' do
+        vj3.vehicle_journey_at_stops.reject {|vjas| vjas == vj3.vehicle_journey_at_stops.first }.each do |vjas|
+          vjas.update(arrival_day_offset: 1)
+        end
+
+        asc_result = Chouette::VehicleJourney.order_by_arrival_time('asc')
+        expect(asc_result.length).to eq(3)
+        expect(asc_result.first.id).to eq(vj1.id)
+        expect(asc_result.last.id).to eq(vj3.id)
+
+        desc_result = Chouette::VehicleJourney.order_by_arrival_time('desc')
+        expect(desc_result.length).to eq(3)
+        expect(desc_result.first.id).to eq(vj3.id)
+        expect(desc_result.last.id).to eq(vj1.id)
+      end
+    end
+  end
+
   describe "vjas_departure_time_must_be_before_next_stop_arrival_time",
       skip: "Validation currently commented out because it interferes with day offsets" do
 
