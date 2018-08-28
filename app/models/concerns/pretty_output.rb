@@ -3,7 +3,9 @@ module PrettyOutput
 
   included do
     def self.colorize txt, color, output = :console
-      if output == :html
+      if output == :slack
+        txt
+      elsif output == :html
         "<span style='color: #{color}'>#{txt}</span>"
       else
         color = {
@@ -148,7 +150,11 @@ module PrettyOutput
 
     if @banner.present?
       msg += @banner
-      msg += @output == :html ? "<hr>" : new_line + "-"*term_width + new_line
+      if @output == :html
+        msg += "<hr>"
+      elsif @output == :console
+        new_line + "-"*term_width + new_line
+      end
     end
 
     return msg if @status == :success

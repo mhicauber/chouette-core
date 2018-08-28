@@ -45,6 +45,8 @@ module ChouetteIhm
     config.subscriptions_notifications_recipients = []
     config.enable_automated_audits = !!ENV['AUTOMATED_AUDITS_ENABLED']
     config.automated_audits_recipients = []
+    config.slack_webhook_enabled = !!ENV["SLACK_WEBHOOK_ENABLED"]
+    config.slack_webhook_url = ENV["SLACK_WEBHOOK_URL"]
 
     config.vehicle_journeys_extra_headers = []
     config.osm_backgrounds_source = :osm

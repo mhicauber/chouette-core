@@ -17,7 +17,6 @@ class ReferentialAudit
 
     def initialize referential
       @referential = referential
-      @banner = "Full Audit on referential \"#{referential.name}\" (#{referential.id})"
       @verbose = true
       @status = :new
       @number_of_lines = self.class.items.size
@@ -29,6 +28,13 @@ class ReferentialAudit
       plain_output = !!opts.delete(:plain_output)
       @output = opts.delete(:output) || :console
       @status = :success
+      if @output == :slack
+        ref_name = CGI::escapeHTML(referential.name)
+        @banner = "<#{Rails.application.config.rails_host}/referentials/#{referential.id}|*Referential \"#{ref_name}\" (#{referential.id})*>"
+      else
+        @banner = "Referential \"#{referential.name}\" (#{referential.id})"
+      end
+
       referential.switch do
         self.class.items.each do |item|
           instance = item.new(referential)
@@ -38,8 +44,7 @@ class ReferentialAudit
           end
           res = send("#{instance.status}_status")
           @statuses += res
-          log instance.pretty_name + " " + "." * (@left_part - instance.pretty_name.size) + " ", silent: plain_output
-          log res, append: true, silent: plain_output
+          log res + "\t" + instance.pretty_name, silent: plain_output
           unless plain_output
             print_state
           end
@@ -60,15 +65,27 @@ class ReferentialAudit
     end
 
     def success_status
-      colorize("✓", :green)
+      if @output == :slack
+        ":white_check_mark:"
+      else
+        colorize("✓", :green)
+      end
     end
 
     def warning_status
-      colorize("-", :orange)
+      if @output == :slack
+        ":small_orange_diamond:"
+      else
+        colorize("-", :orange)
+      end
     end
 
     def error_status
-      colorize("x", :red)
+      if @output == :slack
+        ":red_circle:"
+      else
+        colorize("x", :red)
+      end
     end
   end
 end

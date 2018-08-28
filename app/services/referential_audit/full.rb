@@ -16,10 +16,22 @@ class ReferentialAudit
 
       referentials.each do |referential|
         audit = ReferentialAudit::FullReferential.new referential
-        out << audit.perform(opts.dup.update({plain_output: true}))
+        res = audit.perform(opts.dup.update({plain_output: true}))
+        if block_given?
+          yield res, audit
+        end
+        out << res
       end
 
       out
+    end
+
+    def push_to_slack
+      return unless AF83::Slack.enabled?
+      AF83::Slack.push "*Referentials Audit as of #{Time.now.l(format: :short)}* (<#{Rails.application.config.rails_host}>)"
+      perform(output: :slack) do |res, audit|
+        AF83::Slack.push res unless audit.status == :success
+      end
     end
   end
 end
