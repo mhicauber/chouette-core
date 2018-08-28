@@ -31,6 +31,19 @@ RSpec.describe Workbench, :type => :model do
     Workbench.set_callback(:validation, :before, :initialize_output)
   end
 
+  context "normalize_prefix" do
+    it "should ensure the resulting prefix is valid" do
+      workbench = create(:workbench)
+      ["aaa ", "aaa-bbb", "aaa_bbb", "aaa bbb", " aaa bb ccc"].each do |val|
+        workbench.update_column :prefix, nil
+        workbench.prefix = val
+        expect(workbench).to be_valid
+        workbench.update_column :prefix, nil
+        expect(workbench.update(prefix: val)).to be_truthy
+      end
+    end
+  end
+
   context '.lines' do
     let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
     let!(:organisation) { create :organisation, sso_attributes: { functional_scope: ids.to_json } }

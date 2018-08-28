@@ -23,12 +23,22 @@ class Workbench < ApplicationModel
   validates :name, presence: true
   validates :organisation, presence: true
   validates :prefix, presence: true
+  validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}
   validates :output, presence: true
 
   has_many :referentials, dependent: :destroy
   has_many :referential_metadatas, through: :referentials, source: :metadatas
 
   before_validation :initialize_output
+
+  def self.normalize_prefix input
+    input ||= ""
+    input.strip.gsub(/[^0-9a-zA-Z_]/, '_')
+  end
+
+  def prefix= val
+    self[:prefix] = Workbench.normalize_prefix(val)
+  end
 
   def workbench_scopes
     workgroup.workbench_scopes(self)
