@@ -217,14 +217,14 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       stop_areas: [
         {
-          position: 0,
           stop_area_short_description: {
+            position: 0,
             id: 'test'
           }
         },
         {
-          position: 1,
           stop_area_short_description: {
+            position: 1,
             id: 'test2'
           }
         }
@@ -330,9 +330,9 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {position: 0, stop_area_short_description: {id: 1}},
-        {position: 1, stop_area_short_description: {id: 2}},
-        {position: 3, stop_area_short_description: {id: 4}},
+        {stop_area_short_description: {position: 0, id: 1}},
+        {stop_area_short_description: {position: 1, id: 2}},
+        {stop_area_short_description: {position: 3, id: 4}},
       ],
       costs: {
         "1-2": {
@@ -548,9 +548,9 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {position: 0, stop_area_short_description: {id: 1}},
-        {position: 1, stop_area_short_description: {id: 2}},
-        {position: 3, stop_area_short_description: {id: 4}},
+        {stop_area_short_description: {position: 0, id: 1}},
+        {stop_area_short_description: {position: 1, id: 2}},
+        {stop_area_short_description: {position: 3, id: 4}},
       ],
       costs: {
         "1-2": {
@@ -631,8 +631,8 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {position: 0, stop_area_short_description: {id: 1}},
-        {position: 1, stop_area_short_description: {id: 2}}
+        {stop_area_short_description: {position: 0, id: 1}},
+        {stop_area_short_description: {position: 1, id: 2}}
       ],
       costs: {
         "1-2": {
@@ -709,8 +709,8 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {position: 0, stop_area_short_description: {id: 1}},
-        {position: 1, stop_area_short_description: {id: 2}},
+        {stop_area_short_description: {position: 0, id: 1}},
+        {stop_area_short_description: {position: 1, id: 2}},
       ],
       costs: {
         "1-2": {

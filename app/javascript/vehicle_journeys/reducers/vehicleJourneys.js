@@ -96,12 +96,12 @@ const vehicleJourney= (state = {}, action, keep) => {
         }
 
         _.each(action.selectedJourneyPattern.stop_areas, (jp) =>{
-          if (jp.position == i){
+          if (jp.stop_area_short_description.position == i){
             newVjas.dummy = false
             return
           }
         })
-      
+
         let lastStop = action.selectedJourneyPattern.stop_areas && action.selectedJourneyPattern.stop_areas[action.selectedJourneyPattern.stop_areas.length - 1]
         if(lastStop && lastStop.stop_area_short_description.id == sp.id){
           newVjas.departure_time = newVjas.arrival_time
