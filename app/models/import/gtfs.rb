@@ -34,7 +34,7 @@ class Import::Gtfs < Import::Base
   rescue Exception => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
-    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).any?
+    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
         criticity: :error,
@@ -88,11 +88,15 @@ class Import::Gtfs < Import::Base
     registration_numbers = source.routes.map(&:id)
     line_ids = line_referential.lines.where(registration_number: registration_numbers).pluck(:id)
 
-    start_dates, end_dates = source.calendars.map { |c| [c.start_date, c.end_date ] }.transpose
-    excluded_dates = source.calendar_dates.select { |d| d.exception_type == "2" }.map(&:date)
+    start_dates, end_dates = source.calendars.map { |c| [c.start_date, c.end_date] }.transpose
 
-    min_date = Date.parse (start_dates + [excluded_dates.min]).compact.min
-    max_date = Date.parse (end_dates + [excluded_dates.max]).compact.max
+    start_dates ||= []
+    end_dates ||= []
+
+    included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
+
+    min_date = Date.parse (start_dates + [included_dates.min]).compact.min
+    max_date = Date.parse (end_dates + [included_dates.max]).compact.max
 
     ReferentialMetadata.new line_ids: line_ids, periodes: [min_date..max_date]
   end
