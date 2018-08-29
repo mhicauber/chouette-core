@@ -1,4 +1,4 @@
-RSpec.describe ObjectidSupport do 
+RSpec.describe ObjectidSupport do
 
   context 'when referential has an objectid format of stif_netex' do
     let(:object) { create(:time_table, objectid: nil) }
@@ -14,7 +14,6 @@ RSpec.describe ObjectidSupport do
     end
 
     context "#get_objectid" do
-
       before(:each) do
         object.run_callbacks(:commit)
       end
@@ -36,7 +35,7 @@ RSpec.describe ObjectidSupport do
           expect(object.get_objectid.to_s).to be_kind_of(String)
         end
 
-        it "should be the same as the db attribute" do 
+        it "should be the same as the db attribute" do
           expect(object.get_objectid.to_s).to eq(object.read_attribute(:objectid))
           expect(object.get_objectid.to_s).to eq(object.objectid)
         end
@@ -49,10 +48,7 @@ RSpec.describe ObjectidSupport do
       end
     end
 
-
-    
     context "#objectid" do
-
       it 'should build objectid on create' do
         object.save
         object.run_callbacks(:commit)
@@ -78,21 +74,20 @@ RSpec.describe ObjectidSupport do
   end
 
   context 'when referential has an objectid format of netex' do
-    before(:all) do
-      Referential.first.update(objectid_format: 'netex')
+    let(:referential){ create :referential, objectid_format: 'netex' }
+    before(:each) do
+      referential.switch
     end
 
     let(:object) { create(:time_table, objectid: nil) }
 
-
-    context "#objectid_format" do 
+    context "#objectid_format" do
       it "should be netex" do
         expect(object.referential.objectid_format).to eq('netex')
       end
     end
 
     context "#get_objectid" do
-
       it "should be valid" do
         expect(object.get_objectid).to be_valid
       end
@@ -104,19 +99,20 @@ RSpec.describe ObjectidSupport do
       it "should be a Chouette::Objectid::StifNetex" do
         expect(object.get_objectid).to be_kind_of(Chouette::Objectid::Netex)
       end
+    end
 
-      context "#to_s" do
-        it "should return a string" do
-          expect(object.get_objectid.to_s).to be_kind_of(String)
-        end
+    context "#to_s" do
+      it "should return a string" do
+        expect(object.get_objectid.to_s).to be_kind_of(String)
+      end
 
-        it "should be the same as the db attribute" do 
-          expect(object.get_objectid.to_s).to eq(object.read_attribute(:objectid))
-          expect(object.get_objectid.to_s).to eq(object.objectid)
-        end
-    
+      it "should be the same as the db attribute" do
+        expect(object.get_objectid.to_s).to eq(object.read_attribute(:objectid))
+        expect(object.get_objectid.to_s).to eq(object.objectid)
+      end
+    end
+
     context "#objectid" do
-
       it 'should build objectid on create' do
         object.save
         object.run_callbacks(:commit)
@@ -139,8 +135,5 @@ RSpec.describe ObjectidSupport do
         expect(object.objectid).to be_truthy
       end
     end
-      end
-    end
   end
-  
 end
