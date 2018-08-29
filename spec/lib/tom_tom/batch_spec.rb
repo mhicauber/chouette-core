@@ -4,7 +4,7 @@ RSpec.describe TomTom::Batch do
   describe "#batch" do
     it "should call get_sub_batch!" do
       expect(batch).to receive(:get_sub_batch).and_return(nil)
-      batch.batch []
+      batch.batch [{}]
     end
 
     context "with more than SUB_BATCH_SIZE waycosts" do
