@@ -654,6 +654,7 @@ class Merge < ApplicationModel
         MergeWorker.perform_async(id)
       end
     else
+      referentials.each &:active!
       update status: :failed, ended_at: Time.now
     end
   end
