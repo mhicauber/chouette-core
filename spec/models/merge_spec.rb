@@ -93,6 +93,18 @@ RSpec.describe Merge do
         expect{merge.merge}.to change{ComplianceCheckSet.count}.by 0
       end
     end
+
+    context "when the control_set fails" do
+      it "should reset referential state" do
+        merge.merge
+        check_set = ComplianceCheckSet.last
+        expect(check_set.referential).to eq referential
+        merge.compliance_check_sets.update_all status:  :successful
+        check_set.update status: :failed
+        check_set.do_notify_parent
+        expect(referential.reload.state).to eq :active
+      end
+    end
   end
 
   it "should set source refererentials state to pending" do
