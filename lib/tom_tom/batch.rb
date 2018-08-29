@@ -1,5 +1,8 @@
 module TomTom
   class Batch
+
+    SUB_BATCH_SIZE=50
+
     def initialize(connection)
       @connection = connection
     end
@@ -10,26 +13,9 @@ module TomTom
         routeType: 'shortest',
         traffic: 'false'
       })
-      batch_items = convert_way_costs(way_costs).map do |locations|
-        {
-          query: "/calculateRoute/#{locations}/json?#{params}"
-        }
+      way_costs.each_slice(SUB_BATCH_SIZE) do |slice|
+        get_sub_batch(slice, params)
       end
-
-      response = @connection.post do |req|
-        req.url '/routing/1/batch/json'
-        req.headers['Content-Type'] = 'application/json'
-        req.body = {
-          batchItems: batch_items
-        }.to_json
-      end
-
-      Rails.logger.info "#{self.class.name}: #{way_costs.size} evaluated"
-
-      extract_costs_to_way_costs!(
-        way_costs,
-        JSON.parse(response.body)
-      )
     end
     alias_method :evaluate, :batch
 
@@ -53,6 +39,30 @@ module TomTom
         "#{way_cost.departure.lat},#{way_cost.departure.lng}" \
         ":#{way_cost.arrival.lat},#{way_cost.arrival.lng}"
       end
+    end
+
+    protected
+    def get_sub_batch way_costs, params
+      batch_items = convert_way_costs(way_costs).map do |locations|
+        {
+          query: "/calculateRoute/#{locations}/json?#{params}"
+        }
+      end
+
+      response = @connection.post do |req|
+        req.url '/routing/1/batch/json'
+        req.headers['Content-Type'] = 'application/json'
+        req.body = {
+          batchItems: batch_items
+        }.to_json
+      end
+
+      Rails.logger.info "#{self.class.name}: #{way_costs.size} evaluated"
+
+      extract_costs_to_way_costs!(
+        way_costs,
+        JSON.parse(response.body)
+      )
     end
   end
 end
