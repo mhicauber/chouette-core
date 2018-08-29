@@ -46,6 +46,7 @@ module Chouette
     validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     validates_numericality_of :waiting_time, greater_than_or_equal_to: 0, only_integer: true, if: :waiting_time
+    validates :time_zone, inclusion: { in: TZInfo::Timezone.all_country_zone_identifiers }, allow_nil: true
     validate :parent_area_type_must_be_greater
     validate :area_type_of_right_kind
     validate :registration_number_is_set

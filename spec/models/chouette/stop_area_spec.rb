@@ -14,6 +14,13 @@ describe Chouette::StopArea, :type => :model do
   it { should validate_numericality_of :latitude }
   it { should validate_numericality_of :longitude }
 
+  describe "#time_zone" do
+    it "should validate the value is a correct canonical timezone" do
+      expect(build(:stop_area, time_zone: nil)).to be_valid
+      expect(build(:stop_area, time_zone: "Europe/Lisbon")).to be_valid
+      expect(build(:stop_area, time_zone: "Portugal")).to_not be_valid
+    end
+  end
 
   describe "#area_type" do
     it "should validate the value is correct regarding to the kind" do

@@ -4,7 +4,7 @@ class FullTimeZoneInput < SimpleForm::Inputs::CollectionSelectInput
       collection = options.delete(:collection) || begin
         coll = {}
 
-        TZInfo::Timezone.all_data_zones.map do |tzinfo|
+        TZInfo::Timezone.all_country_zones.map do |tzinfo|
           # v = ActiveSupport::TimeZone.zones_map[k]
         # coll.sort_by do |v|
         #   "(#{v.formatted_offset}) #{v.name}"

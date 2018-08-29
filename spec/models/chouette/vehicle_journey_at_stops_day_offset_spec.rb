@@ -130,7 +130,7 @@ describe Chouette::VehicleJourneyAtStop do
       it "should apply the TZ" do
         at_stops = []
 
-        stop_area = create(:stop_area, time_zone: "Paris")
+        stop_area = create(:stop_area, time_zone: "Europe/Paris")
         stop_point = create(:stop_point, stop_area: stop_area)
         vehicle_journey_at_stop = build_stubbed(
           :vehicle_journey_at_stop,
@@ -141,7 +141,7 @@ describe Chouette::VehicleJourneyAtStop do
 
         at_stops << vehicle_journey_at_stop
 
-        stop_area = create(:stop_area, time_zone: "Portugal")
+        stop_area = create(:stop_area, time_zone: "Europe/Lisbon")
         stop_point = create(:stop_point, stop_area: stop_area)
         vehicle_journey_at_stop = build_stubbed(
           :vehicle_journey_at_stop,
