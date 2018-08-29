@@ -33,7 +33,7 @@ class Workbench < ApplicationModel
 
   def self.normalize_prefix input
     input ||= ""
-    input.strip.gsub(/[^0-9a-zA-Z_]/, '_')
+    input.to_s.strip.gsub(/[^0-9a-zA-Z_]/, '_')
   end
 
   def prefix= val
