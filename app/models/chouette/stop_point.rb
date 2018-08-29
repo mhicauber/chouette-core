@@ -36,10 +36,23 @@ module Chouette
     delegate :name, :registration_number, :kind, :area_type, to: :stop_area_light
 
     before_destroy :remove_dependent_journey_pattern_stop_points
+    before_destroy :destroy_empty_routing_contraint_zones
+
     def remove_dependent_journey_pattern_stop_points
       route.journey_patterns.each do |jp|
         if jp.stop_point_ids.include?( id)
           jp.stop_point_ids = jp.stop_point_ids - [id]
+        end
+      end
+    end
+
+    def destroy_empty_routing_contraint_zones
+      Chouette::RoutingConstraintZone.with_stop_points_containing(self).find_each do |rcz|
+        rcz.stop_point_ids = rcz.stop_point_ids - [id]
+        if rcz.stop_points.count < 2
+          rcz.destroy
+        else
+          rcz.save
         end
       end
     end

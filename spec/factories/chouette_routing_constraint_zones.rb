@@ -5,7 +5,7 @@ FactoryGirl.define do
     association :route, factory: :route
     after(:build) do |zone|
       route = Chouette::Route.find(zone.route_id)
-      zone.stop_point_ids = route.stop_points.pluck(:id).first(2)
+      zone.stop_point_ids ||= route.stop_points.pluck(:id).first(2)
     end
   end
 end
