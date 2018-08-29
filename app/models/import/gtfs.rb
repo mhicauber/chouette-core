@@ -350,7 +350,14 @@ class Import::Gtfs < Import::Base
     source.calendar_dates.each_slice(500) do |slice|
       Chouette::TimeTable.transaction do
         slice.each do |calendar_date|
-          time_table = referential.time_tables.find time_tables_by_service_id[calendar_date.service_id]
+          time_table = referential.time_tables.where(id: time_tables_by_service_id[calendar_date.service_id]).last
+          time_table ||= begin
+            tt = referential.time_tables.build comment: "Calendar #{calendar_date.service_id}"
+            save_model tt
+            time_tables_by_service_id[calendar_date.service_id] = tt.id
+            tt
+          end
+
           date = time_table.dates.build date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1"
 
           save_model date

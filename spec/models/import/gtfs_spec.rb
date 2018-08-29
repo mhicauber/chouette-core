@@ -252,23 +252,41 @@ RSpec.describe Import::Gtfs do
 
     before do
       import.prepare_referential
-      import.import_calendars
     end
 
-    it "should create a Timetable::Date for each calendar date" do
-      import.import_calendar_dates
+    it "should create time_tables when they don't already exist" do
+      expect{import.import_calendar_dates}.to change{Chouette::TimeTable.count}.by 1
+      timetable = Chouette::TimeTable.last
+      expect(timetable.comment).to eq "Calendar FULLW"
+      expect(timetable.periods.count).to eq 0
+      expect(timetable.dates.count).to eq 1
+      expect(timetable.dates.last.date).to eq "2007-06-04".to_date
+      expect(timetable.dates.last.in_out).to be_falsy
 
-      def d(value)
-        Date.parse(value)
+      timetable.dates.destroy_all
+      expect{import.import_calendar_dates}.to change{Chouette::TimeTable.count}.by 0
+    end
+
+    context "when the timetables exist" do
+      before do
+        import.import_calendars
       end
 
-      defined_attributes = ->(d) {
-        [d.time_table.comment, d.date, d.in_out]
-      }
-      expected_attributes = [
-        ["Calendar FULLW", d("Mon, 04 Jun 2007"), false]
-      ]
-      expect(referential.time_table_dates.map(&defined_attributes)).to match_array(expected_attributes)
+      it "should create a Timetable::Date for each calendar date" do
+        import.import_calendar_dates
+
+        def d(value)
+          Date.parse(value)
+        end
+
+        defined_attributes = ->(d) {
+          [d.time_table.comment, d.date, d.in_out]
+        }
+        expected_attributes = [
+          ["Calendar FULLW", d("Mon, 04 Jun 2007"), false]
+        ]
+        expect(referential.time_table_dates.map(&defined_attributes)).to match_array(expected_attributes)
+      end
     end
   end
 
