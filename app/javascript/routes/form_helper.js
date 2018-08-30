@@ -47,7 +47,7 @@ const formHelper = {
       event.preventDefault()
       let msg = "L'itinéraire doit comporter au moins deux arrêts"
       if ($('.alert.alert-danger').length == 0) {
-        $('#stop_points').find('.subform').after(`<div class='alert alert-danger'><span class='fa fa-lg fa-exclamation-circle'></span><span>" ${msg} "</span></div>`)
+        $('#stop_points').find('.subform').after(`<div class='alert alert-danger'><span class='fa fa-lg fa-exclamation-circle'></span><span>${msg}</span></div>`)
       }
     }
   }
