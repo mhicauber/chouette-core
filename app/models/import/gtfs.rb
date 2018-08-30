@@ -200,25 +200,27 @@ class Import::Gtfs < Import::Base
 
   def import_stops
     count = 0
-    Chouette::StopArea.transaction do
-      source.stops.each do |stop|
-        stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
+    source.stops.each_slice(100) do |stops|
+      Chouette::StopArea.transaction do
+        stops.each do |stop|
+          stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
 
-        stop_area.name = stop.name
-        stop_area.area_type = stop.location_type == "1" ? "zdlp" : "zdep"
-        stop_area.parent = stop_area_referential.stop_areas.find_by!(registration_number: stop.parent_station) if stop.parent_station.present?
-        stop_area.latitude, stop_area.longitude = stop.lat, stop.lon
-        stop_area.kind = "commercial"
-        stop_area.deleted_at = nil
-        stop_area.confirmed_at = Time.now
+          stop_area.name = stop.name
+          stop_area.area_type = stop.location_type == "1" ? "zdlp" : "zdep"
+          stop_area.parent = stop_area_referential.stop_areas.find_by!(registration_number: stop.parent_station) if stop.parent_station.present?
+          stop_area.latitude, stop_area.longitude = stop.lat, stop.lon
+          stop_area.kind = "commercial"
+          stop_area.deleted_at = nil
+          stop_area.confirmed_at = Time.now
 
-        # TODO correct default timezone
+          # TODO correct default timezone
 
-        save_model stop_area
-        count += 1
+          save_model stop_area
+          count += 1
+        end
       end
-      create_message criticity: "info", message_key: "gtfs.stops.imported", message_attributes: {count: count}
     end
+    create_message criticity: "info", message_key: "gtfs.stops.imported", message_attributes: {count: count}
   end
 
   def import_routes
@@ -243,8 +245,8 @@ class Import::Gtfs < Import::Base
         save_model line
         count += 1
       end
-      create_message criticity: "info", message_key: "gtfs.routes.imported", message_attributes: {count: count}
     end
+    create_message criticity: "info", message_key: "gtfs.routes.imported", message_attributes: {count: count}
   end
 
   def vehicle_journey_by_trip_id
@@ -254,8 +256,8 @@ class Import::Gtfs < Import::Base
   def import_trips
     count = 0
     source.trips.each_slice(100) do |slice|
-      slice.each do |trip|
-        Chouette::Route.transaction do
+      Chouette::Route.transaction do
+        slice.each do |trip|
           line = line_referential.lines.find_by registration_number: trip.route_id
 
           route = referential.routes.build line: line
@@ -288,9 +290,9 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stop_times
-    source.stop_times.group_by(&:trip_id).each_slice(50) do |slice|
-      slice.each do |trip_id, stop_times|
-        Chouette::VehicleJourneyAtStop.transaction do
+    source.stop_times.group_by(&:trip_id).each_slice(100) do |slice|
+      Chouette::VehicleJourneyAtStop.transaction do
+        slice.each do |trip_id, stop_times|
           vehicle_journey = referential.vehicle_journeys.find vehicle_journey_by_trip_id[trip_id]
           journey_pattern = vehicle_journey.journey_pattern
           route = journey_pattern.route
