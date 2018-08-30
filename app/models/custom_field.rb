@@ -392,14 +392,12 @@ class CustomField < ApplicationModel
           out += "<span class='fa fa-upload'></span>"
           out += preview
           out += "</div>"
-          if @instance.value.file&.present?
-            out += "<div class='col-sm-4'>"
-            out += @form_helper.input "remove_custom_field_#{code}".to_sym, as: :boolean, label: "actions.delete".t
-            out += "</div>"
-          end
-          # out += "<div class='row'>"
+
+          out += "<div class='col-sm-4 delete-wrapper #{@instance.value.file&.present? ? '' : 'hidden'}'>"
+          out += @form_helper.input "remove_custom_field_#{code}".to_sym, as: :boolean, label: "actions.delete".t, checked: false
+          out += "</div>"
+
           out += @form_helper.input form_input_id, form_input_options
-          # out += "</div>"
           out += "</div>"
           out += "</div>"
           out.html_safe
