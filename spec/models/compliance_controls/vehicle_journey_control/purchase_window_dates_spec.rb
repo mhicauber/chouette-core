@@ -7,9 +7,11 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
   let(:journey_pattern){ create :journey_pattern, route: route }
 
   let(:time_table) {create :time_table, dates: [], periods: [ create(:time_table_period, period_start: Date.today, period_end: Date.today + 10) ]}
+  let(:empty_time_table) {create :time_table, dates_count: 0, periods_count: 0}
   let(:purchase_window) { create :purchase_window, date_ranges: [(time_table.start_date+1)...(time_table.end_date-1)]}
 
   let(:vj) { create :vehicle_journey_empty, journey_pattern: journey_pattern, route: route, time_tables: [time_table], purchase_windows: [purchase_window]}
+  let(:vj2) { create :vehicle_journey_empty, journey_pattern: journey_pattern, route: route, time_tables: [empty_time_table], purchase_windows: [purchase_window]}
 
   let(:criticity){ "warning" }
   let(:control_attributes) {
@@ -28,12 +30,13 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
   before(:each) do
     referential.switch do
       time_table
+      empty_time_table
       purchase_window
-      vj
+      vj && vj2
     end
   end
 
-  context "when all the vehicle jorneys with company_id have a published journey name between the range" do
+  context "when all the vehicle journeys with company_id have a published journey name between the range" do
     it "should pass" do
       expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
       resource = ComplianceCheckResource.last
