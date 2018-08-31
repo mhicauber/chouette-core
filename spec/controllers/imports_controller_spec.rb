@@ -1,7 +1,7 @@
 RSpec.describe ImportsController, :type => :controller do
   login_user
 
-  let(:workbench) { create :workbench }
+  let(:workbench) { create :workbench, organisation: Organisation.find_by!(code: "first") }
   let(:import)    { create :import, workbench: workbench }
 
   describe 'GET #new' do

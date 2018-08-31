@@ -1,7 +1,7 @@
 RSpec.describe ExportsController, :type => :controller do
   login_user
 
-  let(:workbench) { create :workbench }
+  let(:workbench) { create :workbench, organisation: Organisation.find_by!(code: "first") }
   let(:export)    { create(:netex_export, workbench: workbench, referential: first_referential) }
 
   describe 'GET #new' do

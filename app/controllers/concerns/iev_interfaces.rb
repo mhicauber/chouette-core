@@ -29,6 +29,10 @@ module IevInterfaces
 
   protected
 
+  def begin_of_association_chain
+    current_organisation
+  end
+
   def collection
     scope = parent.send(collection_name).where(parent_id: nil)
     if index_model.name.demodulize != "Base"
