@@ -41,6 +41,15 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
     end
   end
 
+  context "when an error is raised" do
+    it "should set the status to ERROR" do
+      expect(VehicleJourneyControl::PurchaseWindowDates).to receive(:compliance_test).and_raise
+      expect{compliance_check.process}.to raise_error
+      resource = ComplianceCheckResource.last
+      expect(resource.status).to eq "ERROR"
+    end
+  end
+
   context "when at least one vehicle jorneys with company_id have a published journey name outside of the the range" do
     before(:each) do
       referential.switch do
