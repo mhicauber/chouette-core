@@ -38,6 +38,7 @@ module IevInterfaces
     if index_model.name.demodulize != "Base"
       scope = scope.where(type: index_model.name)
     end
+    @types = scope.select('DISTINCT(type)').map &:class
 
     scope = self.ransack_period_range(scope: scope, error_message:  t("#{collection_name}.filters.error_period_filter"), query: :where_started_at_in)
 

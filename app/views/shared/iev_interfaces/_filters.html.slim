@@ -10,6 +10,9 @@
     .form-group.togglable class=filter_item_class(params[:q], :status_eq_any)
       = f.label Import::Base.human_attribute_name(:status), required: false, class: 'control-label'
       = f.input :status_eq_any, collection: %w(pending successful warning failed), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + import_status(l) + "</span>").html_safe}, required: false, wrapper_html: { class: "checkbox_list"}
+    .form-group.togglable class=filter_item_class(params[:q], :status_eq_any)
+      = f.label Import::Base.human_attribute_name(:type), required: false, class: 'control-label'
+      = f.input :type_eq_any, collection: @types, as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.human_name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
     .form-group.togglable class=filter_item_class(params[:q], :started_at)
       = f.label Import::Base.human_attribute_name(:started_at), required: false, class: 'control-label'
