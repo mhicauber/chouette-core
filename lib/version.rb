@@ -5,7 +5,11 @@ module Version
   end
 
   def self.current
-    @version ||= parse_version_file || get_git_version
+    unless @version_parsed
+      @version ||= parse_version_file || get_git_version
+      @version_parsed = true
+    end
+    @version
   end
 
   protected
