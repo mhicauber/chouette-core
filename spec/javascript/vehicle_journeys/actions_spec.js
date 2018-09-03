@@ -645,7 +645,7 @@ describe('actions.adjustSchedule', () => {
         }
       })
       it('should do nothing', () => {
-        expect(actions.adjustSchedule(action, schedule, true)).toEqual(schedule)
+        expect(actions.adjustSchedule(action, schedule, true, true)).toEqual(schedule)
       })
     }),
     context('with a delta < 0', () => {
@@ -667,7 +667,7 @@ describe('actions.adjustSchedule', () => {
           arrival_time: departure_time,
           delta: 0
         }
-        expect(actions.adjustSchedule(action, schedule, true)).toEqual(expected)
+        expect(actions.adjustSchedule(action, schedule, true, true)).toEqual(expected)
       })
     })
   }),
@@ -681,7 +681,7 @@ describe('actions.adjustSchedule', () => {
         }
       })
       it('should do nothing', () => {
-        expect(actions.adjustSchedule(action, schedule, true)).toEqual(schedule)
+        expect(actions.adjustSchedule(action, schedule, true, true)).toEqual(schedule)
       })
     }),
     context('with a delta < 0', () => {
@@ -703,7 +703,7 @@ describe('actions.adjustSchedule', () => {
           arrival_time: arrival_time,
           delta: 0
         }
-        expect(actions.adjustSchedule(action, schedule, true)).toEqual(expected)
+        expect(actions.adjustSchedule(action, schedule, true, true)).toEqual(expected)
       })
     })
   })
