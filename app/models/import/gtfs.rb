@@ -27,7 +27,6 @@ class Import::Gtfs < Import::Base
   def import
     update status: 'running', started_at: Time.now
 
-    referential&.pending!
     import_without_status
     update status: 'successful', ended_at: Time.now
     referential&.active!
@@ -175,6 +174,7 @@ class Import::Gtfs < Import::Base
 
   def import_without_status
     prepare_referential
+    referential.pending!
 
     Import::Gtfs.benchmark(self, :import_calendars)
     Import::Gtfs.benchmark(self, :import_calendar_dates)
