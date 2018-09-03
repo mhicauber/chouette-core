@@ -89,6 +89,7 @@ fr:
         files: "Résultats"
         parent: Parent
         referential_id: Jeu de données
+        referential: Jeu de données
       export:
         <<: *attrs
         base:
