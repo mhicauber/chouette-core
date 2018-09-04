@@ -237,3 +237,5 @@ source 'https://rails-assets.org' do
 
   gem 'rails-assets-modernizr', '~> 2.0.6'
 end
+
+gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
