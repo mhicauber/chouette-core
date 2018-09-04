@@ -14,6 +14,15 @@ case $command in
     exec bash launch-cron
     ;;
   front)
-    exec bundle exec rake db:migrate db:seed && bundle exec rails server -b 0.0.0.0
+    if [ "$CHOUETTE_MIGRATE" = "true" ]; then
+      bundle exec rake db:migrate db:seed || exit $?
+    fi
+    exec bundle exec rails server -b 0.0.0.0
+    ;;
+  shell)
+    exec bash
+    ;;
+  console)
+    exec bundle exec rails console production
     ;;
 esac
