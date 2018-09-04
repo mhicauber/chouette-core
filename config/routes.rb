@@ -13,9 +13,6 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :exports do
       post :upload, on: :member
-      resources :export_resources, only: [:index] do
-        resources :export_messages, only: [:index]
-      end
     end
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
@@ -59,8 +56,6 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
-
-    resources :networks, controller: "referential_networks"
 
     match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: "referential_lines", except: :index do

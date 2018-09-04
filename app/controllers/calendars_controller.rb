@@ -97,7 +97,7 @@ class CalendarsController < ChouetteController
     end
   end
 
-   def begin_of_association_chain
+  def begin_of_association_chain
     current_organisation
   end
 

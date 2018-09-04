@@ -190,7 +190,7 @@ class ReferentialsController < ChouetteController
   end
 
   def load_workbench
-    @workbench ||= Workbench.find(params[:workbench_id]) if params[:workbench_id]
+    @workbench ||= current_organisation.workbenches.find(params[:workbench_id]) if params[:workbench_id]
     @workbench ||= resource&.workbench if params[:id]
     @workbench
   end

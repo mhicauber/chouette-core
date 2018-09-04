@@ -3,23 +3,32 @@ describe ReferentialsController, :type => :controller do
   login_user
 
   let(:referential) { Referential.first }
-  let(:organisation) { create :organisation }
+  let(:organisation) { @user.organisation }
   let(:other_referential) { create :referential, organisation: organisation }
+  let(:workbench) { create :workbench, organisation: organisation }
 
   describe "GET new" do
-    let(:request){ get :new, workbench_id: referential.workbench_id }
-    before{ request }
+    let(:request){ get :new, workbench_id: workbench.id }
 
-    it 'returns http success' do
-      expect(response).to have_http_status(200)
-    end
+    it_behaves_like 'checks current_organisation'
 
     context "when cloning another referential" do
+      before{ request }
       let(:source){ referential }
-      let(:request){ get :new, workbench_id: referential.workbench_id, from: source.id }
+      let(:request){ get :new, workbench_id: workbench.id, from: source.id }
 
       it 'returns http success' do
         expect(response).to have_http_status(200)
+      end
+
+      it "duplicates the given referential" do
+        new_referential = assigns(:referential)
+        expect(new_referential.line_referential).to eq source.line_referential
+        expect(new_referential.stop_area_referential).to eq source.stop_area_referential
+        expect(new_referential.objectid_format).to eq source.objectid_format
+        expect(new_referential.prefix).to eq source.prefix
+        expect(new_referential.slug).to be_nil
+        expect(new_referential.workbench).to eq workbench
       end
 
       context "when the referential is in another organisation but accessible by the user" do
@@ -43,18 +52,9 @@ describe ReferentialsController, :type => :controller do
   end
 
   describe 'PUT archive' do
-    context "user's organisation matches referential's organisation" do
-      it 'returns http success' do
-        put :archive, id: referential.id
-        expect(response).to have_http_status(302)
-      end
-    end
-
-    context "user's organisation doesn't match referential's organisation" do
-      it 'raises a ActiveRecord::RecordNotFound' do
-        expect { put :archive, id: other_referential.id }.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
+    let(:referential){ create :referential, workbench: workbench, organisation: organisation }
+    let(:request){ put :archive, id: referential.id }
+    it_behaves_like 'checks current_organisation', success_code: 302
   end
 
   describe 'GET select_compliance_control_set' do
@@ -77,30 +77,7 @@ describe ReferentialsController, :type => :controller do
     end
   end
 
-  describe "GET #new" do
-    context "when duplicating" do
-      let(:workbench){ create :workbench}
-      let(:request){
-        get :new,
-          workbench_id: workbench.id,
-          from: referential.id
-      }
-
-      it "duplicates the given referential" do
-        request
-        new_referential = assigns(:referential)
-        expect(new_referential.line_referential).to eq referential.line_referential
-        expect(new_referential.stop_area_referential).to eq referential.stop_area_referential
-        expect(new_referential.objectid_format).to eq referential.objectid_format
-        expect(new_referential.prefix).to eq referential.prefix
-        expect(new_referential.slug).to be_nil
-        expect(new_referential.workbench).to eq workbench
-      end
-    end
-  end
-
   describe "POST #create" do
-    let(:workbench){ create :workbench}
     context "when duplicating" do
       let(:request){
         post :create,
