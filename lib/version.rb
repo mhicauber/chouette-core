@@ -1,7 +1,7 @@
 module Version
 
   def self.reset
-    @version = nil
+    @version = @version_parsed = nil
   end
 
   def self.current
