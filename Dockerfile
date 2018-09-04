@@ -50,7 +50,7 @@ ARG VERSION
 RUN cd /app && BUNDLE_GEMFILE=Gemfile.docker bundle exec rake ci:fix_webpacker assets:precompile i18n:js:export RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production && \
     BUNDLE_GEMFILE=Gemfile.docker bundle exec whenever --output '/proc/1/fd/1' --update-crontab chouette --set 'environment=production&bundle_command=bundle exec' --roles=app,db,web && \
     rm Gemfile.docker && bundle install --deployment --without development test && \
-    ([ -n "$VERSION" ] && echo "{'build_name': '$VERSION'}" > version.json) || true && \
+    ([ -n "$VERSION" ] && echo "{'build_name': '$VERSION'}" > config/version.json) || true && \
     apt-get -y remove build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core yarn nodejs && \
     apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
     rm -rf tmp/cache/* node_modules/ /var/lib/gems/2.3.0/cache/ vendor/bundle/ruby/2.3.0/cache /root/.bundle/ /usr/local/share/.cache/
