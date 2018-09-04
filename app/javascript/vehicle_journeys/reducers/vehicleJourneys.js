@@ -163,14 +163,20 @@ const vehicleJourney= (state = {}, action, keep) => {
       }
       vjasArray = state.vehicle_journey_at_stops.map((vjas, i) =>{
         if(i == action.subIndex){
-          newSchedule = {
+          let schedule = {
             departure_time: _.assign({}, vjas.departure_time),
             arrival_time: _.assign({}, vjas.arrival_time)
           }
+          newSchedule = _.assign({}, schedule)
           if (action.isDeparture){
+            actions.getDelta(schedule, false)
             newSchedule.departure_time[action.timeUnit] = actions.pad(val, action.timeUnit)
-            if(!action.isArrivalsToggled)
-              newSchedule.arrival_time[action.timeUnit] = newSchedule.departure_time[action.timeUnit]
+            if(!action.isArrivalsToggled){
+              console.log({schedule})
+              schedule = actions.getShiftedSchedule({arrival_time: newSchedule.departure_time, departure_time: newSchedule.departure_time}, - schedule.delta)
+              newSchedule.arrival_time = schedule.arrival_time
+            }
+
             newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
             return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, delta: newSchedule.delta})
           }else{
