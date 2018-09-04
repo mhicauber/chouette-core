@@ -23,16 +23,24 @@ class Export::Gtfs < Export::Base
     @stop_area_stop_hash ||= {}
   end
 
-  def line_route_hash
-    @line_route_hash ||= {}
-  end
-
   def journey_periods_hash
     @journey_periods_hash ||= {}
   end
 
   def vehicule_journey_service_trip_hash
     @vehicule_journey_service_trip_hash ||= {}
+  end
+
+  def agency_id company
+    company.registration_number.presence || company.object_id
+  end
+
+  def route_id line
+    line.registration_number.presence || line.object_id
+  end
+
+  def stop_id stop_area
+    stop_area.registration_number.presence || stop_area.object_id
   end
 
   def gtfs_line_type line
@@ -91,7 +99,7 @@ class Export::Gtfs < Export::Base
     company_ids += journeys.joins(route: :line).pluck :"lines.company_id"
     Chouette::Company.where(id: company_ids.uniq).order('name').each do |company|
       target.agencies << {
-        id: (company.registration_number.presence || company.id),
+        id: agency_id(company),
         name: company.name,
         url: company.url,
         timezone: company.time_zone,
@@ -107,12 +115,11 @@ class Export::Gtfs < Export::Base
     stops = Chouette::StopArea.where(id: journeys.joins(route: :stop_points).pluck(:"stop_points.stop_area_id").uniq).order('parent_id ASC NULLS FIRST')
     results = export_stop_areas_recursively(stops)
     results.each do |stop_area|
-      stop_id = stop_area.registration_number.presence || stop_area.id
       target.stops << {
-        id: stop_id,
+        id: stop_id(stop_area),
         name: stop_area.name,
         location_type: stop_area.area_type == 'zdlp' ? 1 : 0,
-        parent_station: ((stop_area.parent.registration_number.presence || stop_area.parent.id) if stop_area.parent),
+        parent_station: (stop_id(stop_area.parent) if stop_area.parent),
         lat: stop_area.latitude,
         lon: stop_area.longitude,
         desc: stop_area.comment,
@@ -129,10 +136,9 @@ class Export::Gtfs < Export::Base
     stop_areas_array_parents = []
 
     stop_areas.each do |stop_area|
-      stop_id = stop_area.registration_number.presence || stop_area.id
       if (!stop_area_stop_hash[stop_area.id])
         stop_areas_array_result << stop_area
-        stop_area_stop_hash[stop_area.id] = stop_id
+        stop_area_stop_hash[stop_area.id] = stop_id(stop_area)
         if (stop_area.parent && !stop_area_stop_hash[stop_area.parent.id])
           stop_areas_array_parents<<stop_area.parent
         end
@@ -148,11 +154,9 @@ class Export::Gtfs < Export::Base
   def export_lines_to(target)
     line_ids = journeys.joins(:route).pluck(:line_id).uniq
     Chouette::Line.where(id: line_ids).each do |line|
-      route_id = line.registration_number.presence || line.id
-      company_id = (line.company.registration_number.presence || line.company.id) if line.company
       target.routes << {
-        id: route_id,
-        agency_id: company_id,
+        id: route_id(line),
+        agency_id: (agency_id(line.company) if line.company),
         long_name: line.published_name,
         short_name: line.number,
         type: gtfs_line_type(line),
@@ -161,7 +165,6 @@ class Export::Gtfs < Export::Base
         #color: TO DO
         #text_color: TO DO
       }
-      line_route_hash[line.id] = route_id
     end
   end
 
@@ -211,14 +214,12 @@ class Export::Gtfs < Export::Base
   def export_vehicle_journeys_to(target)
     c = 0
     journeys.each do |vehicle_journey|
-      # fetches the route_id stored in the routes_lines_hash variable
-      route_id = line_route_hash[vehicle_journey.route.line.id]
       # each entry in trips.txt corresponds to a kind of composite key made of both service_id and route_id
       journey_periods_hash[vehicle_journey.id].each do |service_id|
         c += 1
         trip_id = "trip_#{c}"
         target.trips << {
-          route_id: route_id,
+          route_id: route_id(vehicle_journey.route.line),
           service_id:  service_id,
           id: trip_id,
           #headsign: TO DO + store that field at import
