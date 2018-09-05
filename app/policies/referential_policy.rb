@@ -14,7 +14,7 @@ class ReferentialPolicy < ApplicationPolicy
   end
 
   def destroy?
-    !record.pending? && !record.in_referential_suite? && organisation_match? && user.has_permission?('referentials.destroy')
+    !record.pending? && !record.in_referential_suite? && !record.merged? && organisation_match? && user.has_permission?('referentials.destroy')
   end
 
   def update?
