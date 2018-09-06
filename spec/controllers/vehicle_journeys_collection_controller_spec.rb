@@ -8,6 +8,8 @@ RSpec.describe VehicleJourneysCollectionsController, :type => :controller do
     @user = build_stubbed(:allmighty_user, organisation: referential.organisation)
     allow(controller).to receive(:current_organisation).and_return(@user.organisation)
     allow(controller).to receive(:pundit_user).and_return(user_context)
+    referential.switch
+    line.update line_referential: referential.line_referential
   end
 
   describe "PUT update" do
