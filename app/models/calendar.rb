@@ -1,6 +1,4 @@
 require 'range_ext'
-require_relative 'calendar/date_value'
-require_relative 'calendar/period'
 
 class Calendar < ApplicationModel
   include DateSupport
