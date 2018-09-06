@@ -290,37 +290,41 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stop_times
-    source.stop_times.group_by(&:trip_id).each_slice(100) do |slice|
-      Chouette::VehicleJourneyAtStop.transaction do
-        slice.each do |trip_id, stop_times|
-          vehicle_journey = referential.vehicle_journeys.find vehicle_journey_by_trip_id[trip_id]
-          journey_pattern = vehicle_journey.journey_pattern
-          route = journey_pattern.route
+    count = 0
+    source.stop_times.group_by(&:trip_id).each_slice(10) do |slice|
+      Memory.log "Import stop times from #{count}" do
+        Chouette::VehicleJourneyAtStop.transaction do
+          slice.each do |trip_id, stop_times|
+            vehicle_journey = referential.vehicle_journeys.find vehicle_journey_by_trip_id[trip_id]
+            journey_pattern = vehicle_journey.journey_pattern
+            route = journey_pattern.route
 
-          stop_times.sort_by! { |s| s.stop_sequence.to_i }
+            stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
-          stop_times.each do |stop_time|
-            stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
+            stop_times.each do |stop_time|
+              stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
 
-            stop_point = route.stop_points.build stop_area: stop_area
-            save_model stop_point
+              stop_point = route.stop_points.build stop_area: stop_area
+              save_model stop_point
 
-            journey_pattern.stop_points << stop_point
+              journey_pattern.stop_points << stop_point
 
-            # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-            vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.find_by(stop_point_id: stop_point.id)
+              # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
+              vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.find_by(stop_point_id: stop_point.id)
 
-            departure_time = GTFS::Time.parse(stop_time.departure_time)
-            arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+              departure_time = GTFS::Time.parse(stop_time.departure_time)
+              arrival_time = GTFS::Time.parse(stop_time.arrival_time)
 
-            vehicle_journey_at_stop.departure_time = departure_time.time
-            vehicle_journey_at_stop.arrival_time = arrival_time.time
-            vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
-            vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
+              vehicle_journey_at_stop.departure_time = departure_time.time
+              vehicle_journey_at_stop.arrival_time = arrival_time.time
+              vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
+              vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
 
-            # TODO offset
+              # TODO offset
 
-            save_model vehicle_journey_at_stop
+              save_model vehicle_journey_at_stop
+              count += 1
+            end
           end
         end
       end
