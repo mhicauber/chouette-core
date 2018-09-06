@@ -5,6 +5,8 @@ en:
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
+      time_zone:
+       with_parent: Cannot have a time zone if a parent is selected
       registration_number:
         already_taken: Already taken
         cannot_be_empty: This field is mandatory
