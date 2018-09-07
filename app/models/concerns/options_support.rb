@@ -6,7 +6,11 @@ module OptionsSupport
 
       if opts[:serialize]
         define_method name do
-          JSON.parse(options[name.to_s]) rescue opts[:serialize].new
+          val = options.stringify_keys[name.to_s]
+          unless val.is_a? opts[:serialize]
+            val = JSON.parse(val) rescue opts[:serialize].new
+          end
+          val
         end
       end
 
