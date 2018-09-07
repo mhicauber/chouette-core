@@ -23,6 +23,29 @@ RSpec.describe Merge do
     expect(merge).to be_valid
   end
 
+  context "#current?" do
+    let(:merge){ build_stubbed :merge }
+    context "when the current output is mine" do
+      before(:each) do
+        merge.new = merge.workbench.output.current
+      end
+
+      it "should be true" do
+        expect(merge.current?).to be_truthy
+      end
+    end
+
+    context "when the current output is not mine" do
+      before(:each) do
+        merge.new = build_stubbed(:referential)
+      end
+
+      it "should be false" do
+        expect(merge.current?).to be_falsy
+      end
+    end
+  end
+
   context "with another concurent merge" do
     before do
        Merge.create(workbench: referential.workbench, referentials: [referential, referential])

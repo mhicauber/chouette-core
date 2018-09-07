@@ -119,6 +119,14 @@ class Merge < ApplicationModel
     referentials.each &:active!
   end
 
+  def successful?
+    status.to_s == "successful"
+  end
+
+  def current?
+    workbench.output.current == new
+  end
+
   def prepare_new
     new =
       if workbench.output.current
