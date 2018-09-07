@@ -9,6 +9,7 @@ en:
       title: "Merged offer %{name}"
     actions:
       create: Merge data spaces
+      rollback: Rollback
     statuses:
       new: New
       pending: Pending
