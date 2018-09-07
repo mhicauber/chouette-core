@@ -10,6 +10,10 @@ class Import::Base < ApplicationModel
     "Import::Resource"
   end
 
+  def self.human_name
+    I18n.t("export.#{self.name.demodulize.underscore}")
+  end
+
   def self.file_extension_whitelist
     %w(zip)
   end

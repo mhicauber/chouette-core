@@ -368,4 +368,34 @@ RSpec.describe Import::Gtfs do
       expect(import.download_path).to eq("/workbenches/#{import.workbench_id}/imports/#{import.id}/download?token=#{import.token_download}")
     end
   end
+
+  describe "#referential_metadata" do
+    let(:import) { create_import "google-sample-feed.zip" }
+    let(:start_date_limit) { Date.current.beginning_of_year - 15.years }
+    let(:end_date_limit) { Date.current.end_of_year + 15.years }
+
+    context "when dates are over the extremes" do
+      before do
+        allow(import.source).to receive(:calendars).and_return([
+          double(start_date: (Date.current - 20.years).to_s, end_date: (Date.current + 20.years).to_s)
+        ])
+      end
+
+      it "sets periodes within the allowed limit" do
+        expect(import.referential_metadata.periodes).to eq([start_date_limit..end_date_limit])
+      end
+    end
+
+    context "when dates are inside the extremes" do
+      before do
+        allow(import.source).to receive(:calendars).and_return([
+          double(start_date: 1.month.ago.to_date.to_s, end_date: 1.year.since.to_date.to_s)
+        ])
+      end
+
+      it "sets periodes within the allowed limit" do
+        expect(import.referential_metadata.periodes).to eq([1.month.ago.to_date..1.year.since.to_date])
+      end
+    end
+  end
 end
