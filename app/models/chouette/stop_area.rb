@@ -97,7 +97,7 @@ module Chouette
       end
     end
 
-    after_update :clean_invalid_access_links
+    #after_update :clean_invalid_access_links
     before_save :coordinates_to_lat_lng
 
     def combine_lat_lng
