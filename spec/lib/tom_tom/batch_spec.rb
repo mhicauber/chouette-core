@@ -3,7 +3,7 @@ RSpec.describe TomTom::Batch do
 
   describe "#batch" do
     it "should call get_sub_batch!" do
-      expect(batch).to receive(:get_sub_batch).and_return(nil)
+      expect(batch).to receive(:get_sub_batch).and_return([])
       batch.batch [{}]
     end
 
