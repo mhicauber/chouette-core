@@ -739,6 +739,7 @@ ActiveRecord::Schema.define(version: 20180829151132) do
     t.string   "objectid_format"
     t.datetime "merged_at"
     t.datetime "failed_at"
+    t.datetime "rollbacked_at"
   end
 
   add_index "referentials", ["created_from_id"], name: "index_referentials_on_created_from_id", using: :btree

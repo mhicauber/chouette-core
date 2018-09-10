@@ -21,6 +21,12 @@ class MergesController < ChouetteController
     render json: autocomplete_collection.limit(10)
   end
 
+  def rollback
+    authorize resource
+    resource.rollback!
+    redirect_to [:workbench, :output]
+  end
+
   protected
 
   def begin_of_association_chain

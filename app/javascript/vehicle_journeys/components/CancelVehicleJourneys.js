@@ -5,6 +5,10 @@ export default class CancelVehicleJourney extends CancelButton {
     super(props)
   }
 
+  hasPolicy(){
+    return this.props.filters.policy['vehicle_journeys.update'] == true
+  }
+
   formClassName() {
     return 'vj_collection'
   }

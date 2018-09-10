@@ -11,7 +11,7 @@ class Merge < ApplicationModel
   validate :has_at_least_one_referential, :on => :create
   validate :check_other_merges, :on => :create
 
-  enumerize :status, in: %w[new pending successful failed running], default: :new
+  enumerize :status, in: %w[new pending successful failed running canceled], default: :new
 
   has_array_of :referentials, class_name: 'Referential'
   has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
@@ -24,6 +24,23 @@ class Merge < ApplicationModel
 
   def self.keep_merges=(value)
     @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
+  end
+
+  def rollback!
+    raise "You cannot rollback to the current version" if current?
+    workbench.output.update current: self.new
+    self.following_merges.each &:cancel!
+  end
+
+  def cancel!
+    update status: :canceled
+    referentials.each &:active!
+    new.rollbacked!
+  end
+
+  def following_merges
+    following_referentials = self.workbench.output.referentials.where('created_at > ?', self.new.created_at)
+    workbench.merges.where(new_id: following_referentials.pluck(:id))
   end
 
   def merge

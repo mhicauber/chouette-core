@@ -3,7 +3,7 @@ class Referential < ApplicationModel
   include DataFormatEnumerations
   include ObjectidFormatterSupport
 
-  STATES = %i(pending active failed archived)
+  STATES = %i(pending active failed archived rollbacked)
 
   validates_presence_of :name
   validates_presence_of :slug
@@ -61,9 +61,10 @@ class Referential < ApplicationModel
   belongs_to :referential_suite
 
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
-  scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
+  scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil, rollbacked_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
+  scope :rollbacked, -> { where(ready: true, failed_at: nil, archived_at: nil).where.not(rollbacked_at: nil) }
 
   scope :ready, -> { where(ready: true) }
   scope :exportable, -> {
@@ -162,7 +163,7 @@ class Referential < ApplicationModel
       metadatas_lines
     end
   end
-  
+
   def lines_outside_of_scope
     func_scope = workbench.workbench_scopes.lines_scope(associated_lines).pluck(:objectid)
     lines.where.not(objectid: func_scope)
@@ -350,7 +351,7 @@ class Referential < ApplicationModel
   before_destroy :destroy_jobs
 
   def referential_read_only?
-    !ready? || in_referential_suite? || archived?
+    !ready? || in_referential_suite? || archived? || rollbacked?
   end
 
   def in_referential_suite?
@@ -578,7 +579,8 @@ class Referential < ApplicationModel
   def state
     return :failed if failed_at.present?
     return :archived if archived_at.present?
-    ready? ? :active : :pending
+    return :pending unless ready?
+    rollbacked_at == nil ? :active : :rollbacked
   end
 
   def light_update vals
@@ -598,11 +600,15 @@ class Referential < ApplicationModel
   end
 
   def active!
-    light_update ready: true, failed_at: nil, archived_at: nil
+    light_update ready: true, failed_at: nil, archived_at: nil, merged_at: nil, rollbacked_at: nil
   end
 
   def archived!
     light_update failed_at: nil, archived_at: Time.now
+  end
+
+  def rollbacked!
+    light_update ready: true, failed_at: nil, archived_at: nil, merged_at: nil, rollbacked_at: Time.now
   end
 
   def merged!

@@ -2,10 +2,10 @@
 module ImportsHelper
 
   # Import statuses helper
-  def import_status(status, verbose: false, default_status: nil)
+  def import_status(status, verbose: false, default_status: nil, i18n_prefix: nil)
     status ||= default_status
     return unless status
-
+    i18n_prefix ||= "imports.status"
     status = status.to_s.downcase
     out = if %w[new running pending].include? status
             content_tag :span, '', class: 'fa fa-clock-o'
@@ -20,7 +20,7 @@ module ImportsHelper
           end
     if verbose
       out += content_tag :span do
-        "imports.status.#{status}".t(fallback: '')
+        txt = "#{i18n_prefix}.#{status}".t(fallback: "")
       end
     end
     out

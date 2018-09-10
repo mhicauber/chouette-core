@@ -16,6 +16,7 @@ fr:
       successful: Succès
       failed: Erreur
       running: En cours
+      canceled: Annulé
   activerecord:
     models:
       merge:

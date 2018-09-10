@@ -6,7 +6,7 @@ class ReferentialPolicy < ApplicationPolicy
   end
 
   def browse?
-    record.active? || record.archived?
+    record.active? || record.archived? || record.rollbacked?
   end
 
   def create?
@@ -14,7 +14,7 @@ class ReferentialPolicy < ApplicationPolicy
   end
 
   def destroy?
-    !record.pending? && !record.in_referential_suite? && !record.merged? && organisation_match? && user.has_permission?('referentials.destroy')
+    !record.rollbacked? && !record.pending? && !record.in_referential_suite? && !record.merged? && organisation_match? && user.has_permission?('referentials.destroy')
   end
 
   def update?

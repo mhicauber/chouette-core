@@ -16,6 +16,7 @@ en:
       successful: Successful
       failed: Failed
       running: Running
+      canceled: Canceled
   activerecord:
     models:
       merge:

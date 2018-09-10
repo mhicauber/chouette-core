@@ -18,7 +18,14 @@ export default class CancelButton extends Component {
     return className.join(' ')
   }
 
+  hasPolicy() {
+    return true
+  }
+
   render() {
+    if (!this.hasPolicy()) {
+      return false
+    }
     return (
       <div className='row mt-md'>
         <div className='col-lg-12 text-right'>
