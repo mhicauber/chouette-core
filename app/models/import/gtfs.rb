@@ -275,6 +275,8 @@ class Import::Gtfs < Import::Base
           line = line_referential.lines.find_by registration_number: trip.route_id
 
           route = referential.routes.build line: line
+          # we don't calculate costs right away, as there are no stops in the route yet
+          route.prevent_costs_calculation = true
           route.wayback = (trip.direction_id == "0" ? :outbound : :inbound)
           # TODO better name ?
           name = route.published_name = trip.short_name.presence || trip.headsign.presence || route.wayback.to_s.capitalize
@@ -305,6 +307,7 @@ class Import::Gtfs < Import::Base
 
   def import_stop_times
     count = 0
+    routes = []
     source.stop_times.group_by(&:trip_id).each_slice(10) do |slice|
       Memory.log "Import stop times from #{count}" do
         Chouette::VehicleJourneyAtStop.transaction do
@@ -312,7 +315,7 @@ class Import::Gtfs < Import::Base
             vehicle_journey = referential.vehicle_journeys.find vehicle_journey_by_trip_id[trip_id]
             journey_pattern = vehicle_journey.journey_pattern
             route = journey_pattern.route
-
+            routes << route
             stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
             stop_times.each do |stop_time|
@@ -342,6 +345,9 @@ class Import::Gtfs < Import::Base
           end
         end
       end
+    end
+    routes.uniq.each do |r|
+      r.calculate_costs!
     end
   end
 

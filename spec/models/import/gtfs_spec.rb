@@ -82,6 +82,7 @@ RSpec.describe Import::Gtfs do
 
   describe "#import_routes" do
     let(:import) { create_import "google-sample-feed.zip" }
+
     it "should create a line for each route" do
       import.import_routes
 
@@ -107,6 +108,12 @@ RSpec.describe Import::Gtfs do
     before do
       import.prepare_referential
       import.import_calendars
+      allow(import).to receive(:save_model).and_wrap_original { |m, model| m.call(model); model.run_callbacks(:commit) }
+    end
+
+    it "should not calculate costs" do
+      expect_any_instance_of(Chouette::Route).to_not receive(:calculate_costs!)
+      expect{import.import_trips}.to change{Chouette::Route.count}
     end
 
     it "should create a Route for each trip" do
@@ -176,6 +183,18 @@ RSpec.describe Import::Gtfs do
       import.prepare_referential
       import.import_calendars
       import.import_trips
+    end
+
+    it "should calculate costs" do
+      calculated = []
+      allow_any_instance_of(Chouette::Route).to receive(:calculate_costs!) { |route|
+        calculated << route
+      }
+
+      import.import_stop_times
+      referential.vehicle_journeys.map(&:route).uniq.each do |route|
+        expect(calculated).to include(route)
+      end
     end
 
     it "should create a VehicleJourneyAtStop for each stop_time" do
