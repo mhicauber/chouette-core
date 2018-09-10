@@ -53,20 +53,39 @@ RSpec.describe RoutesController, type: :controller do
   end
 
   describe "PUT /update" do
-    before(:each) do
-      @checksum_source = route.checksum_source
+    let(:request){
       put :update, id: route.id, line_id: route.line_id,
           referential_id: referential.id,
           route: route.attributes.update({name: "New name"})
+    }
+    before(:each) do
+      @checksum_source = route.checksum_source
     end
 
-    it_behaves_like "route, line and referential linked"
-    it_behaves_like "redirected to referential_line_path(referential,line)"
-    it "sets metadata" do
-      expect(Chouette::Route.last.metadata.modifier_username).to eq @user.username
+    context "" do
+      before{ request }
+      it_behaves_like "route, line and referential linked"
+      it_behaves_like "redirected to referential_line_path(referential,line)"
+      it "sets metadata" do
+        expect(Chouette::Route.last.metadata.modifier_username).to eq @user.username
+      end
+      it "updates checksum" do
+        expect(route.reload.checksum_source).to_not eq @checksum_source
+      end
     end
-    it "updates checksum" do
-      expect(route.reload.checksum_source).to_not eq @checksum_source
+    it "does not save item twice" do
+      counts = Hash.new { |hash, key| hash[key] = 0 }
+      allow_any_instance_of(Chouette::Route).to receive(:save).and_wrap_original do |meth, *args|
+        counts[meth.receiver.id] += 1
+        meth.call(*args)
+      end
+      allow_any_instance_of(Chouette::Route).to receive(:save!).and_wrap_original do |meth, *args|
+        counts[meth.receiver.id] += 1
+        meth.call(*args)
+      end
+      request
+      expect(counts.size).to eq 1
+      expect(counts[route.id]).to eq 1
     end
   end
 
