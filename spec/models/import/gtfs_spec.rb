@@ -17,7 +17,13 @@ RSpec.describe Import::Gtfs do
   end
 
   def create_import(file)
-    Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file)
+    i = build_import(file)
+    i.save!
+    i
+  end
+
+  def build_import(file)
+    Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file), creator: "test", name: "test"
   end
 
   context "when the file is not directly accessible" do
@@ -37,14 +43,13 @@ RSpec.describe Import::Gtfs do
 
   describe "created referential" do
 
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import "google-sample-feed.zip" }
 
     it "is named with the import name" do
       import.name = "Import Name"
       import.prepare_referential
       expect(import.referential.name).to eq(import.name)
     end
-
   end
 
   describe "#import_agencies" do
@@ -54,10 +59,39 @@ RSpec.describe Import::Gtfs do
 
       expect(workbench.line_referential.companies.pluck(:registration_number, :name, :url, :time_zone)).to eq([["DTA","Demo Transit Authority","http://google.com","America/Los_Angeles"]])
     end
+
+    it "should create a resource" do
+      expect{import.import_agencies}.to change{import.resources.count}.by 1
+      expect(import.resources.last.name).to eq "agencies"
+    end
+
+    context "when a record lacks its name" do
+      before(:each) do
+        allow(import.source).to receive(:agencies) {
+          [
+            GTFS::Agency.new({
+              id: "DTA",
+              name: "",
+              url: "http://google.com",
+              timezone: "America/Los_Angeles"
+            })
+          ]
+        }
+      end
+      it "should create a message" do
+        expect{
+          begin
+            import.import_agencies
+          rescue ActiveRecord::RecordNotSaved
+            nil
+          end
+        }.to change{Import::Message.count}.by 1
+      end
+    end
   end
 
   describe "#import_stops" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import "google-sample-feed.zip" }
     it "should create a company for each agency" do
       import.import_stops
 
@@ -81,8 +115,7 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_routes" do
-    let(:import) { create_import "google-sample-feed.zip" }
-
+    let(:import) { build_import "google-sample-feed.zip" }
     it "should create a line for each route" do
       import.import_routes
 
@@ -104,7 +137,7 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_trips" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import "google-sample-feed.zip" }
     before do
       import.prepare_referential
       import.import_calendars
@@ -177,7 +210,7 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_stop_times" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import "google-sample-feed.zip" }
 
     before do
       import.prepare_referential
@@ -242,7 +275,7 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_calendars" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import "google-sample-feed.zip" }
 
     before do
       import.prepare_referential
@@ -267,7 +300,7 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_calendar_dates" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import "google-sample-feed.zip" }
 
     before do
       import.prepare_referential

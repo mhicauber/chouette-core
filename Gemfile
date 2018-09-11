@@ -118,6 +118,7 @@ gem 'will_paginate'
 gem 'ransack'
 #gem "squeel", github: 'activerecord-hackery/squeel'
 gem 'active_attr'
+gem 'active_model-errors_details'
 
 gem 'sequel'
 

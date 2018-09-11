@@ -11,6 +11,20 @@ module IevInterfaces::Resource
     self.update status: status_from_importer(importer_status)
   end
 
+  def update_status_from_messages
+    self.update status: status_from_messages
+  end
+
+  def status_from_messages
+    status = if messages.where(criticity: :error).exists?
+      :ERROR
+    elsif messages.where(criticity: :warning).exists?
+      :WARNING
+    else
+      :OK
+    end
+  end
+
   def status_from_importer importer_status
     return nil unless importer_status.present?
     {

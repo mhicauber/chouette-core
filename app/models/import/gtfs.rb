@@ -16,12 +16,21 @@ class Import::Gtfs < Import::Base
     @resource ||= parent.resources.find_or_create_by(name: referential_name, resource_type: "referential", reference: self.name) if parent
   end
 
+  def create_resource name
+    self.resources.find_or_create_by(name: name, resource_type: "file", reference: name)
+  end
+
   def next_step
     main_resource&.next_step
   end
 
-  def create_message args
-    (main_resource || self).messages.build args
+  def create_message args, opts={}
+    resource = opts[:resource] || main_resource || self
+    resource.messages.build args
+    if opts[:commit]
+      resource.save!
+      resource.update_status_from_messages
+    end
   end
 
   def import
@@ -186,22 +195,22 @@ class Import::Gtfs < Import::Base
   end
 
   def import_agencies
+    resource = create_resource :agencies
     count = 0
-    Chouette::Company.transaction do
-      source.agencies.each do |agency|
-        company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
-        company.attributes = { name: agency.name }
-        company.url = agency.url
-        company.time_zone = agency.timezone
+    source.agencies.each do |agency|
+      company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
+      company.attributes = { name: agency.name }
+      company.url = agency.url
+      company.time_zone = agency.timezone
 
-        save_model company
-        count += 1
-      end
+      save_model company, "#{resource.name}.txt", count+1, 0, resource
+      count += 1
     end
     create_message criticity: "info", message_key: "gtfs.agencies.imported", message_attributes: {count: count}
   end
 
   def import_stops
+    resource = create_resource :stops
     count = 0
     source.stops.each_slice(100) do |stops|
       Chouette::StopArea.transaction do
@@ -218,7 +227,7 @@ class Import::Gtfs < Import::Base
 
           # TODO correct default timezone
 
-          save_model stop_area
+          save_model stop_area, "#{resource.name}.txt", count+1, 0, resource
           count += 1
         end
       end
@@ -227,6 +236,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_routes
+    resource = create_resource :routes
     count = 0
     Chouette::Line.transaction do
       source.routes.each do |route|
@@ -256,7 +266,7 @@ class Import::Gtfs < Import::Base
 
         line.url = route.url
 
-        save_model line
+        save_model line, "#{resource.name}.txt", count+1, 0, resource
         count += 1
       end
     end
@@ -269,6 +279,7 @@ class Import::Gtfs < Import::Base
 
   def import_trips
     count = 0
+    resource = create_resource :trips
     source.trips.each_slice(100) do |slice|
       Chouette::Route.transaction do
         slice.each do |trip|
@@ -281,14 +292,14 @@ class Import::Gtfs < Import::Base
           # TODO better name ?
           name = route.published_name = trip.short_name.presence || trip.headsign.presence || route.wayback.to_s.capitalize
           route.name = name
-          save_model route
+          save_model route, "#{resource.name}.txt", count+1, 0, resource
 
           journey_pattern = route.journey_patterns.build name: name
-          save_model journey_pattern
+          save_model journey_pattern, "#{resource.name}.txt", count+1, 0, resource
 
           vehicle_journey = journey_pattern.vehicle_journeys.build route: route
           vehicle_journey.published_journey_name = trip.headsign.presence || trip.id
-          save_model vehicle_journey
+          save_model vehicle_journey, "#{resource.name}.txt", count+1, 0, resource
           count += 1
 
           time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
@@ -308,6 +319,7 @@ class Import::Gtfs < Import::Base
   def import_stop_times
     count = 0
     routes = Set.new
+    resource = create_resource :stop_times
     source.stop_times.group_by(&:trip_id).each_slice(10) do |slice|
       Memory.log "Import stop times from #{count}" do
         Chouette::VehicleJourneyAtStop.transaction do
@@ -326,7 +338,7 @@ class Import::Gtfs < Import::Base
               stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
 
               stop_point = route.stop_points.build stop_area: stop_area
-              save_model stop_point
+              save_model stop_point, "#{resource.name}.txt", count+1, 0, resource
 
               journey_pattern.stop_points << stop_point
 
@@ -343,7 +355,7 @@ class Import::Gtfs < Import::Base
 
               # TODO offset
 
-              save_model vehicle_journey_at_stop
+              save_model vehicle_journey_at_stop, "#{resource.name}.txt", count+1, 0, resource
               count += 1
             end
           end
@@ -361,6 +373,7 @@ class Import::Gtfs < Import::Base
 
   def import_calendars
     count = 0
+    resource = create_resource :calendars
     source.calendars.each_slice(500) do |slice|
       Chouette::TimeTable.transaction do
         slice.each do |calendar|
@@ -370,7 +383,7 @@ class Import::Gtfs < Import::Base
           end
           time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
 
-          save_model time_table
+          save_model time_table, "#{resource.name}.txt", count+1, 0, resource
           count += 1
 
           time_tables_by_service_id[calendar.service_id] = time_table.id
@@ -381,30 +394,52 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendar_dates
+    resource = create_resource :calendar_dates
     source.calendar_dates.each_slice(500) do |slice|
       Chouette::TimeTable.transaction do
         slice.each do |calendar_date|
           time_table = referential.time_tables.where(id: time_tables_by_service_id[calendar_date.service_id]).last
           time_table ||= begin
             tt = referential.time_tables.build comment: "Calendar #{calendar_date.service_id}"
-            save_model tt
+            save_model tt, "#{resource.name}.txt", count+1, 0, resource
             time_tables_by_service_id[calendar_date.service_id] = tt.id
             tt
           end
 
           date = time_table.dates.build date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1"
-
-          save_model date
+          save_model date, "#{resource.name}.txt", count+1, 0, resource
         end
       end
     end
   end
 
-  def save_model(model)
+  def save_model(model, filename, line_number, column_number, resource=nil)
     unless model.save
       Rails.logger.info "Can't save #{model.class.name} : #{model.errors.inspect}"
+      model.errors.details.each do |key, messages|
+        messages.each do |message|
+          message.each do |criticity, error|
+            create_message(
+              {
+                criticity: criticity,
+                message_key: error,
+                message_attributes: {
+                  test_id: error,
+                  source_filename: filename,
+                  object_attribute: key,
+                  source_attribute: key,
+                  source_line_number: line_number,
+                  source_column_number: column_number
+                }
+              },
+              resource: resource, commit: true
+            )
+          end
+        end
+      end
       raise ActiveRecord::RecordNotSaved.new("Invalid #{model.class.name} : #{model.errors.inspect}")
     end
+
     Rails.logger.debug "Created #{model.inspect}"
   end
 

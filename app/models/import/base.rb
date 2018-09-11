@@ -28,7 +28,7 @@ class Import::Base < ApplicationModel
   # we skip validation once the import has been persisted,
   # in order to allow Sidekiq workers (which don't have acces to the file) to
   # save the import
-  validates_presence_of :file, unless: Proc.new {|import| import.persisted? || import.errors[:file].present? }
+  validates_presence_of :file, unless: Proc.new {|import| self.local_file.present? || import.persisted? || import.errors[:file].present? }
 
   def self.model_name
     ActiveModel::Name.new Import::Base, Import::Base, "Import"
