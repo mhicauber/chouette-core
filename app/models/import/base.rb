@@ -14,6 +14,10 @@ class Import::Base < ApplicationModel
     %w(zip)
   end
 
+  def self.human_name
+    I18n.t("import.#{self.name.demodulize.underscore}")
+  end
+
   include IevInterfaces::Task
   # we skip validation once the import has been persisted,
   # in order to allow Sidekiq workers (which don't have acces to the file) to
