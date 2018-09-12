@@ -107,16 +107,16 @@ describe('vehicleJourneys reducer', () => {
     let pristineVjasList = [{
       delta : 0,
       arrival_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
       departure_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
       stop_point_objectid: 'test',
       stop_area_cityname: 'city',
-      dummy: true
+      dummy: false
     }]
     let fakeData = {
       published_journey_name: {value: 'test'},
@@ -127,14 +127,14 @@ describe('vehicleJourneys reducer', () => {
         }
       }
     }
-    let fakeSelectedJourneyPattern = {id: "1"}
+    let fakeSelectedJourneyPattern = { id: "1", stop_areas: [{stop_area_short_description: { object_id: '001', position: 0}}]}
     let fakeSelectedCompany = {name: "ALBATRANS"}
     expect(
       vjReducer(state, {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test', city_name: 'city'}],
+        stopPointsList: [{object_id: 'test', city_name: 'city', area_object_id: '001', position: 0}],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
@@ -219,13 +219,22 @@ describe('vehicleJourneys reducer', () => {
         {
           stop_area_short_description: {
             position: 0,
-            id: 'test'
+            id: 'test1',
+            object_id: '001'
           }
         },
         {
           stop_area_short_description: {
             position: 1,
-            id: 'test2'
+            id: 'test2',
+            object_id: '002'
+          }
+        },
+        {
+          stop_area_short_description: {
+            position: 2,
+            id: 'test3',
+            object_id: '001'
           }
         }
       ]
@@ -236,7 +245,7 @@ describe('vehicleJourneys reducer', () => {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test', city_name: 'city', id: 'test'}, {object_id: 'test2', city_name: 'city', id: 'test2'}, {object_id: 'test', city_name: 'city', id: 'test'}],
+        stopPointsList: [{ object_id: 'test', city_name: 'city', id: 'test', area_object_id: '001', position: 0 }, { object_id: 'test2', city_name: 'city', id: 'test2', area_object_id: '002', position: 1 }, { object_id: 'test', city_name: 'city', id: 'test', area_object_id: '001', position: 2}],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
@@ -330,9 +339,9 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {stop_area_short_description: {position: 0, id: 1}},
-        {stop_area_short_description: {position: 1, id: 2}},
-        {stop_area_short_description: {position: 3, id: 4}},
+        {stop_area_short_description: {position: 0, id: 1, object_id: '001'}},
+        { stop_area_short_description: { position: 1, id: 2, object_id: '002'}},
+        { stop_area_short_description: { position: 3, id: 4, object_id: '004'}},
       ],
       costs: {
         "1-2": {
@@ -351,7 +360,7 @@ describe('vehicleJourneys reducer', () => {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100}],
+        stopPointsList: [{ object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10, area_object_id: '001', position: 0 }, { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, area_object_id: '002', position: 1 }, { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, area_object_id: '003', position: 2 }, { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100, area_object_id: '004', position: 3}],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
@@ -548,9 +557,9 @@ describe('vehicleJourneys reducer', () => {
       id: "1",
       full_schedule: true,
       stop_areas: [
-        {stop_area_short_description: {position: 0, id: 1}},
-        {stop_area_short_description: {position: 1, id: 2}},
-        {stop_area_short_description: {position: 3, id: 4}},
+        {stop_area_short_description: {position: 0, id: 1, object_id: '001'}},
+        { stop_area_short_description: { position: 1, id: 2, object_id: '002' }},
+        { stop_area_short_description: { position: 3, id: 4, object_id: '004'}},
       ],
       costs: {
         "1-2": {
@@ -569,7 +578,7 @@ describe('vehicleJourneys reducer', () => {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: null}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0}],
+        stopPointsList: [{ object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: null, area_object_id: '001', position: 0 }, { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, area_object_id: '002', position: 1 }, { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, area_object_id: '003', position: 2 }, { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, area_object_id: '004', position: 3}],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{

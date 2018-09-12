@@ -57,7 +57,7 @@ class VehicleJourneysController < ChouetteController
 
         if params[:jp]
           @jp_origin  = Chouette::JourneyPattern.find_by(objectid: params[:jp])
-          @jp_origin_stop_points = @jp_origin.stop_points
+          @jp_origin_stop_points = map_stop_points(@jp_origin.stop_points)
         end
       end
     end
@@ -215,7 +215,7 @@ class VehicleJourneysController < ChouetteController
                 position: stop.position,
                 id: stop.stop_area_id,
                 name: stop.stop_area.name,
-                object_id: item.objectid
+                object_id: stop.stop_area.objectid
               }
             }
           end
