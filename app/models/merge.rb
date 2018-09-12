@@ -41,7 +41,7 @@ class Merge < ApplicationModel
   end
 
   def has_at_least_one_referential
-    unless referentials.length > 1
+    unless referentials.length > 0
       errors.add(:base, :no_referential)
     end
   end
