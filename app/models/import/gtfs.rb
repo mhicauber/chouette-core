@@ -1,8 +1,6 @@
 class Import::Gtfs < Import::Base
   include BenchmarkSupport
 
-  PERIOD_EXTREME_VALUE = 15.years
-
   after_commit :launch_worker, :on => :create
 
   after_commit do

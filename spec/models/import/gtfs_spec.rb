@@ -371,8 +371,8 @@ RSpec.describe Import::Gtfs do
 
   describe "#referential_metadata" do
     let(:import) { create_import "google-sample-feed.zip" }
-    let(:start_date_limit) { Date.current.beginning_of_year - Import::Gtfs::PERIOD_EXTREME_VALUE }
-    let(:end_date_limit) { Date.current.end_of_year + Import::Gtfs::PERIOD_EXTREME_VALUE }
+    let(:start_date_limit) { Date.current.beginning_of_year - Import::Base::PERIOD_EXTREME_VALUE }
+    let(:end_date_limit) { Date.current.end_of_year + Import::Base::PERIOD_EXTREME_VALUE }
 
     context "when dates are over the extremes" do
       before do

@@ -2,6 +2,8 @@ class Import::Base < ApplicationModel
   self.table_name = "imports"
   include OptionsSupport
 
+  PERIOD_EXTREME_VALUE = 15.years
+
   def self.messages_class_name
     "Import::Message"
   end
