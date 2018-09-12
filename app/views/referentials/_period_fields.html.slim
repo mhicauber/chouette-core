@@ -7,7 +7,7 @@
             p.small = message
 
   .wrapper
-    - years = IMPORT::Base::PERIOD_EXTREME_VALUE
+    - years = Import::Base::PERIOD_EXTREME_VALUE
 
     div
       = f.input :begin, as: :date, label: false, start_year: years.ago.year, end_year: years.since.year, wrapper_html: { class: 'date smart_date' }
