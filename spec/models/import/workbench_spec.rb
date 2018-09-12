@@ -9,6 +9,8 @@ RSpec.describe Import::Workbench do
     end
   end
 
+  let(:new_referential){ create :referential }
+
   let(:workbench) do
     create :workbench do |workbench|
       workbench.line_referential.objectid_format = "netex"
@@ -55,6 +57,7 @@ RSpec.describe Import::Workbench do
           }
         }
         it "should create a Merge" do
+          import.resources.create referential: new_referential
           expect{import.done!}.to change{Merge.count}.by 1
           merge = Merge.last
           expect(merge.creator).to eq import.creator
