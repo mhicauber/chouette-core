@@ -85,7 +85,7 @@ module Chouette
     def no_time_zone_if_parent
       return unless self.parent
       if self.time_zone
-        errors.add(:time_zone, I18n.t('stop_areas.errors.registration_number.already_taken'))
+        errors.add(:time_zone, I18n.t('stop_areas.errors.time_zone.with_parent'))
       end
     end
 
