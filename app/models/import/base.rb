@@ -2,12 +2,18 @@ class Import::Base < ApplicationModel
   self.table_name = "imports"
   include OptionsSupport
 
+  PERIOD_EXTREME_VALUE = 15.years
+
   def self.messages_class_name
     "Import::Message"
   end
 
   def self.resources_class_name
     "Import::Resource"
+  end
+
+  def self.human_name
+    I18n.t("export.#{self.name.demodulize.underscore}")
   end
 
   def self.file_extension_whitelist

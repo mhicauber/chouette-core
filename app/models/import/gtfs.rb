@@ -96,7 +96,10 @@ class Import::Gtfs < Import::Base
     included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
 
     min_date = Date.parse (start_dates + [included_dates.min]).compact.min
+    min_date = [min_date, Date.current.beginning_of_year - PERIOD_EXTREME_VALUE].max
+
     max_date = Date.parse (end_dates + [included_dates.max]).compact.max
+    max_date = [max_date, Date.current.end_of_year + PERIOD_EXTREME_VALUE].min
 
     ReferentialMetadata.new line_ids: line_ids, periodes: [min_date..max_date]
   end
