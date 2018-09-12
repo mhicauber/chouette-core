@@ -17,7 +17,7 @@ class Import::Gtfs < Import::Base
   end
 
   def create_resource name
-    self.resources.find_or_create_by(name: name, resource_type: "file", reference: name)
+    self.resources.find_or_initialize_by(name: name, resource_type: "file", reference: name)
   end
 
   def next_step
@@ -195,18 +195,16 @@ class Import::Gtfs < Import::Base
   end
 
   def import_agencies
-    resource = create_resource :agencies
-    count = 0
-    source.agencies.each do |agency|
+    create_resource(:agencies).each(source.agencies) do |agency, resource|
       company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
       company.attributes = { name: agency.name }
       company.url = agency.url
       company.time_zone = agency.timezone
 
-      save_model company, "#{resource.name}.txt", count+1, 0, resource
-      count += 1
+      save_model company, "#{resource.name}.txt", resource.rows_count, 0, resource
+    end.tap do |resource|
+      create_message criticity: "info", message_key: "gtfs.agencies.imported", message_attributes: {count: resource.rows_count}
     end
-    create_message criticity: "info", message_key: "gtfs.agencies.imported", message_attributes: {count: count}
   end
 
   def import_stops
@@ -394,20 +392,19 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendar_dates
-    resource = create_resource :calendar_dates
-    source.calendar_dates.each_slice(500) do |slice|
+    create_resource(:calendar_dates).each(source.calendar_dates.each_slice(500)) do |slice, resource|
       Chouette::TimeTable.transaction do
         slice.each do |calendar_date|
           time_table = referential.time_tables.where(id: time_tables_by_service_id[calendar_date.service_id]).last
           time_table ||= begin
             tt = referential.time_tables.build comment: "Calendar #{calendar_date.service_id}"
-            save_model tt, "#{resource.name}.txt", count+1, 0, resource
+            save_model tt, "#{resource.name}.txt", resource.rows_count, 0, resource
             time_tables_by_service_id[calendar_date.service_id] = tt.id
             tt
           end
 
           date = time_table.dates.build date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1"
-          save_model date, "#{resource.name}.txt", count+1, 0, resource
+          save_model date, "#{resource.name}.txt", resource.rows_count, 0, resource
         end
       end
     end

@@ -62,7 +62,11 @@ RSpec.describe Import::Gtfs do
 
     it "should create a resource" do
       expect{import.import_agencies}.to change{import.resources.count}.by 1
-      expect(import.resources.last.name).to eq "agencies"
+      resource = import.resources.last
+      expect(resource.name).to eq "agencies"
+      expect(resource.metrics["ok_count"].to_i).to eq 1
+      expect(resource.metrics["warning_count"].to_i).to eq 0
+      expect(resource.metrics["error_count"].to_i).to eq 0
     end
 
     context "when a record lacks its name" do
@@ -86,6 +90,11 @@ RSpec.describe Import::Gtfs do
             nil
           end
         }.to change{Import::Message.count}.by 1
+        resource = import.resources.last
+        expect(resource.name).to eq "agencies"
+        expect(resource.metrics["ok_count"].to_i).to eq 0
+        expect(resource.metrics["warning_count"].to_i).to eq 0
+        expect(resource.metrics["error_count"].to_i).to eq 1
       end
     end
   end
