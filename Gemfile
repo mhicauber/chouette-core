@@ -195,7 +195,6 @@ group :test, :development do
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'rspec-rails', '~> 3.5.0'
-  gem 'fakeweb'
   gem 'webmock'
   gem 'capybara', '~> 2.4.0'
   gem 'database_cleaner'
