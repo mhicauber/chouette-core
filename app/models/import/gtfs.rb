@@ -234,7 +234,18 @@ class Import::Gtfs < Import::Base
 
         line.company = line_referential.companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
 
-        # TODO transport mode
+        case route.type
+        when '0', '5'
+          line.transport_mode = 'tram'
+        when '1'
+          line.transport_mode = 'metro'
+        when '2'
+          line.transport_mode = 'rail'
+        when '3'
+          line.transport_mode = 'bus'
+        when '7'
+          line.transport_mode = 'funicular'
+        end
 
         line.comment = route.desc
 

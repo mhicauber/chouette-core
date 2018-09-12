@@ -88,14 +88,14 @@ RSpec.describe Import::Gtfs do
       defined_attributes = [
         :registration_number, :name, :number, :published_name,
         "companies.registration_number",
-        :comment, :url
+        :comment, :url, :transport_mode
       ]
       expected_attributes = [
-        ["AAMV", "Airport - Amargosa Valley", "50", "Airport - Amargosa Valley", nil, nil, nil],
-        ["CITY", "City", "40", "City", nil, nil, nil],
-        ["STBA", "Stagecoach - Airport Shuttle", "30", "Stagecoach - Airport Shuttle", nil, nil, nil],
-        ["BFC", "Bullfrog - Furnace Creek Resort", "20", "Bullfrog - Furnace Creek Resort", nil, nil, nil],
-        ["AB", "Airport - Bullfrog", "10", "Airport - Bullfrog", nil, nil, nil]
+        ["AAMV", "Airport - Amargosa Valley", "50", "Airport - Amargosa Valley", nil, nil, nil, "bus"],
+        ["CITY", "City", "40", "City", nil, nil, nil, "bus"],
+        ["STBA", "Stagecoach - Airport Shuttle", "30", "Stagecoach - Airport Shuttle", nil, nil, nil, "bus"],
+        ["BFC", "Bullfrog - Furnace Creek Resort", "20", "Bullfrog - Furnace Creek Resort", nil, nil, nil, "bus"],
+        ["AB", "Airport - Bullfrog", "10", "Airport - Bullfrog", nil, nil, nil, "bus"]
       ]
 
       expect(workbench.line_referential.lines.includes(:company).pluck(*defined_attributes)).to match_array(expected_attributes)
