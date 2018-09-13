@@ -1,4 +1,6 @@
 class SubscriptionMailer < ApplicationMailer
+  add_template_helper MailerHelper
+
   def self.enabled?
     !!Rails.configuration.enable_subscriptions_notifications
   end

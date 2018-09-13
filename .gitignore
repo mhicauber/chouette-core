@@ -54,3 +54,4 @@ coverage
 
 spec/fixtures/target_*
 config/development_toolbar.rb
+.sass-cache

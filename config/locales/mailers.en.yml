@@ -1,9 +1,10 @@
 en:
   mailers:
+    info_contact: 'If you have any question, please send an email to '
     audit_mailer:
       audit:
         subject: "Audit automatique du %{date}"
-    
+
     calendar_mailer:
       sent_by: "Sent by"
       created:

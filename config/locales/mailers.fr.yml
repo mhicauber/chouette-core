@@ -1,5 +1,6 @@
 fr:
   mailers:
+    info_contact: 'Pour toute question, écrivez un mail à '
     audit_mailer:
       audit:
         subject: "Audit automatique du %{date}"
