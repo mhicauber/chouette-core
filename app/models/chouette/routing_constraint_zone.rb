@@ -7,6 +7,8 @@ module Chouette
     belongs_to :route
     has_array_of :stop_points, class_name: 'Chouette::StopPoint', order_by: :position
 
+    attr_accessor :allow_entire_journey
+
     belongs_to_array_in_many :vehicle_journeys, class_name: 'Chouette::VehicleJourney', array_name: :ignored_routing_contraint_zones
 
     def update_vehicle_journey_checksums
@@ -16,7 +18,8 @@ module Chouette
     after_commit :clean_ignored_routing_contraint_zone_ids, on: :destroy
 
     validates_presence_of :name, :stop_points, :route_id
-    validate :stop_points_belong_to_route, :not_all_stop_points_selected, :at_least_two_stop_points_selected
+    validate :stop_points_belong_to_route, :at_least_two_stop_points_selected
+    validate :not_all_stop_points_selected, unless: :allow_entire_journey
 
     def local_id
       "local-#{self.referential.id}-#{self.route&.line&.get_objectid&.local_id}-#{self.route_id}-#{self.id}"
@@ -70,6 +73,10 @@ module Chouette
 
     def route_name
       route.name
+    end
+
+    def pretty_print
+      stop_points.map(&:registration_number).join(' > ')
     end
   end
 end
