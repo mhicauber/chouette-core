@@ -105,7 +105,7 @@ gem 'i18n-js'
 
 # Format Output
 gem 'json'
-gem 'rubyzip'
+gem 'rubyzip', '~> 1.2.2' 
 gem 'roo'
 
 # Controller
