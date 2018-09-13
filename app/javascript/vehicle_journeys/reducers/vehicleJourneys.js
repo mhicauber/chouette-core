@@ -28,7 +28,7 @@ const vehicleJourney= (state = {}, action, keep) => {
         }
       }
       
-      _.each(action.stopPointsList, (sp, i, stopPoints) =>{
+      _.each(action.stopPointsList, (sp) =>{
         let inJourney = false
         let newVjas
 
@@ -94,10 +94,9 @@ const vehicleJourney= (state = {}, action, keep) => {
           }
         }
 
-        let belongToJP = !!action.selectedJourneyPattern.stop_areas.find(({ stop_area_short_description: stopArea }) => stopArea.object_id == sp.area_object_id)
-        let isNotDuplicate = !stopPoints.find(({ area_object_id, position }) => area_object_id == sp.area_object_id && position < sp.position)
+        let belongToJP = !!action.selectedJourneyPattern.stop_areas.find(({ stop_area_short_description: stopArea }) => stopArea.object_id == sp.area_object_id && stopArea.position == sp.position)
 
-        if (belongToJP && isNotDuplicate) newVjas.dummy = false
+        if (belongToJP) newVjas.dummy = false
 
         let lastStop = action.selectedJourneyPattern.stop_areas && action.selectedJourneyPattern.stop_areas[action.selectedJourneyPattern.stop_areas.length - 1]
         if(lastStop && lastStop.stop_area_short_description.id == sp.id){
