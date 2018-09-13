@@ -241,7 +241,7 @@ GEM
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
     ffaker (2.1.0)
-    ffi (1.9.18)
+    ffi (1.9.25)
     ffi-geos (1.2.0)
       ffi (>= 1.0.0)
     flag-icons-rails (2.5.0)
@@ -659,6 +659,7 @@ DEPENDENCIES
   faraday (~> 0.11)
   faraday_middleware
   ffaker (~> 2.1.0)
+  ffi (> 1.9.24)
   flag-icons-rails
   font-awesome-sass (~> 4.7)
   formtastic (= 3.1.5)
