@@ -238,98 +238,102 @@ class Merge < ApplicationModel
     new.switch do
       route_ids_mapping = {}
 
-      referential_routes.each do |route|
-        existing_route = new.routes.find_by line_id: route.line_id, checksum: route.checksum
-        if existing_route
-          route_ids_mapping[route.id] = existing_route.id
-          existing_route.merge_metadata_from route
-        else
-          objectid = Chouette::Route.where(objectid: route.objectid).exists? ? nil : route.objectid
-          attributes = route.attributes.merge(
-            id: nil,
-            objectid: objectid,
-            # line_id is the same
-            # all other primary must be changed
-            opposite_route_id: nil # merged after
-          )
-          new_route = new.routes.build attributes
-
-          route_stop_points = referential_stop_points_by_route[route.id]
-
-          # Stop Points
-          route_stop_points.sort_by(&:position).each do |stop_point|
-            objectid = Chouette::StopPoint.where(objectid: stop_point.objectid).exists? ? nil : stop_point.objectid
-            attributes = stop_point.attributes.merge(
-              id: nil,
-              route_id: nil,
-              objectid: objectid,
-            )
-            new_route.stop_points.build attributes
-          end
-
-          # We need to create StopPoints to known new primary keys
-          save_model! new_route
-
-          route_ids_mapping[route.id] = new_route.id
-
-          old_stop_point_ids = route_stop_points.sort_by(&:position).map(&:id)
-          new_stop_point_ids = new_route.stop_points.sort_by(&:position).map(&:id)
-
-          stop_point_ids_mapping = Hash[[old_stop_point_ids, new_stop_point_ids].transpose]
-
-          # RoutingConstraintZones
-          routing_constraint_zones = referential_routing_constraint_zones[route.id]
-
-          routing_constraint_zones.values.each do |routing_constraint_zone|
-            objectid = new.routing_constraint_zones.where(objectid: routing_constraint_zone.objectid).exists? ? nil : routing_constraint_zone.objectid
-            stop_point_ids = routing_constraint_zone.stop_point_ids.map { |id| stop_point_ids_mapping[id] }.compact
-
-            if stop_point_ids.size != routing_constraint_zone.stop_point_ids.size
-              raise "Can't find all required StopPoints for RoutingConstraintZone #{routing_constraint_zone.inspect}"
-            end
-
-            attributes = routing_constraint_zone.attributes.merge(
-              id: nil,
-              route_id: nil,
-              objectid: objectid,
-              stop_point_ids: stop_point_ids,
-            )
-            new_route.routing_constraint_zones.build attributes
-          end
-
-          save_model! new_route
-
-          if new_route.checksum != route.checksum
-            raise "Checksum has changed: \"#{route.checksum}\", \"#{route.checksum_source}\" -> \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
-          end
-
-          if new_route.routing_constraint_zones.map(&:checksum).sort != routing_constraint_zones.keys.sort
-            raise "Checksum has changed in RoutingConstraintZones: \"#{new_route.routing_constraint_zones.map(&:checksum).sort}\" -> \"#{route.routing_constraint_zones.map(&:checksum).sort}\""
-          end
-
-          new_route.routing_constraint_zones.each do |new_routing_constraint_zone|
-            routing_constraint_zone = routing_constraint_zones[new_routing_constraint_zone.checksum]
-            if routing_constraint_zone
-              referential_routing_constraint_zones_new_ids[routing_constraint_zone.id] = new_routing_constraint_zone.id
+      referential_routes.each_slice(10) do |routes|
+        Chouette::Route.transaction do
+          routes.each do |route|
+            existing_route = new.routes.find_by line_id: route.line_id, checksum: route.checksum
+            if existing_route
+              route_ids_mapping[route.id] = existing_route.id
+              existing_route.merge_metadata_from route
             else
-              raise "Can't find RoutingConstraintZone for checksum #{new_routing_constraint_zone.checksum} into #{routing_constraint_zones.inspect}"
+              objectid = Chouette::Route.where(objectid: route.objectid).exists? ? nil : route.objectid
+              attributes = route.attributes.merge(
+                id: nil,
+                objectid: objectid,
+                # line_id is the same
+                # all other primary must be changed
+                opposite_route_id: nil # merged after
+              )
+              new_route = new.routes.build attributes
+
+              route_stop_points = referential_stop_points_by_route[route.id]
+
+              # Stop Points
+              route_stop_points.sort_by(&:position).each do |stop_point|
+                objectid = Chouette::StopPoint.where(objectid: stop_point.objectid).exists? ? nil : stop_point.objectid
+                attributes = stop_point.attributes.merge(
+                  id: nil,
+                  route_id: nil,
+                  objectid: objectid,
+                )
+                new_route.stop_points.build attributes
+              end
+
+              # We need to create StopPoints to known new primary keys
+              save_model! new_route
+
+              route_ids_mapping[route.id] = new_route.id
+
+              old_stop_point_ids = route_stop_points.sort_by(&:position).map(&:id)
+              new_stop_point_ids = new_route.stop_points.sort_by(&:position).map(&:id)
+
+              stop_point_ids_mapping = Hash[[old_stop_point_ids, new_stop_point_ids].transpose]
+
+              # RoutingConstraintZones
+              routing_constraint_zones = referential_routing_constraint_zones[route.id]
+
+              routing_constraint_zones.values.each do |routing_constraint_zone|
+                objectid = new.routing_constraint_zones.where(objectid: routing_constraint_zone.objectid).exists? ? nil : routing_constraint_zone.objectid
+                stop_point_ids = routing_constraint_zone.stop_point_ids.map { |id| stop_point_ids_mapping[id] }.compact
+
+                if stop_point_ids.size != routing_constraint_zone.stop_point_ids.size
+                  raise "Can't find all required StopPoints for RoutingConstraintZone #{routing_constraint_zone.inspect}"
+                end
+
+                attributes = routing_constraint_zone.attributes.merge(
+                  id: nil,
+                  route_id: nil,
+                  objectid: objectid,
+                  stop_point_ids: stop_point_ids,
+                )
+                new_route.routing_constraint_zones.build attributes
+              end
+
+              save_model! new_route
+
+              if new_route.checksum != route.checksum
+                raise "Checksum has changed: \"#{route.checksum}\", \"#{route.checksum_source}\" -> \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
+              end
+
+              if new_route.routing_constraint_zones.map(&:checksum).sort != routing_constraint_zones.keys.sort
+                raise "Checksum has changed in RoutingConstraintZones: \"#{new_route.routing_constraint_zones.map(&:checksum).sort}\" -> \"#{route.routing_constraint_zones.map(&:checksum).sort}\""
+              end
+
+              new_route.routing_constraint_zones.each do |new_routing_constraint_zone|
+                routing_constraint_zone = routing_constraint_zones[new_routing_constraint_zone.checksum]
+                if routing_constraint_zone
+                  referential_routing_constraint_zones_new_ids[routing_constraint_zone.id] = new_routing_constraint_zone.id
+                else
+                  raise "Can't find RoutingConstraintZone for checksum #{new_routing_constraint_zone.checksum} into #{routing_constraint_zones.inspect}"
+                end
+              end
             end
           end
-        end
-      end
 
-      referential_route_opposite_route_ids.each do |route_id, opposite_route_id|
-        new_route_id = route_ids_mapping[route_id]
-        new_opposite_route_id = route_ids_mapping[opposite_route_id]
+          referential_route_opposite_route_ids.each do |route_id, opposite_route_id|
+            new_route_id = route_ids_mapping[route_id]
+            new_opposite_route_id = route_ids_mapping[opposite_route_id]
 
-        new_route = nil
-        if new_route_id && new_opposite_route_id
-          if new_route = new.routes.find_by(id: new_route_id)
-            new_route.update_column :opposite_route_id, new_opposite_route_id
+            new_route = nil
+            if new_route_id && new_opposite_route_id
+              if new_route = new.routes.find_by(id: new_route_id)
+                new_route.update_column :opposite_route_id, new_opposite_route_id
+              end
+            end
+
+            Rails.logger.warn "Can't merge opposite route for Route #{route_id}" unless new_route
           end
         end
-
-        Rails.logger.warn "Can't merge opposite route for Route #{route_id}" unless new_route
       end
     end
 
@@ -350,43 +354,47 @@ class Merge < ApplicationModel
     referential_journey_patterns_checksums = Hash[referential_journey_patterns.map { |j| [ j.id, j.checksum ] }]
 
     new.switch do
-      referential_journey_patterns.each do |journey_pattern|
-        # find parent route by checksum
-        associated_line_id = referential_routes_lines[journey_pattern.route_id]
-        associated_route_checksum = referential_routes_checksums[journey_pattern.route_id]
-        existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
+      referential_journey_patterns.each_slice(20) do |journey_patterns|
+        Chouette::JourneyPattern.transaction do
+          journey_patterns.each do |journey_pattern|
+            # find parent route by checksum
+            associated_line_id = referential_routes_lines[journey_pattern.route_id]
+            associated_route_checksum = referential_routes_checksums[journey_pattern.route_id]
+            existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
 
-        existing_journey_pattern = new.journey_patterns.find_by route_id: existing_associated_route.id, checksum: journey_pattern.checksum
+            existing_journey_pattern = new.journey_patterns.find_by route_id: existing_associated_route.id, checksum: journey_pattern.checksum
 
-        if existing_journey_pattern
-          existing_journey_pattern.merge_metadata_from journey_pattern
-        else
-          objectid = Chouette::JourneyPattern.where(objectid: journey_pattern.objectid).exists? ? nil : journey_pattern.objectid
-          attributes = journey_pattern.attributes.merge(
-            id: nil,
-            objectid: objectid,
+            if existing_journey_pattern
+              existing_journey_pattern.merge_metadata_from journey_pattern
+            else
+              objectid = Chouette::JourneyPattern.where(objectid: journey_pattern.objectid).exists? ? nil : journey_pattern.objectid
+              attributes = journey_pattern.attributes.merge(
+                id: nil,
+                objectid: objectid,
 
-            # all other primary must be changed
-            route_id: existing_associated_route.id,
+                # all other primary must be changed
+                route_id: existing_associated_route.id,
 
-            departure_stop_point_id: nil, # FIXME
-            arrival_stop_point_id: nil
-          )
+                departure_stop_point_id: nil, # FIXME
+                arrival_stop_point_id: nil
+              )
 
-          stop_areas_objectids = referential_journey_patterns_stop_areas_objectids[journey_pattern.id]
+              stop_areas_objectids = referential_journey_patterns_stop_areas_objectids[journey_pattern.id]
 
-          stop_points = stop_areas_objectids.map do |position, object_id|
-            existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id, position: position).last
-          end
-          if stop_points.count != stop_areas_objectids.count
-            raise "Can't find StopPoints for #{stop_areas_objectids} : #{stop_points.inspect} #{existing_associated_route.stop_points.inspect}"
-          end
+              stop_points = stop_areas_objectids.map do |position, object_id|
+                existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id, position: position).last
+              end
+              if stop_points.count != stop_areas_objectids.count
+                raise "Can't find StopPoints for #{stop_areas_objectids} : #{stop_points.inspect} #{existing_associated_route.stop_points.inspect}"
+              end
 
-          attributes.merge!(stop_points: stop_points)
+              attributes.merge!(stop_points: stop_points)
 
-          new_journey_pattern = new.journey_patterns.create! attributes
-          if new_journey_pattern.checksum != journey_pattern.checksum
-            raise "Checksum has changed for #{journey_pattern.inspect} (to #{new_journey_pattern.inspect}): \"#{journey_pattern.checksum_source}\" -> \"#{new_journey_pattern.checksum_source}\""
+              new_journey_pattern = new.journey_patterns.create! attributes
+              if new_journey_pattern.checksum != journey_pattern.checksum
+                raise "Checksum has changed for #{journey_pattern.inspect} (to #{new_journey_pattern.inspect}): \"#{journey_pattern.checksum_source}\" -> \"#{new_journey_pattern.checksum_source}\""
+              end
+            end
           end
         end
       end
@@ -452,86 +460,89 @@ class Merge < ApplicationModel
     new_vehicle_journey_ids = {}
 
     new.switch do
-      referential_vehicle_journeys.each do |vehicle_journey|
-        # find parent journey pattern by checksum
-        associated_line_id = referential_routes_lines[vehicle_journey.route_id]
-        associated_route_checksum = referential_routes_checksums[vehicle_journey.route_id]
-        associated_journey_pattern_checksum = referential_journey_patterns_checksums[vehicle_journey.journey_pattern_id]
+      referential_vehicle_journeys.each_slice(10) do |vehicle_journeys|
+        Chouette::VehicleJourney.transaction do
+          vehicle_journeys.each do |vehicle_journey|
+            # find parent journey pattern by checksum
+            associated_line_id = referential_routes_lines[vehicle_journey.route_id]
+            associated_route_checksum = referential_routes_checksums[vehicle_journey.route_id]
+            associated_journey_pattern_checksum = referential_journey_patterns_checksums[vehicle_journey.journey_pattern_id]
 
-        existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
-        existing_associated_journey_pattern = existing_associated_route.journey_patterns.find_by checksum: associated_journey_pattern_checksum
+            existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
+            existing_associated_journey_pattern = existing_associated_route.journey_patterns.find_by checksum: associated_journey_pattern_checksum
 
-        existing_vehicle_journey = new.vehicle_journeys.find_by journey_pattern_id: existing_associated_journey_pattern.id, checksum: vehicle_journey.checksum
+            existing_vehicle_journey = new.vehicle_journeys.find_by journey_pattern_id: existing_associated_journey_pattern.id, checksum: vehicle_journey.checksum
 
-        if existing_vehicle_journey
-          existing_vehicle_journey.merge_metadata_from vehicle_journey
-          new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
-        else
-          objectid = Chouette::VehicleJourney.where(objectid: vehicle_journey.objectid).exists? ? nil : vehicle_journey.objectid
-          attributes = vehicle_journey.attributes.merge(
-            id: nil,
-            objectid: objectid,
-
-            # all other primary must be changed
-            route_id: existing_associated_journey_pattern.route_id,
-            journey_pattern_id: existing_associated_journey_pattern.id,
-            ignored_routing_contraint_zone_ids: []
-          )
-          new_vehicle_journey = new.vehicle_journeys.build attributes
-
-          # Create VehicleJourneyAtStops
-
-          vehicle_journey.vehicle_journey_at_stops.each_with_index do |vehicle_journey_at_stop, index|
-            at_stop_attributes = vehicle_journey_at_stop.attributes.merge(
-              id: nil,
-              stop_point_id: existing_associated_journey_pattern.stop_points[index].id
-            )
-            new_vehicle_journey.vehicle_journey_at_stops.build at_stop_attributes
-          end
-
-          # Associate (and create if needed) PurchaseWindows
-
-          referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id].each do |purchase_window_checksum|
-            associated_purchase_window = new.purchase_windows.find_by(checksum: purchase_window_checksum)
-
-            unless associated_purchase_window
-              purchase_window = referential_purchase_windows_by_checksum[purchase_window_checksum]
-
-              objectid = new.purchase_windows.where(objectid: purchase_window.objectid).exists? ? nil : purchase_window.objectid
-              attributes = purchase_window.attributes.merge(
+            if existing_vehicle_journey
+              existing_vehicle_journey.merge_metadata_from vehicle_journey
+              new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
+            else
+              objectid = Chouette::VehicleJourney.where(objectid: vehicle_journey.objectid).exists? ? nil : vehicle_journey.objectid
+              attributes = vehicle_journey.attributes.merge(
                 id: nil,
-                objectid: objectid
-              )
-              new_purchase_window = new.purchase_windows.build attributes
-              save_model! new_purchase_window
+                objectid: objectid,
 
-              if new_purchase_window.checksum != purchase_window.checksum
-                raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
+                # all other primary must be changed
+                route_id: existing_associated_journey_pattern.route_id,
+                journey_pattern_id: existing_associated_journey_pattern.id,
+                ignored_routing_contraint_zone_ids: []
+              )
+              new_vehicle_journey = new.vehicle_journeys.build attributes
+
+              # Create VehicleJourneyAtStops
+
+              vehicle_journey.vehicle_journey_at_stops.each_with_index do |vehicle_journey_at_stop, index|
+                at_stop_attributes = vehicle_journey_at_stop.attributes.merge(
+                  id: nil,
+                  stop_point_id: existing_associated_journey_pattern.stop_points[index].id
+                )
+                new_vehicle_journey.vehicle_journey_at_stops.build at_stop_attributes
               end
 
-              associated_purchase_window = new_purchase_window
+              # Associate (and create if needed) PurchaseWindows
+
+              referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id].each do |purchase_window_checksum|
+                associated_purchase_window = new.purchase_windows.find_by(checksum: purchase_window_checksum)
+
+                unless associated_purchase_window
+                  purchase_window = referential_purchase_windows_by_checksum[purchase_window_checksum]
+
+                  objectid = new.purchase_windows.where(objectid: purchase_window.objectid).exists? ? nil : purchase_window.objectid
+                  attributes = purchase_window.attributes.merge(
+                    id: nil,
+                    objectid: objectid
+                  )
+                  new_purchase_window = new.purchase_windows.build attributes
+                  save_model! new_purchase_window
+
+                  if new_purchase_window.checksum != purchase_window.checksum
+                    raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
+                  end
+
+                  associated_purchase_window = new_purchase_window
+                end
+
+                new_vehicle_journey.purchase_windows << associated_purchase_window
+              end
+
+              # Associate Footnotes
+              referential_vehicle_journey_footnote_checksums[vehicle_journey.id].each do |footnote_checksum|
+                associated_footnote = new.footnotes.find_by(line_id: associated_line_id, checksum: footnote_checksum)
+                new_vehicle_journey.footnotes << associated_footnote
+              end
+
+              # Rewrite ignored_routing_contraint_zone_ids
+              new_vehicle_journey.ignored_routing_contraint_zone_ids = referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
+              save_model! new_vehicle_journey
+
+              if new_vehicle_journey.checksum != vehicle_journey.checksum
+                raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
+              end
+
+              new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
             end
-
-            new_vehicle_journey.purchase_windows << associated_purchase_window
           end
-
-          # Associate Footnotes
-          referential_vehicle_journey_footnote_checksums[vehicle_journey.id].each do |footnote_checksum|
-            associated_footnote = new.footnotes.find_by(line_id: associated_line_id, checksum: footnote_checksum)
-            new_vehicle_journey.footnotes << associated_footnote
-          end
-
-          # Rewrite ignored_routing_contraint_zone_ids
-          new_vehicle_journey.ignored_routing_contraint_zone_ids = referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
-          save_model! new_vehicle_journey
-
-          if new_vehicle_journey.checksum != vehicle_journey.checksum
-            raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
-          end
-
-          new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
         end
-
       end
     end
 
@@ -561,71 +572,75 @@ class Merge < ApplicationModel
         # we're loading timetables per line (line is associated to a period list)
         line = workbench.line_referential.lines.find(line_id)
 
-        time_tables_properties.each do |properties|
-          time_table = referential_time_tables_by_id[properties[:id]]
+        time_tables_properties.each_slice(30) do |batch|
+          Chouette::TimeTable.transaction do
+            batch.each do |properties|
+              time_table = referential_time_tables_by_id[properties[:id]]
 
-          # we can't test if TimeTable already exist by checksum
-          # because checksum is modified by intersect_periods!
+              # we can't test if TimeTable already exist by checksum
+              # because checksum is modified by intersect_periods!
 
-          attributes = time_table.attributes.merge(
-            id: nil,
-            comment: "Ligne #{line.name} - #{time_table.comment}",
-            calendar_id: nil
-          )
-          candidate_time_table = new.time_tables.build attributes
+              attributes = time_table.attributes.merge(
+                id: nil,
+                comment: "Ligne #{line.name} - #{time_table.comment}",
+                calendar_id: nil
+              )
+              candidate_time_table = new.time_tables.build attributes
 
-          time_table.dates.each do |date|
-            date_attributes = date.attributes.merge(
-              id: nil,
-              time_table_id: nil
-            )
-            candidate_time_table.dates.build date_attributes
-          end
-          time_table.periods.each do |period|
-            period_attributes = period.attributes.merge(
-              id: nil,
-              time_table_id: nil
-            )
-            candidate_time_table.periods.build period_attributes
-          end
+              time_table.dates.each do |date|
+                date_attributes = date.attributes.merge(
+                  id: nil,
+                  time_table_id: nil
+                )
+                candidate_time_table.dates.build date_attributes
+              end
+              time_table.periods.each do |period|
+                period_attributes = period.attributes.merge(
+                  id: nil,
+                  time_table_id: nil
+                )
+                candidate_time_table.periods.build period_attributes
+              end
 
-          candidate_time_table.intersect_periods! line_periods.periods(line_id)
-          unless candidate_time_table.empty?
+              candidate_time_table.intersect_periods! line_periods.periods(line_id)
+              unless candidate_time_table.empty?
 
-            # FIXME
-            candidate_time_table.set_current_checksum_source
-            candidate_time_table.update_checksum
+                # FIXME
+                candidate_time_table.set_current_checksum_source
+                candidate_time_table.update_checksum
 
-            # after intersect_periods!, the checksum is the expected one
-            # we can search an existing TimeTable
+                # after intersect_periods!, the checksum is the expected one
+                # we can search an existing TimeTable
 
-            existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
+                existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
 
-            if existing_time_table
-              existing_time_table.merge_metadata_from candidate_time_table
-            else
-              objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
-              candidate_time_table.objectid = objectid
+                if existing_time_table
+                  existing_time_table.merge_metadata_from candidate_time_table
+                else
+                  objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
+                  candidate_time_table.objectid = objectid
 
-              save_model! candidate_time_table
+                  save_model! candidate_time_table
 
-              # Checksum is changed by #intersect_periods
-              # if new_time_table.checksum != time_table.checksum
-              #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
-              # end
+                  # Checksum is changed by #intersect_periods
+                  # if new_time_table.checksum != time_table.checksum
+                  #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
+                  # end
 
-              existing_time_table = candidate_time_table
+                  existing_time_table = candidate_time_table
+                end
+
+                # associate VehicleJourney
+
+                new_vehicle_journey_id = new_vehicle_journey_ids[properties[:vehicle_journey_id]]
+                unless new_vehicle_journey_id
+                  raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
+                end
+
+                associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
+                associated_vehicle_journey.time_tables << existing_time_table
+              end
             end
-
-            # associate VehicleJourney
-
-            new_vehicle_journey_id = new_vehicle_journey_ids[properties[:vehicle_journey_id]]
-            unless new_vehicle_journey_id
-              raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
-            end
-
-            associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
-            associated_vehicle_journey.time_tables << existing_time_table
           end
         end
       end
