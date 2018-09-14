@@ -62,7 +62,6 @@ module Chouette
 
     def at_least_two_stop_points_selected
       return unless route
-      return unless route.stop_points.length > 2
 
       errors.add(:stop_point_ids, I18n.t('activerecord.errors.models.routing_constraint_zone.attributes.stop_points.not_enough_stop_points')) if stop_points.length < 2
     end
