@@ -307,7 +307,7 @@ class Import::Gtfs < Import::Base
 
   def import_stop_times
     count = 0
-    routes = []
+    routes = Set.new
     source.stop_times.group_by(&:trip_id).each_slice(10) do |slice|
       Memory.log "Import stop times from #{count}" do
         Chouette::VehicleJourneyAtStop.transaction do
@@ -315,6 +315,10 @@ class Import::Gtfs < Import::Base
             vehicle_journey = referential.vehicle_journeys.find vehicle_journey_by_trip_id[trip_id]
             journey_pattern = vehicle_journey.journey_pattern
             route = journey_pattern.route
+
+            # we don't calculate costs right away, as there are no stops in the route yet
+            route.prevent_costs_calculation = true
+
             routes << route
             stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
@@ -346,7 +350,7 @@ class Import::Gtfs < Import::Base
         end
       end
     end
-    routes.uniq.each do |r|
+    routes.each do |r|
       r.calculate_costs!
     end
   end
