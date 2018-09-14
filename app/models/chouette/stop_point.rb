@@ -20,10 +20,11 @@ module Chouette
 
     acts_as_list :scope => :route, top_of_list: 0
 
-    validates_presence_of :stop_area
+    # Uses a custom validation to avoid StopArea model loading. See #8202
+    # validates_presence_of :stop_area
     validate :stop_area_id_validation
     def stop_area_id_validation
-      if stop_area_id.nil?
+      unless stop_area_id.present? && Chouette::StopArea.exists?(stop_area_id)
         errors.add(:stop_area_id, I18n.t("stop_areas.errors.empty"))
       end
     end
