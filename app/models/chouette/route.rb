@@ -2,6 +2,8 @@ module Chouette
   class Route < Chouette::TridentActiveRecord
     has_metadata
 
+    attr_accessor :prevent_costs_calculation
+
     include RouteRestrictions
     include ChecksumSupport
     include ObjectidSupport
@@ -89,8 +91,7 @@ module Chouette
       on: [:create, :update],
       if: ->() {
         # Ensure the call back doesn't run during a referential merge
-        !referential.in_referential_suite? &&
-          TomTom.enabled?
+        !referential.in_referential_suite? && !prevent_costs_calculation
       }
 
     scope :with_at_least_three_stop_points, -> { joins(:stop_points).group('routes.id').having("COUNT(stop_points.id) >= 3") }
@@ -231,7 +232,7 @@ module Chouette
     end
 
     def calculate_costs!
-      RouteWayCostWorker.perform_async(referential.id, id)
+      RouteWayCostWorker.perform_async(referential.id, id) if TomTom.enabled?
     end
 
     def calculate_costs
