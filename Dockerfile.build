@@ -1,3 +1,8 @@
+# Usage
+#
+# docker build --build-arg WEEK=`date +%Y%U` -t chouette-core-build -f Dockerfile.build .
+# docker run --add-host "db:172.17.0.1" -e RAILS_DB_PASSWORD=chouette -e RAILS_DB_NAME=chouette_core_build_`date +%s` -e RAILS_DB_PORT=5433 -it --rm chouette-core-build "$@"
+
 FROM debian:stable-slim
 
 ENV RAILS_ENV test
