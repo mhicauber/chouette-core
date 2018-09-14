@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180905131655) do
+ActiveRecord::Schema.define(version: 20180914100755) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1066,6 +1066,7 @@ ActiveRecord::Schema.define(version: 20180905131655) do
     t.integer  "ignored_routing_contraint_zone_ids",           default: [],              array: true
   end
 
+  add_index "vehicle_journeys", ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id", using: :btree
   add_index "vehicle_journeys", ["objectid"], name: "vehicle_journeys_objectid_key", unique: true, using: :btree
   add_index "vehicle_journeys", ["route_id"], name: "index_vehicle_journeys_on_route_id", using: :btree
 
