@@ -1,4 +1,4 @@
-if ENV['RAILS_DB_ADAPTER'] == 'nulldb'
+if ChouetteEnv['RAILS_DB_ADAPTER'] == 'nulldb'
   require 'apartment/adapters/abstract_adapter'
 
   module Apartment

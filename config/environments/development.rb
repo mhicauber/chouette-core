@@ -3,6 +3,10 @@ require Rails.root + 'config/middlewares/cachesettings'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  ChouetteEnv.set :RAILS_HOST, default: 'http://localhost:3000'
+  ChouetteEnv.set :IEV_URL, default: "http://localhost:8080"
+  ChouetteEnv.add_boolean :TOOLBAR
+
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
@@ -61,8 +65,8 @@ Rails.application.configure do
   }
 
   # IEV url
-  config.iev_url    = ENV.fetch('IEV_URL', 'http://localhost:8080')
-  config.rails_host = ENV.fetch('RAILS_HOST', 'http://localhost:3000')
+  config.iev_url    = ChouetteEnv['IEV_URL']
+  config.rails_host = ChouetteEnv['RAILS_HOST']
 
   config.i18n.available_locales = [:fr, :en]
 
@@ -82,7 +86,7 @@ Rails.application.configure do
   config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
   config.automated_audits_recipients = %w{foo@example.com bar@example.com}
   config.development_toolbar = false
-  if ENV['TOOLBAR'] && File.exists?("config/development_toolbar.rb")
+  if ChouetteEnv['TOOLBAR'] && File.exists?("config/development_toolbar.rb")
     config.development_toolbar = OpenStruct.new
     config.development_toolbar.features_doc_url = nil
     config.development_toolbar.available_features = %w()

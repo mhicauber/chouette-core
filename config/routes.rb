@@ -148,7 +148,7 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  if !!ENV["BYPASS_AUTH_FOR_SIDEKIQ"]
+  if ChouetteEnv["BYPASS_AUTH_FOR_SIDEKIQ"]
     mount Sidekiq::Web => '/sidekiq'
   else
     authenticate :user, lambda { |u| u.can_monitor_sidekiq? } do

@@ -1,11 +1,11 @@
-<%= ENV.fetch 'RAILS_ENV', 'production' %>:
-  adapter: <%= ENV.fetch 'RAILS_DB_ADAPTER', 'postgis' %>
+<%= ChouetteEnv.fetch('RAILS_ENV', default: 'production') %>:
+  adapter: <%= ChouetteEnv['RAILS_DB_ADAPTER'] %>
   encoding: unicode
-  pool: <%= ENV.fetch 'RAILS_DB_POOLSIZE', '40' %>
-  host: <%= ENV.fetch 'RAILS_DB_HOST', 'db' %>
-  port: <%= ENV.fetch 'RAILS_DB_PORT', '5432' %>
+  pool: <%= ChouetteEnv['RAILS_DB_POOLSIZE'] %>
+  host: <%= ChouetteEnv['RAILS_DB_HOST'] %>
+  port: <%= ChouetteEnv['RAILS_DB_PORT'] %>
   schema_search_path: 'public,shared_extensions'
   postgis_schema: 'shared_extensions'
-  database: <%= ENV.fetch 'RAILS_DB_NAME', 'chouette' %><%= ENV['TEST_ENV_NUMBER'] %>
-  username: <%= ENV.fetch 'RAILS_DB_USER', 'chouette' %>
-  password: <%= ENV.fetch 'RAILS_DB_PASSWORD' %>
+  database: <%= ChouetteEnv['RAILS_DB_NAME'] %><%= ChouetteEnv['TEST_ENV_NUMBER'] %>
+  username: <%= ChouetteEnv['RAILS_DB_USER'] %>
+  password: <%= ChouetteEnv['RAILS_DB_PASSWORD'] %>

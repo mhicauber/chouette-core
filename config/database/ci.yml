@@ -1,14 +1,14 @@
 test: &default
-  adapter: <%= ENV.fetch 'RAILS_DB_ADAPTER', 'postgis' %>
+  adapter: <%= ChouetteEnv['RAILS_DB_ADAPTER'] %>
   encoding: unicode
-  pool: <%= ENV.fetch 'RAILS_DB_POOLSIZE', '5' %>
-  host: <%= ENV.fetch 'RAILS_DB_HOST', 'localhost' %>
-  port: <%= ENV.fetch 'RAILS_DB_PORT', '5432' %>
+  pool: <%= ChouetteEnv['RAILS_DB_POOLSIZE'] %>
+  host: <%= ChouetteEnv['RAILS_DB_HOST'] %>
+  port: <%= ChouetteEnv['RAILS_DB_PORT'] %>
   schema_search_path: 'public,shared_extensions'
   postgis_schema: 'shared_extensions'
-  database: <%= ENV.fetch 'RAILS_DB_NAME', 'stif_boiv_test' %><%= ENV['TEST_ENV_NUMBER'] %>
-  username: <%= ENV['RAILS_DB_USER'] || ENV['POSTGRESQL_ENV_POSTGRES_USER'] || 'jenkins' %>
-  password: <%= ENV['RAILS_DB_PASSWORD'] || ENV['POSTGRESQL_ENV_POSTGRES_PASSWORD'] %>
+  database: <%= ChouetteEnv['RAILS_DB_NAME'] %><%= ChouetteEnv['TEST_ENV_NUMBER'] %>
+  username: <%= ChouetteEnv['RAILS_DB_USER'] || ChouetteEnv['POSTGRESQL_ENV_POSTGRES_USER'] %>
+  password: <%= ChouetteEnv['RAILS_DB_PASSWORD'] || ChouetteEnv['POSTGRESQL_ENV_POSTGRES_PASSWORD'] %>
 
 # Only used to build assets
 production:

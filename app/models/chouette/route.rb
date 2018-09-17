@@ -9,7 +9,7 @@ module Chouette
     include ObjectidSupport
     extend Enumerize
 
-    if ENV["CHOUETTE_ROUTE_POSITION_CHECK"] == "true" || !Rails.env.production?
+    if ChouetteEnv["CHOUETTE_ROUTE_POSITION_CHECK"] || !Rails.env.production?
       after_commit do
         positions = stop_points.pluck(:position)
         Rails.logger.debug "Check positions in Route #{id} : #{positions.inspect}"
