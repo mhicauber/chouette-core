@@ -1,16 +1,14 @@
 class CalendarObserver < ActiveRecord::Observer
   def after_update(calendar)
     return unless email_sendable_for?(calendar)
-
-    User.from_workgroup(calendar.workgroup_id).each do |user|
+    calendar.organisation.users.each do |user|
       MailerJob.perform_later("CalendarMailer", "updated", [calendar.id, user.id])
     end
   end
 
   def after_create(calendar)
     return unless email_sendable_for?(calendar)
-
-    User.from_workgroup(calendar.workgroup_id).each do |user|
+    calendar.organisation.users.each do |user|
       MailerJob.perform_later("CalendarMailer", "created", [calendar.id, user.id])
     end
   end
@@ -23,6 +21,6 @@ class CalendarObserver < ActiveRecord::Observer
   end
 
   def email_sendable_for?(calendar)
-    enabled? && calendar.shared
+    enabled? && calendar.shared && calendar.organisation.has_feature?(:new_calendar_mail)
   end
 end
