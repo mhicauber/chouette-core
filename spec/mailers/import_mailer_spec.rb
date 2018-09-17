@@ -5,7 +5,7 @@ RSpec.describe ImportMailer, type: :mailer do
   let(:user)    { create(:user) }
   let(:referential) {create :referential}
   let(:import) {create :gtfs_import, referential: referential, parent: create(:workbench_import, creator: user.name)}
-  let(:email)    { ImportMailer.send('created', import.id, user.id) }
+  let(:email)    { ImportMailer.send('finished', import.id, user.id) }
 
   it 'should deliver email to user' do
     expect(email).to deliver_to user.email
@@ -16,10 +16,10 @@ RSpec.describe ImportMailer, type: :mailer do
   end
 
   it 'should have subject' do
-    expect(email).to have_subject I18n.t("mailers.import_mailer.created.subject")
+    expect(email).to have_subject I18n.t("mailers.import_mailer.finished.subject")
   end
 
   it 'should have correct body' do
-    expect(email.body).to have_content I18n.t("mailers.import_mailer.created.body", import_name: import.name)
+    expect(email.body).to have_content I18n.t("mailers.import_mailer.finished.body", import_name: import.name)
   end
 end

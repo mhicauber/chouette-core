@@ -15,21 +15,21 @@ RSpec.describe ImportObserver, type: :observer do
     end
 
     it 'should not schedule mailer' do
-      expect(MailerJob).to_not receive(:perform_later).with 'ImportMailer', 'created', anything
+      expect(MailerJob).to_not receive(:perform_later).with 'ImportMailer', 'finished', anything
       create(:gtfs_import, referential: referential, parent: parent).save
     end  
 
   end
 
-  context 'after_create' do
+  context 'after_update' do
     before(:each) { allow(Rails.configuration).to receive(:enable_user_observer).and_return( false ) }
-    it 'should observe import create' do
-      expect(ImportObserver.instance).to receive(:after_create)
+    it 'should observe import finish' do
+      expect(ImportObserver.instance).to receive(:after_update)
       create(:gtfs_import, referential: referential, parent: parent).save
     end
 
     it 'should schedule mailer on import create' do
-      expect(MailerJob).to receive(:perform_later).with 'ImportMailer', 'created', anything
+      expect(MailerJob).to receive(:perform_later).with 'ImportMailer', 'finished', anything
       create(:gtfs_import, referential: referential, parent: parent).save
     end
   end
