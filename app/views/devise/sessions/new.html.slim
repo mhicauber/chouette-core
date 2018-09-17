@@ -26,12 +26,12 @@
                     = form.input :remember_me, :as => :boolean if devise_mapping.rememberable?
 
                 .col-md-6.new_password
-                  = link_to t("devise.links.new_password"), new_password_path(:user)
+                  = mailer_link_to t("devise.links.new_password"), new_password_path(:user)
 
                   / FIXME ref #819
                   - if false
                     - if devise_mapping.confirmable? && controller_name != 'confirmations'
                       br
-                      = link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
+                      = mailer_link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
 
         = render partial: 'devise/shared/form_registration'

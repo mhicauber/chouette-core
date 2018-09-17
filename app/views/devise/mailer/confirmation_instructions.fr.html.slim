@@ -2,4 +2,4 @@ p = "Bonjour #{@resource.email} !"
 
 p = "Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:"
 
-p = link_to 'Confirmer mon compte', confirmation_url(@resource, :confirmation_token => @token)
+p = mailer_link_to 'Confirmer mon compte', confirmation_url(@resource, :confirmation_token => @token)

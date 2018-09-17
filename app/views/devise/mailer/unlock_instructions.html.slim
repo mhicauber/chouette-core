@@ -4,4 +4,4 @@ p = "Your account has been locked due to an excessive amount of unsuccessful sig
 
 p = "Click the link below to unlock your account:"
 
-p = link_to 'Unlock my account', unlock_url(@resource, :unlock_token => @token)
+p = mailer_link_to 'Unlock my account', unlock_url(@resource, :unlock_token => @token)

@@ -327,3 +327,7 @@ Devise.setup do |config|
   #     logger: Rails.logger
   # }
 end
+
+Devise::Mailer.class_eval do
+  helper :mailer
+end
