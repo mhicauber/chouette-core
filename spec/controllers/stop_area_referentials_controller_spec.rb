@@ -1,7 +1,9 @@
 RSpec.describe StopAreaReferentialsController, :type => :controller do
   login_user
 
-  let(:stop_area_referential) { create :stop_area_referential }
+  let(:stop_area_referential) do
+    create :stop_area_referential, organisations: [@user.organisation]
+  end
 
   describe 'PUT sync' do
     let(:request){ put :sync, id: stop_area_referential.id }

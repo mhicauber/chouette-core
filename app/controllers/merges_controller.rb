@@ -27,12 +27,6 @@ class MergesController < ChouetteController
     redirect_to [:workbench, :output]
   end
 
-  protected
-
-  def begin_of_association_chain
-    current_organisation
-  end
-
   private
 
   def build_resource

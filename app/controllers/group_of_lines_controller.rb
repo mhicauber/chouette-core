@@ -68,10 +68,6 @@ class GroupOfLinesController < ChouetteController
 
   alias_method :line_referential, :parent
 
-  def begin_of_association_chain
-    current_organisation
-  end
-
   private
 
   def group_of_line_params

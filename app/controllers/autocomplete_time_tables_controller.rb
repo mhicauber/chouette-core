@@ -1,16 +1,7 @@
 class AutocompleteTimeTablesController < ChouetteController
   respond_to :json, :only => [:index]
-  before_action :switch_referential
-
+  
   include ReferentialSupport
-
-  def switch_referential
-    Apartment::Tenant.switch!(referential.slug)
-  end
-
-  def referential
-    @referential ||= Referential.find params[:referential_id]
-  end
 
   protected
 

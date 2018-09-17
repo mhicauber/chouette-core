@@ -51,6 +51,10 @@ class ComplianceControlsController < ChouetteController
 
   private
 
+  def begin_of_association_chain
+    nil
+  end
+
   def compliance_control_class
     (params[:sti_class] || params[:compliance_control][:type]).constantize
   end

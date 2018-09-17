@@ -35,10 +35,6 @@ class ImportResourcesController < ChouetteController
 
   private
 
-  def begin_of_association_chain
-    current_organisation
-  end
-
   def decorate_import_resources(import_resources)
     ImportResourcesDecorator.decorate(import_resources)
   end

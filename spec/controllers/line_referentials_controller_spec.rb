@@ -3,6 +3,10 @@ RSpec.describe LineReferentialsController, :type => :controller do
 
   let(:line_referential) { create :line_referential }
 
+  before(:each){
+    line_referential.organisations << @user.organisation
+  }
+
   describe 'PUT sync' do
     let(:request){ put :sync, id: line_referential.id }
 

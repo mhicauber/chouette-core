@@ -67,10 +67,6 @@ class CompaniesController < ChouetteController
   alias_method :current_referential, :line_referential
   helper_method :current_referential
 
-  def begin_of_association_chain
-    current_organisation
-  end
-
   def company_params
     fields = [:objectid, :object_version, :name, :short_name, :organizational_unit, :operating_department_name, :code, :phone, :fax, :email, :registration_number, :url, :time_zone]
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))

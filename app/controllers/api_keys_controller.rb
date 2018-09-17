@@ -40,9 +40,4 @@ class ApiKeysController < ChouetteController
   def load_workbench
     @workbench = parent
   end
-
-  def begin_of_association_chain
-    current_organisation
-  end
-
 end
