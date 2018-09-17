@@ -36,11 +36,6 @@
       .col-lg-12
         h2.mb-lg= t("stop_areas.form.sections.location")
 
-        .form-group
-          label.col-sm-4.col-xs-5.control-label= t('.geolocalize')
-          .col-sm-8.col-xs-7
-            input.typeahead.form-control maxlength="255" type="text" placeholder="#{t('.address')}"
-
         - if @stop_area.projection.present? && @stop_area.projection_type_label.present?
           = f.input :projection_xy, label: t("activerecord.attributes.stop_area.projection_xy", projection: @referential.projection_type_label), input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.projection_xy") }
 
