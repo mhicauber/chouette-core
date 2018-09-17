@@ -11,7 +11,7 @@ describe Chouette::JourneyPattern, :type => :model do
       it "should update checksum" do
         expect do
           subject.stop_points.first.update position: subject.stop_points.size
-        end.to change{subject.reload.checksum}
+        end.to(change{subject.reload.checksum})
       end
     end
 
@@ -19,7 +19,7 @@ describe Chouette::JourneyPattern, :type => :model do
       it "should update checksum" do
         expect do
           subject.update costs:  {"1-2" => {distance: 12}}
-        end.to change{subject.reload.checksum}
+        end.to(change{subject.reload.checksum})
       end
     end
 
@@ -34,36 +34,11 @@ describe Chouette::JourneyPattern, :type => :model do
           {"1-2" => {distance: 12, time: nil}, "3-4" => {}},
           {"1-2" => {distance: 12, time: nil}, "3-4" => {distance: 0}},
         ].each do |costs|
-          expect{ subject.update(costs:  costs) }.to_not change{ subject.reload.checksum }
+          expect{ subject.update(costs:  costs) }.to_not(change{ subject.reload.checksum })
         end
       end
     end
   end
-
-  # context 'validate minimum stop_points size' do
-  #   let(:journey_pattern) { create :journey_pattern }
-  #   let(:stop_points) { journey_pattern.stop_points }
-  #
-  #   it 'should be valid if it has at least two sp' do
-  #     journey_pattern.stop_points.first(stop_points.size - 2).each do |sp|
-  #       journey_pattern.stop_points.delete(sp)
-  #     end
-  #     expect(journey_pattern).to be_valid
-  #   end
-  #
-  #   it 'should not be valid if it has less then two sp' do
-  #     journey_pattern.stop_points.first(stop_points.size - 1).each do |sp|
-  #       journey_pattern.stop_points.delete(sp)
-  #     end
-  #     expect(journey_pattern).to_not be_valid
-  #     expect(journey_pattern.errors).to have_key(:stop_points)
-  #   end
-  #
-  #   it 'should only validate on update' do
-  #     jp = build(:journey_pattern_common)
-  #     expect(jp).to be_valid
-  #   end
-  # end
 
   describe 'costs' do
     let(:journey_pattern) { create :journey_pattern }
@@ -171,7 +146,7 @@ describe Chouette::JourneyPattern, :type => :model do
       jp.attributes.slice('name', 'published_name', 'registration_number').tap do |item|
         item['object_id']   = jp.objectid
         item['stop_points'] = jp.stop_points.map do |sp|
-          { 'id' => sp.stop_area_id, 'position' => sp.position }
+          { 'id' => sp.stop_area_id, 'position' => sp.position, 'checked' => '1' }
         end
         item['costs'] = jp.costs
       end
@@ -183,6 +158,7 @@ describe Chouette::JourneyPattern, :type => :model do
 
     it 'should delete unchecked stop_points' do
       # Of 5 stop_points 2 are checked
+      state['stop_points'].each{|sp| sp['checked'] = false}
       state['stop_points'].take(2).each{|sp| sp['checked'] = true}
       journey_pattern.state_stop_points_update(state)
       expect(journey_pattern.stop_points.count).to eq(2)
@@ -200,15 +176,19 @@ describe Chouette::JourneyPattern, :type => :model do
       expect(journey_pattern.reload.stop_points.count).to eq(5)
     end
 
-    it 'should create journey_pattern' do
-      new_state = journey_pattern_to_state(build(:journey_pattern, objectid: nil, route: route))
-      Chouette::JourneyPattern.state_create_instance route, new_state
+    it 'should build a journey_pattern' do
+      new_state = journey_pattern_to_state(build(:journey_pattern, objectid: nil, route: route, stop_points: route.stop_points))
+      expect {
+        Chouette::JourneyPattern.state_create_instance(route, new_state)
+      }.to change{Chouette::JourneyPattern.count}.by(1)
       expect(new_state['object_id']).to be_truthy
       expect(new_state['new_record']).to be_truthy
     end
 
     it 'should create journey_pattern with state_update' do
-      new_state = journey_pattern_to_state(build(:journey_pattern, objectid: nil, route: route))
+      jp = build(:journey_pattern, objectid: nil, route: route)
+      jp.stop_points = jp.route.stop_points
+      new_state = journey_pattern_to_state(jp)
       collection = [new_state]
       expect {
         Chouette::JourneyPattern.state_update route, collection
@@ -265,7 +245,7 @@ describe Chouette::JourneyPattern, :type => :model do
       expect(collection.first).to_not have_key('object_id')
     end
 
-    it 'should create journey_pattern' do
+    it 'should build journey_pattern' do
       new_state = journey_pattern_to_state(build(:journey_pattern, objectid: nil, route: route))
       Chouette::JourneyPattern.state_create_instance route, new_state
       expect(new_state['object_id']).to be_truthy
@@ -292,10 +272,10 @@ describe Chouette::JourneyPattern, :type => :model do
     end
 
     it 'should validate journey_pattern on update' do
-      journey_pattern.name = ''
+      journey_pattern.stop_points = []
       collection = [state]
       Chouette::JourneyPattern.state_update route, collection
-      expect(collection.first['errors']).to have_key(:name)
+      expect(collection.first['errors']).to have_key(:stop_points)
     end
 
     it 'should validate journey_pattern on create' do

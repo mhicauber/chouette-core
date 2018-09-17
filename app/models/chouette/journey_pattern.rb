@@ -44,12 +44,10 @@ module Chouette
               # Update attributes and stop_points associations
               jp.assign_attributes(state_permited_attributes(item)) unless item['new_record']
               jp.state_stop_points_update(item) if jp.persisted?
-              p jp
-              p jp.valid?
               jp.save!
             end
           rescue => e
-            p e
+            Rails.logger.error e
           end
           item['errors']   = jp.errors if jp.errors.any?
           item['checksum'] = jp.checksum
@@ -92,7 +90,7 @@ module Chouette
 
       jp.after_commit_objectid
       item['object_id']  = jp.objectid
-      item['short_id']  = jp.get_objectid.short_id
+      item['short_id']  = jp.get_objectid&.short_id
       item['new_record'] = true
       jp
     end
