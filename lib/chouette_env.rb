@@ -68,7 +68,10 @@ module ChouetteEnv
 
   def self.fetch key, opts={}
     key = key.to_s
-    Rails.logger.warn("Fetching unexpected ENV key `#{key}`") unless keys.include?(key)
+    unless keys.include?(key)
+      Rails.logger.warn("Fetching unexpected ENV key `#{key}`")
+      keys << key
+    end
 
     default = nil
     default = opts[:default] if opts.has_key?(:default)
