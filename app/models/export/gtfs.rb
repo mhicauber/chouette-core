@@ -32,7 +32,7 @@ class Export::Gtfs < Export::Base
   end
 
   def agency_id company
-    company.registration_number.presence || company.object_id
+    (company.registration_number.presence || company.object_id) if company
   end
 
   def route_id line
@@ -156,7 +156,7 @@ class Export::Gtfs < Export::Base
     Chouette::Line.where(id: line_ids).each do |line|
       target.routes << {
         id: route_id(line),
-        agency_id: (agency_id(line.company) if line.company),
+        agency_id: agency_id(line.company),
         long_name: line.published_name,
         short_name: line.number,
         type: gtfs_line_type(line),
