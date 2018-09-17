@@ -1,4 +1,4 @@
-module ChouetteEnv
+module SmartEnv
   EXPLICITLY_FALSE_VALUES = [0, "0", "false", "no"]
 
   def self.keys

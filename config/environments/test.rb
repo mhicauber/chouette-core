@@ -1,12 +1,12 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  ChouetteEnv.set :RAILS_DB_POOLSIZE, default: '5'
-  ChouetteEnv.set :RAILS_DB_HOST, default: 'localhost'
-  ChouetteEnv.set :RAILS_DB_NAME, default: 'chouette_test'
-  ChouetteEnv.set :RAILS_DB_USER, default: nil
-  ChouetteEnv.set :IEV_URL, default: "http://localhost:8080"
-  ChouetteEnv.add :POSTGRESQL_ENV_POSTGRES_USER, default: :jenkins
+  SmartEnv.set :RAILS_DB_POOLSIZE, default: '5'
+  SmartEnv.set :RAILS_DB_HOST, default: 'localhost'
+  SmartEnv.set :RAILS_DB_NAME, default: 'chouette_test'
+  SmartEnv.set :RAILS_DB_USER, default: nil
+  SmartEnv.set :IEV_URL, default: "http://localhost:8080"
+  SmartEnv.add :POSTGRESQL_ENV_POSTGRES_USER, default: :jenkins
 
   # The test environment is used exclusively to run your application's
   # test suite. You never need to work with it otherwise. Remember that
@@ -53,7 +53,7 @@ Rails.application.configure do
   }
 
   # IEV url
-  config.iev_url = ChouetteEnv['IEV_URL']
+  config.iev_url = SmartEnv['IEV_URL']
 
   config.rails_host = 'http://www.example.com'
   # file to data for demo

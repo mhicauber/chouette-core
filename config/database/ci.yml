@@ -1,14 +1,14 @@
 test: &default
-  adapter: <%= ChouetteEnv['RAILS_DB_ADAPTER'] %>
+  adapter: <%= SmartEnv['RAILS_DB_ADAPTER'] %>
   encoding: unicode
-  pool: <%= ChouetteEnv['RAILS_DB_POOLSIZE'] %>
-  host: <%= ChouetteEnv['RAILS_DB_HOST'] %>
-  port: <%= ChouetteEnv['RAILS_DB_PORT'] %>
+  pool: <%= SmartEnv['RAILS_DB_POOLSIZE'] %>
+  host: <%= SmartEnv['RAILS_DB_HOST'] %>
+  port: <%= SmartEnv['RAILS_DB_PORT'] %>
   schema_search_path: 'public,shared_extensions'
   postgis_schema: 'shared_extensions'
-  database: <%= ChouetteEnv['RAILS_DB_NAME'] %><%= ChouetteEnv['TEST_ENV_NUMBER'] %>
-  username: <%= ChouetteEnv['RAILS_DB_USER'] || ChouetteEnv['POSTGRESQL_ENV_POSTGRES_USER'] %>
-  password: <%= ChouetteEnv['RAILS_DB_PASSWORD'] || ChouetteEnv['POSTGRESQL_ENV_POSTGRES_PASSWORD'] %>
+  database: <%= SmartEnv['RAILS_DB_NAME'] %><%= SmartEnv['TEST_ENV_NUMBER'] %>
+  username: <%= SmartEnv['RAILS_DB_USER'] || SmartEnv['POSTGRESQL_ENV_POSTGRES_USER'] %>
+  password: <%= SmartEnv['RAILS_DB_PASSWORD'] || SmartEnv['POSTGRESQL_ENV_POSTGRES_PASSWORD'] %>
 
 # Only used to build assets
 production:

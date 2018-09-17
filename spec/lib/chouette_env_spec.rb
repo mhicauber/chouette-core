@@ -1,8 +1,8 @@
-RSpec.describe ChouetteEnv do
+RSpec.describe SmartEnv do
   let(:env){ {} }
 
   before(:each) do
-    ChouetteEnv.reset!
+    SmartEnv.reset!
     allow(ENV).to receive(:fetch){|key| env.stringify_keys[key]}
     allow(ENV).to receive(:has_key?){|key| env.stringify_keys.has_key?(key)}
   end
@@ -10,29 +10,29 @@ RSpec.describe ChouetteEnv do
   context "when calling an unexpected key" do
     it "should log the key" do
       expect(Rails.logger).to receive(:warn).once
-      ChouetteEnv[:unexpected]
+      SmartEnv[:unexpected]
     end
   end
 
   context "with a missing required value" do
     it "should raise an error" do
-      ChouetteEnv.add_required :missing
-      expect{ ChouetteEnv.check! }.to raise_error(ChouetteEnv::MissingKey)
+      SmartEnv.add_required :missing
+      expect{ SmartEnv.check! }.to raise_error(SmartEnv::MissingKey)
     end
   end
 
   context "when updating a key" do
     it "should not raise an error" do
-      ChouetteEnv.add_required :foo
-      ChouetteEnv.set :foo, required: false
-      expect{ ChouetteEnv.check! }.to_not raise_error
-      expect(ChouetteEnv[:foo]).to eq nil
-      ChouetteEnv.set :foo, default: "bar"
-      expect(ChouetteEnv[:foo]).to eq "bar"
-      ChouetteEnv.set :foo, boolean: false
-      expect(ChouetteEnv[:foo]).to eq "bar"
-      ChouetteEnv.set :foo, default: nil
-      expect(ChouetteEnv[:foo]).to eq nil
+      SmartEnv.add_required :foo
+      SmartEnv.set :foo, required: false
+      expect{ SmartEnv.check! }.to_not raise_error
+      expect(SmartEnv[:foo]).to eq nil
+      SmartEnv.set :foo, default: "bar"
+      expect(SmartEnv[:foo]).to eq "bar"
+      SmartEnv.set :foo, boolean: false
+      expect(SmartEnv[:foo]).to eq "bar"
+      SmartEnv.set :foo, default: nil
+      expect(SmartEnv[:foo]).to eq nil
     end
   end
 
@@ -43,8 +43,8 @@ RSpec.describe ChouetteEnv do
       }
     }
     it "should raise an error" do
-      ChouetteEnv.add_required :required_key
-      expect{ ChouetteEnv.check! }.to_not raise_error
+      SmartEnv.add_required :required_key
+      expect{ SmartEnv.check! }.to_not raise_error
     end
   end
 
@@ -56,24 +56,24 @@ RSpec.describe ChouetteEnv do
     }
     it "should parse them accurately" do
 
-      ChouetteEnv.add :key
-      expect(ChouetteEnv[:key]).to eq "azerty"
-      expect(ChouetteEnv["key"]).to eq "azerty"
-      expect(ChouetteEnv.fetch(:key)).to eq "azerty"
-      expect(ChouetteEnv.fetch("key")).to eq "azerty"
+      SmartEnv.add :key
+      expect(SmartEnv[:key]).to eq "azerty"
+      expect(SmartEnv["key"]).to eq "azerty"
+      expect(SmartEnv.fetch(:key)).to eq "azerty"
+      expect(SmartEnv.fetch("key")).to eq "azerty"
     end
   end
 
   context "with default value" do
     before(:each){
-      ChouetteEnv.add :with_default, default: "DEFAULT"
+      SmartEnv.add :with_default, default: "DEFAULT"
     }
 
     context "when the value is missing" do
       it "should fallback" do
-        expect(ChouetteEnv[:with_default]).to eq "DEFAULT"
-        expect(ChouetteEnv.fetch(:foo, default: "DEFAULT")).to eq "DEFAULT"
-        expect(ChouetteEnv.fetch(:foo){ "DEFAULT" }).to eq "DEFAULT"
+        expect(SmartEnv[:with_default]).to eq "DEFAULT"
+        expect(SmartEnv.fetch(:foo, default: "DEFAULT")).to eq "DEFAULT"
+        expect(SmartEnv.fetch(:foo){ "DEFAULT" }).to eq "DEFAULT"
       end
     end
 
@@ -84,7 +84,7 @@ RSpec.describe ChouetteEnv do
         }
       }
       it "should fallback" do
-        expect(ChouetteEnv[:with_default]).to eq "NOT DEFAULT"
+        expect(SmartEnv[:with_default]).to eq "NOT DEFAULT"
       end
     end
   end
@@ -109,20 +109,20 @@ RSpec.describe ChouetteEnv do
     let(:truthy){ %i(bool_1 bool_2 bool_4 bool_6) }
     it "should parse them accurately when pre-defined" do
       env.keys.each do |k|
-        ChouetteEnv.add_boolean k
+        SmartEnv.add_boolean k
       end
       env.keys.each do |k|
-        expect(ChouetteEnv[k]).to (truthy.include?(k) ? be_truthy : be_falsy), "#{k} was expected to #{(truthy.include?(k) ? "be truthy" : "be falsy")}"
+        expect(SmartEnv[k]).to (truthy.include?(k) ? be_truthy : be_falsy), "#{k} was expected to #{(truthy.include?(k) ? "be truthy" : "be falsy")}"
       end
-      ChouetteEnv.add_boolean :not_in_env
-      expect(ChouetteEnv[:not_in_env]).to be_falsy
+      SmartEnv.add_boolean :not_in_env
+      expect(SmartEnv[:not_in_env]).to be_falsy
     end
 
     it "should parse them accurately when unexpected" do
       env.keys.each do |k|
-        expect(ChouetteEnv.boolean(k)).to (truthy.include?(k) ? be_truthy : be_falsy), "#{k} was expected to #{(truthy.include?(k) ? "be truthy" : "be falsy")}"
+        expect(SmartEnv.boolean(k)).to (truthy.include?(k) ? be_truthy : be_falsy), "#{k} was expected to #{(truthy.include?(k) ? "be truthy" : "be falsy")}"
       end
-      expect(ChouetteEnv.boolean(:not_in_env)).to be_falsy
+      expect(SmartEnv.boolean(:not_in_env)).to be_falsy
     end
   end
 end

@@ -46,31 +46,31 @@ module Ievkit
       # Default access token from ENV
       # @return [String]
       def access_token
-        ChouetteEnv['IEVKIT_ACCESS_TOKEN']
+        SmartEnv['IEVKIT_ACCESS_TOKEN']
       end
 
       # Default API endpoint from ENV or {API_ENDPOINT}
       # @return [String]
       def api_endpoint
-        ChouetteEnv['IEVKIT_API_ENDPOINT'] || API_ENDPOINT
+        SmartEnv['IEVKIT_API_ENDPOINT'] || API_ENDPOINT
       end
 
       # Default pagination preference from ENV
       # @return [String]
       def auto_paginate
-        ChouetteEnv['IEVKIT_AUTO_PAGINATE']
+        SmartEnv['IEVKIT_AUTO_PAGINATE']
       end
 
       # Default OAuth app key from ENV
       # @return [String]
       def client_id
-        ChouetteEnv['IEVKIT_CLIENT_ID']
+        SmartEnv['IEVKIT_CLIENT_ID']
       end
 
       # Default OAuth app secret from ENV
       # @return [String]
       def client_secret
-        ChouetteEnv['IEVKIT_SECRET']
+        SmartEnv['IEVKIT_SECRET']
       end
 
       # Default options for Faraday::Connection
@@ -87,13 +87,13 @@ module Ievkit
       # Default media type from ENV or {MEDIA_TYPE}
       # @return [String]
       def default_media_type
-        ChouetteEnv['IEVKIT_DEFAULT_MEDIA_TYPE'] || MEDIA_TYPE
+        SmartEnv['IEVKIT_DEFAULT_MEDIA_TYPE'] || MEDIA_TYPE
       end
 
       # Default Iev username for Basic Auth from ENV
       # @return [String]
       def login
-        ChouetteEnv['IEVKIT_LOGIN']
+        SmartEnv['IEVKIT_LOGIN']
       end
 
       # Default middleware stack for Faraday::Connection
@@ -106,13 +106,13 @@ module Ievkit
       # Default Iev password for Basic Auth from ENV
       # @return [String]
       def password
-        ChouetteEnv['IEVKIT_PASSWORD']
+        SmartEnv['IEVKIT_PASSWORD']
       end
 
       # Default pagination page size from ENV
       # @return [Fixnum] Page size
       def per_page
-        page_size = ChouetteEnv['IEVKIT_PER_PAGE'] || PER_PAGE
+        page_size = SmartEnv['IEVKIT_PER_PAGE'] || PER_PAGE
 
         page_size.to_i if page_size
       end
@@ -120,31 +120,31 @@ module Ievkit
       # Default proxy server URI for Faraday connection from ENV
       # @return [String]
       def proxy
-        ChouetteEnv['IEVKIT_PROXY']
+        SmartEnv['IEVKIT_PROXY']
       end
 
       # Default User-Agent header string from ENV or {USER_AGENT}
       # @return [String]
       def user_agent
-        ChouetteEnv['IEVKIT_USER_AGENT'] || USER_AGENT
+        SmartEnv['IEVKIT_USER_AGENT'] || USER_AGENT
       end
 
       # Default web endpoint from ENV or {WEB_ENDPOINT}
       # @return [String]
       def web_endpoint
-        ChouetteEnv['IEVKIT_WEB_ENDPOINT'] || WEB_ENDPOINT
+        SmartEnv['IEVKIT_WEB_ENDPOINT'] || WEB_ENDPOINT
       end
 
       # Default behavior for reading .netrc file
       # @return [Boolean]
       def netrc
-        ChouetteEnv['IEVKIT_NETRC']
+        SmartEnv['IEVKIT_NETRC']
       end
 
       # Default path for .netrc file
       # @return [String]
       def netrc_file
-        ChouetteEnv['IEVKIT_NETRC_FILE'] || File.join(ENV['HOME'].to_s, '.netrc')
+        SmartEnv['IEVKIT_NETRC_FILE'] || File.join(ENV['HOME'].to_s, '.netrc')
       end
 
     end

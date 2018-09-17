@@ -1,1 +1,1 @@
-ChouetteEnv.check!
+SmartEnv.check!

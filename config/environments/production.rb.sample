@@ -2,9 +2,9 @@ require Rails.root + 'config/middlewares/cachesettings'
 
 Rails.application.configure do
 
-  ChouetteEnv.set :RAILS_DB_PASSWORD, required: true
-  ChouetteEnv.set :RAILS_HOST, default: 'http://front:3000'
-  ChouetteEnv.set :IEV_URL, default: "http://iev:8080"
+  SmartEnv.set :RAILS_DB_PASSWORD, required: true
+  SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
+  SmartEnv.set :IEV_URL, default: "http://iev:8080"
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -64,8 +64,8 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
-  if ChouetteEnv['REDIS_URL']
-    config.cache_store = :redis_store, ChouetteEnv.fetch('REDIS_URL', default: 'redis://localhost:6379/0/cache'), { expires_in: 90.minutes }
+  if SmartEnv['REDIS_URL']
+    config.cache_store = :redis_store, SmartEnv.fetch('REDIS_URL', default: 'redis://localhost:6379/0/cache'), { expires_in: 90.minutes }
   end
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
@@ -114,8 +114,8 @@ Rails.application.configure do
   config.i18n.available_locales = [:fr, :en]
 
   # IEV
-  config.iev_url = ChouetteEnv['IEV_URL']
-  config.rails_host = ChouetteEnv['RAILS_HOST']
+  config.iev_url = SmartEnv['IEV_URL']
+  config.rails_host = SmartEnv['RAILS_HOST']
 
   config.middleware.insert_after Rack::Sendfile, CacheSettings, {
     /\/assets\/.*/ => {

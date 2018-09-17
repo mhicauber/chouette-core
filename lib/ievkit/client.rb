@@ -272,7 +272,7 @@ module Ievkit
     #
     # @return [nil]
     def ievkit_warn(*message)
-      unless ChouetteEnv['IEVKIT_SILENT']
+      unless SmartEnv['IEVKIT_SILENT']
         warn message
       end
     end
