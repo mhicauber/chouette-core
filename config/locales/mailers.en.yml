@@ -13,6 +13,14 @@ en:
       updated:
         subject: A shared calendar has been updated
         body: "A new shared calendar %{cal_name} has been updated by STIF. You can now view it in the <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>list of shared calendars</a>."
+    import_mailer:
+      created:
+        subject: The import is over
+        body: |
+          "Hello, the import is over
+          You launched the %{import_name} import. It is now over.
+          To view it :
+          <a href='%%{import_url}' target='_blank' style='color:#333333;'>Import</a>"
     subscription_mailer:
       created:
         subject: A new user signed up

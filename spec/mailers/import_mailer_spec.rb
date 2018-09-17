@@ -1,0 +1,25 @@
+require "rails_helper"
+
+RSpec.describe ImportMailer, type: :mailer do
+
+  let(:user)    { create(:user) }
+  let(:referential) {create :referential}
+  let(:import) {create :gtfs_import, referential: referential, parent: create(:workbench_import, creator: user.name)}
+  let(:email)    { ImportMailer.send('created', import.id, user.id) }
+
+  it 'should deliver email to user' do
+    expect(email).to deliver_to user.email
+  end
+
+  it 'should have correct from' do
+    expect(email.from).to eq(['chouette@example.com'])
+  end
+
+  it 'should have subject' do
+    expect(email).to have_subject I18n.t("mailers.import_mailer.created.subject")
+  end
+
+  it 'should have correct body' do
+    expect(email.body).to have_content I18n.t("mailers.import_mailer.created.body", import_name: import.name)
+  end
+end
