@@ -27,22 +27,26 @@ RSpec.describe JourneyPatternControl::MinimumLength, :type => :model do
   context "when at least one journey pattern have less than 2 stop points" do
     before do
       sp_id = route.stop_points.first.id
-      jp.update(stop_point_ids: [sp_id], departure_stop_point_id: sp_id, arrival_stop_point_id: sp_id )
+      jp.update_columns departure_stop_point_id: sp_id, arrival_stop_point_id: sp_id
+      Chouette::JourneyPattern.connection.execute(
+        "DELETE FROM journey_patterns_stop_points WHERE journey_pattern_id = #{jp.id} AND stop_point_id != #{sp_id}"
+      )
+      expect(jp.reload.stop_points.size).to eq 1
     end
 
-      it "should set the status according to its params" do
-        expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-        resource = ComplianceCheckResource.last
-        expect(resource.status).to eq "ERROR"
-      end
+    it "should set the status according to its params" do
+      expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
+      resource = ComplianceCheckResource.last
+      expect(resource.status).to eq "ERROR"
+    end
 
-      it "should create a message" do
-        expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
-        message = ComplianceCheckMessage.last
-        expect(message.status).to eq "ERROR"
-        expect(message.compliance_check_set).to eq compliance_check_set
-        expect(message.compliance_check).to eq compliance_check
-        expect(message.compliance_check_resource).to eq ComplianceCheckResource.last
-      end
+    it "should create a message" do
+      expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
+      message = ComplianceCheckMessage.last
+      expect(message.status).to eq "ERROR"
+      expect(message.compliance_check_set).to eq compliance_check_set
+      expect(message.compliance_check).to eq compliance_check
+      expect(message.compliance_check_resource).to eq ComplianceCheckResource.last
+    end
   end
 end

@@ -82,20 +82,21 @@ RSpec.describe Import::Gtfs do
 
   describe "#import_routes" do
     let(:import) { create_import "google-sample-feed.zip" }
+
     it "should create a line for each route" do
       import.import_routes
 
       defined_attributes = [
         :registration_number, :name, :number, :published_name,
         "companies.registration_number",
-        :comment, :url
+        :comment, :url, :transport_mode
       ]
       expected_attributes = [
-        ["AAMV", "Airport - Amargosa Valley", "50", "Airport - Amargosa Valley", nil, nil, nil],
-        ["CITY", "City", "40", "City", nil, nil, nil],
-        ["STBA", "Stagecoach - Airport Shuttle", "30", "Stagecoach - Airport Shuttle", nil, nil, nil],
-        ["BFC", "Bullfrog - Furnace Creek Resort", "20", "Bullfrog - Furnace Creek Resort", nil, nil, nil],
-        ["AB", "Airport - Bullfrog", "10", "Airport - Bullfrog", nil, nil, nil]
+        ["AAMV", "Airport - Amargosa Valley", "50", "Airport - Amargosa Valley", nil, nil, nil, "bus"],
+        ["CITY", "City", "40", "City", nil, nil, nil, "bus"],
+        ["STBA", "Stagecoach - Airport Shuttle", "30", "Stagecoach - Airport Shuttle", nil, nil, nil, "bus"],
+        ["BFC", "Bullfrog - Furnace Creek Resort", "20", "Bullfrog - Furnace Creek Resort", nil, nil, nil, "bus"],
+        ["AB", "Airport - Bullfrog", "10", "Airport - Bullfrog", nil, nil, nil, "bus"]
       ]
 
       expect(workbench.line_referential.lines.includes(:company).pluck(*defined_attributes)).to match_array(expected_attributes)
@@ -107,6 +108,12 @@ RSpec.describe Import::Gtfs do
     before do
       import.prepare_referential
       import.import_calendars
+      allow(import).to receive(:save_model).and_wrap_original { |m, model| m.call(model); model.run_callbacks(:commit) }
+    end
+
+    it "should not calculate costs" do
+      expect_any_instance_of(Chouette::Route).to_not receive(:calculate_costs!)
+      expect{import.import_trips}.to change{Chouette::Route.count}
     end
 
     it "should create a Route for each trip" do
@@ -176,6 +183,18 @@ RSpec.describe Import::Gtfs do
       import.prepare_referential
       import.import_calendars
       import.import_trips
+    end
+
+    it "should calculate costs" do
+      calculated = []
+      allow_any_instance_of(Chouette::Route).to receive(:calculate_costs!) { |route|
+        calculated << route
+      }
+
+      import.import_stop_times
+      referential.vehicle_journeys.map(&:route).uniq.each do |route|
+        expect(calculated).to include(route)
+      end
     end
 
     it "should create a VehicleJourneyAtStop for each stop_time" do
@@ -366,6 +385,36 @@ RSpec.describe Import::Gtfs do
 
     it "should return the pathwith the token" do
       expect(import.download_path).to eq("/workbenches/#{import.workbench_id}/imports/#{import.id}/download?token=#{import.token_download}")
+    end
+  end
+
+  describe "#referential_metadata" do
+    let(:import) { create_import "google-sample-feed.zip" }
+    let(:start_date_limit) { Date.current.beginning_of_year - Import::Base::PERIOD_EXTREME_VALUE }
+    let(:end_date_limit) { Date.current.end_of_year + Import::Base::PERIOD_EXTREME_VALUE }
+
+    context "when dates are over the extremes" do
+      before do
+        allow(import.source).to receive(:calendars).and_return([
+          double(start_date: (Date.current - 20.years).to_s, end_date: (Date.current + 20.years).to_s)
+        ])
+      end
+
+      it "sets periodes within the allowed limit" do
+        expect(import.referential_metadata.periodes).to eq([start_date_limit..end_date_limit])
+      end
+    end
+
+    context "when dates are inside the extremes" do
+      before do
+        allow(import.source).to receive(:calendars).and_return([
+          double(start_date: 1.month.ago.to_date.to_s, end_date: 1.year.since.to_date.to_s)
+        ])
+      end
+
+      it "sets periodes within the allowed limit" do
+        expect(import.referential_metadata.periodes).to eq([1.month.ago.to_date..1.year.since.to_date])
+      end
     end
   end
 end

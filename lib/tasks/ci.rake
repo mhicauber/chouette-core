@@ -72,6 +72,7 @@ namespace :ci do
       if File.exists? '.bundle-audit-ignore'
         ignored = []
         File.open('.bundle-audit-ignore').each_line do |line|
+          next unless line.present?
           id, date = line.split('#').map(&:strip)
           date = date.to_date
           puts "Found vulnerability #{id}, ignored until #{date + ignoring_lapse}"

@@ -124,6 +124,7 @@ class ComplianceCheckSet < ApplicationModel
         logger.error "IEV server error : #{e.message}"
         logger.error e.backtrace.inspect
         update status: 'failed'
+        notify_parent
       end
     else
       perform_internal_checks
@@ -132,9 +133,12 @@ class ComplianceCheckSet < ApplicationModel
 
   def perform_internal_checks
     update status: :pending
-    compliance_checks.internals.each &:process
-    update_status
-    do_notify_parent
+    begin
+      compliance_checks.internals.each &:process
+    ensure
+      update_status
+      do_notify_parent
+    end
   end
 
   def context_i18n

@@ -17,15 +17,24 @@
                 attribute: Proc.new { |n| export_status(n.status) }, \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :started_at, \
-                attribute: Proc.new { |n| l(n.started_at, format: :long) if n.started_at }, \
-              ), \
-              TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |export| \
                   workbench_export_path(@workbench, export) \
-                end \
+                end, \
+                sortable: false,\
+                ), \
+              TableBuilderHelper::Column.new( \
+                key: :type, \
+                attribute: Proc.new { |n| n.object.class.human_name }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :referential, \
+                attribute: Proc.new { |n| link_to(n.referential.name, n.referential) }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :started_at, \
+                attribute: Proc.new { |n| l(n.started_at, format: :long) if n.started_at }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :creator, \

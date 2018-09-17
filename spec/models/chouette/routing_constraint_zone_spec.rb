@@ -27,6 +27,12 @@ describe Chouette::RoutingConstraintZone, type: :model do
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
+    it 'validates the number of stop_point_ids' do
+      expect {
+        subject.update!(stop_point_ids: [subject.route.stop_points[0]])
+      }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
     it 'validates that stop points belong to the route' do
       route = create(:route)
       expect {

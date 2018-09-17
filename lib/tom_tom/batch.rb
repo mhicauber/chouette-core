@@ -13,9 +13,11 @@ module TomTom
         routeType: 'shortest',
         traffic: 'false'
       })
+      out = []
       way_costs.each_slice(SUB_BATCH_SIZE) do |slice|
-        get_sub_batch(slice, params)
+        out += get_sub_batch(slice, params)
       end
+      out
     end
     alias_method :evaluate, :batch
 

@@ -38,7 +38,7 @@ let fakeVJAS = [{
     minute: '02'
   },
   stop_area_object_id: "chouette:StopArea:8000b367-e07c-43b8-b1be-766f1bfe542a:LOC"
-}, 
+},
   {
     delta: 627,
     arrival_time: {
@@ -237,6 +237,112 @@ describe('vehicleJourneys reducer', () => {
           distance: 10,
           time: 63
         },
+        "2-4": {
+          distance: 10,
+          time: 30
+        }
+      }
+    }
+    let fakeSelectedCompany = {name: "ALBATRANS"}
+    expect(
+      vjReducer(state, {
+        type: 'ADD_VEHICLEJOURNEY',
+        data: fakeData,
+        selectedJourneyPattern: fakeSelectedJourneyPattern,
+        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100}],
+        selectedCompany: fakeSelectedCompany
+      })
+    ).toEqual([{
+      ignored_routing_contraint_zone_ids: [],
+      journey_pattern: fakeSelectedJourneyPattern,
+      company: fakeSelectedCompany,
+      published_journey_name: 'test',
+      published_journey_identifier: '',
+      short_id: '',
+      objectid: '',
+      footnotes: [],
+      time_tables: [],
+      purchase_windows: [],
+      vehicle_journey_at_stops: pristineVjasList,
+      selected: false,
+      custom_fields: undefined,
+      deletable: false,
+      transport_mode: 'undefined',
+      transport_submode: 'undefined'
+    }, ...state])
+  })
+
+  it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP not starting on the first stop', () => {
+    let pristineVjasList = [{
+      delta : 0,
+      arrival_time : {
+        hour: "00",
+        minute: "00"
+      },
+      departure_time : {
+        hour: "00",
+        minute: "00"
+      },
+      stop_point_objectid: 'test-1',
+      stop_area_cityname: 'city',
+      dummy: true
+    },
+    {
+      delta : 0,
+      arrival_time : {
+        hour: 23,
+        minute: 2
+      },
+      departure_time : {
+        hour: 23,
+        minute: 2
+      },
+      stop_point_objectid: 'test-2',
+      stop_area_cityname: 'city',
+      dummy: false
+    },
+    {
+      delta : 0,
+      arrival_time : {
+        hour: "00",
+        minute: "00"
+      },
+      departure_time : {
+        hour: "00",
+        minute: "00"
+      },
+      stop_point_objectid: 'test-3',
+      stop_area_cityname: 'city',
+      dummy: true
+    },
+    {
+      delta : 0,
+      arrival_time : {
+        hour: 0,
+        minute: 32
+      },
+      departure_time : {
+        hour: 0,
+        minute: 32
+      },
+      stop_point_objectid: 'test-4',
+      stop_area_cityname: 'city',
+      dummy: false
+    }]
+    let fakeData = {
+      published_journey_name: {value: 'test'},
+      published_journey_identifier: {value : ''},
+      "start_time.hour": {value : '0'},
+      "start_time.minute": {value : '2'}
+    }
+    let fakeSelectedJourneyPattern = {
+      id: "1",
+      full_schedule: true,
+      stop_areas: [
+        {stop_area_short_description: {id: 2}},
+        {stop_area_short_description: {id: 4}},
+      ],
+      costs: {
         "2-4": {
           distance: 10,
           time: 30
@@ -550,7 +656,7 @@ describe('vehicleJourneys reducer', () => {
   })
 
   describe('UPDATE_TIME', () => {
-    const val = '33', index = 0, timeUnit = 'minute', isDeparture = true, isArrivalsToggled = true
+    const val = '33', index = 0, timeUnit = 'minute', isDeparture = true, isArrivalsToggled = true, enforceConsistency = true
 
     context('first or last stop of a VJ', () => {
       set('subIndex', () => 0)
@@ -571,7 +677,7 @@ describe('vehicleJourneys reducer', () => {
 
       it('should set departure time & arrival time to the same value', () => {
         const vjas = state[index]['vehicle_journey_at_stops']
-        const newVJAS = [updatedVJAS, ...vjas.slice(1)] 
+        const newVJAS = [updatedVJAS, ...vjas.slice(1)]
         const newVJ = Object.assign({}, state[subIndex], { vehicle_journey_at_stops: newVJAS })
 
         expect(
@@ -582,7 +688,8 @@ describe('vehicleJourneys reducer', () => {
             index,
             timeUnit,
             isDeparture,
-            isArrivalsToggled
+            isArrivalsToggled,
+            enforceConsistency
           })
         ).toEqual([newVJ, state[1]])
       })
@@ -689,7 +796,7 @@ describe('vehicleJourneys reducer', () => {
         }
       }
     })
-    
+
     let newVJ = Object.assign({}, newState[0], {vehicle_journey_at_stops: newVJAS})
     expect(
       vjReducer(newState, {

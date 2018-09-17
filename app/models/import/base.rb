@@ -1,5 +1,8 @@
 class Import::Base < ApplicationModel
   self.table_name = "imports"
+  include OptionsSupport
+
+  PERIOD_EXTREME_VALUE = 15.years
 
   def self.messages_class_name
     "Import::Message"
@@ -9,8 +12,16 @@ class Import::Base < ApplicationModel
     "Import::Resource"
   end
 
+  def self.human_name
+    I18n.t("export.#{self.name.demodulize.underscore}")
+  end
+
   def self.file_extension_whitelist
     %w(zip)
+  end
+
+  def self.human_name
+    I18n.t("import.#{self.name.demodulize.underscore}")
   end
 
   include IevInterfaces::Task
@@ -25,9 +36,12 @@ class Import::Base < ApplicationModel
 
   def child_change
     Rails.logger.info "child_change for #{inspect}"
-    return if self.class.finished_statuses.include?(status)
+    if self.class.finished_statuses.include?(status)
+      done! if self.compliance_check_sets.all? &:successful?
+    else
+      super
+    end
 
-    super
   end
 
   private

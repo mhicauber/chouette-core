@@ -20,11 +20,16 @@ module InternalControl
       referential = compliance_check.referential
       referential.switch do
         collection(referential).each do |obj|
-          compliant = compliance_test(compliance_check, obj)
-          status = status_ok_if(compliant, compliance_check)
-          update_model_with_status compliance_check, obj, status
-          unless compliant
-            create_message_for_model compliance_check, obj, status, message_attributes(compliance_check, obj)
+          begin
+            compliant = compliance_test(compliance_check, obj)
+            status = status_ok_if(compliant, compliance_check)
+            update_model_with_status compliance_check, obj, status
+            unless compliant
+              create_message_for_model compliance_check, obj, status, message_attributes(compliance_check, obj)
+            end
+          rescue
+            update_model_with_status compliance_check, obj, "ERROR"
+            raise
           end
         end
       end

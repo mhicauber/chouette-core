@@ -17,12 +17,10 @@ RSpec.describe Chouette::Route, :type => :model do
   context "when deleting a stop_point" do
     let!(:rcz_should_remain){ create :routing_constraint_zone, route: route, stop_point_ids: route.stop_point_ids[0..2] }
     let!(:rcz_should_disappear){ create :routing_constraint_zone, route: route, stop_point_ids: route.stop_point_ids[0..1] }
-    let!(:rcz_should_disappear_too){ create :routing_constraint_zone, route: route, stop_point_ids: [route.stop_point_ids[0]] }
     it "should remove empty routing_constraint_zones" do
       route.stop_points[0].destroy
       expect(Chouette::RoutingConstraintZone.where(id: rcz_should_remain.id).exists?).to be_truthy
       expect(Chouette::RoutingConstraintZone.where(id: rcz_should_disappear.id).exists?).to be_falsy
-      expect(Chouette::RoutingConstraintZone.where(id: rcz_should_disappear_too.id).exists?).to be_falsy
       expect(rcz_should_remain.reload.stop_point_ids.count).to eq 2
     end
   end

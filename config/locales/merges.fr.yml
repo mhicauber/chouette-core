@@ -40,3 +40,4 @@ fr:
           attributes:
             base:
               multiple_process: "Une autre finalisation est déjà en cours"
+              no_referential: Vous devez choisir au moins un jeu de données

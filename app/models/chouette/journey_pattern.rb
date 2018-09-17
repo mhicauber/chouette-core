@@ -16,7 +16,7 @@ module Chouette
     validates_presence_of :name
 
     delegate :line, to: :route
-    #validates :stop_points, length: { minimum: 2, too_short: :minimum }, on: :update
+    validates :stop_points, length: { minimum: 2, too_short: :minimum }, on: :update
 
     attr_accessor  :control_checked
 
@@ -39,9 +39,16 @@ module Chouette
           item.delete('errors')
           jp = find_by(objectid: item['object_id']) || state_create_instance(route, item)
           next if item['deletable'] && jp.persisted? && jp.destroy
-          # Update attributes and stop_points associations
-          jp.update_attributes(state_permited_attributes(item)) unless item['new_record']
-          jp.state_stop_points_update(item) if !jp.errors.any? && jp.persisted?
+          begin
+            ::ActiveRecord::Base.transaction do
+              # Update attributes and stop_points associations
+              jp.assign_attributes(state_permited_attributes(item)) unless item['new_record']
+              jp.state_stop_points_update(item) if jp.persisted?
+              jp.save!
+            end
+          rescue => e
+            Rails.logger.error e
+          end
           item['errors']   = jp.errors if jp.errors.any?
           item['checksum'] = jp.checksum
         end
@@ -83,7 +90,7 @@ module Chouette
 
       jp.after_commit_objectid
       item['object_id']  = jp.objectid
-      item['short_id']  = jp.get_objectid.short_id
+      item['short_id']  = jp.get_objectid&.short_id
       item['new_record'] = true
       jp
     end

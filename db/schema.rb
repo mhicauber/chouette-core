@@ -11,12 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+
 ActiveRecord::Schema.define(version: 20180829151132) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -89,9 +90,9 @@ ActiveRecord::Schema.define(version: 20180829151132) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -476,6 +477,7 @@ ActiveRecord::Schema.define(version: 20180829151132) do
     t.integer  "current_step",                    default: 0
     t.integer  "total_steps",                     default: 0
     t.string   "creator"
+    t.hstore   "options"
   end
 
   add_index "imports", ["referential_id"], name: "index_imports_on_referential_id", using: :btree
@@ -617,6 +619,14 @@ ActiveRecord::Schema.define(version: 20180829151132) do
   add_index "networks", ["line_referential_id"], name: "index_networks_on_line_referential_id", using: :btree
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
+
+  create_table "notifications", id: :bigserial, force: :cascade do |t|
+    t.string   "objectid"
+    t.json     "payload"
+    t.string   "channel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"
@@ -1057,6 +1067,7 @@ ActiveRecord::Schema.define(version: 20180829151132) do
     t.integer  "ignored_routing_contraint_zone_ids",           default: [],              array: true
   end
 
+  add_index "vehicle_journeys", ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id", using: :btree
   add_index "vehicle_journeys", ["objectid"], name: "vehicle_journeys_objectid_key", unique: true, using: :btree
   add_index "vehicle_journeys", ["route_id"], name: "index_vehicle_journeys_on_route_id", using: :btree
 

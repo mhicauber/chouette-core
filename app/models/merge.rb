@@ -8,6 +8,7 @@ class Merge < ApplicationModel
   belongs_to :new, class_name: 'Referential'
 
   validates :workbench, presence: true
+  validate :has_at_least_one_referential, :on => :create
   validate :check_other_merges, :on => :create
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
@@ -36,6 +37,12 @@ class Merge < ApplicationModel
       create_before_merge_compliance_check_sets
     else
       MergeWorker.perform_async(id)
+    end
+  end
+
+  def has_at_least_one_referential
+    unless referentials.length > 0
+      errors.add(:base, :no_referential)
     end
   end
 

@@ -85,7 +85,7 @@ gem 'map_layers', '0.0.4'
 gem 'rgeo', '~> 0.5.2'
 gem 'georuby-ext', '0.0.5'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
-
+gem 'ffi', '> 1.9.24'
 gem 'mimemagic'
 
 # User interface
@@ -105,7 +105,7 @@ gem 'i18n-js'
 
 # Format Output
 gem 'json'
-gem 'rubyzip'
+gem 'rubyzip', '~> 1.2.2' 
 gem 'roo'
 
 # Controller
@@ -195,7 +195,6 @@ group :test, :development do
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'rspec-rails', '~> 3.5.0'
-  gem 'fakeweb'
   gem 'webmock'
   gem 'capybara', '~> 2.4.0'
   gem 'database_cleaner'

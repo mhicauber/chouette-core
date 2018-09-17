@@ -60,6 +60,10 @@ fr:
       aborted:    Annulé
       canceled:   Annulé
   import:
+    workgroup: Groupe de travail
+    netex:     Netex
+    referential_companies: Transporteurs
+    gtfs: GTFS
     base:
       <<: *imports
   activerecord:
@@ -103,6 +107,8 @@ fr:
         <<: *attrs
         base:
           <<: *attrs
+        workbench:
+          automatic_merge: Finalisation automatique des jeux de données importés
   errors:
     messages:
       extension_whitelist_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"

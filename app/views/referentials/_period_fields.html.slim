@@ -7,9 +7,11 @@
             p.small = message
 
   .wrapper
+    - years = Import::Base::PERIOD_EXTREME_VALUE
+
     div
-      = f.input :begin, as: :date, label: false, start_year: Date.today.year - 15, end_year: Date.today.year + 15, wrapper_html: { class: 'date smart_date' }
+      = f.input :begin, as: :date, label: false, start_year: years.ago.year, end_year: years.since.year, wrapper_html: { class: 'date smart_date' }
     div
-      = f.input :end, as: :date, label: false, start_year: Date.today.year - 15, end_year: Date.today.year + 15, wrapper_html: { class: 'date smart_date' }
+      = f.input :end, as: :date, label: false, start_year: years.ago.year, end_year: years.since.year, wrapper_html: { class: 'date smart_date' }
     div
       = link_to_remove_association '', f, class: 'fa fa-trash', data: { confirm: t('are_you_sure')}, title: t('actions.delete')
