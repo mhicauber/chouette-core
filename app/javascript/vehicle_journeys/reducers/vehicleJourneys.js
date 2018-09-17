@@ -27,6 +27,7 @@ const vehicleJourney= (state = {}, action, keep) => {
           current_time.minute = parseInt(action.data["start_time.minute"].value) + (initTZOffet - 60 * parseInt(initTZOffet / 60))
         }
       }
+      
       _.each(action.stopPointsList, (sp) =>{
         let inJourney = false
         let newVjas
@@ -93,12 +94,9 @@ const vehicleJourney= (state = {}, action, keep) => {
           }
         }
 
-        _.each(action.selectedJourneyPattern.stop_areas, (jp) =>{
-          if (jp.stop_area_short_description.id == sp.id){
-            newVjas.dummy = false
-            return
-          }
-        })
+        let belongToJP = !!action.selectedJourneyPattern.stop_areas.find(({ stop_area_short_description: stopArea }) => stopArea.object_id == sp.area_object_id && stopArea.position == sp.position)
+
+        if (belongToJP) newVjas.dummy = false
 
         let lastStop = action.selectedJourneyPattern.stop_areas && action.selectedJourneyPattern.stop_areas[action.selectedJourneyPattern.stop_areas.length - 1]
         if(lastStop && lastStop.stop_area_short_description.id == sp.id){
