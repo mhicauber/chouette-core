@@ -1,7 +1,0 @@
-p = t("devise.mailer.invitation_instructions.hello", email: @resource.name)
-
-p = t("devise.mailer.invitation_instructions.someone_invited_you", url: unauthenticated_root_url)
-
-p = mailer_link_to t("devise.mailer.invitation_instructions.accept"), accept_invitation_url(@resource, :invitation_token => @token)
-
-p = t("devise.mailer.invitation_instructions.ignore").html_safe
