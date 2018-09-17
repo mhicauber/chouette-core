@@ -141,12 +141,12 @@ RSpec.describe Export::Gtfs, type: :model do
       random_stop_area = selected_stop_areas.sample
 
       # Find matching random stop in exported stops.txt file
-      random_gtfs_stop = source.stops.detect {|e| e.id == (random_stop_area.registration_number.presence || random_stop_area.id.to_s)}
+      random_gtfs_stop = source.stops.detect {|e| e.id == (random_stop_area.registration_number.presence || random_stop_area.object_id)}
       expect(random_gtfs_stop).not_to be_nil
       expect(random_gtfs_stop.name).to eq(random_stop_area.name)
       expect(random_gtfs_stop.location_type).to eq(random_stop_area.area_type == 'zdlp' ? '1' : '0')
       # Checks if the parents are similar
-      expect(random_gtfs_stop.parent_station).to eq(((random_stop_area.parent.registration_number.presence || random_stop_area.parent.id) if random_stop_area.parent))
+      expect(random_gtfs_stop.parent_station).to eq(((random_stop_area.parent.registration_number.presence || random_stop_area.parent.object_id) if random_stop_area.parent))
     end
 
     ################################
