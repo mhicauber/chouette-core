@@ -11,6 +11,10 @@ module Chouette
       @referential ||= self.class.current_referential
     end
 
+    def referential_slug
+      Apartment::Tenant.current
+    end
+
     def workgroup
       referential&.workgroup
     end
