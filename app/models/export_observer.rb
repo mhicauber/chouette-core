@@ -11,6 +11,6 @@ class ExportObserver < ActiveRecord::Observer
 
   def enabled?
     return true unless Rails.configuration.respond_to?(:enable_export_observer)
-    !!Rails.configuration.enable_import_observer
+    !!Rails.configuration.enable_export_observer
   end
 end
