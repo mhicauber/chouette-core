@@ -3,8 +3,19 @@ describe Chouette::StopPoint, :type => :model do
   subject { Chouette::Route.find( vehicle_journey.route_id).stop_points.first }
 
   it { is_expected.to validate_uniqueness_of :objectid }
-  it { is_expected.to validate_presence_of :stop_area }
-  
+
+  describe '#stop_area validation' do
+    it 'should validate a valid StopArea is associated' do
+      stop_area = create :stop_area
+      stop_point = build :stop_point, stop_area_id: nil
+      expect(stop_point).to_not be_valid
+      stop_point.stop_area_id = 42
+      expect(stop_point).to_not be_valid
+      stop_point.stop_area_id = stop_area.id
+      expect(stop_point).to be_valid
+    end
+  end
+
 
   describe '#objectid' do
     subject { super().get_objectid }
