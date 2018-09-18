@@ -1,6 +1,7 @@
 fr:
   api_keys:
     search_no_results: "Aucune clé d'API"
+    workbench_id: "Identifiant de l'espace de travail"
     actions:
       new: "Ajouter une clé d'accès API"
       edit: "Editer la clé d'accès API"
