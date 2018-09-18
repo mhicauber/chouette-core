@@ -78,7 +78,7 @@ RSpec.describe Merge do
       end
 
       it "should raise an error" do
-        expect{merge.rollback!}.to raise_error
+        expect{merge.rollback!}.to raise_error RuntimeError
       end
     end
 
@@ -109,7 +109,7 @@ RSpec.describe Merge do
           expect(r.merged_at).to be_nil
           expect(r.archived_at).to be_nil
         end
-        expect(final_merge.new.state).to eq :rollbacked
+        expect(final_merge.new.state).to eq :active
       end
     end
   end
@@ -154,7 +154,7 @@ RSpec.describe Merge do
       it "should not allow the creation of a referential from scratch if the workbench has previous merges" do
         m = Merge.create(workbench: workbench, referentials: [referential, referential])
         m.update status: :successful
-        expect{ merge.prepare_new }.to raise_error
+        expect{ merge.prepare_new }.to raise_error RuntimeError
       end
 
       it "should allow the creation of a referential from scratch if the workbench has no previous merges" do

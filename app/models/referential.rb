@@ -3,7 +3,7 @@ class Referential < ApplicationModel
   include DataFormatEnumerations
   include ObjectidFormatterSupport
 
-  STATES = %i(pending active failed archived rollbacked)
+  STATES = %i(pending active failed archived)
 
   validates_presence_of :name
   validates_presence_of :slug
@@ -61,10 +61,9 @@ class Referential < ApplicationModel
   belongs_to :referential_suite
 
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
-  scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil, rollbacked_at: nil) }
+  scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
-  scope :rollbacked, -> { where(ready: true, failed_at: nil, archived_at: nil).where.not(rollbacked_at: nil) }
 
   scope :ready, -> { where(ready: true) }
   scope :exportable, -> {
@@ -351,7 +350,7 @@ class Referential < ApplicationModel
   before_destroy :destroy_jobs
 
   def referential_read_only?
-    !ready? || in_referential_suite? || archived? || rollbacked?
+    !ready? || in_referential_suite? || archived?
   end
 
   def in_referential_suite?
@@ -580,7 +579,7 @@ class Referential < ApplicationModel
     return :failed if failed_at.present?
     return :archived if archived_at.present?
     return :pending unless ready?
-    rollbacked_at == nil ? :active : :rollbacked
+    :active
   end
 
   def light_update vals
@@ -600,15 +599,13 @@ class Referential < ApplicationModel
   end
 
   def active!
-    light_update ready: true, failed_at: nil, archived_at: nil, merged_at: nil, rollbacked_at: nil
+    light_update ready: true, failed_at: nil, archived_at: nil, merged_at: nil
   end
+
+  alias_method :rollbacked!, :active!
 
   def archived!
     light_update failed_at: nil, archived_at: Time.now
-  end
-
-  def rollbacked!
-    light_update ready: true, failed_at: nil, archived_at: nil, merged_at: nil, rollbacked_at: Time.now
   end
 
   def merged!
