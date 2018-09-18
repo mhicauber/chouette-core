@@ -5,7 +5,8 @@ Rails.application.configure do
   SmartEnv.set :RAILS_DB_HOST, default: 'localhost'
   SmartEnv.set :RAILS_DB_NAME, default: 'chouette_test'
   SmartEnv.set :RAILS_DB_USER, default: nil
-  SmartEnv.set :IEV_URL, default: "http://localhost:8080"
+  SmartEnv.set :RAILS_HOST, default: 'http://www.example.com'
+  SmartEnv.set :IEV_URL, default: 'http://localhost:8080'
   SmartEnv.add :POSTGRESQL_ENV_POSTGRES_USER, default: :jenkins
 
   # The test environment is used exclusively to run your application's
@@ -56,6 +57,7 @@ Rails.application.configure do
   config.iev_url = SmartEnv['IEV_URL']
 
   config.rails_host = 'http://www.example.com'
+
   # file to data for demo
   config.demo_data = 'tmp/demo.zip'
 

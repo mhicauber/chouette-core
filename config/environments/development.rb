@@ -64,10 +64,6 @@ Rails.application.configure do
     type: "database"
   }
 
-  # IEV url
-  config.iev_url    = SmartEnv['IEV_URL']
-  config.rails_host = SmartEnv['RAILS_HOST']
-
   config.i18n.available_locales = [:fr, :en]
 
   config.serve_static_files = true
