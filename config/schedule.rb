@@ -26,6 +26,7 @@ end
 set :NEW_RELIC_LOG, 'stdout'
 
 set :job_template, "/bin/bash -c ':job'"
+job_type :rake_if, '[ "$:if" == "true" ] && cd :path && :environment_variable=:environment bundle exec rake :task --silent :output'
 
 every :hour do
   runner "Cron.every_hour"
@@ -37,6 +38,10 @@ end
 
 every :day, :at => '4:00 am' do
  runner "Cron.every_day_at_4AM"
+end
+
+every 3.hours do
+  rake_if 'cucumber:clean_test_organisations', if: "CHOUETTE_CLEAN_TEST_ORGANISATIONS"
 end
 
 every 5.minutes do
