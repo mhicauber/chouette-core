@@ -6,21 +6,67 @@ fr:
         subject: "Audit automatique du %{date}"
     calendar_mailer:
       sent_by: "Envoyé par"
+      button: Voir modèle de calendrier
       created:
-        subject: Un nouveau calendrier partagé à été ajouté
-        body: "Un calendrier partagé %{cal_name} a été ajouté par le STIF. Vous pouvez maintenant le consulter dans la <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>liste des calendriers partagés</a>."
+        subject: Un modèle de calendrier vient d'être partagé
+        body: |
+          "Bonjour, un nouveau modèle de calendrier a été partagé.
+          Au sein de votre organisation, le modèle de calendrier %{cal_name} a été partagé.
+          Pour y accéder :"
       updated:
-        subject: Un nouveau calendrier partagé à été mis à jour
-        body: "Un calendrier partagé %{cal_name} a été mis à jour par le STIF. Vous pouvez maintenant le consulter dans la <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>liste des calendriers partagés</a>."
+        subject: Un modèle de calendrier a été modifié
+        body: |
+          "Bonjour, un modèle de calendrier partagé a été modifié.
+          Au sein de votre organisation, le modèle de calendrier partagé %{cal_name} a été modifié.
+          Pour y accéder :"
     import_mailer:
-      created:
+      button: Voir import
+      finished:
         subject: L'import est terminé
         body: |
-          "Bonjour, l'import est terminé
+          "Bonjour, l'import est terminé 
           Vous avez lancé l'import %{import_name}. Il est maintenant terminé.
-          Pour y accéder :
-          <a href='%%{import_url}' target='_blank' style='color:#333333;'>Import</a>"
+          Pour y accéder :"
+    export_mailer:
+      button: Voir export
+      created:
+        subject: L'export est terminé
+        body: |
+          "Bonjour, l'export est terminé 
+          Vous avez lancé l'export %{export_name}. Il est maintenant terminé.
+          Pour y accéder :"
+    merge_mailer:
+      button: Voir offre finalisée
+      finished:
+        subject: L'export est terminé
+        body: |
+          "Bonjour, l'export est terminé 
+          Vous avez lancé l'export %{merge_name}. Il est maintenant terminé.
+          Pour y accéder :"
     subscription_mailer:
       created:
         subject: Un nouvel utilisateur s'est inscrit
         body: "Un nouvel utilisateur a rejoint la plateforme:"
+    password_mailer:
+      updated:
+        subject: Réinitialiser votre mot de passe
+        body: |
+          "Bonjour, vous avez oublié votre mot de passe
+          Vous avez demandé à réinitialiser votre mot de passe.
+          Pour démarrer la procédure :"
+        button: Réinitialiser mon mot de passe
+    user_mailer:
+      created:
+        subject: Un nouvel inscrit sur Chouette
+        body: |
+          "Bonjour, un nouvel utilisateur vient de s'inscrire
+          Nom : %{user_name}
+          Organisation : %{orga_name}
+          Mail : %{user_mail}"
+    invitation_mailer:
+      button: Accepter l'invitation
+      subject: Invitation sur l'application Chouette
+      body: |
+        "Bonjour %{email},
+        Ce message est une invitation pour accéder à Chouette, vous pouvez l'accepter en cliquant sur le lien suivant :"
+      ignore: Si vous ne souhaitez pas accepter cette invitation, ignorez ce message. Votre compte ne sera pas créé tant que vous n'accédez pas au lien ci-dessus et que vous ne définissez un mot de passe.

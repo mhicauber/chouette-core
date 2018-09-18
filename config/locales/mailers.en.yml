@@ -9,19 +9,58 @@ en:
       sent_by: "Sent by"
       created:
         subject: A new shared calendar has been created
-        body: "A new shared calendar %{cal_name} has been added by STIF. You can now view it in the <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>list of shared calendars</a>."
+        body: |
+          "Hello, a new calendar has been shared
+          In your organization, the %{cal_name} calendar has been shared.
+          To view it :
+          <a href='%{cal_url}' target='_blank' style='color:#333333;'>Calendar</a>"
       updated:
         subject: A shared calendar has been updated
-        body: "A new shared calendar %{cal_name} has been updated by STIF. You can now view it in the <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>list of shared calendars</a>."
+        body: |
+          "Hello, a new shared calendar %{cal_name} has been updated.
+          To view it :
+          <a href='%{cal_url}' target='_blank' style='color:#333333;'>Calendar</a>."
     import_mailer:
-      created:
+      button: See Import
+      finished:
         subject: The import is over
         body: |
           "Hello, the import is over
           You launched the %{import_name} import. It is now over.
-          To view it :
-          <a href='%%{import_url}' target='_blank' style='color:#333333;'>Import</a>"
+          To view it :"
+    export_mailer:
+      button: See export
+      finished:
+        subject: The export is over
+        body: |
+          "Hello, the export is over
+          You launched the %{export_name} export. It is now over.
+          To view it :"
+    merge_mailer:
+      button: See current offer
+      finished:
+        subject: Merge is done
+        body: |
+          "Hello, The merge
+          You launched the %{merge_name} merge. It is now over.
+          To view it :"
     subscription_mailer:
       created:
         subject: A new user signed up
         body: "A new user signed up:"
+    password_mailer:
+      updated:
+        subject: Set up new password
+        body: |
+          "Hello, you forgot your password
+          You asked to set up a new one.
+          To start the process :
+          <a href='%{new_password_url}' target='_blank' style='color:#333333;'>New password</a>"
+    user_mailer:
+      created:
+        subject: New registered user on Chouette
+        body: |
+          "Hello, a new user just subscribed on the platform
+          Name : %{user_name}
+          Organization : %{orga_name}
+          Email : %{user_mail}"

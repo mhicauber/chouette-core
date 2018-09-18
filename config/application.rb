@@ -70,7 +70,7 @@ module ChouetteIhm
     # Configure Browserify to use babelify to compile ES6
     # config.browserify_rails.commandline_options = "-t [ babelify --presets [ react es2015 ] ]"
 
-    config.active_record.observers = [:route_observer, :calendar_observer, :import_observer]
+    config.active_record.observers = [:route_observer, :calendar_observer, :import_observer, :export_observer, :user_observer, :merge_observer]
     config.active_record.raise_in_transactional_callbacks = true
 
     config.active_job.queue_adapter = :sidekiq
@@ -79,9 +79,11 @@ module ChouetteIhm
       'FeatureChecker::NotAuthorizedError' => :unauthorized
     )
 
-    config.development_toolbar = false
+    config.development_toolbar = true
     config.enable_calendar_observer = true
     config.enable_import_observer = true
+    config.enable_export_observer = true
+    config.enable_merge_observer = true
     config.enable_subscriptions_notifications = SmartEnv.boolean('SUBSCRIPTION_NOTIFIER_ENABLED')
     config.subscriptions_notifications_recipients = []
     config.enable_automated_audits = SmartEnv.boolean('AUTOMATED_AUDITS_ENABLED')
