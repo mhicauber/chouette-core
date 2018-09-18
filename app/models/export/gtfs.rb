@@ -112,7 +112,7 @@ class Export::Gtfs < Export::Base
   end
 
   def export_stop_areas_to(target)
-    stops = Chouette::StopArea.where(id: journeys.joins(route: :stop_points).pluck(:"stop_points.stop_area_id").uniq).order('parent_id ASC NULLS FIRST')
+    stops = Chouette::StopArea.where(id: journeys.joins(route: :stop_points).pluck(:"stop_points.stop_area_id").uniq).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
     results = export_stop_areas_recursively(stops)
     results.each do |stop_area|
       target.stops << {
@@ -239,8 +239,9 @@ class Export::Gtfs < Export::Base
   def export_vehicle_journey_at_stops_to(target)
     journeys.each do |vehicle_journey|
       vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
+        next if vehicle_journey_at_stop.stop_point.stop_area.commercial?
+
         vehicule_journey_service_trip_hash[vehicle_journey.id].each do |trip_id|
-          vehicle_journey_at_stop.departure_time
 
           arrival_time = GTFS::Time.format_datetime(vehicle_journey_at_stop.arrival_time, vehicle_journey_at_stop.arrival_day_offset) if vehicle_journey_at_stop.arrival_time
           departure_time = GTFS::Time.format_datetime(vehicle_journey_at_stop.departure_time, vehicle_journey_at_stop.departure_day_offset) if vehicle_journey_at_stop.departure_time
