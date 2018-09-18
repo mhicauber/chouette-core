@@ -5,7 +5,7 @@ module IevInterfaces::Resource
     extend Enumerize
     attr_accessor :rows_count
 
-    enumerize :status, in: %i(OK ERROR WARNING IGNORED), scope: true
+    enumerize :status, in: %i[OK ERROR WARNING IGNORED], scope: true
     validates_presence_of :name, :resource_type
     before_save :update_metrics
     after_initialize do
@@ -13,11 +13,46 @@ module IevInterfaces::Resource
     end
   end
 
-  def each collection
-    collection.each do |item|
+  def each(collection, opts = {})
+    inner_block = proc do |item|
       inc_rows_count
       yield item, self
     end
+
+    transaction_block = proc do |item|
+      if opts[:transaction]
+        ActiveRecord::Base.transaction do
+          inner_block.call item
+        end
+      else
+        inner_block.call item
+      end
+    end
+
+    memory_block = proc do |item|
+      if opts[:memory_profile]
+        label = opts[:memory_profile]
+        label = instance_exec(&label) if label.is_a?(Proc)
+        Memory.log label do
+          transaction_block.call item
+        end
+      else
+        transaction_block.call item
+      end
+    end
+
+    if opts[:slice]
+      collection.each_slice(opts[:slice]) do |slice|
+        slice.each do |item|
+          memory_block.call item
+        end
+      end
+    else
+      collection.each do |item|
+        memory_block.call item
+      end
+    end
+
     save!
     self
   end
@@ -26,16 +61,16 @@ module IevInterfaces::Resource
     @rows_count += 1
   end
 
-  def update_status_from_importer importer_status
-    self.update status: status_from_importer(importer_status)
+  def update_status_from_importer(importer_status)
+    update status: status_from_importer(importer_status)
   end
 
   def update_status_from_messages
-    self.update status: status_from_messages
+    update status: status_from_messages
   end
 
   def status_from_messages
-    status = if messages.where(criticity: :error).exists?
+    if messages.where(criticity: :error).exists?
       :ERROR
     elsif messages.where(criticity: :warning).exists?
       :WARNING
@@ -54,8 +89,9 @@ module IevInterfaces::Resource
     }
   end
 
-  def status_from_importer importer_status
+  def status_from_importer(importer_status)
     return nil unless importer_status.present?
+
     {
       new: nil,
       pending: nil,

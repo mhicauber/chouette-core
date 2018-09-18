@@ -13,7 +13,7 @@ Rails.application.configure do
   config.eager_load = false
 
   # Configure static asset server for tests with Cache-Control for performance.
-  config.serve_static_files  = true
+  config.serve_static_files = true
   config.static_cache_control = 'public, max-age=3600'
 
   # Show full error reports and disable caching.
@@ -41,27 +41,33 @@ Rails.application.configure do
   config.accept_user_creation = false
 
   config.chouette_authentication_settings = {
-    type: "cas",
-    cas_server: "http://cas-portal.example.com/sessions"
+    type: 'cas',
+    cas_server: 'http://cas-portal.example.com/sessions'
   }
 
   # IEV url
   config.iev_url = ENV.fetch('IEV_URL', 'http://localhost:8080')
 
-  config.rails_host = "http://www.example.com"
+  config.rails_host = 'http://www.example.com'
   # file to data for demo
-  config.demo_data = "tmp/demo.zip"
+  config.demo_data = 'tmp/demo.zip'
 
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  config.action_mailer.default_url_options = { host: 'localhost:3000' }
 
   # Configure the e-mail address which will be shown in Devise::Maile
-  config.mailer_sender = "chouette@example.com"
+  config.mailer_sender = 'chouette@example.com'
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = false
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.default charset: 'utf-8'
 
-  config.i18n.available_locales = [:fr, :en]
+  config.i18n.available_locales = %i[fr en]
+
+  if ENV['VERBOSE_SPECS']
+    config.logger = Logger.new(STDOUT)
+    config.logger.level = Logger::ERROR
+    config.active_record.logger = nil
+  end
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

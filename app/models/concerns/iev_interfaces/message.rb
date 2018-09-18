@@ -3,7 +3,7 @@ module IevInterfaces::Message
 
   included do
     extend Enumerize
-    enumerize :criticity, in: %i(info warning error)
+    enumerize :criticity, in: %i[info warning error]
     validates :criticity, presence: true
 
     %i(info warning error).each do |criticity|

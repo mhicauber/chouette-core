@@ -1,10 +1,10 @@
 class Import::Gtfs < Import::Base
   include BenchmarkSupport
 
-  after_commit :launch_worker, :on => :create
+  after_commit :launch_worker, on: :create
 
   after_commit do
-    main_resource.update_status_from_importer self.status
+    main_resource.update_status_from_importer status
     true
   end
 
@@ -13,11 +13,11 @@ class Import::Gtfs < Import::Base
   end
 
   def main_resource
-    @resource ||= parent.resources.find_or_create_by(name: referential_name, resource_type: "referential", reference: self.name) if parent
+    @resource ||= parent.resources.find_or_create_by(name: referential_name, resource_type: 'referential', reference: self.name) if parent
   end
 
   def create_resource name
-    self.resources.find_or_initialize_by(name: name, resource_type: "file", reference: name)
+    resources.find_or_initialize_by(name: name, resource_type: 'file', reference: name)
   end
 
   def next_step
@@ -27,19 +27,26 @@ class Import::Gtfs < Import::Base
   def create_message args, opts={}
     resource = opts[:resource] || main_resource || self
     resource.messages.build args
-    if opts[:commit]
+    return unless opts[:commit]
+
+    begin
       resource.save!
-      resource.update_status_from_messages
+    rescue
+      Rails.logger.error "Invalid resource: #{resource.errors.inspect}"
+      Rails.logger.error "Last message: #{resource.messages.last.errors.inspect}"
+      raise
     end
+    resource.update_status_from_messages
   end
 
   def import
     update status: 'running', started_at: Time.now
 
     import_without_status
-    update status: 'successful', ended_at: Time.now
+    @status ||= 'successful'
+    update status: @status, ended_at: Time.now
     referential&.active!
-  rescue Exception => e
+  rescue => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
@@ -67,7 +74,7 @@ class Import::Gtfs < Import::Base
     Zip::File.open(file) do |zip_file|
       zip_file.glob('agency.txt').size == 1
     end
-  rescue Exception => e
+  rescue => e
     Rails.logger.debug "Error in testing GTFS file: #{e}"
     return false
   end
@@ -201,74 +208,72 @@ class Import::Gtfs < Import::Base
       company.url = agency.url
       company.time_zone = agency.timezone
 
-      save_model company, "#{resource.name}.txt", resource.rows_count, 0, resource
+      save_model company, resource: resource
     end.tap do |resource|
-      create_message criticity: "info", message_key: "gtfs.agencies.imported", message_attributes: {count: resource.rows_count}
+      create_message criticity: :info, message_key: 'gtfs.agencies.imported', message_attributes: {count: resource.rows_count}
     end
   end
 
   def import_stops
-    resource = create_resource :stops
-    count = 0
-    source.stops.each_slice(100) do |stops|
-      Chouette::StopArea.transaction do
-        stops.each do |stop|
-          stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
-
-          stop_area.name = stop.name
-          stop_area.area_type = stop.location_type == "1" ? "zdlp" : "zdep"
-          stop_area.parent = stop_area_referential.stop_areas.find_by!(registration_number: stop.parent_station) if stop.parent_station.present?
-          stop_area.latitude, stop_area.longitude = stop.lat, stop.lon
-          stop_area.kind = "commercial"
-          stop_area.deleted_at = nil
-          stop_area.confirmed_at = Time.now
-
-          # TODO correct default timezone
-
-          save_model stop_area, "#{resource.name}.txt", count+1, 0, resource
-          count += 1
-        end
+    create_resource(:stops).each(source.stops, slice: 100, transaction: true) do |stop, resource|
+      if stop.parent_station.present?
+        next unless check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
       end
+
+      stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
+
+      stop_area.name = stop.name
+      stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
+      if stop.parent_station.present?
+        stop_area.parent = stop_area_referential.stop_areas.find_by!(registration_number: stop.parent_station)
+      end
+      stop_area.latitude, stop_area.longitude = stop.lat, stop.lon
+      stop_area.kind = :commercial
+      stop_area.deleted_at = nil
+      stop_area.confirmed_at = Time.now
+
+      # TODO correct default timezone
+
+      save_model stop_area, resource: resource
+    end.tap do |resource|
+      create_message criticity: :info, message_key: 'gtfs.stops.imported', message_attributes: { count: resource.rows_count }
     end
-    create_message criticity: "info", message_key: "gtfs.stops.imported", message_attributes: {count: count}
   end
 
   def import_routes
-    resource = create_resource :routes
-    count = 0
-    Chouette::Line.transaction do
-      source.routes.each do |route|
-        line = line_referential.lines.find_or_initialize_by(registration_number: route.id)
-        line.name = route.long_name.presence || route.short_name
-        line.number = route.short_name
-        line.published_name = route.long_name
-
-        line.company = line_referential.companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
-
-        case route.type
-        when '0', '5'
-          line.transport_mode = 'tram'
-        when '1'
-          line.transport_mode = 'metro'
-        when '2'
-          line.transport_mode = 'rail'
-        when '3'
-          line.transport_mode = 'bus'
-        when '7'
-          line.transport_mode = 'funicular'
-        end
-
-        line.comment = route.desc
-
-        # TODO colors
-
-        line.url = route.url
-
-        save_model line, "#{resource.name}.txt", count+1, 0, resource
-        count += 1
+    create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
+      if route.agency_id.present?
+        next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
       end
+
+      line = line_referential.lines.find_or_initialize_by(registration_number: route.id)
+      line.name = route.long_name.presence || route.short_name
+      line.number = route.short_name
+      line.published_name = route.long_name
+      line.company = line_referential.companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
+      line.comment = route.desc
+
+      line.transport_mode = case route.type
+                            when '0', '5'
+                              'tram'
+                            when '1'
+                              'metro'
+                            when '2'
+                              'rail'
+                            when '3'
+                              'bus'
+                            when '7'
+                              'funicular'
+                            end
+
+      # TODO: colors
+
+      line.url = route.url
+
+      save_model line, resource: resource
+    end.tap do |resource|
+      create_message criticity: :info, message_key: 'gtfs.routes.imported', message_attributes: {count: resource.rows_count}
     end
-    create_message criticity: "info", message_key: "gtfs.routes.imported", message_attributes: {count: count}
   end
 
   def vehicle_journey_by_trip_id
@@ -276,92 +281,92 @@ class Import::Gtfs < Import::Base
   end
 
   def import_trips
-    count = 0
-    resource = create_resource :trips
-    source.trips.each_slice(100) do |slice|
-      Chouette::Route.transaction do
-        slice.each do |trip|
-          line = line_referential.lines.find_by registration_number: trip.route_id
+    create_resource(:trips).each(source.trips, slice: 100, transaction: true) do |trip, resource|
+      line = line_referential.lines.find_by registration_number: trip.route_id
 
-          route = referential.routes.build line: line
-          # we don't calculate costs right away, as there are no stops in the route yet
-          route.prevent_costs_calculation = true
-          route.wayback = (trip.direction_id == "0" ? :outbound : :inbound)
-          # TODO better name ?
-          name = route.published_name = trip.short_name.presence || trip.headsign.presence || route.wayback.to_s.capitalize
-          route.name = name
-          save_model route, "#{resource.name}.txt", count+1, 0, resource
+      route = referential.routes.build line: line
+      # we don't calculate costs right away, as there are no stops in the route yet
+      route.prevent_costs_calculation = true
+      route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
+      # TODO better name ?
+      name = route.published_name = trip.short_name.presence || trip.headsign.presence || route.wayback.to_s.capitalize
+      route.name = name
+      save_model route, resource: resource
 
-          journey_pattern = route.journey_patterns.build name: name
-          save_model journey_pattern, "#{resource.name}.txt", count+1, 0, resource
+      journey_pattern = route.journey_patterns.build name: name
+      save_model journey_pattern, resource: resource
 
-          vehicle_journey = journey_pattern.vehicle_journeys.build route: route
-          vehicle_journey.published_journey_name = trip.headsign.presence || trip.id
-          save_model vehicle_journey, "#{resource.name}.txt", count+1, 0, resource
-          count += 1
+      vehicle_journey = journey_pattern.vehicle_journeys.build route: route
+      vehicle_journey.published_journey_name = trip.headsign.presence || trip.id
+      save_model vehicle_journey, resource: resource
 
-          time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
-          if time_table
-            vehicle_journey.time_tables << time_table
-          else
-            create_message criticity: "warning", message_key: "gtfs.trips.unkown_service_id", message_attributes: {service_id: trip.service_id}
-          end
-
-          vehicle_journey_by_trip_id[trip.id] = vehicle_journey.id
-        end
+      time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
+      if time_table
+        vehicle_journey.time_tables << time_table
+      else
+        create_message criticity: :warning, message_key: 'gtfs.trips.unkown_service_id', message_attributes: { service_id: trip.service_id }
       end
+
+      vehicle_journey_by_trip_id[trip.id] = vehicle_journey.id
+    end.tap do |resource|
+      create_message criticity: :info, message_key: 'gtfs.trips.imported', message_attributes: { count: resource.rows_count }
     end
-    create_message criticity: "info", message_key: "gtfs.trips.imported", message_attributes: {count: count}
   end
 
   def import_stop_times
-    count = 0
     routes = Set.new
-    resource = create_resource :stop_times
-    source.stop_times.group_by(&:trip_id).each_slice(10) do |slice|
-      Memory.log "Import stop times from #{count}" do
-        Chouette::VehicleJourneyAtStop.transaction do
-          slice.each do |trip_id, stop_times|
-            vehicle_journey = referential.vehicle_journeys.find vehicle_journey_by_trip_id[trip_id]
-            journey_pattern = vehicle_journey.journey_pattern
-            route = journey_pattern.route
+    create_resource(:stop_times).each(
+      source.stop_times.group_by(&:trip_id),
+      slice: 10,
+      transaction: true,
+      memory_profile: -> { "Import stop times from #{rows_count}" }
+    ) do |row, resource|
+      trip_id, stop_times = row
+      # Memory.log "Import stop times from #{count}" do
+      vehicle_journey = referential.vehicle_journeys.find(vehicle_journey_by_trip_id[trip_id])
+      journey_pattern = vehicle_journey.journey_pattern
+      route = journey_pattern.route
 
-            # we don't calculate costs right away, as there are no stops in the route yet
-            route.prevent_costs_calculation = true
+      # we don't calculate costs right away, as there are no stops in the route yet
+      route.prevent_costs_calculation = true
 
-            routes << route
-            stop_times.sort_by! { |s| s.stop_sequence.to_i }
+      routes << route
+      stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
-            stop_times.each do |stop_time|
-              stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
-
-              stop_point = route.stop_points.build stop_area: stop_area
-              save_model stop_point, "#{resource.name}.txt", count+1, 0, resource
-
-              journey_pattern.stop_points << stop_point
-
-              # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-              vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.find_by(stop_point_id: stop_point.id)
-
-              departure_time = GTFS::Time.parse(stop_time.departure_time)
-              arrival_time = GTFS::Time.parse(stop_time.arrival_time)
-
-              vehicle_journey_at_stop.departure_time = departure_time.time
-              vehicle_journey_at_stop.arrival_time = arrival_time.time
-              vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
-              vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
-
-              # TODO offset
-
-              save_model vehicle_journey_at_stop, "#{resource.name}.txt", count+1, 0, resource
-              count += 1
-            end
-          end
-        end
+      stop_times.each do |stop_time|
+        import_stop_time stop_time, journey_pattern, resource
       end
     end
+
     routes.each do |r|
       r.calculate_costs!
+    end
+  end
+
+  def import_stop_time(stop_time, journey_pattern, resource)
+    unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
+      route = journey_pattern.route
+      stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
+
+      stop_point = route.stop_points.build stop_area: stop_area
+      save_model stop_point, resource: resource
+
+      journey_pattern.stop_points << stop_point
+
+      # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
+      vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.find_by(stop_point_id: stop_point.id)
+
+      departure_time = GTFS::Time.parse(stop_time.departure_time)
+      arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+
+      vehicle_journey_at_stop.departure_time = departure_time.time
+      vehicle_journey_at_stop.arrival_time = arrival_time.time
+      vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
+      vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
+
+      # TODO: offset
+
+      save_model vehicle_journey_at_stop, resource: resource
     end
   end
 
@@ -370,74 +375,111 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendars
-    count = 0
-    resource = create_resource :calendars
-    source.calendars.each_slice(500) do |slice|
-      Chouette::TimeTable.transaction do
-        slice.each do |calendar|
-          time_table = referential.time_tables.build comment: "Calendar #{calendar.service_id}"
-          Chouette::TimeTable.all_days.each do |day|
-            time_table.send("#{day}=", calendar.send(day))
-          end
-          time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
-
-          save_model time_table, "#{resource.name}.txt", count+1, 0, resource
-          count += 1
-
-          time_tables_by_service_id[calendar.service_id] = time_table.id
-        end
+    create_resource(:agencies).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
+      time_table = referential.time_tables.build comment: "Calendar #{calendar.service_id}"
+      Chouette::TimeTable.all_days.each do |day|
+        time_table.send("#{day}=", calendar.send(day))
       end
+      time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
+      save_model time_table, resource: resource
+
+      time_tables_by_service_id[calendar.service_id] = time_table.id
+    end.tap do |resource|
+      create_message criticity: 'info', message_key: 'gtfs.calendars.imported', message_attributes: { count: resource.rows_count }
     end
-    create_message criticity: "info", message_key: "gtfs.calendars.imported", message_attributes: {count: count}
   end
 
   def import_calendar_dates
-    create_resource(:calendar_dates).each(source.calendar_dates.each_slice(500)) do |slice, resource|
-      Chouette::TimeTable.transaction do
-        slice.each do |calendar_date|
-          time_table = referential.time_tables.where(id: time_tables_by_service_id[calendar_date.service_id]).last
-          time_table ||= begin
-            tt = referential.time_tables.build comment: "Calendar #{calendar_date.service_id}"
-            save_model tt, "#{resource.name}.txt", resource.rows_count, 0, resource
-            time_tables_by_service_id[calendar_date.service_id] = tt.id
-            tt
-          end
-
-          date = time_table.dates.build date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1"
-          save_model date, "#{resource.name}.txt", resource.rows_count, 0, resource
+    create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
+      comment = "Calendar #{calendar_date.service_id}"
+      unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
+        time_table = referential.time_tables.where(id: time_tables_by_service_id[calendar_date.service_id]).last
+        time_table ||= begin
+          tt = referential.time_tables.build comment: comment
+          save_model tt, resource: resource
+          time_tables_by_service_id[calendar_date.service_id] = tt.id
+          tt
         end
+
+        date = time_table.dates.build date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1"
+        save_model date, resource: resource
       end
     end
   end
 
-  def save_model(model, filename, line_number, column_number, resource=nil)
+  def save_model(model, filename: nil, line_number:  nil, column_number: nil, resource: nil)
+    if resource
+      filename ||= "#{resource.name}.txt"
+      line_number ||= resource.rows_count
+      column_number ||= 0
+    end
     unless model.save
-      Rails.logger.info "Can't save #{model.class.name} : #{model.errors.inspect}"
+      Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
       model.errors.details.each do |key, messages|
         messages.each do |message|
           message.each do |criticity, error|
-            create_message(
-              {
-                criticity: criticity,
-                message_key: error,
-                message_attributes: {
-                  test_id: error,
-                  source_filename: filename,
-                  object_attribute: key,
-                  source_attribute: key,
-                  source_line_number: line_number,
-                  source_column_number: column_number
-                }
-              },
-              resource: resource, commit: true
-            )
+            if Import::Message.criticity.values.include?(criticity.to_s)
+              create_message(
+                {
+                  criticity: criticity,
+                  message_key: error,
+                  message_attributes: {
+                    test_id: error,
+                    source_filename: filename,
+                    object_attribute: key,
+                    source_attribute: key,
+                    source_line_number: line_number,
+                    source_column_number: column_number
+                  }
+                },
+                resource: resource, commit: true
+              )
+            end
           end
         end
       end
-      raise ActiveRecord::RecordNotSaved.new("Invalid #{model.class.name} : #{model.errors.inspect}")
+      @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
+      @models_in_error[model.class.name] << model_key(model)
+      @status = "failed"
+      return
     end
 
     Rails.logger.debug "Created #{model.inspect}"
+  end
+
+  def check_parent_is_valid_or_create_message(klass, key, resource)
+    if @models_in_error&.key?(klass.name) && @models_in_error[klass.name].include?(key)
+      create_message(
+        {
+          criticity: :error,
+          message_key: :invalid_parent,
+          message_attributes: {
+            parent_class: klass,
+            parent_key: key,
+            source_filename: "#{resource.name}.txt",
+            source_line_number: resource.rows_count,
+            source_column_number: 0
+          }
+        },
+        resource: resource, commit: true
+      )
+      return false
+    end
+    true
+  end
+
+  def unless_parent_model_in_error(klass, key, resource)
+    return unless check_parent_is_valid_or_create_message(klass, key, resource)
+
+    yield
+  end
+
+  def model_key(model)
+    return model.registration_number if model.respond_to?(:registration_number)
+
+    return model.comment if model.is_a?(Chouette::TimeTable)
+
+    model.objectid
   end
 
   def notify_parent
