@@ -87,6 +87,7 @@ module Chouette
     validates_presence_of :published_name
     validates_presence_of :line
     validates :wayback, inclusion: { in: self.wayback.values }
+    validates :stop_points, length: { minimum: 2, message: :not_enough_stop_points }
     after_commit :calculate_costs!,
       on: [:create, :update],
       if: ->() {

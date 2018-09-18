@@ -7,6 +7,7 @@ FactoryGirl.define do
     sequence(:wayback) { |n| Chouette::Route.wayback.values[n % 2] }
     sequence(:direction) { |n| Chouette::Route.direction.values[n % 12] }
     sequence(:objectid) { |n| "organisation:Route:lineId-routeId#{n}:LOC" }
+    stop_points { create_list(:stop_point, 2) }    
 
     factory :route do
 

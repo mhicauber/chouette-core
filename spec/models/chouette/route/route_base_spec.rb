@@ -7,7 +7,7 @@ RSpec.describe Chouette::Route, :type => :model do
 
   it { is_expected.to enumerize(:direction).in(:straight_forward, :backward, :clockwise, :counter_clockwise, :north, :north_west, :west, :south_west, :south, :south_east, :east, :north_east) }
   it { is_expected.to enumerize(:wayback).in(:outbound, :inbound) }
-
+  xit { is_expected.to validate_length_of(:stop_point_ids).is_at_least(2) }
   #it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :line }
   it { is_expected.to validate_uniqueness_of :objectid }

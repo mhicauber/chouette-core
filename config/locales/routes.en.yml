@@ -97,6 +97,12 @@ en:
         no_journey_pattern: "No journey pattern"
         stop_area_departure: Stop area departure 
         stop_area_arrival: Stop area arrival 
+    errors:
+      models:
+        route:
+          attributes:
+            stop_points:
+              not_enough_stop_points: "A route must have at least two stop points"
   formtastic:
     titles:
       route:

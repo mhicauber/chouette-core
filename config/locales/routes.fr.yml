@@ -103,6 +103,12 @@ fr:
         no_journey_pattern: "Pas de mission"
         stop_area_departure: Arrêt de départ
         stop_area_arrival: Arrêt d'arrivée
+    errors:
+      models:
+        route:
+          attributes:
+            stop_points:
+              not_enough_stop_points: "Un itinéraire doit contenir au moins deux arrêts sur la séquence"
   formtastic:
     titles:
       route:
