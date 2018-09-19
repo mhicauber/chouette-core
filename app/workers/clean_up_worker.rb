@@ -1,8 +1,9 @@
 class CleanUpWorker
   include Sidekiq::Worker
 
-  def perform(id)
+  def perform(id, original_state=nil)
     cleaner = CleanUp.find id
+    cleaner.original_state = original_state
     cleaner.run if cleaner.may_run?
     begin
       cleaner.referential.switch

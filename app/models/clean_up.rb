@@ -16,7 +16,7 @@ class CleanUp < ApplicationModel
     where(referential_id: referential.id)
   end
 
-  attr_accessor :methods
+  attr_accessor :methods, :original_state
 
   def end_date_must_be_greater_that_begin_date
     if self.end_date && self.date_type == 'between' && self.begin_date >= self.end_date
@@ -25,7 +25,8 @@ class CleanUp < ApplicationModel
   end
 
   def perform_cleanup
-    CleanUpWorker.perform_async(self.id)
+    raise "You cannot specify methods if you call the CleanUp asynchronously" unless methods.empty?
+    CleanUpWorker.perform_async(self.id, self.original_state)
   end
 
   def clean
@@ -52,6 +53,9 @@ class CleanUp < ApplicationModel
         # Run caller-specified cleanup methods
         run_methods
       end
+    end
+    if original_state.present? && referential.respond_to?("#{original_state}!")
+      referential.send("#{original_state}!") && referential.save!
     end
   end
 

@@ -129,6 +129,12 @@ RSpec.describe CleanUp, :type => :model do
       expect(cleaner).to receive(:destroy_time_tables_periods_between)
       cleaner.clean
     end
+
+    it "should set the referential state to the original_state value" do
+      cleaner.original_state = :archived
+      cleaner.clean
+      expect(cleaner.referential.state).to eq :archived
+    end
   end
 
   context '#destroy_time_tables_dates_between' do
