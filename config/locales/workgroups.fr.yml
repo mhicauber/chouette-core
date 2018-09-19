@@ -3,13 +3,13 @@ fr:
     edit:
       title: "Paramétrages de l'application"
     compliance_control_sets:
-      after_import: après import
-      after_import_by_workgroup: après import (groupe)
-      before_merge: avant finalisation
-      before_merge_by_workgroup: avant finalisation (groupe)
-      after_merge: après finalisation
-      after_merge_by_workgroup: après finalisation (groupe)
-      automatic_by_workgroup: automatique
+      after_import: Après Import
+      after_import_by_workgroup: Après Import (Groupe)
+      before_merge: Avant Finalisation
+      before_merge_by_workgroup: Avant Finalisation (Groupe)
+      after_merge: Après Finalisation
+      after_merge_by_workgroup: Après Finalisation (Groupe)
+      automatic_by_workgroup: Automatique
       manual: Manuel
   activerecord:
     models:
