@@ -40,6 +40,8 @@ fr:
       table:
         test_results: Résultats des tests
         download: Téléchargement
+      gtfs:
+        filename: Fichier
     compliance_check_task: "Validation"
     severities:
       info: "Information"

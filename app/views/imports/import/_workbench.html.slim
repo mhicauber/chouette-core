@@ -11,19 +11,8 @@
   .error_messages
     = render 'shared/iev_interfaces/messages', messages: @import.messages
 
-ruby:
- controls = @workbench.workgroup.import_compliance_control_sets.map do |key, label|
-   TableBuilderHelper::Column.new(
-     name: label,
-     attribute: Proc.new { |n| n.workbench.compliance_control_set(key).present? ? import_status(n.workbench_import_check_set(key)&.status, verbose: true, default_status: (n.status == "ERROR" ? :aborted : :pending)) : '-' },
-     sortable: false,
-     link_to: lambda do |item|
-       item.workbench_import_check_set(key).present? && [@import.workbench, item.workbench_import_check_set(key)]
-    end
-    )
-  end
-
 - if @import.resources.any?
+  - controls = import_controls(@workbench)
   .col-lg-12
     = table_builder_2 @import.resources,
       [ \

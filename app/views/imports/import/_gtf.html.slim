@@ -12,11 +12,12 @@
     = render 'shared/iev_interfaces/messages', messages: @import.main_resource.messages
 
 - if @import.resources.any?
+  - controls = import_controls(@workbench)
   .col-lg-12
     = table_builder_2 @import.resources,
       [ \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.referential_name'), \
+          name: t('imports.show.file_name'), \
           attribute: 'name', \
           sortable: false, \
           link_to: lambda do |item| \

@@ -40,6 +40,8 @@ en:
       table:
         test_results: Test results
         download: Download
+      gtfs:
+        filename: File
     compliance_check_task: "Validate Report"
     severities:
       info: "Information"
