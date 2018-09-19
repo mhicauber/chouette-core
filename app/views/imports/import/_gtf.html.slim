@@ -16,7 +16,7 @@
     = table_builder_2 @import.resources,
       [ \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.file_name'), \
+          name: t('imports.show.gtfs.filename'), \
           attribute: 'name', \
           sortable: false, \
           link_to: lambda do |item| \
@@ -30,10 +30,19 @@
           link_to: lambda do |item| \
             item.netex_import.present? ? [@import.workbench, item.netex_import] : [@import.workbench, @import, item] \
           end \
-        )\
+        ),\
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.table.test_results') , \
+          attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', n.metrics.deep_symbolize_keys) }, \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.table.download') , \
+          attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
+          sortable: false, \
+          link_to: lambda do |import_resource| \
+            workbench_import_import_resource_import_messages_path(import_resource.import.workbench, import_resource.import, import_resource, format: 'csv' ) \
+          end \
+        ), \
       ],
-      cls: 'table',
-      overhead: [ \
-        {}, \
-        {}, \
-      ]
+      cls: 'table'

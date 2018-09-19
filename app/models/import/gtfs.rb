@@ -209,8 +209,6 @@ class Import::Gtfs < Import::Base
       company.time_zone = agency.timezone
 
       save_model company, resource: resource
-    end.tap do |resource|
-      create_message criticity: :info, message_key: 'gtfs.agencies.imported', message_attributes: {count: resource.rows_count}
     end
   end
 
@@ -235,8 +233,6 @@ class Import::Gtfs < Import::Base
       # TODO correct default timezone
 
       save_model stop_area, resource: resource
-    end.tap do |resource|
-      create_message criticity: :info, message_key: 'gtfs.stops.imported', message_attributes: { count: resource.rows_count }
     end
   end
 
@@ -271,8 +267,6 @@ class Import::Gtfs < Import::Base
       line.url = route.url
 
       save_model line, resource: resource
-    end.tap do |resource|
-      create_message criticity: :info, message_key: 'gtfs.routes.imported', message_attributes: {count: resource.rows_count}
     end
   end
 
@@ -308,8 +302,6 @@ class Import::Gtfs < Import::Base
       end
 
       vehicle_journey_by_trip_id[trip.id] = vehicle_journey.id
-    end.tap do |resource|
-      create_message criticity: :info, message_key: 'gtfs.trips.imported', message_attributes: { count: resource.rows_count }
     end
   end
 
@@ -384,8 +376,6 @@ class Import::Gtfs < Import::Base
       save_model time_table, resource: resource
 
       time_tables_by_service_id[calendar.service_id] = time_table.id
-    end.tap do |resource|
-      create_message criticity: 'info', message_key: 'gtfs.calendars.imported', message_attributes: { count: resource.rows_count }
     end
   end
 
