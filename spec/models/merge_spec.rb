@@ -56,11 +56,21 @@ RSpec.describe Merge do
        out.current = out.referentials.last
        out.save!
        out
-     end
-    let(:previous_merge){ create :merge, workbench: workbench, status: :successful }
-    let(:previous_failed_merge){ create :merge, workbench: workbench, status: :failed }
-    let(:merge){create :merge, workbench: workbench, status: :successful }
-    let(:final_merge){ create :merge, workbench: workbench, status: :successful }
+    end
+
+    def create_merge(attributes = {})
+      attributes = {
+        workbench: workbench,
+        status: :successful,
+        referentials: [create(:workbench_referential, workbench: workbench)]
+      }.merge(attributes)
+      create :merge, attributes
+    end
+
+    let(:previous_merge){ create_merge }
+    let(:previous_failed_merge){ create_merge status: :failed }
+    let(:merge){ create_merge }
+    let(:final_merge){ create_merge }
 
     before(:each){
       previous_merge.update new: output.referentials.sort_by(&:created_at)[0]
