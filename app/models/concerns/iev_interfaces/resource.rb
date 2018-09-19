@@ -53,6 +53,7 @@ module IevInterfaces::Resource
       end
     end
 
+    update_status_from_messages
     save!
     self
   end

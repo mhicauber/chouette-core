@@ -12,7 +12,6 @@
     = render 'shared/iev_interfaces/messages', messages: @import.main_resource.messages
 
 - if @import.resources.any?
-  - controls = import_controls(@workbench)
   .col-lg-12
     = table_builder_2 @import.resources,
       [ \
@@ -37,9 +36,4 @@
       overhead: [ \
         {}, \
         {}, \
-        { \
-          title: I18n.t('imports.show.summary').html_safe, \
-          width: controls.size, \
-          cls: 'overheaded-default colspan="2"' \
-        } \
       ]
