@@ -10,7 +10,7 @@ navMenu = $('#menu_left.nav-menu')
 @handleCloseMenu = ->
   closeMenu = ->
     navMenu.removeClass 'open'
-    
+
   mainNav.find('.closeMenu').on 'click', (e) ->
     closeMenu()
 
@@ -32,7 +32,8 @@ navMenu = $('#menu_left.nav-menu')
 
 @sticker = ->
   # Sticky behavior
-  $(document).on 'scroll', () ->
+
+  didScroll = ->
     limit = 51
     offset = 30
 
@@ -75,6 +76,11 @@ navMenu = $('#menu_left.nav-menu')
           for child in item.content
             child.appendTo item.originalParent
         $('.sticky-content').remove()
+
+  $(document).on 'scroll', () =>
+    didScroll()
+
+  didScroll()
 
 $ ->
 
