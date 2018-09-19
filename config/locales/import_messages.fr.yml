@@ -4,6 +4,7 @@ fr:
     foreign_lines_in_referential: Le référentiel contient des lignes hors périmètre
     inconsistent_zip_file: "Le fichier zip contient des repertoires non prévus : %{spurious_dirs} qui seront ignorés"
     missing_calendar_in_zip_file: "Le dossier %{source_filename} ne contient pas de calendrier"
+    invalid_parent: Parent invalide
     referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} n'a pas pu être créé car aucune donnée d'offre n'est présente dans le fichier"
     referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car aucune ligne n'appartient à l'organisation"
     referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
@@ -18,6 +19,7 @@ fr:
         imported: "%{count} itinéraire(s) importé(s)"
       trips:
         imported: "%{count} course(s) importée(s)"
+        unknown_service_id: Identifiant du service inconnu
       calendars:
         imported: "%{count} calendrier(s) importé(s)"
     1_netexstif_2: "Le fichier %{source_filename} ne respecte pas la syntaxe XML ou la XSD NeTEx : erreur '%{error_value}' rencontré"

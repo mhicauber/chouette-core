@@ -16,7 +16,7 @@
     = table_builder_2 @import.resources,
       [ \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.referential_name'), \
+          name: t('imports.show.gtfs.filename'), \
           attribute: 'name', \
           sortable: false, \
           link_to: lambda do |item| \
@@ -26,19 +26,20 @@
         TableBuilderHelper::Column.new( \
           key: :status, \
           attribute: Proc.new { |n| import_status(n.status, verbose: true, default_status: :pending) }, \
+          sortable: false \
+        ),\
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.table.test_results') , \
+          attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', n.metrics.deep_symbolize_keys) }, \
           sortable: false, \
-          link_to: lambda do |item| \
-            item.netex_import.present? ? [@import.workbench, item.netex_import] : [@import.workbench, @import, item] \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.table.download') , \
+          attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
+          sortable: false, \
+          link_to: lambda do |import_resource| \
+            workbench_import_import_resource_import_messages_path(import_resource.import.workbench, import_resource.import, import_resource, format: 'csv' ) \
           end \
-        )\
+        ), \
       ],
-      cls: 'table',
-      overhead: [ \
-        {}, \
-        {}, \
-        { \
-          title: I18n.t('imports.show.summary').html_safe, \
-          width: controls.size, \
-          cls: 'overheaded-default colspan="2"' \
-        } \
-      ]
+      cls: 'table'

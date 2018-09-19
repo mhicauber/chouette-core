@@ -29,7 +29,17 @@ class Import::MessageExport
     csv_string = CSV.generate(options) do |csv|
       csv << column_names
       import_messages.each do |import_message|
-        csv << [import_message.criticity, import_message.message_attributes['test_id'], I18n.t("import_messages.#{import_message.message_key}", import_message.message_attributes.deep_symbolize_keys), *import_message.resource_attributes.values_at("filename", "line_number", "column_number")  ]
+        csv << [
+          import_message.criticity,
+          import_message.message_attributes['test_id'],
+          I18n.t(
+            "import_messages.#{import_message.message_key}",
+            import_message.message_attributes.deep_symbolize_keys.update(
+              default: import_message.message_key
+            )
+          ),
+          *import_message.resource_attributes&.values_at("filename", "line_number", "column_number")
+        ]
       end
     end
     # We add a BOM to indicate we use UTF-8

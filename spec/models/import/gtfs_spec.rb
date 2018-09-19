@@ -17,12 +17,18 @@ RSpec.describe Import::Gtfs do
   end
 
   def create_import(file)
-    Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file)
+    i = build_import(file)
+    i.save!
+    i
+  end
+
+  def build_import(file)
+    Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file), creator: "test", name: "test"
   end
 
   context "when the file is not directly accessible" do
     let(:import) {
-      Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture("google-sample-feed.zip")
+      Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture('google-sample-feed.zip')
     }
 
     before(:each) do
@@ -37,28 +43,69 @@ RSpec.describe Import::Gtfs do
 
   describe "created referential" do
 
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import 'google-sample-feed.zip' }
 
     it "is named with the import name" do
       import.name = "Import Name"
       import.prepare_referential
       expect(import.referential.name).to eq(import.name)
     end
-
   end
 
   describe "#import_agencies" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { create_import 'google-sample-feed.zip' }
     it "should create a company for each agency" do
       import.import_agencies
 
       expect(workbench.line_referential.companies.pluck(:registration_number, :name, :url, :time_zone)).to eq([["DTA","Demo Transit Authority","http://google.com","America/Los_Angeles"]])
     end
+
+    it "should create a resource" do
+      expect { import.import_agencies }.to change { import.resources.count }.by 1
+      resource = import.resources.last
+      expect(resource.name).to eq 'agencies'
+      expect(resource.metrics['ok_count'].to_i).to eq 1
+      expect(resource.metrics['warning_count'].to_i).to eq 0
+      expect(resource.metrics['error_count'].to_i).to eq 0
+    end
+
+    context 'when a record lacks its name' do
+      before(:each) do
+        allow(import.source).to receive(:agencies) {
+          [
+            GTFS::Agency.new(
+              id: 'DTA',
+              name: '',
+              url: 'http://google.com',
+              timezone: 'America/Los_Angeles'
+            ),
+            GTFS::Agency.new(
+              id: 'DTA 2',
+              name: 'name',
+              url: 'http://google.com',
+              timezone: 'America/Los_Angeles'
+            )
+          ]
+        }
+      end
+      it 'should create a message and continue' do
+        companies_count = Chouette::Company.count
+        expect do
+          import.import_agencies
+        end.to change { Import::Message.count }.by 1
+        expect(Chouette::Company.count).to eq companies_count + 1
+        resource = import.resources.last
+        expect(resource.name).to eq 'agencies'
+        expect(resource.metrics['ok_count'].to_i).to eq 1
+        expect(resource.metrics['warning_count'].to_i).to eq 0
+        expect(resource.metrics['error_count'].to_i).to eq 1
+      end
+    end
   end
 
-  describe "#import_stops" do
-    let(:import) { create_import "google-sample-feed.zip" }
-    it "should create a company for each agency" do
+  describe '#import_stops' do
+    let(:import) { build_import 'google-sample-feed.zip' }
+    it "should create a stop_area for each stop" do
       import.import_stops
 
       defined_attributes = [
@@ -78,12 +125,55 @@ RSpec.describe Import::Gtfs do
 
       expect(workbench.stop_area_referential.stop_areas.pluck(*defined_attributes)).to match_array(expected_attributes)
     end
+
+    context 'with a parent stop' do
+      let(:parent) do
+        GTFS::Stop.new(
+          id: 'parent_id',
+          name: 'parent',
+          location_type: '1'
+        )
+      end
+
+      let(:child) do
+        GTFS::Stop.new(
+          id: 'child_id',
+          name: 'child',
+          parent_station: 'parent_id',
+          location_type: '2'
+        )
+      end
+
+      before(:each) do
+        allow(import.source).to receive(:stops) { [parent, child] }
+      end
+
+      it 'should link the stop_areas' do
+        import.import_stops
+        parent = Chouette::StopArea.find_by(registration_number: 'parent_id')
+        child = Chouette::StopArea.find_by(registration_number: 'child_id')
+        expect(child.parent).to eq parent
+      end
+
+      context 'when the parent is not valid' do
+        let(:parent) do
+          GTFS::Stop.new(
+            id: 'parent_id',
+            name: '',
+            location_type: '1'
+          )
+        end
+
+        it "should not create the child either" do
+          expect { import.import_stops }.to_not(change { Chouette::StopArea.count })
+        end
+      end
+    end
   end
 
-  describe "#import_routes" do
-    let(:import) { create_import "google-sample-feed.zip" }
-
-    it "should create a line for each route" do
+  describe '#import_routes' do
+    let(:import) { build_import 'google-sample-feed.zip' }
+    it 'should create a line for each route' do
       import.import_routes
 
       defined_attributes = [
@@ -101,10 +191,49 @@ RSpec.describe Import::Gtfs do
 
       expect(workbench.line_referential.lines.includes(:company).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
+
+    context "with a company" do
+      let(:agency_name){ 'name' }
+      let(:agency){
+        GTFS::Agency.new(
+          id: 'agency_id',
+          name: agency_name,
+          url: 'http://google.com',
+          timezone: 'America/Los_Angeles'
+        )
+      }
+      let(:route){
+        GTFS::Route.new(
+          id: 'route_id',
+          short_name: 'route',
+          agency_id: 'agency_id'
+        )
+      }
+      before(:each) do
+        allow(import.source).to receive(:agencies) { [agency] }
+        allow(import.source).to receive(:routes) { [route] }
+        import.import_agencies
+      end
+
+      it 'should link the line' do
+        import.import_routes
+        parent = Chouette::Company.find_by(registration_number: agency.id)
+        child = Chouette::Line.find_by(registration_number: route.id)
+        expect(child.company).to eq parent
+      end
+
+      context "when the agency is not valid" do
+        let(:agency_name){ nil }
+
+        it "shoud not create the line" do
+          expect { import.import_routes }.to_not(change { Chouette::Line.count })
+        end
+      end
+    end
   end
 
   describe "#import_trips" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import 'google-sample-feed.zip' }
     before do
       import.prepare_referential
       import.import_calendars
@@ -177,7 +306,7 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_stop_times" do
-    let(:import) { create_import "google-sample-feed.zip" }
+    let(:import) { build_import 'google-sample-feed.zip' }
 
     before do
       import.prepare_referential
@@ -208,41 +337,41 @@ RSpec.describe Import::Gtfs do
         "stop_areas.registration_number", :position, :departure_time, :arrival_time,
       ]
       expected_attributes = [
-        ["STAGECOACH", 0, t("2000-01-01 06:00:00 UTC"), t("2000-01-01 06:00:00 UTC")],
-        ["BEATTY_AIRPORT", 1, t("2000-01-01 06:20:00 UTC"), t("2000-01-01 06:20:00 UTC")],
-        ["STAGECOACH", 0, t("2000-01-01 06:00:00 UTC"), t("2000-01-01 06:00:00 UTC")],
-        ["NANAA", 1, t("2000-01-01 06:07:00 UTC"), t("2000-01-01 06:05:00 UTC")],
-        ["NADAV", 2, t("2000-01-01 06:14:00 UTC"), t("2000-01-01 06:12:00 UTC")],
-        ["DADAN", 3, t("2000-01-01 06:21:00 UTC"), t("2000-01-01 06:19:00 UTC")],
-        ["EMSI", 4, t("2000-01-01 06:28:00 UTC"), t("2000-01-01 06:26:00 UTC")],
-        ["EMSI", 0, t("2000-01-01 06:30:00 UTC"), t("2000-01-01 06:28:00 UTC")],
-        ["DADAN", 1, t("2000-01-01 06:37:00 UTC"), t("2000-01-01 06:35:00 UTC")],
-        ["NADAV", 2, t("2000-01-01 06:44:00 UTC"), t("2000-01-01 06:42:00 UTC")],
-        ["NANAA", 3, t("2000-01-01 06:51:00 UTC"), t("2000-01-01 06:49:00 UTC")],
-        ["STAGECOACH", 4, t("2000-01-01 06:58:00 UTC"), t("2000-01-01 06:56:00 UTC")],
-        ["BEATTY_AIRPORT", 0, t("2000-01-01 08:00:00 UTC"), t("2000-01-01 08:00:00 UTC")],
-        ["BULLFROG", 1, t("2000-01-01 08:15:00 UTC"), t("2000-01-01 08:10:00 UTC")],
-        ["BULLFROG", 0, t("2000-01-01 12:05:00 UTC"), t("2000-01-01 12:05:00 UTC")],
-        ["BEATTY_AIRPORT", 1, t("2000-01-01 12:15:00 UTC"), t("2000-01-01 12:15:00 UTC")],
-        ["BULLFROG", 0, t("2000-01-01 08:20:00 UTC"), t("2000-01-01 08:20:00 UTC")],
-        ["FUR_CREEK_RES", 1, t("2000-01-01 09:20:00 UTC"), t("2000-01-01 09:20:00 UTC")],
-        ["FUR_CREEK_RES", 0, t("2000-01-01 11:00:00 UTC"), t("2000-01-01 11:00:00 UTC")],
-        ["BULLFROG", 1, t("2000-01-01 12:00:00 UTC"), t("2000-01-01 12:00:00 UTC")],
-        ["BEATTY_AIRPORT", 0, t("2000-01-01 08:00:00 UTC"), t("2000-01-01 08:00:00 UTC")],
-        ["AMV", 1, t("2000-01-01 09:00:00 UTC"), t("2000-01-01 09:00:00 UTC")],
-        ["AMV", 0, t("2000-01-01 10:00:00 UTC"), t("2000-01-01 10:00:00 UTC")],
-        ["BEATTY_AIRPORT", 1, t("2000-01-01 11:00:00 UTC"), t("2000-01-01 11:00:00 UTC")],
-        ["BEATTY_AIRPORT", 0, t("2000-01-01 13:00:00 UTC"), t("2000-01-01 13:00:00 UTC")],
-        ["AMV", 1, t("2000-01-01 14:00:00 UTC"), t("2000-01-01 14:00:00 UTC")],
-        ["AMV", 0, t("2000-01-01 15:00:00 UTC"), t("2000-01-01 15:00:00 UTC")],
-        ["BEATTY_AIRPORT", 1, t("2000-01-01 16:00:00 UTC"), t("2000-01-01 16:00:00 UTC")]
+        ['STAGECOACH', 0, t('2000-01-01 06:00:00 UTC'), t('2000-01-01 06:00:00 UTC')],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 06:20:00 UTC'), t('2000-01-01 06:20:00 UTC')],
+        ['STAGECOACH', 0, t('2000-01-01 06:00:00 UTC'), t('2000-01-01 06:00:00 UTC')],
+        ['NANAA', 1, t('2000-01-01 06:07:00 UTC'), t('2000-01-01 06:05:00 UTC')],
+        ['NADAV', 2, t('2000-01-01 06:14:00 UTC'), t('2000-01-01 06:12:00 UTC')],
+        ['DADAN', 3, t('2000-01-01 06:21:00 UTC'), t('2000-01-01 06:19:00 UTC')],
+        ['EMSI', 4, t('2000-01-01 06:28:00 UTC'), t('2000-01-01 06:26:00 UTC')],
+        ['EMSI', 0, t('2000-01-01 06:30:00 UTC'), t('2000-01-01 06:28:00 UTC')],
+        ['DADAN', 1, t('2000-01-01 06:37:00 UTC'), t('2000-01-01 06:35:00 UTC')],
+        ['NADAV', 2, t('2000-01-01 06:44:00 UTC'), t('2000-01-01 06:42:00 UTC')],
+        ['NANAA', 3, t('2000-01-01 06:51:00 UTC'), t('2000-01-01 06:49:00 UTC')],
+        ['STAGECOACH', 4, t('2000-01-01 06:58:00 UTC'), t('2000-01-01 06:56:00 UTC')],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC')],
+        ['BULLFROG', 1, t('2000-01-01 08:15:00 UTC'), t('2000-01-01 08:10:00 UTC')],
+        ['BULLFROG', 0, t('2000-01-01 12:05:00 UTC'), t('2000-01-01 12:05:00 UTC')],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 12:15:00 UTC'), t('2000-01-01 12:15:00 UTC')],
+        ['BULLFROG', 0, t('2000-01-01 08:20:00 UTC'), t('2000-01-01 08:20:00 UTC')],
+        ['FUR_CREEK_RES', 1, t('2000-01-01 09:20:00 UTC'), t('2000-01-01 09:20:00 UTC')],
+        ['FUR_CREEK_RES', 0, t('2000-01-01 11:00:00 UTC'), t('2000-01-01 11:00:00 UTC')],
+        ['BULLFROG', 1, t('2000-01-01 12:00:00 UTC'), t('2000-01-01 12:00:00 UTC')],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC')],
+        ['AMV', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC')],
+        ['AMV', 0, t('2000-01-01 10:00:00 UTC'), t('2000-01-01 10:00:00 UTC')],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 11:00:00 UTC'), t('2000-01-01 11:00:00 UTC')],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 13:00:00 UTC'), t('2000-01-01 13:00:00 UTC')],
+        ['AMV', 1, t('2000-01-01 14:00:00 UTC'), t('2000-01-01 14:00:00 UTC')],
+        ['AMV', 0, t('2000-01-01 15:00:00 UTC'), t('2000-01-01 15:00:00 UTC')],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC')]
       ]
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
   end
 
-  describe "#import_calendars" do
-    let(:import) { create_import "google-sample-feed.zip" }
+  describe '#import_calendars' do
+    let(:import) { build_import 'google-sample-feed.zip' }
 
     before do
       import.prepare_referential
@@ -259,60 +388,129 @@ RSpec.describe Import::Gtfs do
         [t.comment, t.valid_days, t.periods.first.period_start, t.periods.first.period_end]
       }
       expected_attributes = [
-        ["Calendar FULLW", [1, 2, 3, 4, 5, 6, 7], d("Mon, 01 Jan 2007"), d("Fri, 31 Dec 2010")],
-        ["Calendar WE", [6, 7], d("Mon, 01 Jan 2007"), d("Fri, 31 Dec 2010")]
+        ['Calendar FULLW', [1, 2, 3, 4, 5, 6, 7], d('Mon, 01 Jan 2007'), d('Fri, 31 Dec 2010')],
+        ['Calendar WE', [6, 7], d('Mon, 01 Jan 2007'), d('Fri, 31 Dec 2010')]
       ]
       expect(referential.time_tables.map(&defined_attributes)).to match_array(expected_attributes)
     end
   end
 
-  describe "#import_calendar_dates" do
-    let(:import) { create_import "google-sample-feed.zip" }
+  describe '#import_calendar_dates' do
+    let(:import) { build_import 'google-sample-feed.zip' }
 
     before do
       import.prepare_referential
     end
 
-    it "should create time_tables when they don't already exist" do
+    it 'should create time_tables when they don\'t already exist' do
       expect{import.import_calendar_dates}.to change{Chouette::TimeTable.count}.by 1
       timetable = Chouette::TimeTable.last
-      expect(timetable.comment).to eq "Calendar FULLW"
+      expect(timetable.comment).to eq 'Calendar FULLW'
       expect(timetable.periods.count).to eq 0
       expect(timetable.dates.count).to eq 1
-      expect(timetable.dates.last.date).to eq "2007-06-04".to_date
+      expect(timetable.dates.last.date).to eq '2007-06-04'.to_date
       expect(timetable.dates.last.in_out).to be_falsy
 
       timetable.dates.destroy_all
-      expect{import.import_calendar_dates}.to change{Chouette::TimeTable.count}.by 0
+      expect { import.import_calendar_dates }.to change { Chouette::TimeTable.count }.by 0
     end
 
-    context "when the timetables exist" do
+    context 'when the timetables exist' do
       before do
         import.import_calendars
       end
 
-      it "should create a Timetable::Date for each calendar date" do
+      it 'should create a Timetable::Date for each calendar date' do
         import.import_calendar_dates
 
         def d(value)
           Date.parse(value)
         end
 
-        defined_attributes = ->(d) {
+        defined_attributes = lambda do |d|
           [d.time_table.comment, d.date, d.in_out]
-        }
+        end
         expected_attributes = [
-          ["Calendar FULLW", d("Mon, 04 Jun 2007"), false]
+          ['Calendar FULLW', d('Mon, 04 Jun 2007'), false]
         ]
         expect(referential.time_table_dates.map(&defined_attributes)).to match_array(expected_attributes)
       end
     end
+
+    context 'when one timetable is in error' do
+      before(:each) do
+        allow(import.source).to receive(:calendars) {
+          [
+            GTFS::Calendar.new(
+              service_id: 'FULLW-ERR',
+              monday: '1',
+              tuesday: '1',
+              wednesday: '1',
+              thursday: '1',
+              friday: '1',
+              saturday: '1',
+              sunday: '1',
+              start_date: '20110101',
+              end_date: '20101231'
+            ),
+            GTFS::Calendar.new(
+              service_id: 'FULLW',
+              monday: '1',
+              tuesday: '1',
+              wednesday: '1',
+              thursday: '1',
+              friday: '1',
+              saturday: '1',
+              sunday: '1',
+              start_date: '20070101',
+              end_date: '20101231'
+            )
+          ]
+        }
+
+        allow(import.source).to receive(:calendar_dates) {
+          [
+            GTFS::CalendarDate.new(
+              service_id: 'FULLW',
+              date: '20070604',
+              exception_type: '2'
+            ),
+            GTFS::CalendarDate.new(
+              service_id: 'FULLW-ERR',
+              date: '20070604',
+              exception_type: '2'
+            )
+          ]
+        }
+      end
+
+      it 'should not create a Timetables' do
+        import.import_calendars
+
+        expect do
+          import.import_calendar_dates
+        end.to_not(change { Chouette::TimeTable.count })
+      end
+
+      it 'should set the importer as failed' do
+        import.import
+        expect(import.status).to eq 'failed'
+      end
+
+      it 'should create an error message' do
+        import.import_calendars
+        
+        expect do
+          import.import_calendar_dates
+        end.to(change { Import::Message.count }.by(1))
+      end
+    end
   end
 
-  describe "#download_local_file" do
-    let(:file) { "google-sample-feed.zip" }
+  describe '#download_local_file' do
+    let(:file) { 'google-sample-feed.zip' }
     let(:import) do
-      Import::Gtfs.create! name: "GTFS test", creator: "Test", workbench: workbench, file: open_fixture(file), download_host: "rails_host"
+      Import::Gtfs.create! name: 'GTFS test', creator: 'Test', workbench: workbench, file: open_fixture(file), download_host: 'rails_host'
     end
 
     let(:download_url) { "#{import.download_host}/workbenches/#{import.workbench_id}/imports/#{import.id}/download?token=#{import.token_download}" }
@@ -321,69 +519,68 @@ RSpec.describe Import::Gtfs do
       stub_request(:get, download_url).to_return(status: 200, body: read_fixture(file))
     end
 
-    it "should download local_file" do
+    it 'should download local_file' do
       expect(File.read(import.download_local_file)).to eq(read_fixture(file))
     end
   end
 
-  describe "#download_uri" do
+  describe '#download_uri' do
     let(:import) { Import::Gtfs.new }
 
     before do
-      allow(import).to receive(:download_path).and_return("/download_path")
+      allow(import).to receive(:download_path).and_return('/download_path')
     end
 
     context "when download_host is 'front'" do
-      before { allow(import).to receive(:download_host).and_return("front") }
-      it "returns http://front/download_path" do
+      before { allow(import).to receive(:download_host).and_return('front') }
+      it 'returns http://front/download_path' do
         expect(import.download_uri.to_s).to eq('http://front/download_path')
       end
     end
 
     context "when download_host is 'front:3000'" do
-      before { allow(import).to receive(:download_host).and_return("front:3000") }
-      it "returns http://front:3000/download_path" do
+      before { allow(import).to receive(:download_host).and_return('front:3000') }
+      it 'returns http://front:3000/download_path' do
         expect(import.download_uri.to_s).to eq('http://front:3000/download_path')
       end
     end
 
     context "when download_host is 'http://front:3000'" do
-      before { allow(import).to receive(:download_host).and_return("http://front:3000") }
-      it "returns http://front:3000/download_path" do
+      before { allow(import).to receive(:download_host).and_return('http://front:3000') }
+      it 'returns http://front:3000/download_path' do
         expect(import.download_uri.to_s).to eq('http://front:3000/download_path')
       end
     end
 
     context "when download_host is 'https://front:3000'" do
-      before { allow(import).to receive(:download_host).and_return("https://front:3000") }
-      it "returns https://front:3000/download_path" do
+      before { allow(import).to receive(:download_host).and_return('https://front:3000') }
+      it 'returns https://front:3000/download_path' do
         expect(import.download_uri.to_s).to eq('https://front:3000/download_path')
       end
     end
 
     context "when download_host is 'http://front'" do
-      before { allow(import).to receive(:download_host).and_return("http://front") }
-      it "returns http://front/download_path" do
+      before { allow(import).to receive(:download_host).and_return('http://front') }
+      it 'returns http://front/download_path' do
         expect(import.download_uri.to_s).to eq('http://front/download_path')
       end
     end
-
   end
 
-  describe "#download_host" do
-    it "should return host defined by Rails.application.config.rails_host" do
-      allow(Rails.application.config).to receive(:rails_host).and_return("download_host")
-      expect(Import::Gtfs.new.download_host).to eq("download_host")
+  describe '#download_host' do
+    it 'should return host defined by Rails.application.config.rails_host' do
+      allow(Rails.application.config).to receive(:rails_host).and_return('download_host')
+      expect(Import::Gtfs.new.download_host).to eq('download_host')
     end
   end
 
-  describe "#download_path" do
-    let(:file) { "google-sample-feed.zip" }
+  describe '#download_path' do
+    let(:file) { 'google-sample-feed.zip' }
     let(:import) do
-      Import::Gtfs.create! name: "GTFS test", creator: "Test", workbench: workbench, file: open_fixture(file), download_host: "rails_host"
+      Import::Gtfs.create! name: 'GTFS test', creator: 'Test', workbench: workbench, file: open_fixture(file), download_host: 'rails_host'
     end
 
-    it "should return the pathwith the token" do
+    it 'should return the pathwith the token' do
       expect(import.download_path).to eq("/workbenches/#{import.workbench_id}/imports/#{import.id}/download?token=#{import.token_download}")
     end
   end
