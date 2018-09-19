@@ -1,4 +1,7 @@
 class StopAreaReferential < ApplicationModel
+  @@keep_syncs = 40
+  mattr_accessor :keep_syncs
+
   validates :registration_number_format, format: { with: /\AX*\z/ }
 
   include ObjectidFormatterSupport
@@ -18,6 +21,13 @@ class StopAreaReferential < ApplicationModel
 
   def last_sync
     stop_area_referential_syncs.last
+  end
+
+  def clean_previous_syncs
+    return unless stop_area_referential_syncs.count > @@keep_syncs
+    while stop_area_referential_syncs.count > @@keep_syncs do
+      stop_area_referential_syncs.order("created_at asc").first.destroy
+    end
   end
 
   def generate_registration_number
