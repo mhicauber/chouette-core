@@ -5,6 +5,9 @@ class ApiKeysController < ChouetteController
   include PolicyChecker
 
   before_action :load_workbench
+  before_action on: :index do
+    user_not_authorized unless current_user.has_permission?('api_keys.index')
+  end
 
   def index
     index! do

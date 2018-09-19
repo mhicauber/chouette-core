@@ -50,6 +50,7 @@ class Permission
 
       permissions << "calendars.share"
       permissions << "merges.rollback"
+      permissions << "api_keys.index"
     end
 
     def referentials
