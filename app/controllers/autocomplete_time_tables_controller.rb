@@ -19,7 +19,7 @@ class AutocompleteTimeTablesController < ChouetteController
     if params[:route_id]
       scope = scope.joins(vehicle_journeys: :route).where( "routes.id IN (#{params[:route_id]})")
     end
-    scope.distinct
+    scope.distinct.select('*, lower(comment) AS lower_comment').order("lower_comment ASC").all
   end
 
   def split_params! search
