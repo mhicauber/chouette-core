@@ -147,15 +147,10 @@ describe Referential, :type => :model do
       referential.failed_at = Time.now
       expect(referential.state).to eq :failed
       referential.failed_at = nil
-      referential.rollbacked_at = Time.now
       expect(referential.state).to eq :pending
       referential.ready = true
       referential.failed_at = nil
-      referential.rollbacked_at = nil
       expect(referential.state).to eq :active
-      referential.rollbacked_at = Time.now
-      expect(referential.state).to eq :rollbacked
-      referential.rollbacked_at = nil
       referential.archived_at = Time.now
       expect(referential.state).to eq :archived
     end
@@ -168,7 +163,6 @@ describe Referential, :type => :model do
         expect(Referential.failed).to_not include referential
         expect(Referential.active).to_not include referential
         expect(Referential.archived).to_not include referential
-        expect(Referential.rollbacked).to_not include referential
 
         referential = create :referential
         referential.failed!
@@ -176,7 +170,6 @@ describe Referential, :type => :model do
         expect(Referential.failed).to include referential
         expect(Referential.active).to_not include referential
         expect(Referential.archived).to_not include referential
-        expect(Referential.rollbacked).to_not include referential
 
         referential = create :referential
         referential.active!
@@ -184,7 +177,6 @@ describe Referential, :type => :model do
         expect(Referential.failed).to_not include referential
         expect(Referential.active).to include referential
         expect(Referential.archived).to_not include referential
-        expect(Referential.rollbacked).to_not include referential
 
         referential = create :referential
         referential.archived!
@@ -192,15 +184,6 @@ describe Referential, :type => :model do
         expect(Referential.failed).to_not include referential
         expect(Referential.active).to_not include referential
         expect(Referential.archived).to include referential
-        expect(Referential.rollbacked).to_not include referential
-
-        referential = create :referential
-        referential.rollbacked!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to_not include referential
-        expect(Referential.rollbacked).to include referential
       end
     end
 
