@@ -26,10 +26,7 @@
         TableBuilderHelper::Column.new( \
           key: :status, \
           attribute: Proc.new { |n| import_status(n.status, verbose: true, default_status: :pending) }, \
-          sortable: false, \
-          link_to: lambda do |item| \
-            item.netex_import.present? ? [@import.workbench, item.netex_import] : [@import.workbench, @import, item] \
-          end \
+          sortable: false \
         ),\
         TableBuilderHelper::Column.new( \
           name: t('imports.show.table.test_results') , \

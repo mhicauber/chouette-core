@@ -177,7 +177,7 @@ class Import::Gtfs < Import::Base
   end
 
   def source
-    @source ||= ::GTFS::Source.build local_file
+    @source ||= ::GTFS::Source.build local_file, strict: false
   end
 
   delegate :line_referential, :stop_area_referential, to: :workbench
@@ -367,7 +367,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendars
-    create_resource(:agencies).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
+    create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
       time_table = referential.time_tables.build comment: "Calendar #{calendar.service_id}"
       Chouette::TimeTable.all_days.each do |day|
         time_table.send("#{day}=", calendar.send(day))
@@ -414,12 +414,14 @@ class Import::Gtfs < Import::Base
                   criticity: criticity,
                   message_key: error,
                   message_attributes: {
-                    test_id: error,
-                    source_filename: filename,
+                    test_id: key,
                     object_attribute: key,
                     source_attribute: key,
-                    source_line_number: line_number,
-                    source_column_number: column_number
+                  },
+                  resource_attributes: {
+                    filename: filename,
+                    line_number: line_number,
+                    column_number: column_number
                   }
                 },
                 resource: resource, commit: true
@@ -446,9 +448,12 @@ class Import::Gtfs < Import::Base
           message_attributes: {
             parent_class: klass,
             parent_key: key,
-            source_filename: "#{resource.name}.txt",
-            source_line_number: resource.rows_count,
-            source_column_number: 0
+            test_id: :parent,
+          },
+          resource_attributes: {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count,
+            column_number: 0
           }
         },
         resource: resource, commit: true
