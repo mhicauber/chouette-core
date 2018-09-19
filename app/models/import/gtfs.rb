@@ -301,7 +301,7 @@ class Import::Gtfs < Import::Base
         create_message(
           {
             criticity: :warning,
-            message_key: 'gtfs.trips.unkown_service_id',
+            message_key: 'gtfs.trips.unknown_service_id',
             message_attributes: { service_id: trip.service_id },
             resource_attributes: {
               filename: "#{resource.name}.txt",

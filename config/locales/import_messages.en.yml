@@ -19,6 +19,7 @@ en:
         imported: "%{count} route(s) imported"
       trips:
         imported: "%{count} trip(s) imported"
+        unknown_service_id: Identifiant du service inconnu
       calendars:
         imported: "%{count} calendar(s) imported"
     1_netexstif_2: "Le fichier %{source_filename} ne respecte pas la syntaxe XML ou la XSD NeTEx : erreur '%{error_value}' rencontré"
