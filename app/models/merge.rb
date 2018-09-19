@@ -157,6 +157,8 @@ class Merge < ApplicationModel
       raise
     end
 
+    new.pending!
+
     output.update new: new
     update new: new
   end

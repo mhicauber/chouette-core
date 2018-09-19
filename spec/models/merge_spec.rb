@@ -71,6 +71,12 @@ RSpec.describe Merge do
         m.update status: :failed
         expect{ merge.prepare_new }.to_not raise_error
       end
+
+      it "should create a referential with ready: false" do
+        merge.update created_at: Time.now
+        merge.prepare_new
+        expect(workbench.output.new.ready).to be false
+      end
     end
   end
 
