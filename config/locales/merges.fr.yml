@@ -9,12 +9,14 @@ fr:
       title: "Finalisation de l'offre %{name}"
     actions:
       create: Finaliser des Jeux de Données
+      rollback: 'Revenir à cette offre'
     statuses:
       new: Nouveau
       pending: En attente
       successful: Succès
       failed: Erreur
       running: En cours
+      canceled: Annulé
   activerecord:
     models:
       merge:

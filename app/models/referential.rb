@@ -162,7 +162,7 @@ class Referential < ApplicationModel
       metadatas_lines
     end
   end
-  
+
   def lines_outside_of_scope
     func_scope = workbench.workbench_scopes.lines_scope(associated_lines).pluck(:objectid)
     lines.where.not(objectid: func_scope)
@@ -578,7 +578,8 @@ class Referential < ApplicationModel
   def state
     return :failed if failed_at.present?
     return :archived if archived_at.present?
-    ready? ? :active : :pending
+    return :pending unless ready?
+    :active
   end
 
   def light_update vals
@@ -598,8 +599,10 @@ class Referential < ApplicationModel
   end
 
   def active!
-    light_update ready: true, failed_at: nil, archived_at: nil
+    light_update ready: true, failed_at: nil, archived_at: nil, merged_at: nil
   end
+
+  alias_method :rollbacked!, :active!
 
   def archived!
     light_update failed_at: nil, archived_at: Time.now

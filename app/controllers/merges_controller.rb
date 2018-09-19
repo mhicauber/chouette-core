@@ -6,6 +6,10 @@ class MergesController < ChouetteController
 
   respond_to :html
 
+  def show
+    @merge = @merge.decorate(context: {workbench: parent})
+  end
+
   def available_referentials
     autocomplete_collection = parent.referentials.mergeable
     if params[:q].present?
@@ -15,6 +19,12 @@ class MergesController < ChouetteController
     end
 
     render json: autocomplete_collection.limit(10)
+  end
+
+  def rollback
+    authorize resource
+    resource.rollback!
+    redirect_to [:workbench, :output]
   end
 
   protected

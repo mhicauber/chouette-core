@@ -25,6 +25,9 @@ ChouetteIhm::Application.routes.draw do
 
     resource :output, controller: :workbench_outputs
     resources :merges do
+      member do
+        put :rollback
+      end
       collection do
         get :available_referentials
       end

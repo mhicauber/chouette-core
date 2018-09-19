@@ -2,7 +2,8 @@ module Support
   module DecoratorHelpers
     def self.included(into)
       into.instance_eval do
-        subject{ object.decorate }
+        subject{ object.decorate(context: context) }
+        let(:context){{}}
         let( :policy ){ ::Pundit.policy(user_context, object) }
         let( :user_context ){ UserContext.new(user, referential: referential) }
         let( :features ){ [] }

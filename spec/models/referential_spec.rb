@@ -146,6 +146,8 @@ describe Referential, :type => :model do
       expect(referential.state).to eq :pending
       referential.failed_at = Time.now
       expect(referential.state).to eq :failed
+      referential.failed_at = nil
+      expect(referential.state).to eq :pending
       referential.ready = true
       referential.failed_at = nil
       expect(referential.state).to eq :active

@@ -9,12 +9,14 @@ en:
       title: "Merged offer %{name}"
     actions:
       create: Merge data spaces
+      rollback: Rollback
     statuses:
       new: New
       pending: Pending
       successful: Successful
       failed: Failed
       running: Running
+      canceled: Canceled
   activerecord:
     models:
       merge:
