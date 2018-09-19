@@ -298,7 +298,20 @@ class Import::Gtfs < Import::Base
       if time_table
         vehicle_journey.time_tables << time_table
       else
-        create_message criticity: :warning, message_key: 'gtfs.trips.unkown_service_id', message_attributes: { service_id: trip.service_id }
+        create_message(
+          {
+            criticity: :warning,
+            message_key: 'gtfs.trips.unkown_service_id',
+            message_attributes: { service_id: trip.service_id },
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource,
+          commit: true
+        )
       end
 
       vehicle_journey_by_trip_id[trip.id] = vehicle_journey.id
@@ -424,7 +437,8 @@ class Import::Gtfs < Import::Base
                     column_number: column_number
                   }
                 },
-                resource: resource, commit: true
+                resource: resource,
+                commit: true
               )
             end
           end
