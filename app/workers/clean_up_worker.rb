@@ -8,10 +8,10 @@ class CleanUpWorker
     begin
       cleaner.referential.switch
       result = cleaner.clean
-      cleaner.successful(result)
+      # cleaner.successful(result)
     rescue Exception => e
       Rails.logger.error "CleanUpWorker : #{e}"
-      cleaner.failed({error: e.message})
+      # cleaner.failed({error: e.message})
     end
   end
 end

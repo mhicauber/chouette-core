@@ -6,9 +6,9 @@ class CleanUp < ApplicationModel
 
   enumerize :date_type, in: %i(between before after)
 
-  validates_presence_of :begin_date, message: :presence
+  # validates_presence_of :date_type, message: :presence
+  validates_presence_of :begin_date, message: :presence, if: :date_type
   validates_presence_of :end_date, message: :presence, if: Proc.new {|cu| cu.date_type == 'between'}
-  validates_presence_of :date_type, message: :presence
   validate :end_date_must_be_greater_that_begin_date
   after_commit :perform_cleanup, :on => :create
 
@@ -25,7 +25,7 @@ class CleanUp < ApplicationModel
   end
 
   def perform_cleanup
-    raise "You cannot specify methods if you call the CleanUp asynchronously" unless methods.empty?
+    raise "You cannot specify methods (#{methods.inspect}) if you call the CleanUp asynchronously" unless methods.blank?
     CleanUpWorker.perform_async(self.id, self.original_state)
   end
 
@@ -33,7 +33,7 @@ class CleanUp < ApplicationModel
     referential.switch
     referential.pending_while do
       {}.tap do |result|
-        if date_type
+        if date_type.present?
           processed = send("destroy_time_tables_#{self.date_type}")
           if processed
             result['time_table']      = processed[:time_tables].try(:count)

@@ -63,9 +63,8 @@ class ReferentialsController < ChouetteController
   end
 
   def update
-    update! do
-      @referential.clean_routes_if_needed
-    end
+    update!
+    @referential.clean_routes_if_needed
   end
 
   def select_compliance_control_set

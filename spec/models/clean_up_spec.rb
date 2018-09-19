@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe CleanUp, :type => :model do
 
-  it { should validate_presence_of(:date_type).with_message(:presence) }
-  it { should validate_presence_of(:begin_date).with_message(:presence) }
+  # it { should validate_presence_of(:begin_date).with_message(:presence) }
   it { should belong_to(:referential) }
 
   context 'Clean Up With Date Type : Between' do

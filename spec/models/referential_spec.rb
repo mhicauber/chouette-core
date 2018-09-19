@@ -162,7 +162,7 @@ describe Referential, :type => :model do
         ref.reload
       end
       it "should perform cleanup" do
-        expect(CleanUp).to receive(:create).with({referential: ref, original_state: ref.state})
+        expect(CleanUp).to receive(:create!).with({referential: ref, original_state: ref.state})
         ref.clean_routes_if_needed
         expect(ref.reload.state).to eq :pending
       end
