@@ -4,5 +4,6 @@ class Api::V1::WorkbenchesController < Api::V1::WorkbenchController
   protected
 
   def begin_of_association_chain
+    @current_workbench.organisation
   end
 end
