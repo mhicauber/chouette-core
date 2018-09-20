@@ -5,6 +5,7 @@ const mapStateToProps = (state) => {
   return {
     editMode: state.editMode,
     status: state.status,
+    filters: state.filters
   }
 }
 
