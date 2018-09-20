@@ -147,11 +147,11 @@ module Chouette
                               :arrival_stop_point_id => (ordered_stop_points.last && ordered_stop_points.last.id))
     end
 
-    def vjas_add( stop_point)
+    def vjas_add(stop_point)
       return if new_record?
 
       vehicle_journeys.each do |vj|
-        vjas = vj.vehicle_journey_at_stops.create :stop_point_id => stop_point.id
+        vj.vehicle_journey_at_stops.create :stop_point_id => stop_point.id
       end
     end
 
