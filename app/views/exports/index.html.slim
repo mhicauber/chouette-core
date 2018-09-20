@@ -30,7 +30,13 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :referential, \
-                attribute: Proc.new { |n| link_to(n.referential.name, n.referential) }, \
+                attribute: Proc.new { |n| \
+                  if n.referential.present? then \
+                    link_to(n.referential.name, n.referential) \
+                  else \
+                    "-" \
+                  end \
+                }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :started_at, \
