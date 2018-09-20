@@ -69,6 +69,9 @@ class StopAreasController < ChouetteController
 
   def create
     authorize resource_class
+    @stop_area = Chouette::StopArea.new
+    @stop_area.stop_area_referential = stop_area_referential
+    @stop_area.assign_attributes stop_area_params
     create!
   end
 
