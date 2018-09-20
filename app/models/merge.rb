@@ -34,7 +34,12 @@ class Merge < ApplicationModel
 
   def cancel!
     update status: :canceled
-    referentials.each &:active!
+    referentials.each do |referential|
+      # always change merged_at
+      referential.update_column :merged_at, nil
+      # change archived_at if possible
+      referential.update archived_at: nil
+    end
     new.rollbacked!
   end
 

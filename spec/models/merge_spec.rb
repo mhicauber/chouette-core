@@ -51,18 +51,22 @@ RSpec.describe Merge do
     let(:output) do
        out = workbench.output
        3.times do
-         out.referentials << create(:workbench_referential, workbench: workbench)
+         out.referentials << create(:workbench_referential, workbench: workbench, organisation: workbench.organisation)
        end
        out.current = out.referentials.last
        out.save!
        out
     end
 
+    def create_referential
+      create(:workbench_referential, organisation: workbench.organisation, workbench: workbench, metadatas: [create(:referential_metadata)])
+    end
+
     def create_merge(attributes = {})
       attributes = {
         workbench: workbench,
         status: :successful,
-        referentials: [create(:workbench_referential, workbench: workbench)]
+        referentials: 2.times.map { create_referential.tap(&:merged!) }
       }.merge(attributes)
       create :merge, attributes
     end
@@ -76,10 +80,6 @@ RSpec.describe Merge do
       previous_merge.update new: output.referentials.sort_by(&:created_at)[0]
       merge.update new: output.referentials.sort_by(&:created_at)[1]
       final_merge.update new: output.referentials.sort_by(&:created_at)[2]
-
-      [previous_merge, previous_failed_merge, merge, final_merge].each do |m|
-        m.update referentials: 2.times.map{ r = create :workbench_referential, workbench: workbench; r.merged!; r }
-      end
     }
 
     context "when the current output is mine" do
