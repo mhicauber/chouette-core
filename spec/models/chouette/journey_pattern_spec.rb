@@ -40,6 +40,34 @@ describe Chouette::JourneyPattern, :type => :model do
     end
   end
 
+  describe 'when the stop_points are modified' do
+    let(:journey_pattern) { create :journey_pattern }
+    let(:vehicle_journey) { create :vehicle_journey, journey_pattern: journey_pattern }
+
+    describe 'when a stop_point is removed' do
+      it 'should remove it from its vehicle_journeys' do
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq journey_pattern.stop_points.count
+        journey_pattern.reload
+
+        expect { journey_pattern.stop_points.delete(journey_pattern.stop_points.last) }.to(
+          change { vehicle_journey.reload.vehicle_journey_at_stops.count }.by(-1)
+        )
+      end
+    end
+
+    describe 'when a stop_point is added' do
+      let(:stop_point) { create :stop_point }
+      it 'should remove it from its vehicle_journeys' do
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq journey_pattern.stop_points.count
+        journey_pattern.reload
+
+        expect { journey_pattern.stop_points << stop_point }.to(
+          change { vehicle_journey.reload.vehicle_journey_at_stops.count }.by(1)
+        )
+      end
+    end
+  end
+
   describe 'costs' do
     let(:journey_pattern) { create :journey_pattern }
 
@@ -152,16 +180,20 @@ describe Chouette::JourneyPattern, :type => :model do
       end
     end
 
-    let(:route) { create :route }
+    let(:route) { create :route, stop_points_count: 5 }
     let(:journey_pattern) { create :journey_pattern, route: route }
     let(:state) { journey_pattern_to_state(journey_pattern) }
+    let!(:vehicle_journey) { create :vehicle_journey, journey_pattern: journey_pattern }
 
     it 'should delete unchecked stop_points' do
+      expect(journey_pattern.stop_points.count).to eq(5)
+      expect(vehicle_journey.reload.vehicle_journey_at_stops.count).to eq(5)
       # Of 5 stop_points 2 are checked
       state['stop_points'].each{|sp| sp['checked'] = false}
       state['stop_points'].take(2).each{|sp| sp['checked'] = true}
       journey_pattern.state_stop_points_update(state)
       expect(journey_pattern.stop_points.count).to eq(2)
+      expect(vehicle_journey.reload.vehicle_journey_at_stops.count).to eq(2)
     end
 
     it 'should attach checked stop_points' do
@@ -169,11 +201,13 @@ describe Chouette::JourneyPattern, :type => :model do
       state['stop_points'].each{|sp| sp['checked'] = false}
       journey_pattern.state_stop_points_update(state)
       expect(journey_pattern.reload.stop_points).to be_empty
+      expect(vehicle_journey.reload.vehicle_journey_at_stops).to be_empty
 
       state['stop_points'].each{|sp| sp['checked'] = true}
       journey_pattern.state_stop_points_update(state)
 
       expect(journey_pattern.reload.stop_points.count).to eq(5)
+      expect(vehicle_journey.reload.vehicle_journey_at_stops.count).to eq(5)
     end
 
     it 'should build a journey_pattern' do
