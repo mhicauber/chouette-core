@@ -122,6 +122,21 @@ RSpec.describe Merge do
         expect(final_merge.new.state).to eq :active
       end
     end
+
+    context 'when another concurent referential has been created meanwhile' do
+      before(:each) do
+        concurent = create_referential.tap(&:active!)
+        metadata = final_merge.referentials.last.metadatas.last
+        concurent.update metadatas: [create(:referential_metadata, line_ids: metadata.line_ids, periodes: metadata.periodes)]
+      end
+
+      it 'should leave the referential archived' do
+        merge.rollback!
+        r = final_merge.referentials.last
+        expect(r.merged_at).to be_nil
+        expect(r.archived_at).to_not be_nil
+      end
+    end
   end
 
   context "with another concurent merge" do
