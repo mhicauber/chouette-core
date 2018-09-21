@@ -48,6 +48,7 @@ class Permission
       end
 
       permissions << "calendars.share"
+      permissions << "merges.rollback"
     end
 
     def referentials
