@@ -29,12 +29,12 @@ class Merge < ApplicationModel
   def rollback!
     raise "You cannot rollback to the current version" if current?
     workbench.output.update current: self.new
-    self.following_merges.each &:cancel!
+    self.following_merges.each(&:cancel!)
   end
 
   def cancel!
     update status: :canceled
-    referentials.each &:active!
+    referentials.each(&:unmerged!)
     new.rollbacked!
   end
 
@@ -48,7 +48,7 @@ class Merge < ApplicationModel
     update_column :started_at, Time.now
     update_column :status, :running
 
-    referentials.each &:pending!
+    referentials.each(&:pending!)
 
     if before_merge_compliance_control_sets.present?
       create_before_merge_compliance_check_sets
