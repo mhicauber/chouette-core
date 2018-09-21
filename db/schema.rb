@@ -11,13 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20180829151132) do
+ActiveRecord::Schema.define(version: 20180914100755) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -90,9 +89,9 @@ ActiveRecord::Schema.define(version: 20180829151132) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -620,14 +619,6 @@ ActiveRecord::Schema.define(version: 20180829151132) do
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
 
-  create_table "notifications", id: :bigserial, force: :cascade do |t|
-    t.string   "objectid"
-    t.json     "payload"
-    t.string   "channel"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -739,7 +730,6 @@ ActiveRecord::Schema.define(version: 20180829151132) do
     t.string   "objectid_format"
     t.datetime "merged_at"
     t.datetime "failed_at"
-    t.datetime "rollbacked_at"
   end
 
   add_index "referentials", ["created_from_id"], name: "index_referentials_on_created_from_id", using: :btree
