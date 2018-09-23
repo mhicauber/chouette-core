@@ -1,7 +1,7 @@
 class AddOptionsToImports < ActiveRecord::Migration
   def change
+    return if ActiveRecord::Base.connection.column_exists?(:imports, :options)
+
     add_column :imports, :options, :hstore
-  rescue PG::DuplicateColumn
-    nil
   end
 end
