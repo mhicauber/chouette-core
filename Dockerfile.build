@@ -20,16 +20,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-c
     curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
     echo "deb https://deb.nodesource.com/node_6.x stretch main" > /etc/apt/sources.list.d/nodesource.list
 
-# Install ruby, native dependencies, bundler and yarn
+# Install ruby, bundler and yarn
 RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
-    apt-get install -y --no-install-recommends ruby2.3 locales && \
+    apt-get install -y --no-install-recommends ruby2.3 locales yarn nodejs && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
-    apt-get install -y --no-install-recommends libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 yarn nodejs && \
     gem2.3 install --no-ri --no-rdoc bundler
 
 # Install bundler packages
 COPY Gemfile Gemfile.lock /app/
-RUN apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core&& \
+RUN apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core && \
     cd /app && bundle install --deployment
 
 # Install yarn packages
