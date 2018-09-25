@@ -197,8 +197,8 @@ class Import::Gtfs < Import::Base
 
     Import::Gtfs.benchmark(self, :import_calendars)
     Import::Gtfs.benchmark(self, :import_calendar_dates)
-    Import::Gtfs.benchmark(self, :import_trips)
     Import::Gtfs.benchmark(self, :import_stop_times)
+    Import::Gtfs.benchmark(self, :import_trips)
   end
 
   def import_agencies
@@ -275,24 +275,40 @@ class Import::Gtfs < Import::Base
   end
 
   def import_trips
-    create_resource(:trips).each(source.trips, slice: 100, transaction: true) do |trip, resource|
-      line = line_referential.lines.find_by registration_number: trip.route_id
+    @trips = source.trips.each_with_object({}) do |trip, h|
+      h[trip.id] = trip
+    end
+  end
 
+  def import_stop_times
+    # routes = Set.new
+    prev_trip_id = nil
+    to_be_saved = []
+    create_resource(:stop_times).each(
+      source.stop_times.group_by(&:trip_id),
+      slice: 10,
+      transaction: true,
+      memory_profile: -> { "Import stop times from #{rows_count}" }
+    ) do |row, resource|
+      trip_id, stop_times = row
+      to_be_saved = []
+      prev_trip_id = trip_id
+
+      trip = @trips[trip_id]
+      line = line_referential.lines.find_by registration_number: trip.route_id
       route = referential.routes.build line: line
-      # we don't calculate costs right away, as there are no stops in the route yet
-      route.prevent_costs_calculation = true
       route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
-      # TODO better name ?
       name = route.published_name = trip.short_name.presence || trip.headsign.presence || route.wayback.to_s.capitalize
       route.name = name
-      save_model route, resource: resource
+      to_be_saved << route
 
       journey_pattern = route.journey_patterns.build name: name
-      save_model journey_pattern, resource: resource
+      to_be_saved << journey_pattern
 
       vehicle_journey = journey_pattern.vehicle_journeys.build route: route
       vehicle_journey.published_journey_name = trip.headsign.presence || trip.id
-      save_model vehicle_journey, resource: resource
+
+      to_be_saved << vehicle_journey
 
       time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
       if time_table
@@ -314,65 +330,46 @@ class Import::Gtfs < Import::Base
         )
       end
 
-      vehicle_journey_by_trip_id[trip.id] = vehicle_journey.id
-    end
-  end
 
-  def import_stop_times
-    routes = Set.new
-    create_resource(:stop_times).each(
-      source.stop_times.group_by(&:trip_id),
-      slice: 10,
-      transaction: true,
-      memory_profile: -> { "Import stop times from #{rows_count}" }
-    ) do |row, resource|
-      trip_id, stop_times = row
-      # Memory.log "Import stop times from #{count}" do
-      vehicle_journey = referential.vehicle_journeys.find(vehicle_journey_by_trip_id[trip_id])
-      journey_pattern = vehicle_journey.journey_pattern
-      route = journey_pattern.route
-
-      # we don't calculate costs right away, as there are no stops in the route yet
-      route.prevent_costs_calculation = true
-
-      routes << route
       stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
-      stop_times.each do |stop_time|
-        import_stop_time stop_time, journey_pattern, resource
+      stop_points = stop_times.map do |stop_time|
+        [stop_time, import_stop_time(stop_time, route, resource)]
       end
-    end
-
-    routes.each do |r|
-      r.calculate_costs!
+      to_be_saved.each do |model|
+        save_model model, resource: resource
+      end
+      stop_points.each do |stop_time, stop_point|
+        add_stop_point stop_time, stop_point, journey_pattern, resource
+      end
     end
   end
 
-  def import_stop_time(stop_time, journey_pattern, resource)
+  def import_stop_time(stop_time, route, resource)
     unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
-      route = journey_pattern.route
       stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
-
       stop_point = route.stop_points.build stop_area: stop_area
-      save_model stop_point, resource: resource
 
-      journey_pattern.stop_points << stop_point
-
-      # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-      vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.find_by(stop_point_id: stop_point.id)
-
-      departure_time = GTFS::Time.parse(stop_time.departure_time)
-      arrival_time = GTFS::Time.parse(stop_time.arrival_time)
-
-      vehicle_journey_at_stop.departure_time = departure_time.time
-      vehicle_journey_at_stop.arrival_time = arrival_time.time
-      vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
-      vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
-
-      # TODO: offset
-
-      save_model vehicle_journey_at_stop, resource: resource
+      # save_model stop_point, resource: resource
+      stop_point
     end
+  end
+
+  def add_stop_point(stop_time, stop_point, journey_pattern, resource)
+    journey_pattern.stop_points << stop_point
+    # # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
+    vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.where(stop_point_id: stop_point.id).last
+    departure_time = GTFS::Time.parse(stop_time.departure_time)
+    arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+
+    vehicle_journey_at_stop.departure_time = departure_time.time
+    vehicle_journey_at_stop.arrival_time = arrival_time.time
+    vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
+    vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
+
+    # TODO: offset
+
+    save_model vehicle_journey_at_stop, resource: resource
   end
 
   def time_tables_by_service_id

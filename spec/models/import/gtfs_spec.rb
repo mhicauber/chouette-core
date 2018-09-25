@@ -26,6 +26,10 @@ RSpec.describe Import::Gtfs do
     Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file), creator: "test", name: "test"
   end
 
+  before(:each) do
+    allow(import).to receive(:save_model).and_wrap_original { |m, *args| m.call(*args); args.first.run_callbacks(:commit) }
+  end
+
   context "when the file is not directly accessible" do
     let(:import) {
       Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture('google-sample-feed.zip')
@@ -237,72 +241,76 @@ RSpec.describe Import::Gtfs do
     before do
       import.prepare_referential
       import.import_calendars
-      allow(import).to receive(:save_model).and_wrap_original { |m, model| m.call(model); model.run_callbacks(:commit) }
     end
 
-    it "should not calculate costs" do
-      expect_any_instance_of(Chouette::Route).to_not receive(:calculate_costs!)
-      expect{import.import_trips}.to change{Chouette::Route.count}
-    end
-
-    it "should create a Route for each trip" do
+    it 'should store the trips in memory' do
       import.import_trips
-
-      defined_attributes = [
-        "lines.registration_number", :wayback, :name, :published_name
-      ]
-      expected_attributes = [
-        ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
-        ["AB", "inbound", "to Airport", "to Airport"],
-        ["STBA", "inbound", "Shuttle", "Shuttle"],
-        ["CITY", "outbound", "Outbound", "Outbound"],
-        ["CITY", "inbound", "Inbound", "Inbound"],
-        ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
-        ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
-        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "inbound", "to Airport", "to Airport"],
-        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "inbound", "to Airport", "to Airport"]
-      ]
-
-      expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
+      expect(import.instance_variable_get('@trips').size).to eq 11
     end
 
-    it "should create a JourneyPattern for each trip" do
-      import.import_trips
-
-      defined_attributes = [
-        :name
-      ]
-      expected_attributes = [
-        "to Bullfrog", "to Airport", "Shuttle", "Outbound", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
-      ]
-
-      expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
-    end
-
-    it "should create a VehicleJourney for each trip" do
-      import.import_trips
-
-      defined_attributes = ->(v) {
-        [v.published_journey_name, v.time_tables.first&.comment]
-      }
-      expected_attributes = [
-        ["to Bullfrog", "Calendar FULLW"],
-        ["to Airport", "Calendar FULLW"],
-        ["Shuttle", "Calendar FULLW"],
-        ["CITY1", "Calendar FULLW"],
-        ["CITY2", "Calendar FULLW"],
-        ["to Furnace Creek Resort", "Calendar FULLW"],
-        ["to Bullfrog", "Calendar FULLW"],
-        ["to Amargosa Valley", "Calendar WE"],
-        ["to Airport", "Calendar WE"],
-        ["to Amargosa Valley", "Calendar WE"],
-        ["to Airport", "Calendar WE"]
-      ]
-
-      expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
-    end
+    # it "should not calculate costs" do
+    #   expect_any_instance_of(Chouette::Route).to_not receive(:calculate_costs!)
+    #   expect{import.import_trips}.to change{Chouette::Route.count}
+    # end
+    #
+    # it "should create a Route for each trip" do
+    #   import.import_trips
+    #
+    #   defined_attributes = [
+    #     "lines.registration_number", :wayback, :name, :published_name
+    #   ]
+    #   expected_attributes = [
+    #     ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
+    #     ["AB", "inbound", "to Airport", "to Airport"],
+    #     ["STBA", "inbound", "Shuttle", "Shuttle"],
+    #     ["CITY", "outbound", "Outbound", "Outbound"],
+    #     ["CITY", "inbound", "Inbound", "Inbound"],
+    #     ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
+    #     ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
+    #     ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
+    #     ["AAMV", "inbound", "to Airport", "to Airport"],
+    #     ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
+    #     ["AAMV", "inbound", "to Airport", "to Airport"]
+    #   ]
+    #
+    #   expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
+    # end
+    #
+    # it "should create a JourneyPattern for each trip" do
+    #   import.import_trips
+    #
+    #   defined_attributes = [
+    #     :name
+    #   ]
+    #   expected_attributes = [
+    #     "to Bullfrog", "to Airport", "Shuttle", "Outbound", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
+    #   ]
+    #
+    #   expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
+    # end
+    #
+    # it "should create a VehicleJourney for each trip" do
+    #   import.import_trips
+    #
+    #   defined_attributes = ->(v) {
+    #     [v.published_journey_name, v.time_tables.first&.comment]
+    #   }
+    #   expected_attributes = [
+    #     ["to Bullfrog", "Calendar FULLW"],
+    #     ["to Airport", "Calendar FULLW"],
+    #     ["Shuttle", "Calendar FULLW"],
+    #     ["CITY1", "Calendar FULLW"],
+    #     ["CITY2", "Calendar FULLW"],
+    #     ["to Furnace Creek Resort", "Calendar FULLW"],
+    #     ["to Bullfrog", "Calendar FULLW"],
+    #     ["to Amargosa Valley", "Calendar WE"],
+    #     ["to Airport", "Calendar WE"],
+    #     ["to Amargosa Valley", "Calendar WE"],
+    #     ["to Airport", "Calendar WE"]
+    #   ]
+    #
+    #   expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+    # end
   end
 
   describe "#import_stop_times" do
@@ -325,6 +333,65 @@ RSpec.describe Import::Gtfs do
         expect(calculated).to include(route)
       end
     end
+
+    it "should create a Route for each trip" do
+     import.import_stop_times
+
+     defined_attributes = [
+       "lines.registration_number", :wayback, :name, :published_name
+     ]
+     expected_attributes = [
+       ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
+       ["AB", "inbound", "to Airport", "to Airport"],
+       ["STBA", "inbound", "Shuttle", "Shuttle"],
+       ["CITY", "outbound", "Outbound", "Outbound"],
+       ["CITY", "inbound", "Inbound", "Inbound"],
+       ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
+       ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
+       ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
+       ["AAMV", "inbound", "to Airport", "to Airport"],
+       ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
+       ["AAMV", "inbound", "to Airport", "to Airport"]
+     ]
+
+     expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
+   end
+
+   it "should create a JourneyPattern for each trip" do
+     import.import_stop_times
+
+     defined_attributes = [
+       :name
+     ]
+     expected_attributes = [
+       "to Bullfrog", "to Airport", "Shuttle", "Outbound", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
+     ]
+
+     expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
+   end
+
+   it "should create a VehicleJourney for each trip" do
+     import.import_stop_times
+
+     defined_attributes = ->(v) {
+       [v.published_journey_name, v.time_tables.first&.comment]
+     }
+     expected_attributes = [
+       ["to Bullfrog", "Calendar FULLW"],
+       ["to Airport", "Calendar FULLW"],
+       ["Shuttle", "Calendar FULLW"],
+       ["CITY1", "Calendar FULLW"],
+       ["CITY2", "Calendar FULLW"],
+       ["to Furnace Creek Resort", "Calendar FULLW"],
+       ["to Bullfrog", "Calendar FULLW"],
+       ["to Amargosa Valley", "Calendar WE"],
+       ["to Airport", "Calendar WE"],
+       ["to Amargosa Valley", "Calendar WE"],
+       ["to Airport", "Calendar WE"]
+     ]
+
+     expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+   end
 
     it "should create a VehicleJourneyAtStop for each stop_time" do
       import.import_stop_times
@@ -499,7 +566,7 @@ RSpec.describe Import::Gtfs do
 
       it 'should create an error message' do
         import.import_calendars
-        
+
         expect do
           import.import_calendar_dates
         end.to(change { Import::Message.count }.by(1))
