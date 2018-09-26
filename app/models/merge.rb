@@ -694,7 +694,7 @@ class Merge < ApplicationModel
   def compliance_check_set(key, referential = nil)
     referential ||= new
     control = workbench.compliance_control_set(key)
-    compliance_check_sets.where(compliance_control_set_id: control.id).find_by(referential_id: referential.id) if control
+    compliance_check_sets.where(compliance_control_set_id: control.id).find_by(referential_id: referential.id, context: key) if control
   end
 
   def save_model!(model)
