@@ -22,7 +22,7 @@ class ComplianceCheckSet < ApplicationModel
 
   scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
 
-  scope :unfinished, -> { where 'status NOT IN (?)', finished_statuses }
+  scope :unfinished, -> { where 'notified_parent_at IS NULL' }
 
   scope :assigned_to_slots, ->(organisation, slots) do
     joins(:compliance_control_set).merge(ComplianceControlSet.assigned_to_slots(organisation, slots))
@@ -69,8 +69,8 @@ class ComplianceCheckSet < ApplicationModel
 
   def do_notify_parent
     if notified_parent_at.nil?
-      parent&.child_change
       update(notified_parent_at: DateTime.now)
+      parent&.child_change
     end
   end
 
