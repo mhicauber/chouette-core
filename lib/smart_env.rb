@@ -69,7 +69,7 @@ module SmartEnv
   def self.fetch key, opts={}
     key = key.to_s
     unless keys.include?(key)
-      Rails.logger.warn("Fetching unexpected ENV key `#{key}`")
+      logger.warn("Fetching unexpected ENV key `#{key}`")
       keys << key
     end
 
@@ -80,6 +80,15 @@ module SmartEnv
     val = ENV.fetch(key, nil) || default || default_values[key]
     val = cast_boolean(val) if opts[:boolean] || boolean_keys.include?(key)
     val
+  end
+
+  @@default_logger = nil
+  def self.default_logger
+    @@default_logger ||= Logger.new($stdout)
+  end
+
+  def self.logger
+    Rails.logger || default_logger
   end
 
   def self.cast_boolean value
