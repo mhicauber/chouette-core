@@ -7,7 +7,6 @@ Rails.application.configure do
   SmartEnv.set :RAILS_DB_USER, default: nil
   SmartEnv.set :RAILS_HOST, default: 'http://www.example.com'
   SmartEnv.set :IEV_URL, default: 'http://localhost:8080'
-  SmartEnv.add :POSTGRESQL_ENV_POSTGRES_USER, default: :jenkins
 
   # The test environment is used exclusively to run your application's
   # test suite. You never need to work with it otherwise. Remember that
