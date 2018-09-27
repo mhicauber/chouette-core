@@ -199,7 +199,10 @@ class Seed::Workgroup
 
           if SmartEnv.boolean 'CHOUETTE_ITS_SEND_INVITATION'
             print "invite! "
-            user.invite!
+            locale = attributes[:locale] || :fr
+            I18n.with_locale locale do
+              user.invite!
+            end
           end
         end
       end
