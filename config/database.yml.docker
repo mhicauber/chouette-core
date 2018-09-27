@@ -2,10 +2,10 @@
   adapter: <%= SmartEnv['RAILS_DB_ADAPTER'] %>
   encoding: unicode
   pool: <%= SmartEnv['RAILS_DB_POOLSIZE'] %>
-  host: <%= SmartEnv['RAILS_DB_HOST'] %>
+  host: <%= SmartEnv.fetch 'RAILS_DB_HOST', default: 'db' %>
   port: <%= SmartEnv['RAILS_DB_PORT'] %>
   schema_search_path: 'public,shared_extensions'
   postgis_schema: 'shared_extensions'
   database: <%= SmartEnv['RAILS_DB_NAME'] %><%= SmartEnv['TEST_ENV_NUMBER'] %>
-  username: <%= SmartEnv['RAILS_DB_USER'] %>
+  username: <%= SmartEnv.fetch 'RAILS_DB_USER', default: 'chouette' %>
   password: <%= SmartEnv['RAILS_DB_PASSWORD'] %>
