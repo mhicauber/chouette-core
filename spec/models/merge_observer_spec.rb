@@ -11,34 +11,40 @@ RSpec.describe MergeObserver, type: :observer do
 
   let(:merge) { Merge.create(workbench: referential.workbench, referentials: [referential, referential], creator: user.name) }
  
-  context "when MergeObserver is disabled" do
+  context "when notifications are disabled" do
     before(:each) do
       allow(Rails.configuration)
-        .to receive(:enable_merge_observer)
+        .to receive(:enable_subscriptions_notifications)
         .and_return( false )
 
-      expect(Rails.configuration.enable_merge_observer).to be_falsy
+      expect(Rails.configuration.enable_subscriptions_notifications).to be_falsy
     end
 
     it 'should not schedule mailer' do
       merge.status = 'successful'
-      expect(MailerJob).to_not receive(:perform_later).with 'MergeMailer', 'finished', anything
       merge.save
+      expect(MailerJob).to_not receive(:perform_later).with 'MergeMailer', 'finished', anything
     end  
 
   end
 
-  context 'after_update' do
-    before(:each) { allow(Rails.configuration).to receive(:enable_user_observer).and_return( false ) }
+  context 'when notifications are enabled' do
+    before(:each) do
+      allow(Rails.configuration)
+        .to receive(:enable_subscriptions_notifications)
+        .and_return( true )
+
+      expect(Rails.configuration.enable_subscriptions_notifications).to be_truthy
+    end
     it 'should observe merge finish' do
-      merge.status = 'successful'
       expect(MergeObserver.instance).to receive(:after_update)
+      merge.status = 'successful'
       merge.save
     end
 
-    it 'should schedule mailer on merge finish' do
-      merge.status = 'successful'
+    xit 'should schedule mailer on merge finish' do
       expect(MailerJob).to receive(:perform_later).with 'MergeMailer', 'finished', anything
+      merge.status = 'successful'
       merge.save
     end
   end

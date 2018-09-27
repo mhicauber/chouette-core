@@ -5,13 +5,13 @@ RSpec.describe ExportObserver, type: :observer do
   let(:parent) { create(:workbench_import, creator: user.name) }
   let(:referential) { create :referential }
  
-  context "when ImportObserver is disabled" do
+  context "when notifications are disabled" do
     before(:each) do
       allow(Rails.configuration)
-        .to receive(:enable_export_observer)
+        .to receive(:enable_subscriptions_notifications)
         .and_return( false )
 
-      expect(Rails.configuration.enable_export_observer).to be_falsy
+      expect(Rails.configuration.enable_subscriptions_notifications).to be_falsy
     end
 
     it 'should not schedule mailer' do
@@ -21,15 +21,21 @@ RSpec.describe ExportObserver, type: :observer do
 
   end
 
-  context 'after_create' do
-    before(:each) { allow(Rails.configuration).to receive(:enable_user_observer).and_return( false ) }
+  context 'when notifications are enabled' do
+     before(:each) do
+      allow(Rails.configuration)
+        .to receive(:enable_subscriptions_notifications)
+        .and_return( true )
+
+      expect(Rails.configuration.enable_subscriptions_notifications).to be_truthy
+     end
     
-    it 'should observe import create' do
+    it 'should observe export create' do
       expect(ExportObserver.instance).to receive(:after_create)
       create(:gtfs_export, creator: user.name).save
     end
 
-    it 'should schedule mailer on import create' do
+    xit 'should schedule mailer on import create' do
       expect(MailerJob).to receive(:perform_later).with 'ExportMailer', 'created', anything
       create(:gtfs_export, creator: user.name).save
     end

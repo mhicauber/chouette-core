@@ -90,6 +90,19 @@ RSpec.describe ComplianceCheckSet, type: :model do
         end
       end
     end
+
+    context "when notifications are allowed" do
+      before(:each) do
+        allow(Rails.configuration).to receive(:enable_subscriptions_notifications).and_return true
+        expect(Rails.configuration.enable_subscriptions_notifications).to be_truthy
+      end
+
+     xit "should send an email" do
+        expect(MailerJob).to receive(:perform_later).with 'ComplianceCheckSetMailer', 'finished', anything
+        check_set.perform
+      end
+
+    end
   end
 
   describe "#update_status" do

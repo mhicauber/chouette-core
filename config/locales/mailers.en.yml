@@ -48,14 +48,19 @@ en:
       created:
         subject: A new user signed up
         body: "A new user signed up:"
+    confirmation_mailer:
+      button: Confirm the subscription
+      subject: Instructions of confirmation
+      body: |
+        "Hello %{email} ! 
+        You can now confirm your subscription by clicking on the following link"
     password_mailer:
       updated:
         subject: Set up new password
         body: |
           "Hello, you forgot your password
           You asked to set up a new one.
-          To start the process :
-          <a href='%{new_password_url}' target='_blank' style='color:#333333;'>New password</a>"
+          To start the process :"
     user_mailer:
       created:
         subject: New registered user on Chouette
@@ -64,3 +69,18 @@ en:
           Name : %{user_name}
           Organization : %{orga_name}
           Email : %{user_mail}"
+    invitation_mailer:
+      button: Accept the invitation
+      subject: Invitation on the Chouette application
+      body: |
+        "Hello %{email},
+        This message is an invit to use the Chouette app, you can access it by clicking on the following link :"
+      ignore: If you don't want to access it, you can ignore the message. Your account won't be created until you click the link above and you define a password.
+    compliance_check_set_mailer:
+      finished:
+        button: See compliance check set
+        subject: Compliance Check set is over
+        body: |
+          "Hello, the compliance check set is done
+          You started the validation of %{ref_name} referentual. The operation is now over.
+          To access it :"

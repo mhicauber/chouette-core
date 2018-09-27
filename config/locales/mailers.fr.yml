@@ -47,6 +47,12 @@ fr:
       created:
         subject: Un nouvel utilisateur s'est inscrit
         body: "Un nouvel utilisateur a rejoint la plateforme:"
+    confirmation_mailer:
+      button: Confirmer l'inscription
+      subject: Instructions de confirmation
+      body: |
+        "Bonjour %{email} ! 
+        Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:"
     password_mailer:
       updated:
         subject: Réinitialiser votre mot de passe
@@ -70,3 +76,11 @@ fr:
         "Bonjour %{email},
         Ce message est une invitation pour accéder à Chouette, vous pouvez l'accepter en cliquant sur le lien suivant :"
       ignore: Si vous ne souhaitez pas accepter cette invitation, ignorez ce message. Votre compte ne sera pas créé tant que vous n'accédez pas au lien ci-dessus et que vous ne définissez un mot de passe.
+    compliance_check_set_mailer:
+      finished:
+        button: Voir Validation
+        subject: La validation est terminée
+        body: |
+          "Bonjour, la validation est terminée
+          Vous avez lancé une validation sur %{ref_name}. Elle est maintenant terminée.
+          Pour y accéder :"

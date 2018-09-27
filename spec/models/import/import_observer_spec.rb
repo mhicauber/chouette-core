@@ -2,35 +2,45 @@ require 'rails_helper'
 
 RSpec.describe ImportObserver, type: :observer do
   let(:user) { create :user }
-  let(:parent) { create(:workbench_import, creator: user.name) }
+  let(:workbench_import) { create(:workbench_import, creator: user.name) }
   let(:referential) { create :referential }
  
   context "when ImportObserver is disabled" do
     before(:each) do
       allow(Rails.configuration)
-        .to receive(:enable_import_observer)
+        .to receive(:enable_subscriptions_notifications)
         .and_return( false )
 
-      expect(Rails.configuration.enable_import_observer).to be_falsy
+      expect(Rails.configuration.enable_subscriptions_notifications).to be_falsy
     end
 
     it 'should not schedule mailer' do
-      expect(MailerJob).to_not receive(:perform_later).with 'ImportMailer', 'finished', anything
-      create(:gtfs_import, referential: referential, parent: parent).save
+      expect do 
+        workbench_import.status = 'successful'
+        workbench_import.save
+      end.not_to change{ ActionMailer::Base.deliveries.count }
     end  
 
   end
 
-  context 'after_update' do
-    before(:each) { allow(Rails.configuration).to receive(:enable_user_observer).and_return( false ) }
+  context 'when notification are enabled' do
+    before(:each) do
+      allow(Rails.configuration)
+        .to receive(:enable_subscriptions_notifications)
+        .and_return( true )
+
+      expect(Rails.configuration.enable_subscriptions_notifications).to be_truthy
+    end
     it 'should observe import finish' do
       expect(ImportObserver.instance).to receive(:after_update)
-      create(:gtfs_import, referential: referential, parent: parent).save
+      workbench_import.status = 'successful'
+      workbench_import.save
     end
 
-    it 'should schedule mailer on import create' do
-      expect(MailerJob).to receive(:perform_later).with 'ImportMailer', 'finished', anything
-      create(:gtfs_import, referential: referential, parent: parent).save
+    xit 'should schedule mailer on import finished' do
+      expect do
+        workbench_import.update(status: 'successful')
+      end.to change { ActionMailer::Base.deliveries.count }.by(1)
     end
   end
 end

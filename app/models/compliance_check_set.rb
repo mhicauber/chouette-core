@@ -103,7 +103,7 @@ class ComplianceCheckSet < ApplicationModel
     if self.class.finished_statuses.include?(status)
       attributes[:ended_at] = Time.now
     end
-
+  
     update attributes
     import_resource&.next_step
   end
@@ -133,6 +133,7 @@ class ComplianceCheckSet < ApplicationModel
     else
       perform_internal_checks
     end
+    send_mail if mail_enabled?
   end
 
   def perform_internal_checks
@@ -143,6 +144,14 @@ class ComplianceCheckSet < ApplicationModel
       update_status
       do_notify_parent
     end
+  end
+
+  def send_mail
+    MailerJob.perform_later("ComplianceCheckSetMailer", "finished", [self.id, self.metadata.creator_id])
+  end
+
+  def mail_enabled?
+    Rails.configuration.respond_to?(:enable_subscriptions_notifications) && !!Rails.configuration.enable_subscriptions_notifications && self.class.finished_statuses.include?(self.status) && self.metadata.creator_id
   end
 
   def context_i18n

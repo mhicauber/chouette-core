@@ -79,11 +79,8 @@ module ChouetteIhm
       'FeatureChecker::NotAuthorizedError' => :unauthorized
     )
 
-    config.development_toolbar = true
+    config.development_toolbar = false
     config.enable_calendar_observer = true
-    config.enable_import_observer = true
-    config.enable_export_observer = true
-    config.enable_merge_observer = true
     config.enable_subscriptions_notifications = SmartEnv.boolean('SUBSCRIPTION_NOTIFIER_ENABLED')
     config.subscriptions_notifications_recipients = []
     config.enable_automated_audits = SmartEnv.boolean('AUTOMATED_AUDITS_ENABLED')
