@@ -27,6 +27,7 @@ module ChouetteIhm
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     SmartEnv.add :IEV_URL
+    SmartEnv.add :RAILS_ENV
     SmartEnv.add :RAILS_DB_ADAPTER, default: :postgis
     SmartEnv.add :RAILS_DB_HOST, default: 'db'
     SmartEnv.add :RAILS_DB_NAME, default: 'chouette'
@@ -63,9 +64,6 @@ module ChouetteIhm
     SmartEnv.add :IEVKIT_WEB_ENDPOINT
     SmartEnv.add_boolean :IEVKIT_NETRC
     SmartEnv.add_boolean :IEVKIT_SILENT
-
-    # Cucumber
-    SmartEnv.add :CUCUMBER_FORMAT
 
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 
