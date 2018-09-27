@@ -22,7 +22,7 @@ class SimpleImporter < SimpleInterface
 
     @statuses = ""
 
-    if SmartEnv["NO_TRANSACTION"]
+    if SmartEnv.boolean "NO_TRANSACTION"
       process_csv_file
     else
       ActiveRecord::Base.transaction do

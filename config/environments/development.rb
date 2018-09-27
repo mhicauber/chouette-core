@@ -82,7 +82,7 @@ Rails.application.configure do
   config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
   config.automated_audits_recipients = %w{foo@example.com bar@example.com}
   config.development_toolbar = false
-  if SmartEnv['TOOLBAR'] && File.exists?("config/development_toolbar.rb")
+  if SmartEnv.boolean('TOOLBAR') && File.exists?("config/development_toolbar.rb")
     config.development_toolbar = OpenStruct.new
     config.development_toolbar.features_doc_url = nil
     config.development_toolbar.available_features = %w()

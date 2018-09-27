@@ -20,7 +20,7 @@ class Sidekiq::Middleware::Server::Logging
 end
 
 Sidekiq.configure_server do |config|
-  if SmartEnv["CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT"]
+  if SmartEnv.boolean "CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT"
     [
       LineReferentialSync.pending,
       StopAreaReferentialSync.pending
