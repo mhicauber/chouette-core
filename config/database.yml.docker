@@ -1,11 +1,11 @@
-<%= ENV.fetch 'RAILS_ENV', 'production' %>:
-  adapter: <%= ENV.fetch 'RAILS_DB_ADAPTER', 'postgis' %>
+<%= SmartEnv.fetch('RAILS_ENV', default: 'production') %>:
+  adapter: <%= SmartEnv['RAILS_DB_ADAPTER'] %>
   encoding: unicode
-  pool: <%= ENV.fetch 'RAILS_DB_POOLSIZE', '40' %>
-  host: <%= ENV.fetch 'RAILS_DB_HOST', 'db' %>
-  port: <%= ENV.fetch 'RAILS_DB_PORT', '5432' %>
+  pool: <%= SmartEnv['RAILS_DB_POOLSIZE'] %>
+  host: <%= SmartEnv.fetch 'RAILS_DB_HOST', default: 'db' %>
+  port: <%= SmartEnv['RAILS_DB_PORT'] %>
   schema_search_path: 'public,shared_extensions'
   postgis_schema: 'shared_extensions'
-  database: <%= ENV.fetch 'RAILS_DB_NAME', 'chouette' %><%= ENV['TEST_ENV_NUMBER'] %>
-  username: <%= ENV.fetch 'RAILS_DB_USER', 'chouette' %>
-  password: <%= ENV.fetch 'RAILS_DB_PASSWORD' %>
+  database: <%= SmartEnv['RAILS_DB_NAME'] %><%= SmartEnv['TEST_ENV_NUMBER'] %>
+  username: <%= SmartEnv.fetch 'RAILS_DB_USER', default: 'chouette' %>
+  password: <%= SmartEnv['RAILS_DB_PASSWORD'] %>

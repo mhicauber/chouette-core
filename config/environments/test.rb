@@ -1,6 +1,13 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  SmartEnv.set :RAILS_DB_POOLSIZE, default: '5'
+  SmartEnv.set :RAILS_DB_HOST, default: 'localhost'
+  SmartEnv.set :RAILS_DB_NAME, default: 'chouette_test'
+  SmartEnv.set :RAILS_DB_USER, default: nil
+  SmartEnv.set :RAILS_HOST, default: 'http://www.example.com'
+  SmartEnv.set :IEV_URL, default: 'http://localhost:8080'
+
   # The test environment is used exclusively to run your application's
   # test suite. You never need to work with it otherwise. Remember that
   # your test database is "scratch space" for the test suite and is wiped
@@ -45,10 +52,6 @@ Rails.application.configure do
     cas_server: 'http://cas-portal.example.com/sessions'
   }
 
-  # IEV url
-  config.iev_url = ENV.fetch('IEV_URL', 'http://localhost:8080')
-
-  config.rails_host = 'http://www.example.com'
   # file to data for demo
   config.demo_data = 'tmp/demo.zip'
 

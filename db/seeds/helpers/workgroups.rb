@@ -197,7 +197,7 @@ class Seed::Workgroup
         if user.new_record?
           user.password = SecureRandom.hex
 
-          if ENV['CHOUETTE_ITS_SEND_INVITATION']
+          if SmartEnv.boolean 'CHOUETTE_ITS_SEND_INVITATION'
             print "invite! "
             user.invite!
           end

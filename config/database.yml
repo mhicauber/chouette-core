@@ -21,7 +21,7 @@ test: &test
 
 production:
   <<: *default
-  adapter: <%= ENV.fetch 'RAILS_DB_ADAPTER', 'postgis' %>
+  adapter: <%= SmartEnv[:RAILS_DB_ADAPTER] %>
   database: chouette2
 
 cucumber:

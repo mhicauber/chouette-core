@@ -5,9 +5,9 @@ require 'ievkit/client/jobs'
 
 module Ievkit
 
-  # Client for the Iev API  
+  # Client for the Iev API
   class Client
-   
+
     include Ievkit::Configurable
     include Ievkit::Authentication
     include Ievkit::Client::Jobs
@@ -66,7 +66,7 @@ module Ievkit
     def post(url, options = {})
       request :post, url, options
     end
-    
+
     # Make a HTTP POST request
     #
     # @param url [String] The path, relative to {#api_endpoint}
@@ -149,12 +149,12 @@ module Ievkit
     # Hypermedia agent for the Iev API
     #
     # @return [Sawyer::Agent]
-    def multipart_agent      
+    def multipart_agent
       @multipart_agent ||= Sawyer::Agent.new(api_endpoint, sawyer_options.merge({ :serializer => Ievkit::Serializer.multipart}) ) do |http|
         http.headers[:accept] = default_media_type
         http.headers[:content_type] = "multipart/form-data"
         http.headers[:user_agent] = user_agent
-        
+
         # Activate if authentication is needed
         #
         # if basic_authenticated?
@@ -166,7 +166,7 @@ module Ievkit
         # end
       end
     end
-    
+
     # Hypermedia agent for the Iev API
     #
     # @return [Sawyer::Agent]
@@ -175,7 +175,7 @@ module Ievkit
         http.headers[:accept] = default_media_type
         http.headers[:content_type] = "application/json"
         http.headers[:user_agent] = user_agent
-        
+
         # Activate if authentication is needed
         #
         # if basic_authenticated?
@@ -272,7 +272,7 @@ module Ievkit
     #
     # @return [nil]
     def ievkit_warn(*message)
-      unless ENV['IEVKIT_SILENT']
+      unless SmartEnv['IEVKIT_SILENT']
         warn message
       end
     end
@@ -291,11 +291,11 @@ module Ievkit
           options[:headers][:accept] = accept
         end
       end
-      
+
       @last_response = response = multipart_agent.call(method, URI::Parser.new.escape(path.to_s), data, options)
       response.data
     end
-    
+
     def request(method, path, data, options = {})
       if data.is_a?(Hash)
         options[:query]   = data.delete(:query) || {}
@@ -304,7 +304,7 @@ module Ievkit
           options[:headers][:accept] = accept
         end
       end
-      
+
       @last_response = response = agent.call(method, URI::Parser.new.escape(path.to_s), data, options)
       response.data
     end
