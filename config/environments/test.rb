@@ -53,11 +53,6 @@ Rails.application.configure do
     cas_server: 'http://cas-portal.example.com/sessions'
   }
 
-  # IEV url
-  config.iev_url = SmartEnv['IEV_URL']
-
-  config.rails_host = 'http://www.example.com'
-
   # file to data for demo
   config.demo_data = 'tmp/demo.zip'
 
