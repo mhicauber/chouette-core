@@ -65,7 +65,7 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
   if SmartEnv['REDIS_URL']
-    config.cache_store = :redis_store, SmartEnv.fetch('REDIS_URL', default: 'redis://localhost:6379/0/cache'), { expires_in: 90.minutes }
+    config.cache_store = :redis_store, SmartEnv['REDIS_URL'], { expires_in: 90.minutes }
   end
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
