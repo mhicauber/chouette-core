@@ -74,3 +74,20 @@ rescue LoadError
 end
 
 end
+
+namespace :cucumber do
+  desc "Remove all test organisations created by cucumber"
+  task :clean_test_organisations, [:delay] => [:environment] do |task, args|
+    args.with_defaults(delay: 2.hour)
+
+    organisation_ids = User.where("email like 'test+%@chouette.test'").pluck(:organisation_id).uniq
+    organisations = Organisation.where(id: organisation_ids).where("created_at < ?", Time.now - args[:delay].to_i)
+
+    puts "Remove #{organisations.count} test organisation(s)"
+
+    organisations.find_each do |organisation|
+      organisation.workgroups.destroy_all
+      organisation.destroy
+    end
+  end
+end
