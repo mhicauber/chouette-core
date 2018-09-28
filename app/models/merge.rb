@@ -683,7 +683,11 @@ class Merge < ApplicationModel
         save_current
       else
         # We just passed 'before' validations
-        MergeWorker.perform_async(id) unless self.merge_scheduled?
+        if self.merge_scheduled?
+          Rails.logger.warn "Trying to schedule a Merge while it is already enqueued (Merge ID: #{id})"
+        else
+          MergeWorker.perform_async(id)
+        end
       end
     else
       referentials.each &:active!
