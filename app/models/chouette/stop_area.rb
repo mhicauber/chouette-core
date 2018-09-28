@@ -47,7 +47,6 @@ module Chouette
 
     validates_numericality_of :waiting_time, greater_than_or_equal_to: 0, only_integer: true, if: :waiting_time
     validates :time_zone, inclusion: { in: TZInfo::Timezone.all_country_zone_identifiers }, allow_nil: true, allow_blank: true
-    validate :no_time_zone_if_parent
     validate :parent_area_type_must_be_greater
     validate :area_type_of_right_kind
     validate :registration_number_is_set
@@ -79,13 +78,6 @@ module Chouette
       return unless self.kind
       unless Chouette::AreaType.send(self.kind).map(&:to_s).include?(self.area_type)
         errors.add(:area_type, I18n.t('stop_areas.errors.incorrect_kind_area_type'))
-      end
-    end
-
-    def no_time_zone_if_parent
-      return unless self.parent
-      if self.time_zone
-        errors.add(:time_zone, I18n.t('stop_areas.errors.time_zone.with_parent'))
       end
     end
 
