@@ -7,7 +7,8 @@
       - if has_feature? :purchase_windows
         = link_to I18n.t("purchase_windows.index.title"), [@referential, :purchase_windows], class: 'btn btn-primary sticky-action', target: :blank
       - if @route.opposite_route.present?
-        = link_to(t('routes.actions.reversed_vehicle_journey'), [@referential, @route.line, @route.opposite_route, :vehicle_journeys], class: 'btn btn-primary sticky-action')
+        - enable = @route.opposite_route.vehicle_journeys.exists?
+        = link_to(t('routes.actions.reversed_vehicle_journey'), [@referential, @route.line, @route.opposite_route, :vehicle_journeys], class: "btn btn-primary sticky-action #{enable ? '' : 'disabled'}")
 
 
 .page_content
