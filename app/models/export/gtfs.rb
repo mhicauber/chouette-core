@@ -239,7 +239,7 @@ class Export::Gtfs < Export::Base
   def export_vehicle_journey_at_stops_to(target)
     journeys.each do |vehicle_journey|
       vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
-        next if vehicle_journey_at_stop.stop_point.stop_area.commercial?
+        next if !vehicle_journey_at_stop.stop_point.stop_area.commercial?
 
         vehicule_journey_service_trip_hash[vehicle_journey.id].each do |trip_id|
 
