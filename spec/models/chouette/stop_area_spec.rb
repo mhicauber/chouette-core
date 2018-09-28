@@ -20,6 +20,15 @@ describe Chouette::StopArea, :type => :model do
       expect(build(:stop_area, time_zone: "Europe/Lisbon")).to be_valid
       expect(build(:stop_area, time_zone: "Portugal")).to_not be_valid
     end
+
+    it "shouldn't have a time_zone if it has a parent" do
+      gdl = create :stop_area, :area_type => "gdl" 
+
+      expect(build(:stop_area, area_type: 'lda', time_zone: "Europe/Lisbon")).to be_valid
+      expect(build(:stop_area, area_type: 'lda', parent: gdl)).to be_valid
+      expect(build(:stop_area, area_type: 'lda', time_zone: "Europe/Lisbon", parent: gdl)).to_not be_valid
+      
+    end
   end
 
   describe "#area_type" do
