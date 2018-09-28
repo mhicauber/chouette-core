@@ -117,10 +117,6 @@ class LinesController < ChouetteController
   alias_method :current_referential, :line_referential
   helper_method :current_referential
 
-  def begin_of_association_chain
-    current_organisation
-  end
-
   def line_params
     out = params.require(:line).permit(
       :transport_mode,

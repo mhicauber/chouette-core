@@ -18,10 +18,4 @@ class StopAreaReferentialsController < ChouetteController
     end
     redirect_to resource
   end
-
-  protected
-  def begin_of_chain
-    current_organisation
-  end
-
 end

@@ -33,7 +33,7 @@ RSpec.describe RoutesController, type: :controller do
       get :index, line_id: route.line_id,
           referential_id: referential.id
     end
-
+    
     it_behaves_like "line and referential linked"
     it_behaves_like "redirected to referential_line_path(referential,line)"
   end

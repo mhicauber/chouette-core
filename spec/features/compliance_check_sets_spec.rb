@@ -24,6 +24,7 @@ RSpec.describe "ComplianceCheckSets", type: :feature do
   context 'executed' do
 
     before do
+      compliance_check_set.workbench.update organisation_id: @user.organisation_id
       visit(executed_compliance_check_set_path(compliance_check_set))
     end
 

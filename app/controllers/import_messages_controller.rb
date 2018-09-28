@@ -5,7 +5,6 @@ class ImportMessagesController < ChouetteController
     belongs_to :import_resource, :parent_class => Import::Resource
   end
 
-
   def index
     index! do |format|
       format.csv {
@@ -20,7 +19,7 @@ class ImportMessagesController < ChouetteController
   end
 
   def parent
-    @import_resource ||= Import::Resource.find(params[:import_resource_id])
+    scope = current_organisation.imports
+    @import_resource ||= Import::Resource.joins(:import).merge(scope).find(params[:import_resource_id])
   end
-
 end

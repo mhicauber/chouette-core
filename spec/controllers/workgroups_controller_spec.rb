@@ -1,10 +1,30 @@
 RSpec.describe WorkgroupsController, :type => :controller do
   login_user
 
-  let(:workgroup) { create :workgroup }
-  let(:workbench) { create :workbench, workgroup: workgroup }
-  let(:compliance_control_set) { create :compliance_control_set, organisation: @user.organisation }
+  let(:workbench) { create :workbench, organisation: organisation }
+  let(:workgroup) { workbench.workgroup }
+  let(:organisation){ @user.organisation }
+  let(:compliance_control_set) { create :compliance_control_set, organisation: organisation }
   let(:merge_id) { 2**64/2 - 1 } # Let's check we support Bigint
+
+
+  describe "GET show" do
+    let(:request){ get :show, id: workgroup.id }
+    it_behaves_like 'checks current_organisation', success_code: 302
+  end
+
+  describe "GET edit" do
+    let(:request){ get :edit, id: workgroup.id }
+    it 'should respond with 403' do
+      expect(request).to have_http_status 403
+    end
+    context "when belonging to the owner" do
+      before do
+        workgroup.update owner: @user.organisation
+      end
+      it_behaves_like 'checks current_organisation'
+    end
+  end
 
   describe 'PATCH update' do
     let(:params){

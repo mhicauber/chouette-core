@@ -25,7 +25,7 @@ class ImportResourcesController < ChouetteController
   end
 
   def resource
-    @import ||= Import::Base.find params[:import_id]
+    @import ||= current_organisation.imports.find params[:import_id]
     @import_resource ||= begin
       import_resource = Import::Resource.find params[:id]
       raise ActiveRecord::RecordNotFound unless import_resource.import == @import

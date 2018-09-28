@@ -12,6 +12,8 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   requires_feature :referential_vehicle_journeys
 
+  belongs_to :referential
+
   def index
     if params[:q] && params[:q][:route_line_id_eq].present?
       @filtered_line = Chouette::Line.find(params[:q][:route_line_id_eq])
@@ -61,6 +63,6 @@ class ReferentialVehicleJourneysController < ChouetteController
         scope.order_by_arrival_time(direction)
       else
         scope.order "#{params[:sort]} #{direction}"
-      end
+    end
   end
 end

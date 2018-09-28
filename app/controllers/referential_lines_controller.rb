@@ -12,7 +12,6 @@ class ReferentialLinesController < ChouetteController
   belongs_to :referential
 
   def show
-
     @q = resource.routes.ransack(params[:q])
     @routes = @q.result
 
@@ -99,7 +98,6 @@ class ReferentialLinesController < ChouetteController
       @lines ||= @q.result(:distinct => true).order(:number)
     end
     @lines = @lines.paginate(page: params[:page], per_page: 10).includes([:network, :company])
-
   end
 
   private

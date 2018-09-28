@@ -147,10 +147,6 @@ class StopAreasController < ChouetteController
       end
   end
 
-  def begin_of_association_chain
-    current_organisation
-  end
-
   private
 
   def sort_column

@@ -1,8 +1,14 @@
 RSpec.describe ImportsController, :type => :controller do
   login_user
 
-  let(:workbench) { create :workbench, organisation: Organisation.find_by!(code: "first") }
+  let(:organisation){ @user.organisation }
+  let(:workbench) { create :workbench, organisation: organisation }
   let(:import)    { create :import, workbench: workbench }
+
+  describe "GET index" do
+    let(:request){ get :index, workbench_id: workbench.id }
+    it_behaves_like 'checks current_organisation'
+  end
 
   describe 'GET #new' do
     it 'should be successful if authorized' do

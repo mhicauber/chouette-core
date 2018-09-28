@@ -1,7 +1,15 @@
 RSpec.describe FootnotesController, :type => :controller do
   login_user permissions: []
+
+  let(:referential) { create :workbench_referential, workbench: workbench, organisation: organisation }
+  let(:workbench){ create :workbench, organisation: organisation }
+  let(:organisation) { @user.organisation }
   let(:route){ create :route, referential: referential }
   let(:line) { route.line }
+
+  before(:each) do
+    line.update line_referential: workbench.line_referential
+  end
 
   describe "GET edit_all" do
     let(:request){ get :edit_all, line_id: line.id, referential_id: referential.id }
@@ -11,9 +19,7 @@ RSpec.describe FootnotesController, :type => :controller do
     end
 
     with_permission "footnotes.update" do
-      it 'returns HTTP success' do
-        expect(request).to be_success
-      end
+      it_behaves_like 'checks current_organisation'
 
       context "with an archived referential" do
         before(:each) do
@@ -34,9 +40,7 @@ RSpec.describe FootnotesController, :type => :controller do
     end
 
     with_permission "footnotes.update" do
-      it 'returns HTTP success' do
-        expect(request).to be_redirect
-      end
+      it_behaves_like 'checks current_organisation', success_code: 302
     end
   end
 end
