@@ -20,6 +20,13 @@ RSpec.describe Api::V1::WorkbenchesController, type: :controller do
         get :index, format: :json
         expect(response).to be_success
       end
+
+      it 'should only return the current organisation workbench' do
+        create(:workbench)
+
+        get :index, format: :json
+        expect(assigns(:workbenches).length).to eq 1
+      end
     end
   end
 end
