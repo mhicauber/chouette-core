@@ -23,6 +23,8 @@
     display: inline-block
     vertical-align: middle
     width: calc(100% - 65px)
+    max-height: 8.4rem
+    overflow: hidden
 
     &:first-child
       width: 100%
@@ -30,28 +32,11 @@
     h1
       position: relative
       line-height: 1.4
-      max-height: 2.2em
       margin: 0 -1.4em 0 0
       padding: 0 1.4em 0 0
-      overflow: hidden
 
-      &:before
-        content: '[...]'
-        font-size: 0.65em
-        position: absolute
-        z-index: 5
-        right: 0
-        bottom: 4px
-
-      &:after
-        content: ''
-        position: absolute
-        z-index: 5
-        right: 0
-        width: 1.4em
-        height: 1em
-        margin-top: 0.2em
-        background-color: $brand-color-secondary
+      &.placeholder
+        color: red
 
       .small.fa
         color: #fff

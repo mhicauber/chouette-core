@@ -28,6 +28,7 @@
 //= require jquery-ui/widgets/draggable
 //= require jquery-ui/widgets/droppable
 //= require jquery-ui/widgets/sortable
+//= require ellipsis
 
 $(document).ready(function() {
   $('a[disabled=disabled]').click(function(event){
@@ -50,5 +51,18 @@ $(document).ready(function() {
       $(e.target).parents(".custom_field_attachment_wrapper").find('.btn label').html(I18n.t("actions.select"))
       $(e.target).parents(".delete-wrapper").addClass('hidden')
     }
+  })
+
+  $('.page-title h1').ellipsis()
+  var cooldown
+  $(window).resize(function(){
+    if(cooldown){
+      clearTimeout(cooldown)
+    }
+    cooldown = setTimeout(function(){
+      $('.page-title h1').ellipsis()
+      cooldown = null
+    }, 200)
+
   })
 })
