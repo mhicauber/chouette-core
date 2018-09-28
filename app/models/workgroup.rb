@@ -95,7 +95,7 @@ class Workgroup < ApplicationModel
 
   private
   def self.compliance_control_sets_label(key)
-    "workgroups.compliance_control_sets.#{key}".t.capitalize
+    "workgroups.compliance_control_sets.#{key}".t
   end
 
   def self.compliance_control_sets_labels(keys)
