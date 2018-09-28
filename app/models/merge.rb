@@ -685,12 +685,21 @@ class Merge < ApplicationModel
         save_current
       else
         # We just passed 'before' validations
-        MergeWorker.perform_async(id)
+        if self.merge_scheduled?
+          Rails.logger.warn "Trying to schedule a Merge while it is already enqueued (Merge ID: #{id})"
+        else
+          MergeWorker.perform_async(id)
+        end
       end
     else
       referentials.each &:active!
       update status: :failed, ended_at: Time.now
     end
+  end
+
+  def merge_scheduled?
+    queue = Sidekiq::Queue[MergeWorker.sidekiq_options["queue"]]
+    queue.any? { |item| item["class"] == "MergeWorker" && item.args == [self.id] }
   end
 
   def compliance_check_set(key, referential = nil)
