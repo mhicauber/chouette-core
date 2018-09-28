@@ -6,8 +6,6 @@ fr:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
       incorrect_kind_area_type: Ce type d'arrêt est invalide pour cette catégorie
-      time_zone:
-       with_parent: Ne peut pas avoir de fuseau horaire si un parent est sélectionné 
       registration_number:
         already_taken: Déjà utilisé
         cannot_be_empty: Ce champ est requis
