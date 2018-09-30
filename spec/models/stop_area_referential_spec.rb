@@ -26,7 +26,7 @@ RSpec.describe StopAreaReferential, :type => :model do
       end
 
       it "should remove syncs if there are already 40 or more" do
-        expect { subject.clean_previous_syncs }.to_not change(StopAreaReferentialSync, :count)
+        expect { subject.clean_previous_syncs(:stop_area_referential_syncs) }.to_not change(StopAreaReferentialSync, :count)
         expect(subject.stop_area_referential_syncs.count).to eq(1)
       end
     end
@@ -39,7 +39,7 @@ RSpec.describe StopAreaReferential, :type => :model do
       end
 
       it "should remove syncs if there are already 40 or more" do
-        expect { subject.clean_previous_syncs }.to change(StopAreaReferentialSync, :count).by(StopAreaReferential.keep_syncs - StopAreaReferentialSync.count)
+        expect { subject.clean_previous_syncs(:stop_area_referential_syncs) }.to change(StopAreaReferentialSync, :count).by(SyncSupport::KEEP_SYNCS - StopAreaReferentialSync.count)
         expect(subject.stop_area_referential_syncs.count).to eq(40)
       end
     end

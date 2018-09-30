@@ -1,9 +1,7 @@
 class LineReferential < ApplicationModel
   include ObjectidFormatterSupport
+  include SyncSupport
   extend NetexTransportModeEnumerations
-
-  @@keep_syncs = 40
-  mattr_accessor :keep_syncs
 
   has_many :line_referential_memberships, dependent: :destroy
   has_many :organisations, through: :line_referential_memberships
@@ -31,12 +29,5 @@ class LineReferential < ApplicationModel
 
   def last_sync
     line_referential_syncs.last
-  end
-
-  def clean_previous_syncs
-    return unless line_referential_syncs.count > @@keep_syncs
-    while line_referential_syncs.count > @@keep_syncs do
-      line_referential_syncs.order("created_at asc").first.destroy
-    end
   end
 end

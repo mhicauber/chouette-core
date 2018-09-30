@@ -21,7 +21,7 @@ RSpec.describe LineReferential, type: :model do
       end
 
       it "should remove syncs if there are already 40 or more" do
-        expect { subject.clean_previous_syncs }.to_not change(LineReferentialSync, :count)
+        expect { subject.clean_previous_syncs(:line_referential_syncs) }.to_not change(LineReferentialSync, :count)
         expect(subject.line_referential_syncs.count).to eq(1)
       end
     end
@@ -34,7 +34,7 @@ RSpec.describe LineReferential, type: :model do
       end
 
       it "should remove syncs if there are already 40 or more" do
-        expect { subject.clean_previous_syncs }.to change(LineReferentialSync, :count).by(LineReferential.keep_syncs - LineReferentialSync.count)
+        expect { subject.clean_previous_syncs(:line_referential_syncs) }.to change(LineReferentialSync, :count).by(SyncSupport::KEEP_SYNCS - LineReferentialSync.count)
         expect(subject.line_referential_syncs.count).to eq(40)
       end
     end
