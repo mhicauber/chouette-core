@@ -40,6 +40,10 @@ module Chouette
       .where("time_tables_vehicle_journeys.vehicle_journey_id is null")
     }
 
+    scope :empty, -> {
+      includes(:periods, :dates).where(time_table_periods: {id: nil}, time_table_dates: {id: nil})
+    }
+
     after_save :save_shortcuts
 
     def local_id
