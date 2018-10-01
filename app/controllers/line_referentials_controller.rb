@@ -12,7 +12,6 @@ class LineReferentialsController < ChouetteController
     authorize resource, :synchronize?
     @sync = resource.line_referential_syncs.build
     if @sync.save
-      resource.clean_previous_syncs(:line_referential_syncs)
       flash[:notice] = t('notice.line_referential_sync.created')
     else
       flash[:error] = @sync.errors.full_messages.to_sentence
