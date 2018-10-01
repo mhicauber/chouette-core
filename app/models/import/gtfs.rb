@@ -241,7 +241,6 @@ class Import::Gtfs < Import::Base
       if route.agency_id.present?
         next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
       end
-
       line = line_referential.lines.find_or_initialize_by(registration_number: route.id)
       line.name = route.long_name.presence || route.short_name
       line.number = route.short_name

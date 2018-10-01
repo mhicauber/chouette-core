@@ -4,15 +4,15 @@ RSpec.describe Import::Gtfs do
 
   let(:referential) do
     create :referential do |referential|
-      referential.line_referential.objectid_format = "netex"
-      referential.stop_area_referential.objectid_format = "netex"
+      referential.line_referential.update objectid_format: "netex"
+      referential.stop_area_referential.update objectid_format: "netex"
     end
   end
 
   let(:workbench) do
     create :workbench do |workbench|
-      workbench.line_referential.objectid_format = "netex"
-      workbench.stop_area_referential.objectid_format = "netex"
+      workbench.line_referential.update objectid_format: "netex"
+      workbench.stop_area_referential.update objectid_format: "netex"
     end
   end
 
@@ -499,7 +499,7 @@ RSpec.describe Import::Gtfs do
 
       it 'should create an error message' do
         import.import_calendars
-        
+
         expect do
           import.import_calendar_dates
         end.to(change { Import::Message.count }.by(1))

@@ -173,8 +173,8 @@ describe TableBuilderHelper, type: :helper do
     end
 
     it "can set a column as non-sortable" do
-      company = build_stubbed(:company)
-      line_referential = build_stubbed(
+      company = create(:company)
+      line_referential = create(
         :line_referential,
         companies: [company]
       )
@@ -288,7 +288,7 @@ describe TableBuilderHelper, type: :helper do
     end
 
     it "can set all columns as non-sortable" do
-      company = build_stubbed(:company)
+      company = create(:company)
       line_referential = build_stubbed(
         :line_referential,
         companies: [company]
