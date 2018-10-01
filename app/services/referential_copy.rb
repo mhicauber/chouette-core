@@ -1,10 +1,18 @@
-class ReferentialCopy < ActiveRecord::Base
+class ReferentialCopy
   extend Enumerize
 
-  belongs_to :source, class_name: "Referential"
-  belongs_to :target, class_name: "Referential"
+  attr_accessor :source, :target, :status, :last_error, :logger
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
+
+  def initialize(source:, target:)
+    @source = source
+    @target = target
+  end
+
+  def logger
+    @logger ||= Rails.logger
+  end
 
   def copy
     copy_metadatas
@@ -15,9 +23,9 @@ class ReferentialCopy < ActiveRecord::Base
         copy_routes line
       end
     end
-    update status: :successful
+    @status = :successful
   rescue SaveError => e
-    Rails.logger.error e.message
+    logger.error e.message
     failed! e.message
   end
 
@@ -189,7 +197,8 @@ class ReferentialCopy < ActiveRecord::Base
   end
 
   def failed! error
-    update status: :failed, last_error: error
+    @status = :failed
+    @last_error = error
   end
 
   class SaveError < RuntimeError

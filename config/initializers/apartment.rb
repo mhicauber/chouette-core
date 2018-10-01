@@ -58,7 +58,6 @@ Apartment.configure do |config|
     'Merge',
     'Organisation',
     'Referential',
-    'ReferentialCopy',
     'ReferentialCloning',
     'ReferentialMetadata',
     'ReferentialSuite',

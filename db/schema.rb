@@ -89,9 +89,9 @@ ActiveRecord::Schema.define(version: 20180914100755) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -682,15 +682,6 @@ ActiveRecord::Schema.define(version: 20180914100755) do
 
   add_index "referential_clonings", ["source_referential_id"], name: "index_referential_clonings_on_source_referential_id", using: :btree
   add_index "referential_clonings", ["target_referential_id"], name: "index_referential_clonings_on_target_referential_id", using: :btree
-
-  create_table "referential_copies", id: :bigserial, force: :cascade do |t|
-    t.integer  "source_id",  limit: 8
-    t.integer  "target_id",  limit: 8
-    t.string   "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text     "last_error"
-  end
 
   create_table "referential_metadata", id: :bigserial, force: :cascade do |t|
     t.integer   "referential_id",        limit: 8
