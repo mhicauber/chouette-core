@@ -171,7 +171,7 @@ class Referential < ApplicationModel
   def clean_routes_if_needed
     return unless persisted?
     line_ids = self.metadatas.pluck(:line_ids).flatten.uniq
-    if self.switch { routes.where("line_id NOT IN (?)", line_ids).exists? }
+    if self.switch { routes.where.not(line_id: line_ids).exists? }
       CleanUp.create!(referential: self, original_state: self.state)
       pending! && save!
     end
