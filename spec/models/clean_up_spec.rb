@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe CleanUp, :type => :model do
 
-  it { should validate_presence_of(:date_type).with_message(:presence) }
-  it { should validate_presence_of(:begin_date).with_message(:presence) }
+  # it { should validate_presence_of(:begin_date).with_message(:presence) }
   it { should belong_to(:referential) }
 
   context 'Clean Up With Date Type : Between' do
@@ -128,6 +127,12 @@ RSpec.describe CleanUp, :type => :model do
       expect(cleaner).to receive(:destroy_time_tables_dates_between)
       expect(cleaner).to receive(:destroy_time_tables_periods_between)
       cleaner.clean
+    end
+
+    it "should set the referential state to the original_state value" do
+      cleaner.original_state = :archived
+      cleaner.clean
+      expect(cleaner.referential.state).to eq :archived
     end
   end
 

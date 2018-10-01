@@ -139,6 +139,36 @@ describe Referential, :type => :model do
     end
   end
 
+  context "clean_routes_if_needed" do
+    before(:each){
+      3.times do create(:line, line_referential: ref.line_referential) end
+      m = ref.metadatas.last
+      m.update_column :line_ids, ref.associated_lines.map(&:id)
+      ref.switch do
+        create(:route, line: ref.lines.last)
+      end
+    }
+    context "when the lines did not change" do
+      it "should do nothing" do
+        expect(CleanUp).to_not receive(:create)
+        ref.clean_routes_if_needed
+      end
+    end
+
+    context "when the lines changed" do
+      before do
+        m = ref.metadatas.last
+        m.update_column :line_ids, m.line_ids[0...-1]
+        ref.reload
+      end
+      it "should perform cleanup" do
+        expect(CleanUp).to receive(:create!).with({referential: ref, original_state: ref.state})
+        ref.clean_routes_if_needed
+        expect(ref.reload.state).to eq :pending
+      end
+    end
+  end
+
   context ".state" do
     it "should return the expected values" do
       referential = build :referential

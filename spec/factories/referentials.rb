@@ -20,7 +20,7 @@ FactoryGirl.define do
     factory :workbench_referential do
       association :workbench
       before :create do | ref |
-        ref.workbench.organisation = ref.organisation
+        ref.workbench.update organisation: ref.organisation
       end
     end
   end

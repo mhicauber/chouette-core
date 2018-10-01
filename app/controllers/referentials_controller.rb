@@ -62,6 +62,11 @@ class ReferentialsController < ChouetteController
     end
   end
 
+  def update
+    update!
+    @referential.clean_routes_if_needed
+  end
+
   def select_compliance_control_set
     @compliance_control_sets = ComplianceControlSet.where(organisation: current_organisation)
   end
