@@ -60,7 +60,16 @@ module ObjectidSupport
     end
 
     def objectid_formatter
-      self.referential.objectid_formatter
+      Chouette::ObjectidFormatter.for_objectid_provider(*referential_identifier)
+    end
+
+    def referential_identifier
+      %w[line_referential stop_area_referential].each do |name|
+        if (r = self.class.reflections[name])
+          return [r.klass, { id: send(r.foreign_key) }]
+        end
+      end
+      [Referential, { slug: referential_slug }]
     end
 
     def before_validation_objectid

@@ -3,8 +3,13 @@ module ObjectidFormatterSupport
 
   included do
     extend Enumerize
-    enumerize :objectid_format, in: %w(netex stif_netex stif_reflex stif_codifligne)
+    enumerize :objectid_format,
+              in: %w[netex stif_netex stif_reflex stif_codifligne]
     validates_presence_of :objectid_format
+
+    after_save do
+      Chouette::ObjectidFormatter.reset_objectid_providers_cache!
+    end
 
     def objectid_formatter
       objectid_formatter_class.new
