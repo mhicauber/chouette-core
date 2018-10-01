@@ -95,8 +95,7 @@ RSpec.describe ReferentialCopy do
     end
 
     context "with existing overlapping periodes" do
-
-      it "should copy metadatas only once" do
+      it "should create a new metadata nonetheless" do
         referential
         target
         overlapping_metadata = target.metadatas.last
@@ -104,10 +103,10 @@ RSpec.describe ReferentialCopy do
         overlapping_metadata.periodes = [(period.max-1.day..period.max+1.day)]
         overlapping_metadata.line_ids = referential_metadata.line_ids
         overlapping_metadata.save!
-        expect{referential_copy.send :copy_metadatas}.to change{target.metadatas.count}.by 0
+        expect{referential_copy.send :copy_metadatas}.to change{target.metadatas.count}.by 1
         target_metadata = target.metadatas.reload.last
         expect(target_metadata.lines).to eq referential_metadata.lines
-        expect(target_metadata.periodes).to eq [(period.min..period.max+1.day)]
+        expect(target_metadata.periodes).to eq [period]
       end
     end
   end

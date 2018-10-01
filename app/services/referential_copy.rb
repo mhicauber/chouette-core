@@ -41,14 +41,9 @@ class ReferentialCopy
 
   def copy_metadatas
     source.metadatas.each do |metadata|
-      candidate = target.metadatas.with_lines(metadata.line_ids).last
-      if candidate
-        candidate.periodes += metadata.periodes
-        candidate.merge_periodes
-        controlled_save! candidate
-      else
-        target.metadatas.create line_ids: metadata.line_ids, periodes: metadata.periodes
-      end
+      candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
+      candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes)
+      controlled_save! candidate
     end
   end
 
