@@ -334,7 +334,7 @@ class Import::Gtfs < Import::Base
       # we don't calculate costs right away, as there are no stops in the route yet
       route.prevent_costs_calculation = true
 
-      routes << route
+      routes << route.id
       stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
       stop_times.each do |stop_time|
@@ -342,7 +342,7 @@ class Import::Gtfs < Import::Base
       end
     end
 
-    routes.each do |r|
+    referential.routes.where(id: routes).find_each do |r|
       r.calculate_costs!
     end
   end
