@@ -27,7 +27,7 @@ module MetadataSupport
 
         define_method :set_metadata! do |name, value|
           self.metadata.send "#{name}=", value
-          self.save!
+          self.update_column :metadata, self.metadata.as_json
         end
       end
     end
