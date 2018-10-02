@@ -38,4 +38,19 @@ describe Organisation, :type => :model do
 
   end
 
+  describe "#api_keys" do
+
+    let(:organisation) { create :organisation }
+
+    it "regroups api keys of all organisation's workbenches" do
+      api_keys = []
+      3.times do |n|
+        workbench = create :workbench, organisation: organisation
+        api_keys << workbench.api_keys.create
+      end
+      organisation.api_keys.to_a.should eq(api_keys)
+    end
+
+  end
+
 end
