@@ -53,14 +53,21 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     end
 
     describe "with a TimeZone" do
+      let(:stop){ at_stop.stop_point.stop_area }
       before(:each) do
-        stop = at_stop.stop_point.stop_area
-        stop.update time_zone: "America/Mexico_City"
+        stop.update time_zone: 'America/Mexico_City'
       end
 
       it "should offset times" do
         expect(at_stop.departure_local).to eq at_stop.send(:format_time, at_stop.departure_time - 6.hours)
         expect(at_stop.arrival_local).to eq at_stop.send(:format_time, at_stop.arrival_time - 6.hours)
+      end
+
+      it "should not be sensible to winter/summer time" do
+        stop.update time_zone: 'Europe/Paris'
+        summer_time = Timecop.freeze("2000/08/01 12:00:00".to_time) { at_stop.departure_local }
+        winter_time = Timecop.freeze("2000/12/01 12:00:00".to_time) { at_stop.departure_local }
+        expect(summer_time).to eq winter_time
       end
     end
   end
