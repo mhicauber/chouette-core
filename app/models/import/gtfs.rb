@@ -342,7 +342,7 @@ class Import::Gtfs < Import::Base
       end
     end
 
-    referential.routes.where(id: routes).find_each do |r|
+    referential.routes.where(id: routes.to_a).find_each do |r|
       r.calculate_costs!
     end
   end
