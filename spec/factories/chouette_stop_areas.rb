@@ -41,5 +41,50 @@ FactoryGirl.define do
     trait :deactivated do
       deleted_at { 1.hour.ago }
     end
+
+    trait :zdep do
+      kind "commercial"
+      area_type 'zdep'
+    end
+
+    trait :zdlp do
+      kind "commercial"
+      area_type 'zdlp'
+    end
+
+    trait :lda do
+      kind "commercial"
+      area_type 'lda'
+    end
+
+    trait :gdl do
+      kind "commercial"
+      area_type 'gdl'
+    end
+
+    trait :deposit do
+      kind "non_commercial"
+      area_type 'deposit'
+    end
+
+    trait :border do
+      kind "non_commercial"
+      area_type 'border'
+    end
+
+    trait :service_area do
+      kind "non_commercial"
+      area_type 'service_area'
+    end
+
+    trait :relief do
+      kind "non_commercial"
+      area_type 'relief'
+    end
+
+    trait :other do
+      kind "non_commercial"
+      area_type 'other'
+    end
   end
 end
