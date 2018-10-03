@@ -133,6 +133,7 @@ describe Chouette::VehicleJourneyAtStop do
         context "in #{season}" do
 
           before { Timecop.freeze(time.to_time) }
+          after { Timecop.return }
 
           it "should apply the TZ" do
             at_stops = []
