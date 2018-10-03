@@ -4,8 +4,12 @@ module VehicleJourneyControl
 
     def self.default_code; "3-VehicleJourney-10" end
 
+    def self.collection referential
+      referential.vehicle_journeys.includes(:time_tables)
+    end
+
     def self.compliance_test compliance_check, vehicle_journey
-      vehicle_journey.time_tables.empty.empty?
+      vehicle_journey.time_tables.empty.blank?
     end
 
     def self.custom_message_attributes compliance_check, vj
