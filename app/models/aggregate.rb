@@ -86,34 +86,17 @@ class Aggregate < ActiveRecord::Base
   end
 
   def prepare_new
-    new =
-      if workgroup.output.current
-        Rails.logger.debug "Clone current output"
-        Referential.new_from(workgroup.output.current, nil).tap do |clone|
-          clone.inline_clone = true
-          clone.prefix = "aggregate_#{id}"
-          clone.line_referential = workgroup.line_referential
-          clone.stop_area_referential = workgroup.stop_area_referential
-        end
-      else
-        if workgroup.aggregates.successful.count > 0
-          # there had been previous merges, we should have a current output
-          raise "Trying to create a new referential to aggregate into from Aggregate##{self.id}, while there had been previous aggregates in the same workgroup"
-        end
-        Rails.logger.debug "Create a new output"
-        # 'empty' one
-        attributes = {
-          organisation: workgroup.owner,
-          prefix: "aggregate_#{id}",
-          line_referential: workgroup.line_referential,
-          stop_area_referential: workgroup.stop_area_referential,
-          objectid_format: referentials.first.objectid_format
-        }
-        workgroup.output.referentials.new attributes
-      end
-
+    Rails.logger.debug "Create a new output"
+    # 'empty' one
+    attributes = {
+      organisation: workgroup.owner,
+      prefix: "aggregate_#{id}",
+      line_referential: workgroup.line_referential,
+      stop_area_referential: workgroup.stop_area_referential,
+      objectid_format: referentials.first.objectid_format
+    }
+    new = workgroup.output.referentials.new attributes
     new.referential_suite = output
-    new.organisation = workgroup.owner
     new.slug = "output_#{workgroup.id}_#{created_at.to_i}"
     new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at))
 
