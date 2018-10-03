@@ -1,29 +1,19 @@
 class Merge < ApplicationModel
-  extend Enumerize
-
-  @@keep_merges = 20
-  mattr_accessor :keep_merges
+  include OperationSupport
 
   belongs_to :workbench
-  belongs_to :new, class_name: 'Referential'
 
   validates :workbench, presence: true
-  validate :has_at_least_one_referential, :on => :create
   validate :check_other_merges, :on => :create
 
-  enumerize :status, in: %w[new pending successful failed running canceled], default: :new
-
-  has_array_of :referentials, class_name: 'Referential'
   has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
 
   delegate :output, to: :workbench
 
   after_commit :merge, :on => :create
 
-  scope :successful, ->{ where status: :successful }
-
-  def self.keep_merges=(value)
-    @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
+  def clean_scope
+    workbench.merges
   end
 
   def rollback!
@@ -54,12 +44,6 @@ class Merge < ApplicationModel
       create_before_merge_compliance_check_sets
     else
       MergeWorker.perform_async(id)
-    end
-  end
-
-  def has_at_least_one_referential
-    unless referentials.length > 0
-      errors.add(:base, :no_referential)
     end
   end
 
@@ -678,15 +662,9 @@ class Merge < ApplicationModel
     output.update current: new, new: nil
     output.current.update referential_suite: output, ready: true
     referentials.each &:merged!
-    clean_previous_merges
+    clean_previous_operations
 
     update status: :successful, ended_at: Time.now
-  end
-
-  def clean_previous_merges
-    while workbench.merges.successful.count > [Merge.keep_merges, 0].max do
-      workbench.merges.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }
-    end
   end
 
   def child_change

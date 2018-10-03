@@ -7,6 +7,7 @@ class Workgroup < ApplicationModel
   has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
+  has_many :aggregates
 
   validates_uniqueness_of :name
 
