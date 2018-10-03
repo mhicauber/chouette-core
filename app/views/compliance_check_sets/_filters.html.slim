@@ -1,4 +1,4 @@
-= search_form_for @q_for_form, url: workbench_compliance_check_sets_path(@workbench), builder: SimpleForm::FormBuilder, class: 'form form-filter' do |f|
+= search_form_for @q_for_form, url: [@parent, :compliance_check_sets], builder: SimpleForm::FormBuilder, class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :referential_name_cont)
       = f.search_field :referential_name_cont, class: 'form-control', placeholder: t('compliance_check_sets.filters.name')

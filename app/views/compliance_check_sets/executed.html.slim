@@ -1,4 +1,4 @@
-- breadcrumb :compliance_check_set_executed, @workbench, @compliance_check_set
+- breadcrumb :compliance_check_set_executed, @parent, @compliance_check_set
 - page_header_content_for @compliance_check_set
 
 .page_content
@@ -30,7 +30,7 @@
                     key: :name, \
                     attribute: 'name', \
                     link_to: lambda do |compliance_check| \
-                        compliance_check_path(compliance_check) \
+                        [@parent, @compliance_check_set, compliance_check] \
                       end \
                   ), \
                   TableBuilderHelper::Column.new( \
@@ -65,7 +65,7 @@
                   key: :name, \
                   attribute: 'name', \
                   link_to: lambda do |compliance_check| \
-                      compliance_check_path(compliance_check) \
+                      [@parent, @compliance_check_set, compliance_check] \
                     end \
                 ), \
                 TableBuilderHelper::Column.new( \

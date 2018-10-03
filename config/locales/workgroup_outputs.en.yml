@@ -1,0 +1,7 @@
+en:
+  workgroup_outputs:
+    show:
+      title: Current offers
+      see_current_output: See the current offer
+      table_headers:
+        ended_at: "Ended at"

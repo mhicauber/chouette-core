@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181003110259) do
+ActiveRecord::Schema.define(version: 20181003124924) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1098,14 +1098,15 @@ ActiveRecord::Schema.define(version: 20181003110259) do
 
   create_table "workgroups", id: :bigserial, force: :cascade do |t|
     t.string   "name"
-    t.integer  "line_referential_id",      limit: 8
-    t.integer  "stop_area_referential_id", limit: 8
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.string   "import_types",                       default: [],              array: true
-    t.string   "export_types",                       default: [],              array: true
-    t.integer  "owner_id",                 limit: 8
-    t.integer  "output_id",                limit: 8
+    t.integer  "line_referential_id",        limit: 8
+    t.integer  "stop_area_referential_id",   limit: 8
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.string   "import_types",                         default: [],              array: true
+    t.string   "export_types",                         default: [],              array: true
+    t.integer  "owner_id",                   limit: 8
+    t.integer  "output_id",                  limit: 8
+    t.hstore   "compliance_control_set_ids"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

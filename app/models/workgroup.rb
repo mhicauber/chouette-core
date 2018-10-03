@@ -9,6 +9,7 @@ class Workgroup < ApplicationModel
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
   has_many :aggregates
+  has_many :compliance_check_sets, through: :aggregates
 
   validates_uniqueness_of :name
 
@@ -16,6 +17,9 @@ class Workgroup < ApplicationModel
   validates_presence_of :stop_area_referential_id
   validates_uniqueness_of :stop_area_referential_id
   validates_uniqueness_of :line_referential_id
+
+  validates :output, presence: true
+  before_validation :initialize_output
 
   has_many :custom_fields
 
@@ -43,8 +47,18 @@ class Workgroup < ApplicationModel
     )
   end
 
+  def self.workgroup_compliance_control_sets
+    %i[
+      after_aggregate
+    ]
+  end
+
   def self.all_compliance_control_sets_labels
     compliance_control_sets_labels all_compliance_control_sets
+  end
+
+  def self.compliance_control_sets_for_workgroup
+    compliance_control_sets_labels workgroup_compliance_control_sets
   end
 
   def self.compliance_control_sets_by_workgroup
@@ -96,7 +110,12 @@ class Workgroup < ApplicationModel
   end
 
   def aggregatable_referentials
-    workbenches.map { |w| w.output.current }.compact  
+    workbenches.map { |w| w.output.current }.compact
+  end
+
+  def compliance_control_set key
+    id = (compliance_control_set_ids || {})[key.to_s]
+    ComplianceControlSet.where(id: id).last if id.present?
   end
 
   private
@@ -109,6 +128,10 @@ class Workgroup < ApplicationModel
       h[k] = compliance_control_sets_label(k)
       h
     end
+  end
+
+  def initialize_output
+    self.output ||= ReferentialSuite.create
   end
 
 end

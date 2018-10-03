@@ -1,6 +1,22 @@
 - breadcrumb :aggregate, @aggregate
 - page_header_content_for @aggregate
 
+ruby:
+ after_controls = Workgroup.compliance_control_sets_for_workgroup.map do |key, label|
+   TableBuilderHelper::Column.new(
+     name: label,
+     attribute: lambda do |item|
+       ccs = @aggregate.compliance_check_set(key)
+       ccs ? import_status(ccs.status, verbose: true) : '-'
+     end,
+     sortable: false,
+     link_to: lambda do |item|
+       ccs = @aggregate.compliance_check_set(key)
+       ccs && [@aggregate.workgroup, ccs]
+    end
+    )
+  end
+
 .page_content
   .container-fluid
     .row
@@ -37,5 +53,5 @@
               link_to: lambda do |item| \
                 referential_path(item) \
               end \
-            ) \
+            ), *after_controls \
           ], cls: 'table'

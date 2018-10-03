@@ -36,6 +36,7 @@ module ReferentialsHelper
   end
 
   def mutual_workbench workbench
+    return unless workbench
     current_user.organisation.workbenches.where(workgroup_id: workbench.workgroup_id).last
   end
 

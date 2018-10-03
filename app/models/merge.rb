@@ -5,7 +5,7 @@ class Merge < ApplicationModel
 
   validates :workbench, presence: true
 
-  has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
+  has_many :compliance_check_sets, -> { where(parent_type: "Merge") }, foreign_key: :parent_id, dependent: :destroy
 
   delegate :output, to: :workbench
 

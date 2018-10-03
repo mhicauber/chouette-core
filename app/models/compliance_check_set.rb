@@ -75,7 +75,11 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def organisation
-    workbench.organisation
+    organisation = workbench&.organisation
+    if parent_type == "Aggregate"
+      organisation ||= parent.workgroup.owner
+    end
+    organisation
   end
 
   def human_attribute_name(*args)
