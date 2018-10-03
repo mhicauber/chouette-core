@@ -43,4 +43,23 @@ RSpec.describe LineReferentialSync, :type => :model do
       line_referential_sync.failed
     end
   end
+
+  context "#clean_previous_syncs" do
+    it "should be called after create" do
+      sync = build(:line_referential_sync)
+      expect(sync).to receive(:clean_previous_syncs)
+      sync.run_callbacks(:create)
+    end
+
+    it "should clean previous syncs" do
+      line_ref = create(:line_referential) 
+      create_list(:line_referential_sync, 5, line_referential: line_ref, status: 'successful')
+
+      expect(LineReferentialSync.count).to eq(5)
+      LineReferentialSync.keep_syncs = 3
+      line_ref.line_referential_syncs.last.clean_previous_syncs
+
+      expect(LineReferentialSync.count).to eq(3)
+    end
+  end
 end

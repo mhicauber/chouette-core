@@ -1,4 +1,5 @@
 class StopAreaReferentialSync < ApplicationModel
+  include SyncSupport
   include AASM
   belongs_to :stop_area_referential
   has_many :stop_area_referential_sync_messages, :dependent => :destroy
@@ -7,6 +8,8 @@ class StopAreaReferentialSync < ApplicationModel
   validate :multiple_process_validation, :on => :create
 
   scope :pending, -> { where(status: [:new, :pending]) }
+
+  alias_method :referential, :stop_area_referential
 
   private
   def perform_sync

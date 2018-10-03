@@ -1,7 +1,6 @@
 class StopAreaReferential < ApplicationModel
   validates :registration_number_format, format: { with: /\AX*\z/ }
 
-  include SyncSupport
   include ObjectidFormatterSupport
   has_many :stop_area_referential_memberships, dependent: :destroy
   has_many :organisations, through: :stop_area_referential_memberships
