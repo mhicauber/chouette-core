@@ -3,6 +3,7 @@ class Permission
     def all_resources
       %w[
         access_points
+        aggregates
         connection_links
         calendars
         footnotes

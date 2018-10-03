@@ -6,6 +6,10 @@ crumb :workbench do |workbench|
   link workbench.name, workbench_path(workbench)
 end
 
+crumb :workgroup do |workgroup|
+  link workgroup.name, workgroup_path(workgroup)
+end
+
 crumb :workbench_configure do |workbench|
   link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
   parent :workbench, workbench
@@ -16,6 +20,11 @@ crumb :workbench_output do |workbench|
   parent :workbench, mutual_workbench(workbench)
 end
 
+crumb :workgroup_output do |workgroup|
+  link I18n.t('workgroup_outputs.show.title'), workgroup_output_path(workgroup)
+  parent :workgroup, workgroup
+end
+
 crumb :merges do |workbench|
   link I18n.t('merges.index.title'), workbench_output_path(workbench)
   parent :workbench, workbench
@@ -24,6 +33,16 @@ end
 crumb :merge do |merge|
   link breadcrumb_name(merge), workbench_merge_path(merge.workbench, merge)
   parent :merges, merge.workbench
+end
+
+crumb :aggregates do |workgroup|
+  link I18n.t('aggregates.index.title'), workgroup_output_path(workgroup)
+  parent :workgroup, workgroup
+end
+
+crumb :aggregate do |aggregate|
+  link breadcrumb_name(aggregate), workgroup_aggregate_path(aggregate.workgroup, aggregate)
+  parent :aggregates, aggregate.workgroup
 end
 
 crumb :referential do |referential|

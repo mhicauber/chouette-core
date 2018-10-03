@@ -1,6 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe Aggregate, type: :model do
+  context "with another concurent aggregate" do
+    before do
+       Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential])
+    end
+
+    it "should not be valid" do
+      aggregate = Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential])
+      expect(aggregate).to_not be_valid
+    end
+  end
+
   it "should clean previous aggregates" do
     3.times do
       other_workbench = create(:workbench)

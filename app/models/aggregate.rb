@@ -5,7 +5,20 @@ class Aggregate < ActiveRecord::Base
 
   validates :workgroup, presence: true
 
-  def clean_scope
-    workgroup.aggregates
+  after_commit :aggregate, :on => :create
+
+  def parent
+    workgroup
+  end
+
+  def aggregate
+    update_column :started_at, Time.now
+    update_column :status, :running
+
+    AggregateWorker.perform_async(id)
+  end
+
+  def aggregate!
+    update status: :successful, ended_at: Time.now
   end
 end

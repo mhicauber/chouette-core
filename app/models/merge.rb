@@ -4,7 +4,6 @@ class Merge < ApplicationModel
   belongs_to :workbench
 
   validates :workbench, presence: true
-  validate :check_other_merges, :on => :create
 
   has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
 
@@ -12,8 +11,8 @@ class Merge < ApplicationModel
 
   after_commit :merge, :on => :create
 
-  def clean_scope
-    workbench.merges
+  def parent
+    workbench
   end
 
   def rollback!
@@ -47,13 +46,6 @@ class Merge < ApplicationModel
     end
   end
 
-  def check_other_merges
-    if workbench && workbench.merges.where(status: [:new, :pending, :running]).exists?
-      Rails.logger.warn "Pending Merge(s) on Workbench #{workbench.name}/#{workbench.id}"
-      errors.add(:base, :multiple_process)
-    end
-  end
-
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, label|
       cc_set = workbench.compliance_control_set(key)
@@ -84,14 +76,6 @@ class Merge < ApplicationModel
 
   def create_compliance_check_set(context, control_set, referential)
     ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id, context
-  end
-
-  def name
-    referentials.first(3).map { |r| r.name.truncate(10) }.join(',')
-  end
-
-  def full_names
-    referentials.map(&:name).to_sentence
   end
 
   def merge!

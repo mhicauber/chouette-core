@@ -2,6 +2,7 @@ class Workgroup < ApplicationModel
   belongs_to :line_referential
   belongs_to :stop_area_referential
   belongs_to :owner, class_name: "Organisation"
+  belongs_to :output, class_name: 'ReferentialSuite'
 
   has_many :workbenches, dependent: :destroy
   has_many :calendars, dependent: :destroy
@@ -92,6 +93,10 @@ class Workgroup < ApplicationModel
 
   def after_merge_compliance_control_sets
     self.class.after_merge_compliance_control_sets
+  end
+
+  def aggregatable_referentials
+    workbenches.map { |w| w.output.current }.compact  
   end
 
   private

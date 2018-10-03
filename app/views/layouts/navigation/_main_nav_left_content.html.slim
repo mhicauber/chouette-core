@@ -6,7 +6,7 @@
           span = 'layouts.navbar.dashboard'.t
         = link_to workbench_output_path(workbench), class: 'list-group-item' do
           span = 'layouts.navbar.workbench_outputs.organisation'.t
-        = link_to '#', class: 'list-group-item disabled' do
+        = link_to workgroup_output_path(workbench.workgroup), class: 'list-group-item' do
           span = 'layouts.navbar.workbench_outputs.workgroup'.t
 
     .menu-item.panel

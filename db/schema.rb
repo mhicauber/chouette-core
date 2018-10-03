@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181003092810) do
+ActiveRecord::Schema.define(version: 20181003110259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,9 @@ ActiveRecord::Schema.define(version: 20181003092810) do
     t.integer  "new_id",          limit: 8
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+    t.string   "creator"
+    t.datetime "started_at"
+    t.datetime "ended_at"
   end
 
   add_index "aggregates", ["workgroup_id"], name: "index_aggregates_on_workgroup_id", using: :btree
@@ -1102,6 +1105,7 @@ ActiveRecord::Schema.define(version: 20181003092810) do
     t.string   "import_types",                       default: [],              array: true
     t.string   "export_types",                       default: [],              array: true
     t.integer  "owner_id",                 limit: 8
+    t.integer  "output_id",                limit: 8
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
