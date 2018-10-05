@@ -485,7 +485,7 @@ describe Chouette::VehicleJourney, :type => :model do
     let(:journey_pattern) { create :journey_pattern, route: route }
     let(:vehicle_journey) { create :vehicle_journey, route: route, journey_pattern: journey_pattern }
     let(:state)           { vehicle_journey_to_state(vehicle_journey) }
-    let(:collection)      { [state] }
+    let(:collection)      { [state.dup] }
 
     it 'should create new vj from state' do
       create(:custom_field, code: :energy)
@@ -525,6 +525,35 @@ describe Chouette::VehicleJourney, :type => :model do
       expect(created.arrival_local_time.hour).to_not eq created.arrival_time.hour
       expect(created.departure_local_time.hour).to eq 15
       expect(created.arrival_local_time.hour).to eq 12
+    end
+
+    it "should not be sensible to winter/summer time" do
+      new_vj = build(:vehicle_journey, objectid: nil, published_journey_name: 'dummy', route: route, journey_pattern: journey_pattern)
+      stop_area = create(:stop_area, time_zone: 'Europe/Paris')
+      stop_point = create(:stop_point, stop_area: stop_area)
+      new_vj.vehicle_journey_at_stops << build(:vehicle_journey_at_stop, vehicle_journey: vehicle_journey, stop_point: stop_point)
+      data = vehicle_journey_to_state(new_vj)
+      data['vehicle_journey_at_stops'][0]["departure_time"]["hour"] = "15"
+      data['vehicle_journey_at_stops'][0]["arrival_time"]["hour"] = "12"
+      collection << JSON.parse(data.to_json)
+
+      Timecop.freeze('2000/08/01 12:00:00'.to_time) do
+        Chouette::VehicleJourney.state_update(route, collection.dup)
+        created = Chouette::VehicleJourney.last.vehicle_journey_at_stops.last
+        expect(created.departure_local_time.hour).to eq 15
+        expect(created.arrival_local_time.hour).to eq 12
+      end
+
+      collection = [state, data]
+
+      Chouette::VehicleJourney.last.destroy
+
+      Timecop.freeze('2000/12/01 12:00:00'.to_time) do
+        Chouette::VehicleJourney.state_update(route, collection)
+        created = Chouette::VehicleJourney.last.vehicle_journey_at_stops.last
+        expect(created.departure_local_time.hour).to eq 15
+        expect(created.arrival_local_time.hour).to eq 12
+      end
     end
 
     it 'should save vehicle_journey_at_stops of newly created vj' do
