@@ -105,7 +105,7 @@ gem 'i18n-js'
 
 # Format Output
 gem 'json'
-gem 'rubyzip', '~> 1.2.2' 
+gem 'rubyzip', '~> 1.2.2'
 gem 'roo'
 
 # Controller
@@ -127,6 +127,7 @@ gem 'draper'
 gem 'enumerize', '~> 2.1.2'
 gem 'deep_cloneable', '~> 2.0.0'
 gem 'acts-as-taggable-on', '~> 4.0.0'
+gem 'nokogiri', '>=1.8.5'
 
 gem 'acts_as_list', '~> 0.9.11'
 gem 'acts_as_tree', '~> 2.1.0', require: 'acts_as_tree'
