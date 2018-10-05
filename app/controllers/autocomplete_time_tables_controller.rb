@@ -19,6 +19,6 @@ class AutocompleteTimeTablesController < ChouetteController
 
   def collection
     split_params! :unaccented_comment_or_objectid_cont_any
-    @time_tables = select_time_tables.search(params[:q]).result.paginate(page: params[:page])
+    @time_tables = select_time_tables.search(params[:q]).result.paginate(page: params[:page]).select('*, lower(comment) AS lower_comment').order("lower_comment ASC")
   end
 end
