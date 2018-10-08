@@ -35,8 +35,7 @@ crumb :merge do |merge|
 end
 
 crumb :aggregates do |workgroup|
-  link I18n.t('aggregates.index.title'), workgroup_output_path(workgroup)
-  parent :workgroup, workgroup
+  link 'layouts.navbar.workbench_outputs.workgroup'.t, workgroup_output_path(workgroup)
 end
 
 crumb :aggregate do |aggregate|
