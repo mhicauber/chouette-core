@@ -17,6 +17,7 @@ class ReferentialCopy
   def copy
     copy_metadatas
     copy_time_tables
+    copy_purchase_windows
     source.switch do
       lines.includes(:footnotes, :routes).each do |line|
         copy_footnotes line
@@ -95,9 +96,12 @@ class ReferentialCopy
   def copy_route route
     line = route.line
     attributes = clean_attributes_for_copy route
+    opposite_route_checksum = route.opposite_route&.checksum
     target.switch do
       new_route = line.routes.build attributes
       copy_collection route, new_route, :stop_points
+
+      new_route.opposite_route = line.routes.where(checksum: opposite_route_checksum).last if opposite_route_checksum
 
       controlled_save! new_route
 
@@ -166,15 +170,16 @@ class ReferentialCopy
 
   def copy_item_to_target_collection source_item, target_collection, &block
     attributes = clean_attributes_for_copy source_item
+    owner = target_collection.instance_variable_get("@association").owner
     target.switch do
       new_item = target_collection.build attributes
       block.call(source_item, new_item) if block.present?
-      controlled_save! new_item
+      controlled_save! new_item if owner.persisted?
     end
   end
 
   def clean_attributes_for_copy model
-    model.attributes.dup.except(*%w(id created_at updated_at))
+    model.attributes.dup.except(*%w(id created_at updated_at opposite_route_id position))
   end
 
   def controlled_save! model
