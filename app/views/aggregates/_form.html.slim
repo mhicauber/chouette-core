@@ -11,13 +11,22 @@
     .col-lg-12
       = form.hidden_field :referential_ids
 
-  .row.merge-referentials-selector.aggregate
-    .col
-      .head
-        h4= Referential.t.capitalize
-      ul.target
-        - aggregate.referentials.each do |referential|
-          li= referential.name
+  .row
+    .col-lg-12
+      .select-table
+        = table_builder_2 aggregate.referentials,
+          [ \
+            TableBuilderHelper::Column.new( \
+              key: :organisation_name, \
+              name: Organisation.ts.capitalize, \
+              attribute: Proc.new {|r| r.organisation.name }, \
+              sortable: false\
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: :name, \
+              sortable: false\
+          )], cls: 'table'
 
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_merge_form'
