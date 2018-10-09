@@ -1,41 +1,41 @@
 en:
   actions:
-    edit: "Edit"
     activate: 'Activate'
-    deactivate: 'Deactivate'
-    destroy: "Destroy"
-    delete: "Delete"
-    download: 'Download'
-    search: "Search"
-    submit: "Submit"
-    processing: "Processing…"
-    add: "Add"
-    remove: Remove
-    new: "Add new"
-    show: "See"
-    archive: "Archive"
-    unarchive: "Unarchive"
-    clone: 'Clone'
-    duplicate: 'Clone'
-    clean_up: 'Purge'
-    sync: 'Synchronize'
-    combine: 'Combine'
     actualize: 'Actualize'
-    import: 'Import'
-    validate: 'Validate'
-    filter: 'Filter'
-    erase: 'Erase'
-    create_api_key: "Create an API key"
-    select: Select
-    wait_for_submission: "Please wait..."
-    cancel_destroy: Cancel destroy
     add_referential: Add a referential
-  or: "or"
-  cancel: "Cancel"
-  cancel_firm: You're about to cancel your current work. Are you sure ?
-  back: "Go Back"
-  search_hint: "Type in a search term"
-  no_result_text: "No Results"
-  searching_term: "Searching..."
+    add: "Add"
+    archive: "Archive"
+    cancel_destroy: Cancel destroy
+    clean_up: 'Purge'
+    clone: 'Clone'
+    combine: 'Combine'
+    create_api_key: "Create an API key"
+    deactivate: 'Deactivate'
+    delete: "Delete"
+    destroy: "Destroy"
+    download: 'Download'
+    duplicate: 'Clone'
+    edit: "Edit"
+    erase: 'Erase'
+    filter: 'Filter'
+    import: 'Import'
+    new: "Add new"
+    processing: "Processing…"
+    remove: Remove
+    search: "Search"
+    select: Select
+    show: "See"
+    submit: "Submit"
+    sync: 'Synchronize'
+    unarchive: "Unarchive"
+    validate: 'Validate'
+    wait_for_submission: "Please wait..."
   are_you_sure: Are you sure?
+  back: "Go Back"
+  cancel_firm: You're about to cancel your current work. Are you sure ?
+  cancel: "Cancel"
+  no_result_text: "No Results"
   ok: Ok
+  or: "or"
+  search_hint: "Type in a search term"
+  searching_term: "Searching..."
