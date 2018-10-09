@@ -40,7 +40,11 @@ class Seed::Workgroup
   end
 
   def user(name, attributes = {})
-    users << {name: name}.merge(attributes)
+    users << { name: name }.merge(attributes)
+  end
+
+  def deleted_user(name, attributes = {})
+    users << { name: name, deleted: true }.merge(attributes)
   end
 
   def profile(name, permissions = nil, &block)
@@ -182,6 +186,13 @@ class Seed::Workgroup
     end
 
     users.each do |attributes|
+      if attributes.fetch(:deleted, false)
+        user = User.find_by username: attributes[:email]
+        print "Seed User #{{username: attributes[:email]}} "
+        user&.destroy && puts('[deleted]') || puts('[not found for deletion]')
+        next
+      end
+
       organisation =
         if attributes[:organisation]
           workgroup_organisations.find { |o| o.name == attributes[:organisation] }
