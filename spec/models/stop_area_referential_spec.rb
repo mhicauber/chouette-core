@@ -13,4 +13,5 @@ RSpec.describe StopAreaReferential, :type => :model do
   it { should allow_value('XXXXX').for(:registration_number_format) }
   it { should_not allow_value('123').for(:registration_number_format) }
   it { should_not allow_value('ABC').for(:registration_number_format) }
+  
 end

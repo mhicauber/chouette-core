@@ -1,5 +1,6 @@
 class LineReferentialSync < ApplicationModel
   include AASM
+  include SyncSupport
   belongs_to :line_referential
   has_many :line_referential_sync_messages, :dependent => :destroy
 
@@ -7,6 +8,8 @@ class LineReferentialSync < ApplicationModel
   validate :multiple_process_validation, :on => :create
 
   scope :pending, -> { where(status: [:new, :pending]) }
+
+  alias_method :referential, :line_referential
 
   private
   def perform_sync
