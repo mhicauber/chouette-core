@@ -22,7 +22,7 @@ fr:
     combine: 'Combiner'
     actualize: 'Actualiser'
     import: 'Importer'
-    validate: 'Valider'
+    validate: 'Contrôler'
     filter: 'Filtrer'
     erase: 'Effacer'
     create_api_key: "Créer une clé d'API"
