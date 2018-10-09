@@ -1,13 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe CalendarObserver, type: :observer do
-  let(:workgroup_1) { create :workgroup }
-  let(:workgroup_2) { create :workgroup }
+  let(:calendar) { create(:calendar, shared: true, organisation: user_1.organisation) }
 
-  let(:calendar) { create(:calendar, shared: true, workgroup_id: workgroup_1.id) }
-
-  let(:user_1)     { create(:user, organisation: create(:organisation, workbenches: [create(:workbench, workgroup_id: workgroup_1.id)] )) }
-  let(:user_2)     { create(:user, organisation: create(:organisation, workbenches: [create(:workbench, workgroup_id: workgroup_2.id)] )) }
+  let!(:user_1)     { create(:user) }
+  let!(:user_2)     { create(:user) }
 
   context "when CalendarObserver is disabled" do
     before(:each) do
@@ -27,51 +24,61 @@ RSpec.describe CalendarObserver, type: :observer do
 
     it "should not send any mail if disabled on create" do
       expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
-      build(:calendar, shared: true, workgroup_id: workgroup_1.id).save
+      build(:calendar, shared: true, organisation: user_1.organisation).save
     end
   end
 
-  context 'after_update' do
-    it 'should observe calendar updates' do
-      expect(CalendarObserver.instance).to receive(:after_update).with calendar
-      calendar.update_attribute(:name, 'edited_name')
+  context "when CalendarObserver is enabled" do
+    before(:each) do
+      allow(Rails.configuration)
+        .to receive(:enable_calendar_observer)
+        .and_return( true )
+
+      expect(Rails.configuration.enable_calendar_observer).to be_truthy
     end
 
-    it 'should schedule mailer on calendar update' do
-      calendar.name = 'edited_name'
-      expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
-      calendar.save
+    context 'after_update' do
+      it 'should observe calendar updates' do
+        expect(CalendarObserver.instance).to receive(:after_update).with calendar
+        calendar.update_attribute(:name, 'edited_name')
+      end
+
+      it 'should schedule mailer on calendar update' do
+        calendar.name = 'edited_name'
+        expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
+        calendar.save
+      end
+
+      it 'should not schedule mailer for none shared calendar on update' do
+        calendar = create(:calendar, shared: false)
+        calendar.name = 'edited_name'
+        expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
+        calendar.save
+      end
+
+      it "should only send mail to user from the same organisation" do
+        calendar.name = 'edited_name'
+        expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
+        expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
+        calendar.save
+      end
     end
 
-    it 'should not schedule mailer for none shared calendar on update' do
-      calendar = create(:calendar, shared: false)
-      calendar.name = 'edited_name'
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
-      calendar.save
-    end
+    context 'after_create' do
+      it 'should observe calendar create' do
+        expect(CalendarObserver.instance).to receive(:after_create)
+        build(:calendar).save
+      end
 
-    it "should only send mail to user from the same workgroup" do
-      calendar.name = 'edited_name'
-      expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
-      calendar.save
-    end
-  end
+      it 'should schedule mailer on calendar create' do
+        expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
+        build(:calendar, shared: true, organisation: user_1.organisation).save
+      end
 
-  context 'after_create' do
-    it 'should observe calendar create' do
-      expect(CalendarObserver.instance).to receive(:after_create)
-      build(:calendar).save
-    end
-
-    it 'should schedule mailer on calendar create' do
-      expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
-      build(:calendar, shared: true, workgroup_id: workgroup_1.id).save
-    end
-
-    it 'should not schedule mailer for any shared calendar on create' do
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
-      build(:calendar, shared: false, workgroup_id: workgroup_1.id).save
+      it 'should not schedule mailer for any shared calendar on create' do
+        expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
+        build(:calendar, shared: false, organisation: user_1.organisation).save
+      end
     end
   end
 end
