@@ -4,8 +4,6 @@ class ComplianceCheckSetsController < ChouetteController
   before_action only: [:index] { set_date_time_params("created_at", DateTime) }
   respond_to :html
 
-  belongs_to :workbench
-
   def index
     index! do |format|
       scope = self.ransack_period_range(scope: @compliance_check_sets.joins(:compliance_control_set), error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
@@ -55,6 +53,18 @@ class ComplianceCheckSetsController < ChouetteController
   end
 
   private
+
+  def end_of_association_chain
+    parent.compliance_check_sets
+  end
+
+  def parent
+    @parent ||= if params[:workgroup_id]
+      current_organisation.workgroups.find params[:workgroup_id]
+    else
+      current_organisation.workbenches.find params[:workbench_id]
+    end
+  end
 
   # Action Implementation
   # ---------------------

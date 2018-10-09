@@ -1,0 +1,32 @@
+= simple_form_for aggregate, as: :aggregate, url: workgroup_aggregates_path(workgroup), html: {class: 'form-horizontal', id: 'wb_merge_form'}, wrapper: :horizontal_form do |form|
+  - if form.error(:base).present?
+    .row
+      .col-lg-12
+        .alert.alert-warning
+          strong= form.error(:base)
+
+    .separator
+
+  .row
+    .col-lg-12
+      = form.hidden_field :referential_ids
+
+  .row
+    .col-lg-12
+      .select-table
+        = table_builder_2 aggregate.referentials,
+          [ \
+            TableBuilderHelper::Column.new( \
+              key: :organisation_name, \
+              name: Organisation.ts.capitalize, \
+              attribute: Proc.new {|r| r.organisation.name }, \
+              sortable: false\
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: :name, \
+              sortable: false\
+          )], cls: 'table'
+
+  = cancel_button
+  = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_merge_form'

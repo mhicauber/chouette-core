@@ -1,0 +1,45 @@
+en:
+  aggregates:
+    referential_name: "Aggregated offer %{date}"
+    index:
+      title: "Aggregated offers"
+    new:
+      title: "New aggregated offer"
+    show:
+      title: "Aggregated offer %{name}"
+    actions:
+      create: Aggregated data spaces
+      rollback: Rollback
+    statuses:
+      new: New
+      pending: Pending
+      successful: Successful
+      failed: Failed
+      running: Running
+      canceled: Canceled
+  activerecord:
+    models:
+      aggregate:
+        zero: "Aggregated offers"
+        one: "Aggregated offer"
+        other: "Aggregated offers"
+    attributes:
+      aggregate:
+        created_at: "Created at"
+        started_at: Started at
+        name: Name
+        ended_at: Ended at
+        status: "Status"
+        creator: "Creator"
+        referentials: "Data spaces"
+        new: Aggregated dataset
+        operator: User
+        available_referentials: "Avalaible data spaces"
+        selected_referentials: "Selected data spaces"
+    errors:
+      models:
+        aggregate:
+          attributes:
+            base:
+              multiple_process: "Another Aggregate is already pending"
+              no_referential: You must choose at least one referential

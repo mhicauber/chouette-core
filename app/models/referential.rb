@@ -56,7 +56,6 @@ class Referential < ApplicationModel
   has_many :stop_areas, through: :stop_area_referential
 
   belongs_to :workbench
-  delegate :workgroup, to: :workbench, allow_nil: true
 
   belongs_to :referential_suite
 
@@ -164,6 +163,7 @@ class Referential < ApplicationModel
   end
 
   def lines_outside_of_scope
+    return lines.none unless workbench
     func_scope = workbench.workbench_scopes.lines_scope(associated_lines).pluck(:objectid)
     lines.where.not(objectid: func_scope)
   end
@@ -262,6 +262,16 @@ class Referential < ApplicationModel
 
   def footnotes
     Chouette::Footnote.all
+  end
+
+  def workgroup
+    @workgroup = begin
+      workgroup = workbench&.workgroup
+      if referential_suite
+        workgroup ||= Workgroup.where(output_id: referential_suite.id).last
+      end
+      workgroup
+    end
   end
 
   before_validation :define_default_attributes

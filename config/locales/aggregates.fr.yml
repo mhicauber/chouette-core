@@ -1,0 +1,44 @@
+fr:
+  aggregates:
+    referential_name: "Offre aggrégée %{date}"
+    index:
+      title: "Aggregations de l'offre"
+    new:
+      title: "Nouvelle aggregation de l'offre"
+    show:
+      title: "Aggregation de l'offre %{name}"
+    actions:
+      create: Aggréger des Jeux de Données
+    statuses:
+      new: Nouveau
+      pending: En attente
+      successful: Succès
+      failed: Erreur
+      running: En cours
+      canceled: Annulé
+  activerecord:
+    models:
+      aggregate:
+        zero:  "Aggregations d'offre"
+        one:   "Aggregation de l'offre"
+        other: "Aggregations d'offre"
+    attributes:
+      aggregate:
+        created_at: "Créé le"
+        started_at: Démarrage
+        name: Nom
+        ended_at: Achevé à
+        status: "Etat"
+        creator: "Demandeur"
+        referentials: "Jeux de données"
+        new: Jeu de données aggrégé
+        operator: Utilisateur
+        available_referentials: "Jeux de données disponibles"
+        selected_referentials: "Jeux de données selectionnés"
+    errors:
+      models:
+        aggregate:
+          attributes:
+            base:
+              multiple_process: "Une autre aggregation est déjà en cours"
+              no_referential: Vous devez choisir au moins un jeu de données

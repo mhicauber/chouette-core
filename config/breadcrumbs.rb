@@ -6,6 +6,10 @@ crumb :workbench do |workbench|
   link workbench.name, workbench_path(workbench)
 end
 
+crumb :workgroup do |workgroup|
+  link workgroup.name, workgroup_path(workgroup)
+end
+
 crumb :workbench_configure do |workbench|
   link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
   parent :workbench, workbench
@@ -14,6 +18,10 @@ end
 crumb :workbench_output do |workbench|
   link I18n.t('workbench_outputs.show.title'), workbench_output_path(workbench)
   parent :workbench, mutual_workbench(workbench)
+end
+
+crumb :workgroup_output do |workgroup|
+  link 'layouts.navbar.workbench_outputs.workgroup'.t, workgroup_output_path(workgroup)
 end
 
 crumb :merges do |workbench|
@@ -26,9 +34,22 @@ crumb :merge do |merge|
   parent :merges, merge.workbench
 end
 
+crumb :aggregates do |workgroup|
+  link 'layouts.navbar.workbench_outputs.workgroup'.t, workgroup_output_path(workgroup)
+end
+
+crumb :aggregate do |aggregate|
+  link breadcrumb_name(aggregate), workgroup_aggregate_path(aggregate.workgroup, aggregate)
+  parent :aggregates, aggregate.workgroup
+end
+
 crumb :referential do |referential|
   link breadcrumb_name(referential), referential_path(referential)
-  parent :workbench, mutual_workbench(referential.workbench)
+  if referential.workbench
+    parent :workbench, mutual_workbench(referential.workbench || referential.workgroup.workbenches.last)
+  else
+    parent :workgroup_output, referential.workgroup
+  end
 end
 
 crumb :referentials do |referential|
@@ -81,24 +102,24 @@ crumb :time_table do |referential, time_table|
   parent :time_tables, referential
 end
 
-crumb :compliance_check_sets do |workbench|
-  link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(workbench)
-  parent :workbench, workbench
+crumb :compliance_check_sets do |ccset_parent|
+  link I18n.t('compliance_check_sets.index.title'), [ccset_parent, :compliance_check_sets]
+  parent ccset_parent.class.name.downcase.intern, ccset_parent
 end
 
-crumb :compliance_check_set do |workbench, compliance_check_set|
-  link breadcrumb_name(compliance_check_set), workbench_compliance_check_set_path(workbench, compliance_check_set)
-  parent :compliance_check_sets, workbench
+crumb :compliance_check_set do |ccset_parent, compliance_check_set|
+  link breadcrumb_name(compliance_check_set), [ccset_parent, compliance_check_set]
+  parent :compliance_check_sets, ccset_parent
 end
 
-crumb :compliance_check do |workbench, compliance_check|
-  link breadcrumb_name(compliance_check), workbench_compliance_check_set_compliance_check_path(workbench, compliance_check.compliance_check_set, compliance_check)
-  parent :compliance_check_set_executed, workbench, compliance_check.compliance_check_set
+crumb :compliance_check do |cc_set_parent, compliance_check|
+  link breadcrumb_name(compliance_check), [cc_set_parent, compliance_check.compliance_check_set, compliance_check]
+  parent :compliance_check_set_executed, cc_set_parent, compliance_check.compliance_check_set
 end
 
-crumb :compliance_check_set_executed do |workbench, compliance_check_set|
-  link I18n.t('compliance_check_sets.executed.title', name: compliance_check_set.name), executed_workbench_compliance_check_set_path(workbench, compliance_check_set)
-  parent :compliance_check_sets, workbench
+crumb :compliance_check_set_executed do |cc_set_parent, compliance_check_set|
+  link I18n.t('compliance_check_sets.executed.title', name: compliance_check_set.name), [:executed, cc_set_parent, compliance_check_set]
+  parent :compliance_check_sets, cc_set_parent
 end
 
 crumb :imports do |workbench|

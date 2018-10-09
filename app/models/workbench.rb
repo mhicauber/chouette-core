@@ -82,9 +82,6 @@ class Workbench < ApplicationModel
   private
 
   def initialize_output
-    # Don't reset `output` if it's already initialised
-    return if !output.nil?
-
-    self.output = ReferentialSuite.create
+    self.output ||= ReferentialSuite.create
   end
 end

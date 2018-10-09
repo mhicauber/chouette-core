@@ -1,29 +1,18 @@
 class Merge < ApplicationModel
-  extend Enumerize
-
-  @@keep_merges = 20
-  mattr_accessor :keep_merges
+  include OperationSupport
 
   belongs_to :workbench
-  belongs_to :new, class_name: 'Referential'
 
   validates :workbench, presence: true
-  validate :has_at_least_one_referential, :on => :create
-  validate :check_other_merges, :on => :create
 
-  enumerize :status, in: %w[new pending successful failed running canceled], default: :new
-
-  has_array_of :referentials, class_name: 'Referential'
-  has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
+  has_many :compliance_check_sets, -> { where(parent_type: "Merge") }, foreign_key: :parent_id, dependent: :destroy
 
   delegate :output, to: :workbench
 
   after_commit :merge, :on => :create
 
-  scope :successful, ->{ where status: :successful }
-
-  def self.keep_merges=(value)
-    @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
+  def parent
+    workbench
   end
 
   def rollback!
@@ -57,19 +46,6 @@ class Merge < ApplicationModel
     end
   end
 
-  def has_at_least_one_referential
-    unless referentials.length > 0
-      errors.add(:base, :no_referential)
-    end
-  end
-
-  def check_other_merges
-    if workbench && workbench.merges.where(status: [:new, :pending, :running]).exists?
-      Rails.logger.warn "Pending Merge(s) on Workbench #{workbench.name}/#{workbench.id}"
-      errors.add(:base, :multiple_process)
-    end
-  end
-
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, label|
       cc_set = workbench.compliance_control_set(key)
@@ -98,18 +74,6 @@ class Merge < ApplicationModel
     end
   end
 
-  def create_compliance_check_set(context, control_set, referential)
-    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id, context
-  end
-
-  def name
-    referentials.first(3).map { |r| r.name.truncate(10) }.join(',')
-  end
-
-  def full_names
-    referentials.map(&:name).to_sentence
-  end
-
   def merge!
     prepare_new
 
@@ -128,20 +92,6 @@ class Merge < ApplicationModel
     Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
     failed!
     raise e if Rails.env.test?
-  end
-
-  def failed!
-    update status: :failed, ended_at: Time.now
-    new&.failed!
-    referentials.each &:active!
-  end
-
-  def successful?
-    status.to_s == "successful"
-  end
-
-  def current?
-    workbench.output.current == new
   end
 
   def prepare_new
@@ -674,53 +624,8 @@ class Merge < ApplicationModel
     end
   end
 
-  def save_current
-    output.update current: new, new: nil
-    output.current.update referential_suite: output, ready: true
+  def after_save_current
     referentials.each &:merged!
-    clean_previous_merges
-
-    update status: :successful, ended_at: Time.now
-  end
-
-  def clean_previous_merges
-    while workbench.merges.successful.count > [Merge.keep_merges, 0].max do
-      workbench.merges.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }
-    end
-  end
-
-  def child_change
-    Rails.logger.debug "Merge #{self.inspect} child_change"
-    # Wait next child change if one of the check isn't finished
-    return if compliance_check_sets.unfinished.exists?
-
-    if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
-      if new
-        # We are done
-        save_current
-      else
-        # We just passed 'before' validations
-        if self.merge_scheduled?
-          Rails.logger.warn "Trying to schedule a Merge while it is already enqueued (Merge ID: #{id})"
-        else
-          MergeWorker.perform_async(id)
-        end
-      end
-    else
-      referentials.each &:active!
-      update status: :failed, ended_at: Time.now
-    end
-  end
-
-  def merge_scheduled?
-    queue = Sidekiq::Queue[MergeWorker.sidekiq_options["queue"]]
-    queue.any? { |item| item["class"] == "MergeWorker" && item.args == [self.id] }
-  end
-
-  def compliance_check_set(key, referential = nil)
-    referential ||= new
-    control = workbench.compliance_control_set(key)
-    compliance_check_sets.where(compliance_control_set_id: control.id).find_by(referential_id: referential.id, context: key) if control
   end
 
   def save_model!(model)

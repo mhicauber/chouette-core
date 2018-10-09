@@ -162,8 +162,8 @@ RSpec.describe Merge do
       m.update status: :failed
     end
     expect(Merge.count).to eq 9
-    Merge.keep_merges = 2
-    Merge.last.clean_previous_merges
+    Merge.keep_operations = 2
+    Merge.last.clean_previous_operations
     expect(Merge.count).to eq 8
   end
 
@@ -369,7 +369,7 @@ RSpec.describe Merge do
 
     it "should work" do
       merge = Merge.create!(workbench: referential.workbench, referentials: [referential])
-      expect(merge).to receive(:clean_previous_merges)
+      expect(merge).to receive(:clean_previous_operations)
       expect(MergeWorker).to receive(:perform_async)
       merge.merge
       merge.merge!

@@ -34,11 +34,19 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :workgroups do
+    resource :output, controller: :workgroup_outputs
+    resources :aggregates
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do
         get 'month', defaults: { format: :json }
       end
+    end
+
+    resources :compliance_check_sets, only: [:index, :show] do
+      get :executed, on: :member
+      resources :compliance_checks, only: [:show]
+      resources :compliance_check_messages, only: [:index]
     end
   end
 
