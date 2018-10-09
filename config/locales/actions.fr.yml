@@ -1,41 +1,41 @@
 fr:
   actions:
-    edit: 'Editer'
     activate: 'Activer'
-    deactivate: 'Désactiver'
-    destroy: 'Supprimer'
-    delete: 'Supprimer'
-    download: 'Télécharger'
-    search: "Chercher"
-    submit: "Valider"
-    processing: "En cours…"
-    add: 'Ajouter'
-    remove: Retirer
-    new: 'Créer'
-    show: 'Consulter'
-    archive: 'Archiver'
-    unarchive: 'Désarchiver'
-    clone: 'Dupliquer'
-    duplicate: 'Dupliquer'
-    clean_up: 'Purger'
-    sync: 'Synchroniser'
-    combine: 'Combiner'
     actualize: 'Actualiser'
-    import: 'Importer'
-    validate: 'Valider'
-    filter: 'Filtrer'
-    erase: 'Effacer'
-    create_api_key: "Créer une clé d'API"
-    select: Sélectionner
-    wait_for_submission: "Validation..."
-    cancel_destroy: Annuler suppresion
     add_referential: Ajoutez un jeu de données
-  or: "ou"
-  cancel: "Annuler"
-  cancel_confirm: Etes vous sûr de vouloir annuler l'action en cours ?
-  back: "Retour"
-  search_hint: "Entrez un texte à rechercher"
-  no_result_text: "Aucun résultat"
-  searching_term: "Recherche en cours..."
+    add: 'Ajouter'
+    archive: 'Archiver'
+    cancel_destroy: Annuler suppresion
+    clean_up: 'Purger'
+    clone: 'Dupliquer'
+    combine: 'Combiner'
+    create_api_key: "Créer une clé d'API"
+    deactivate: 'Désactiver'
+    delete: 'Supprimer'
+    destroy: 'Supprimer'
+    download: 'Télécharger'
+    duplicate: 'Dupliquer'
+    edit: 'Editer'
+    erase: 'Effacer'
+    filter: 'Filtrer'
+    import: 'Importer'
+    new: 'Créer'
+    processing: "En cours…"
+    remove: Retirer
+    search: "Chercher"
+    select: Sélectionner
+    show: 'Consulter'
+    submit: "Valider"
+    sync: 'Synchroniser'
+    unarchive: 'Désarchiver'
+    validate: 'Contrôler'
+    wait_for_submission: "Validation..."
   are_you_sure: Etes vous sûr ?
+  back: "Retour"
+  cancel_confirm: Etes vous sûr de vouloir annuler l'action en cours ?
+  cancel: "Annuler"
+  no_result_text: "Aucun résultat"
   ok: Ok
+  or: "ou"
+  search_hint: "Entrez un texte à rechercher"
+  searching_term: "Recherche en cours..."
