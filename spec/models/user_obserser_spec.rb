@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UserObserver, type: :observer do
-  let(:organisation) {create :organisation, features: ['new_user_mail']}
+  let(:organisation) {create :organisation}
 
   context "when notifications are disabled" do
     before(:each) do

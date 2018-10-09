@@ -106,6 +106,10 @@ module IevInterfaces::Task
     update attributes
   end
 
+  def finished?
+    self.class.finished_statuses.include?(status)
+  end
+
   def successful?
     status.to_s == "successful"
   end

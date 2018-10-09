@@ -15,6 +15,6 @@ class ImportObserver < ActiveRecord::Observer
   end
 
   def email_sendable_for?(import)
-    enabled? && import.status != 'running'
+    enabled? && import.finished?
   end
 end

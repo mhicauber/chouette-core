@@ -21,6 +21,6 @@ class CalendarObserver < ActiveRecord::Observer
   end
 
   def email_sendable_for?(calendar)
-    enabled? && calendar.shared && calendar.organisation.has_feature?(:new_calendar_mail)
+    enabled? && calendar.shared
   end
 end

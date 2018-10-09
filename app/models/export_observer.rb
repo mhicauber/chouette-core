@@ -2,7 +2,7 @@ class ExportObserver < ActiveRecord::Observer
   observe Export::Gtfs, Export::Netex
 
   def after_create(export)
-    return unless enabled?
+    return unless email_sendable_for?(export)
     user = User.find_by_name(export.creator)
     MailerJob.perform_later("ExportMailer", "created", [export.id, user.id])
   end
@@ -12,5 +12,9 @@ class ExportObserver < ActiveRecord::Observer
   def enabled?
     return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
     !!Rails.configuration.enable_subscriptions_notifications
+  end
+
+  def email_sendable_for?(export)
+    enabled? && export.finished?
   end
 end
