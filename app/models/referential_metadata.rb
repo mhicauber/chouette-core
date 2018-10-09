@@ -11,6 +11,7 @@ class ReferentialMetadata < ApplicationModel
   validates :periodes, presence: true
 
   scope :include_lines, -> (line_ids) { where('line_ids && ARRAY[?]::bigint[]', line_ids) }
+  scope :with_lines, -> (line_ids) { where('line_ids = ARRAY[?]::bigint[]', line_ids) }
   scope :include_dateranges, -> (dateranges) { where('periodes && ARRAY[?]', dateranges) }
 
 # Transform Wed, 22 Feb 2017...Fri, 24 Feb 2017 into Wed, 22 Feb 2017..Thu, 23 Feb 2017
@@ -120,6 +121,25 @@ class ReferentialMetadata < ApplicationModel
     unless periods_are_valid
       errors.add(:periods, :invalid)
     end
+  end
+
+  def merge_periodes
+    return unless periods.any?
+    sorted_periods = periodes.sort_by(&:min)
+    merged_periods = []
+    current = sorted_periods.first
+    sorted_periods[1..-1].each do |period|
+      if current & period
+        current = (current.min..[current.max, period.max].max)
+      else
+        merged_periods << current
+        current = period
+      end
+    end
+    merged_periods << current
+
+    self.periodes = merged_periods
+    clear_periods
   end
 
   def periods_attributes=(attributes = {})

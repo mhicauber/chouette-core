@@ -56,7 +56,7 @@ module Chouette
 
     def not_all_stop_points_selected
       return unless route
-
+      
       errors.add(:stop_point_ids, I18n.t('activerecord.errors.models.routing_constraint_zone.attributes.stop_points.all_stop_points_selected')) if stop_points.length == route.stop_points.length
     end
 
