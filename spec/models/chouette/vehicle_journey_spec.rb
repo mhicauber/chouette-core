@@ -143,6 +143,39 @@ describe Chouette::VehicleJourney, :type => :model do
       expect{rcz.destroy; rcz.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
     end
 
+    context "when a custom_field is added" do
+      let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {}) }
+      context "when the custom_field has the :ignore_empty_value_in_checksums option enabled" do
+        let(:custom_field) do
+           create :custom_field,
+                  field_type: :string,
+                  code: :energy_ignored,
+                  name: :energy,
+                  resource_type: "VehicleJourney",
+                  options: {ignore_empty_value_in_checksums: true}
+         end
+
+        it "should not change the checksum" do
+          expect{ custom_field }.to_not change { vehicle_journey.current_checksum_source }
+        end
+      end
+
+      context "when the custom_field hasn't the :ignore_empty_value_in_checksums option enabled" do
+        let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {}) }
+        let(:custom_field) do
+           create :custom_field,
+                  field_type: :string,
+                  code: :energy_ignored,
+                  name: :energy,
+                  resource_type: "VehicleJourney"
+         end
+
+        it "should change the checksum" do
+          expect{ custom_field }.to change { vehicle_journey.current_checksum_source }
+        end
+      end
+    end
+
     context "when custom_field_values change" do
       let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {custom_field.code.to_s => former_value}) }
       let(:custom_field){ create :custom_field, field_type: :string, code: :energy, name: :energy, resource_type: "VehicleJourney" }
