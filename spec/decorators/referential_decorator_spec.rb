@@ -45,7 +45,7 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
         let( :action){ :index }
         context "on index" do
           it 'has corresponding actions' do
-            expect_action_link_elements(action).to eq ["Consulter", "Editer", "Calendriers", "Dupliquer", "Valider", "Archiver","<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
+            expect_action_link_elements(action).to eq ["Consulter", "Editer", "Calendriers", "Dupliquer", "Contrôler", "Archiver","<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
             expect_action_link_hrefs(action).to eq([
               [object],
               [:edit, object],
@@ -61,7 +61,7 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
         context "on show" do
           let( :action){ :show }
           it 'has corresponding actions' do
-            expect_action_link_elements(action).to eq ["Editer", "Calendriers", "Dupliquer", "Valider", "Archiver", "Purger", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
+            expect_action_link_elements(action).to eq ["Editer", "Calendriers", "Dupliquer", "Contrôler", "Archiver", "Purger", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
             expect_action_link_hrefs(action).to eq([
               [:edit, object],
               referential_time_tables_path(object),
@@ -170,7 +170,7 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
       context 'all rights and same organisation' do
         let( :user ){ build_stubbed :allmighty_user, organisation: referential.organisation }
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Valider"]
+          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Contrôler"]
           expect_action_link_hrefs.to eq([
             [object],
             referential_time_tables_path(object),
