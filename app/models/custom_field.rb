@@ -100,7 +100,9 @@ class CustomField < ApplicationModel
       end
 
       def checksum
-        @raw_value
+        val = @raw_value
+        return nil if !val.present? && !!options["ignore_empty_value_in_checksums"]
+        "#{val}"
       end
 
       def input form_helper
