@@ -24,6 +24,10 @@ class Aggregate < ActiveRecord::Base
   def aggregate!
     prepare_new
 
+    referentials.each do |source|
+      ReferentialCopy.new(source: source, target: new).copy
+    end
+
     if after_aggregate_compliance_control_set.present?
       create_after_aggregate_compliance_check_set
     else
