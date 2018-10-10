@@ -13,12 +13,11 @@ module SyncSupport
   def clean_previous_syncs
     return unless clean_scope && clean_scope.count > self.class.keep_syncs
     while clean_scope.count > self.class.keep_syncs do
-      clean_scope.order("created_at asc").first.destroy
+      clean_scope.reorder("created_at asc").first.destroy
     end
   end
 
   def clean_scope
     referential&.send(self.class.name.tableize)
   end
-
 end
