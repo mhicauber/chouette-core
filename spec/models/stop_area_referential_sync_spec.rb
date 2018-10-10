@@ -52,14 +52,21 @@ RSpec.describe StopAreaReferentialSync, :type => :model do
     end
 
     it "should clean previous syncs" do
-      stop_area_ref = create(:stop_area_referential) 
-      create_list(:stop_area_referential_sync, 5, stop_area_referential: stop_area_ref, status: 'successful')
+      stop_area_ref = create(:stop_area_referential)
+      previous = create_list(:stop_area_referential_sync, 5, stop_area_referential: stop_area_ref, status: 'successful')
 
       expect(StopAreaReferentialSync.count).to eq(5)
       StopAreaReferentialSync.keep_syncs = 3
       stop_area_ref.stop_area_referential_syncs.last.clean_previous_syncs
 
       expect(StopAreaReferentialSync.count).to eq(3)
+      (0..1).each do |i|
+        expect { previous[i].reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+      expect(previous[2].reload).to_not be_nil
+      (2..4).each do |i|
+        expect(previous[i].reload).to_not be_nil
+      end
     end
   end
 end
