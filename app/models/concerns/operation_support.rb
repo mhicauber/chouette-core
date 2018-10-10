@@ -103,7 +103,7 @@ module OperationSupport
         if operation_scheduled?
           Rails.logger.warn "Trying to schedule a #{self.class.name} while it is already enqueued (#{self.class.name} ID: #{id})"
         else
-          AggregateWorker.perform_async(id)
+          worker_class.perform_async(id)
         end
       end
     else
