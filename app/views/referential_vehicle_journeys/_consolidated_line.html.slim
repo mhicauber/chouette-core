@@ -108,4 +108,4 @@
                       vjas = journey.vehicle_journey_at_stops[sp.id]
                     .td class="#{vjas && sp.highlighted? ? 'highlighted' : ''} #{vjas.nil? ? 'disabled' : ''} #{headline.present? ? 'headlined' : ''}"
                       div title="#{sp.stop_area.city_name ? "#{sp.stop_area.city_name} (#{sp.stop_area.zip_code})" : ''}" data-headline=headline class=(headline.present? ? 'headlined' : '')
-                        = [vjas&.arrival_local, vjas&.departure_local].compact.uniq.map{|t| t.l(format: "%H:%M")}.join('&nbsp;-&nbsp;').presence&.html_safe || "00:00"
+                        = [vjas&.arrival_local, vjas&.departure_local].compact.uniq.join('&nbsp;-&nbsp;').presence&.html_safe || "00:00"
