@@ -329,20 +329,40 @@ class Import::Gtfs < Import::Base
       transaction: true,
       memory_profile: -> { "Import stop times from #{rows_count}" }
     ) do |row, resource|
-      trip_id, stop_times = row
-      # Memory.log "Import stop times from #{count}" do
-      vehicle_journey = referential.vehicle_journeys.find(vehicle_journey_by_trip_id[trip_id])
-      journey_pattern = vehicle_journey.journey_pattern
-      route = journey_pattern.route
+      begin
+        trip_id, stop_times = row
+        # Memory.log "Import stop times from #{count}" do
+        vehicle_journey = referential.vehicle_journeys.find(vehicle_journey_by_trip_id[trip_id])
+        journey_pattern = vehicle_journey.journey_pattern
+        route = journey_pattern.route
 
-      # we don't calculate costs right away, as there are no stops in the route yet
-      route.prevent_costs_calculation = true
+        # we don't calculate costs right away, as there are no stops in the route yet
+        route.prevent_costs_calculation = true
 
-      routes << route.id
-      stop_times.sort_by! { |s| s.stop_sequence.to_i }
+        routes << route.id
+        stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
-      stop_times.each do |stop_time|
-        import_stop_time stop_time, journey_pattern, resource
+        stop_times.each do |stop_time|
+          import_stop_time stop_time, journey_pattern, resource
+        end
+
+      rescue Import::Gtfs::InvalidTripError
+        create_message(
+          {
+            criticity: :error,
+            message_key: "trip_starting_with_non_zero_day_offset",
+            message_attributes: {
+              trip_id: vehicle_journey.published_journey_name
+            },
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource, commit: true
+        )
+        @status = "failed"
       end
     end
 
@@ -352,6 +372,13 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stop_time(stop_time, journey_pattern, resource)
+    departure_time = GTFS::Time.parse(stop_time.departure_time)
+    arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+
+    if stop_time.stop_sequence.to_i == 1 # first stop has stop_sequence == 1
+      raise InvalidTripError unless departure_time.day_offset == 0 &&  arrival_time.day_offset == 0
+    end
+
     unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
       route = journey_pattern.route
       stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
@@ -363,15 +390,11 @@ class Import::Gtfs < Import::Base
 
       # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
       vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.find_by(stop_point_id: stop_point.id)
-      departure_time = GTFS::Time.parse(stop_time.departure_time)
-      arrival_time = GTFS::Time.parse(stop_time.arrival_time)
-      if stop_time.stop_sequence.to_i == 1 # first stop has stop_sequence == 1
-        @vehicle_journey_at_stop_first_offset = departure_time.day_offset
-      end
+
       vehicle_journey_at_stop.departure_time = departure_time.time
       vehicle_journey_at_stop.arrival_time = arrival_time.time
-      vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset - @vehicle_journey_at_stop_first_offset
-      vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset - @vehicle_journey_at_stop_first_offset
+      vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset
+      vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset
 
       # TODO: offset
 
@@ -491,6 +514,7 @@ class Import::Gtfs < Import::Base
     return model.registration_number if model.respond_to?(:registration_number)
 
     return model.comment if model.is_a?(Chouette::TimeTable)
+    return model.checksum_source if model.is_a?(Chouette::VehicleJourneyAtStop)
 
     model.objectid
   end
@@ -501,5 +525,7 @@ class Import::Gtfs < Import::Base
       next_step
     end
   end
+
+  class InvalidTripError < StandardError; end
 
 end
