@@ -301,6 +301,32 @@ RSpec.describe CleanUp, :type => :model do
       ).to be false
       expect(Chouette::VehicleJourney.exists?(vehicle_journey.id)).to be false
     end
+
+    it "removes join tables rows" do
+      class PurchaseWindowsVehicleJourney < ActiveRecord::Base; end
+      class TimeTablesVehicleJourney < ActiveRecord::Base; end
+      class FootnotesVehicleJourney < ActiveRecord::Base; end
+      class JourneyPatternsStopPoint < ActiveRecord::Base; end
+
+      vehicle_journey = create(:vehicle_journey)
+      purchase_window  = create(:purchase_window)
+      footnote  = create(:footnote)
+      time_table  = create(:time_table)
+      vehicle_journey.purchase_windows << purchase_window
+      vehicle_journey.time_tables << time_table
+      vehicle_journey.footnotes << footnote
+
+      expect(PurchaseWindowsVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
+      expect(TimeTablesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
+      expect(FootnotesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
+      expect(JourneyPatternsStopPoint.where(journey_pattern_id: vehicle_journey.journey_pattern_id)).to be_exists
+
+      cleaner.destroy_routes_outside_referential
+      expect(PurchaseWindowsVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
+      expect(TimeTablesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
+      expect(FootnotesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
+      expect(JourneyPatternsStopPoint.where(journey_pattern_id: vehicle_journey.journey_pattern_id)).to_not be_exists
+    end
   end
 
   describe "#destroy_unassociated_footnotes" do
