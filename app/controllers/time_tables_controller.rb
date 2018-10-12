@@ -14,9 +14,9 @@ class TimeTablesController < ChouetteController
   include PolicyChecker
 
   def show
-    @year = params[:year] ? params[:year].to_i : Date.today.cwyear
-    @time_table_combination = TimeTableCombination.new
     show! do
+      @year = params[:year] ? params[:year].to_i : @time_table.bounding_dates.first&.cwyear || Date.today.cwyear
+      @time_table_combination = TimeTableCombination.new
       @time_table = @time_table.decorate(context: {
         referential: @referential
       })
