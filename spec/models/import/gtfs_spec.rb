@@ -288,17 +288,17 @@ RSpec.describe Import::Gtfs do
         [v.published_journey_name, v.time_tables.first&.comment]
       }
       expected_attributes = [
-        ["to Bullfrog", "Calendar FULLW"],
-        ["to Airport", "Calendar FULLW"],
-        ["Shuttle", "Calendar FULLW"],
+        ["AB1", "Calendar FULLW"],
+        ["AB2", "Calendar FULLW"],
+        ["STBA", "Calendar FULLW"],
         ["CITY1", "Calendar FULLW"],
         ["CITY2", "Calendar FULLW"],
-        ["to Furnace Creek Resort", "Calendar FULLW"],
-        ["to Bullfrog", "Calendar FULLW"],
-        ["to Amargosa Valley", "Calendar WE"],
-        ["to Airport", "Calendar WE"],
-        ["to Amargosa Valley", "Calendar WE"],
-        ["to Airport", "Calendar WE"]
+        ["BFC1", "Calendar FULLW"],
+        ["BFC2", "Calendar FULLW"],
+        ["AAMV1", "Calendar WE"],
+        ["AAMV2", "Calendar WE"],
+        ["AAMV3", "Calendar WE"],
+        ["AAMV4", "Calendar WE"]
       ]
 
       expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
