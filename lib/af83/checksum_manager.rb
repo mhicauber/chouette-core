@@ -1,10 +1,10 @@
 module AF83::ChecksumManager
-  def self.watch object, opts={}
-    current.watch object, opts
-  end
-
   def self.current
     @current ||= AF83::ChecksumManager::Inline.new
+  end
+
+  def self.watch object
+    current.watch object
   end
 
   class Base
@@ -20,7 +20,7 @@ module AF83::ChecksumManager
   class Inline < Base
 
     # We update the checksums right away
-    def watch object, opts
+    def watch object
       object, need_save = *resolve_object(object)
       if need_save
         object.update_checksum_without_callbacks!
