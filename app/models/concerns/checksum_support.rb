@@ -4,7 +4,10 @@ module ChecksumSupport
   VALUE_FOR_NIL_ATTRIBUTE = '-'
 
   included do |into|
-    before_save :set_current_checksum_source, :update_checksum
+    before_save do
+      AF83::ChecksumManager.watch self
+    end
+
     Referential.register_model_with_checksum self
     into.extend ClassMethods
   end
@@ -21,7 +24,9 @@ module ChecksumSupport
 
       load_parents = ->(child){
         parents = []
-        parents << child.send(belongs_to) if child.respond_to? belongs_to
+        if child.respond_to? belongs_to
+          parents << child.send(belongs_to)
+        end
         parents += child.send(has_many) if child.respond_to? has_many
         parents.compact
       }
@@ -30,7 +35,7 @@ module ChecksumSupport
         if changed? || destroyed?
           parents = load_parents.call(self)
           Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.each &:update_checksum_without_callbacks!
+          parents.each { |parent| AF83::ChecksumManager.watch parent, save: true }
         end
       end
 
@@ -47,7 +52,7 @@ module ChecksumSupport
         if @_parents_for_checksum_update.present?
           parents = @_parents_for_checksum_update
           Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.each &:update_checksum_without_callbacks!
+          parents.each { |parent| AF83::ChecksumManager.watch parent, save: true }
         end
       end
 
