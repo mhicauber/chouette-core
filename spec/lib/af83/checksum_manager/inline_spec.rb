@@ -1,4 +1,4 @@
-RSpec.describe AF83::Decorator do
+RSpec.describe AF83::ChecksumManager::Inline do
   let(:manager){ AF83::ChecksumManager::Inline.new }
   let(:route){ create(:route) }
 

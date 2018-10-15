@@ -16,8 +16,10 @@ RSpec.describe AF83::Decorator do
   context "#resolve_object" do
     it "should parse the params" do
       object = create(:route)
-      expect(AF83::ChecksumManager.current.resolve_object(object)).to eq([object, false])
-      expect(AF83::ChecksumManager.current.resolve_object([object.class.name, object.id])).to eq([object, true])
+      expect(AF83::ChecksumManager::SerializedObject.new(object).object).to eq(object)
+      expect(AF83::ChecksumManager::SerializedObject.new(object).need_save).to be_falsy
+      expect(AF83::ChecksumManager::SerializedObject.new([object.class.name, object.id]).object).to eq(object)
+      expect(AF83::ChecksumManager::SerializedObject.new([object.class.name, object.id]).need_save).to be_truthy
     end
   end
 end
