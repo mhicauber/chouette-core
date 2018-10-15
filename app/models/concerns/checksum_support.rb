@@ -25,9 +25,26 @@ module ChecksumSupport
       load_parents = ->(child){
         parents = []
         if child.respond_to? belongs_to
-          parents << child.send(belongs_to)
+          reflection = child.class.reflections[belongs_to.to_s]
+          if reflection
+            parent_id = child.send(reflection.foreign_key)
+            parent_class = reflection.klass.name
+          else
+            # the relation is not a true ActiveRecord Relation
+            parent = child.send(belongs_to)
+            parents << [parent.class.name, parent.id]
+          end
+          parents << [parent_class, parent_id] if parent_id
         end
-        parents += child.send(has_many) if child.respond_to? has_many
+        if child.respond_to? has_many
+          reflection = child.class.reflections[has_many.to_s]
+          if reflection
+            parents += [reflection.klass.name].product(child.send(has_many).pluck(reflection.foreign_key).compact)
+          else
+            # the relation is not a true ActiveRecord Relation
+            parents += child.send(has_many).map {|parent| [parent.class.name, parent.id] }
+          end
+        end
         parents.compact
       }
 
@@ -35,7 +52,7 @@ module ChecksumSupport
         if changed? || destroyed?
           parents = load_parents.call(self)
           Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.each { |parent| AF83::ChecksumManager.watch parent, save: true }
+          parents.each { |parent| AF83::ChecksumManager.watch parent }
         end
       end
 
@@ -52,7 +69,7 @@ module ChecksumSupport
         if @_parents_for_checksum_update.present?
           parents = @_parents_for_checksum_update
           Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.each { |parent| AF83::ChecksumManager.watch parent, save: true }
+          parents.each { |parent| AF83::ChecksumManager.watch parent }
         end
       end
 

@@ -104,8 +104,14 @@ describe Chouette::VehicleJourney, :type => :model do
 
     it "changes when a vjas is added" do
       vehicle_journey = create(:vehicle_journey)
-      expect(vehicle_journey).to receive(:update_checksum_without_callbacks!).at_least(:once).and_call_original
+      @update_calls = Hash.new { |hash, key| hash[key] = 0 }
+      allow_any_instance_of(Chouette::VehicleJourney).to receive(:update_checksum_without_callbacks!).and_wrap_original do |m, *opts|
+        @update_calls[m.receiver.id] += 1
+        m.call(*opts)
+      end
       expect{create(:vehicle_journey_at_stop, vehicle_journey: vehicle_journey)}.to change{vehicle_journey.reload.checksum}
+      expect(@update_calls.size).to eq 1
+      expect(@update_calls[vehicle_journey.id]).to eq 1
     end
 
     it "changes when a vjas is deleted" do
