@@ -15,9 +15,30 @@ module AF83::ChecksumManager
     manager
   end
 
+  def self.logger
+    @@logger ||= Rails.logger
+  end
+
+  def self.logger= logger
+    @@logger = logger
+  end
+
+  def self.log_level
+    @@log_level ||= :debug
+  end
+
+  def self.log_level= log_level
+    @@log_level = log_level if logger.respond_to?(log_level)
+  end
+
+  def self.log msg
+    prefix = "[ChecksumManager::#{current.class.name.split('::').last} #{current.object_id.to_s(16)}]"
+    logger.send log_level, "#{prefix} #{msg}"
+  end
+
   def self.start_transaction
     raise AlreadyInTransactionError if in_transaction?
-    Rails.logger.debug "=== NEW CHECKSUM TRANSACTION ==="
+    log "=== NEW TRANSACTION ==="
     self.current = AF83::ChecksumManager::Transactional.new
   end
 
@@ -26,11 +47,11 @@ module AF83::ChecksumManager
   end
 
   def self.commit
-    Rails.logger.debug "=== COMMITTING CHECKSUM TRANSACTION ==="
+    current.log "=== COMMITTING TRANSACTION ==="
     raise NotInTransactionError unless current.is_a?(AF83::ChecksumManager::Transactional)
     current.commit
+    log "=== DONE COMMITTING TRANSACTION ==="
     self.current = nil
-    Rails.logger.debug "=== DONE COMMITTING CHECKSUM TRANSACTION ==="
   end
 
   def self.after_create object
@@ -82,10 +103,14 @@ module AF83::ChecksumManager
     parents.compact
   end
 
+  def self.parents_to_sentence parents
+    parents.group_by(&:first).map{ |klass, v| "#{v.size} #{klass}" }.to_sentence
+  end
+
   def self.child_update_parents object
     if object.changed? || object.destroyed?
       parents = checksum_parents object
-      Rails.logger.debug "Request from #{object.class.name} checksum updates for #{parents.count} parent(s)"
+      log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
       parents.each { |parent| watch parent, from: object }
     end
   end
@@ -93,7 +118,7 @@ module AF83::ChecksumManager
   def self.child_load_parents object
     parents = checksum_parents object
 
-    Rails.logger.debug "Prepare request for #{object.class.name} deletion checksum updates for #{parents.count} parent(s)"
+    log "Prepare request for #{object.class.name}##{object.id} deletion checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
 
     @_parents_for_checksum_update ||= {}
     @_parents_for_checksum_update[object] = parents
@@ -102,7 +127,7 @@ module AF83::ChecksumManager
   def self.child_update_loaded_parents object
     if @_parents_for_checksum_update.present? && @_parents_for_checksum_update[object].present?
       parents = @_parents_for_checksum_update[object]
-      Rails.logger.debug "Request from #{object.class.name} checksum updates for #{parents.count} parent(s)"
+      log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
       parents.each { |parent| AF83::ChecksumManager.watch parent, from: object }
       @_parents_for_checksum_update.delete object
     end
@@ -167,6 +192,10 @@ module AF83::ChecksumManager
     def after_create object
     end
 
+    def log msg
+      AF83::ChecksumManager.log msg
+    end
+
     def update_object_synchronously object, force_save: false
       serialized_object = SerializedObject.new(object)
       if serialized_object.need_save || force_save
@@ -214,23 +243,23 @@ module AF83::ChecksumManager
           object = resolution_stack.shift
           while object && sentinel > 0
             count = resolution_children_count[object.signature]
-            Rails.logger.debug "resolving checksum for #{object.signature}: #{count} pending children"
+            log "resolving checksum for #{object.signature}: #{count} pending children"
             if count.nil?
               # the object no longer exists (most likely a new record that is now saved with another signature)
-              Rails.logger.debug "SKIP OBJECT"
+              log "SKIP OBJECT"
             elsif count.zero?
               if is_dirty?(object)
-                Rails.logger.debug "Reloading dirty object"
+                log "Reloading dirty object"
                 object.reload
               end
-              Rails.logger.debug "Updating"
+              log "Updating"
               update_object_synchronously object, force_save: true
               dirty_object_instances(object).map(&:reload)
               AF83::ChecksumManager.child_load_parents(object.object).each do |parent|
                 resolution_children_count[SerializedObject.new(parent).signature] -= 1
               end
             else
-              Rails.logger.debug "Pushed back"
+              log "Pushed back"
               resolution_stack.push object
             end
             sentinel -= 1
@@ -244,7 +273,7 @@ module AF83::ChecksumManager
     end
 
     def abort_transaction!
-      Rails.logger.debug "=== ABORTING CHECKSUM TRANSACTION ==="
+      log "=== ABORTING TRANSACTION ==="
       clean!
     end
 
@@ -255,7 +284,7 @@ module AF83::ChecksumManager
     end
 
     def after_create object
-      Rails.logger.debug "after_create #{object}"
+      log "after_create #{object}"
       serialized = SerializedObject.new(object, load_object: true)
       new_signature = SerializedObject.new(serialized.serialized_object).signature
       count = resolution_children_count.delete(serialized.signature(unserialized: true)) || 0
