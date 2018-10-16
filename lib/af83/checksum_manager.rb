@@ -1,6 +1,10 @@
 module AF83::ChecksumManager
   THREAD_VARIABLE_NAME = "current_checksum_manager".freeze
 
+  class NotInTransactionError < StandardError; end
+  class AlreadyInTransactionError < StandardError; end
+  class MultipleReferentialsError < StandardError; end
+
   def self.current
     current_manager = Thread.current.thread_variable_get THREAD_VARIABLE_NAME
     current_manager || self.current = AF83::ChecksumManager::Inline.new
@@ -12,9 +16,13 @@ module AF83::ChecksumManager
   end
 
   def self.start_transaction
-    raise AlreadyInTransactionError if current.is_a?(AF83::ChecksumManager::Transactional)
+    raise AlreadyInTransactionError if in_transaction?
     Rails.logger.debug "=== NEW CHECKSUM TRANSACTION ==="
     self.current = AF83::ChecksumManager::Transactional.new
+  end
+
+  def self.in_transaction?
+    current.is_a?(AF83::ChecksumManager::Transactional)
   end
 
   def self.commit
@@ -100,9 +108,6 @@ module AF83::ChecksumManager
     end
   end
 
-  class NotInTransactionError < StandardError; end
-  class AlreadyInTransactionError < StandardError; end
-
   class SerializedObject
     def self.new object, opts={}
       return object if object.is_a?(SerializedObject)
@@ -159,7 +164,6 @@ module AF83::ChecksumManager
   end
 
   class Base
-
     def after_create object
     end
 
@@ -182,7 +186,19 @@ module AF83::ChecksumManager
   end
 
   class Transactional < Base
+    def initialize
+      @current_tenant = Apartment::Tenant.current
+    end
+
+    def ensure_tenant_did_not_change!
+      unless Apartment::Tenant.current == @current_tenant
+        abort_transaction!
+        raise MultipleReferentialsError
+      end
+    end
+
     def watch object, from: nil
+      ensure_tenant_did_not_change!
       push_on_stack SerializedObject.new(object), from
       if from.nil?
         # we are in the before_save callback
@@ -193,38 +209,49 @@ module AF83::ChecksumManager
     def commit
       begin
         return if resolution_stack.empty?
-        sentinel = resolution_stack.size ** 2 # If I'm correct, the max complexity here is n(n+1)/2
-        object = resolution_stack.shift
-        while object && sentinel > 0
-          count = resolution_children_count[object.signature]
-          Rails.logger.debug "resolving checksum for #{object.signature}: #{count} pending children"
-          if count.nil?
-            # the object no longer exists (most likely a new record that is now saved with another signature)
-            Rails.logger.debug "SKIP OBJECT"
-          elsif count.zero?
-            if is_dirty?(object)
-              Rails.logger.debug "Reloading dirty object"
-              object.reload
-            end
-            Rails.logger.debug "Updating"
-            update_object_synchronously object, force_save: true
-            dirty_object_instances(object).map(&:reload)
-            AF83::ChecksumManager.child_load_parents(object.object).each do |parent|
-              resolution_children_count[SerializedObject.new(parent).signature] -= 1
-            end
-          else
-            Rails.logger.debug "Pushed back"
-            resolution_stack.push object
-          end
-          sentinel -= 1
+        Apartment::Tenant.switch @current_tenant do
+          sentinel = resolution_stack.size ** 2 # If I'm correct, the max complexity here is n(n+1)/2
           object = resolution_stack.shift
+          while object && sentinel > 0
+            count = resolution_children_count[object.signature]
+            Rails.logger.debug "resolving checksum for #{object.signature}: #{count} pending children"
+            if count.nil?
+              # the object no longer exists (most likely a new record that is now saved with another signature)
+              Rails.logger.debug "SKIP OBJECT"
+            elsif count.zero?
+              if is_dirty?(object)
+                Rails.logger.debug "Reloading dirty object"
+                object.reload
+              end
+              Rails.logger.debug "Updating"
+              update_object_synchronously object, force_save: true
+              dirty_object_instances(object).map(&:reload)
+              AF83::ChecksumManager.child_load_parents(object.object).each do |parent|
+                resolution_children_count[SerializedObject.new(parent).signature] -= 1
+              end
+            else
+              Rails.logger.debug "Pushed back"
+              resolution_stack.push object
+            end
+            sentinel -= 1
+            object = resolution_stack.shift
+          end
+          raise "There was an error processing the resolution queue" unless sentinel > 0
         end
-        raise "There was an error processing the resolution queue" unless sentinel > 0
       ensure
-        @resolution_stack = nil
-        @resolution_children_count = nil
-        @dirty_objects = nil
+        clean!
       end
+    end
+
+    def abort_transaction!
+      Rails.logger.debug "=== ABORTING CHECKSUM TRANSACTION ==="
+      clean!
+    end
+
+    def clean!
+      @resolution_stack = nil
+      @resolution_children_count = nil
+      @dirty_objects = nil
     end
 
     def after_create object

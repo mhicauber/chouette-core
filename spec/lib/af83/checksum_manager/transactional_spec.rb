@@ -11,7 +11,8 @@ RSpec.describe AF83::ChecksumManager::Transactional do
     let(:route){ create(:route) }
 
     before(:each) do
-      AF83::ChecksumManager.start_transaction
+      AF83::ChecksumManager.start_transaction unless AF83::ChecksumManager.in_transaction?
+      
       @update_calls = Hash.new { |hash, key| hash[key] = Hash.new { |hash, key| hash[key] = 0 } }
       allow_any_instance_of(Chouette::Route).to receive(:update_checksum_without_callbacks!).and_wrap_original do |m, *opts|
         @update_calls[m.receiver.class][m.receiver.id] += 1
@@ -28,6 +29,12 @@ RSpec.describe AF83::ChecksumManager::Transactional do
       route
       expect(@update_calls.size).to eq(0)
       AF83::ChecksumManager.commit
+    end
+
+    it 'should raise an error if we try to write in distinct referentials' do
+      create(:route)
+      create(:referential).switch
+      expect { create(:route) }.to raise_error AF83::ChecksumManager::MultipleReferentialsError
     end
 
     context "after #commit" do
