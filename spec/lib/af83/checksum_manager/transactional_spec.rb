@@ -12,7 +12,7 @@ RSpec.describe AF83::ChecksumManager::Transactional do
 
     before(:each) do
       AF83::ChecksumManager.start_transaction unless AF83::ChecksumManager.in_transaction?
-      
+
       @update_calls = Hash.new { |hash, key| hash[key] = Hash.new { |hash, key| hash[key] = 0 } }
       allow_any_instance_of(Chouette::Route).to receive(:update_checksum_without_callbacks!).and_wrap_original do |m, *opts|
         @update_calls[m.receiver.class][m.receiver.id] += 1
@@ -82,6 +82,8 @@ RSpec.describe AF83::ChecksumManager::Transactional do
             expect(
               AF83::ChecksumManager.current.send(:is_dirty?, vj.vehicle_journey_at_stops.last)
             ).to be_falsy
+            vjas = Chouette::VehicleJourneyAtStop.find vj.vehicle_journey_at_stops.last.id
+            vjas.destroy
           end
 
           expect(@update_calls[Chouette::VehicleJourney].size).to eq(1)

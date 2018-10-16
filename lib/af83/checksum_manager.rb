@@ -68,6 +68,10 @@ module AF83::ChecksumManager
     current.watch object, from: from
   end
 
+  def self.object_signature object
+    SerializedObject.new(object).signature
+  end
+
   def self.checksum_parents object
     klass = object.class
     return [] unless klass.respond_to? :checksum_parent_relations
@@ -121,12 +125,12 @@ module AF83::ChecksumManager
     log "Prepare request for #{object.class.name}##{object.id} deletion checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
 
     @_parents_for_checksum_update ||= {}
-    @_parents_for_checksum_update[object] = parents
+    @_parents_for_checksum_update[object_signature(object)] = parents
   end
 
   def self.child_update_loaded_parents object
-    if @_parents_for_checksum_update.present? && @_parents_for_checksum_update[object].present?
-      parents = @_parents_for_checksum_update[object]
+    if @_parents_for_checksum_update.present? && @_parents_for_checksum_update[object_signature(object)].present?
+      parents = @_parents_for_checksum_update[object_signature(object)]
       log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
       parents.each { |parent| AF83::ChecksumManager.watch parent, from: object }
       @_parents_for_checksum_update.delete object
@@ -327,7 +331,7 @@ module AF83::ChecksumManager
 
       resolution_children_count[object.signature] ||= 0
 
-      if from && from.class.try(:is_checksum_enabled?)
+      if from && from.class.try(:is_checksum_enabled?) && !from.destroyed?
         resolution_children_count[object.signature] += 1
       end
     end
