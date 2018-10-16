@@ -8,7 +8,7 @@ RSpec.describe AF83::ChecksumManager::Inline do
       it 'should update the checksum but not in DB' do
         expect(object).to receive(:set_current_checksum_source)
         expect(object).to receive(:update_checksum)
-        manager.watch(object)
+        manager.watch(object, nil)
       end
     end
 
@@ -24,7 +24,7 @@ RSpec.describe AF83::ChecksumManager::Inline do
       end
 
       it 'should update the checksum in DB' do
-        manager.watch(object)
+        manager.watch(object, nil)
         expect(@update_calls.size).to eq(1)
         expect(@update_calls[route.id]).to eq(1)
       end

@@ -66,7 +66,7 @@ Rails.application.configure do
 
   config.i18n.available_locales = %i[fr en]
 
-  if ENV['VERBOSE_SPECS']
+  if ENV['VERBOSE_SPECS'].present?
     config.logger = Logger.new(STDOUT)
     config.logger.level = Logger::ERROR
     config.active_record.logger = nil

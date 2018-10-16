@@ -8,7 +8,7 @@ RSpec.describe AF83::Decorator do
   context "AF83::ChecksumManager#watch" do
     it "should delegate to the current manager" do
       object = create(:route)
-      expect(AF83::ChecksumManager.current).to receive(:watch).with(object).once
+      expect(AF83::ChecksumManager.current).to receive(:watch).with(object, from: nil).once
       AF83::ChecksumManager.watch object
     end
   end

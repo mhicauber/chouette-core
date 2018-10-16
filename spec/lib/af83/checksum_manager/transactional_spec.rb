@@ -51,6 +51,28 @@ RSpec.describe AF83::ChecksumManager::Transactional do
         expect{ route.update_checksum_without_callbacks! }.to_not change { route.checksum }
       end
 
+      it 'should work with a destroyed object' do
+        route
+        AF83::ChecksumManager.commit
+        AF83::ChecksumManager.start_transaction
+        route.update name: "route"
+        Chouette::Route.find(route.id).destroy
+        expect{ AF83::ChecksumManager.commit }.to_not raise_error
+      end
+
+      it 'should work with a simple save object' do
+        route
+        AF83::ChecksumManager.commit
+        AF83::ChecksumManager.start_transaction
+        route.name = "new name"
+        route.save
+        expect(
+          AF83::ChecksumManager.current.send(:is_dirty?, route)
+        ).to be_falsy
+        AF83::ChecksumManager.commit
+        expect(route.checksum_source.split('|').first).to eq "new name"
+      end
+
       it 'should go back to an inline manager' do
         AF83::ChecksumManager.commit
         expect(AF83::ChecksumManager.current).to be_a(AF83::ChecksumManager::Inline)
@@ -74,6 +96,7 @@ RSpec.describe AF83::ChecksumManager::Transactional do
           AF83::ChecksumManager.transaction do
             vjas = vj.vehicle_journey_at_stops.first
             vjas.update arrival_time: "02:00"
+            vjas.update arrival_time: "02:30"
 
             expect(@update_calls.size).to eq(0)
             expect(

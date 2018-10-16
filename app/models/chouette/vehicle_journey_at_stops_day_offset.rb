@@ -36,7 +36,8 @@ module Chouette
 
     def save
       @at_stops.each do |at_stop|
-        at_stop.save
+        attrs = %i[departure_day_offset arrival_day_offset]
+        at_stop.save if attrs.any? { |attr| at_stop.send("#{attr}_changed?")}
       end
     end
 

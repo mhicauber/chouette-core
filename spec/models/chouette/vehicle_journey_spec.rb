@@ -91,72 +91,87 @@ describe Chouette::VehicleJourney, :type => :model do
 
   describe 'checksum' do
     it_behaves_like 'checksum support'
-    it "changes when the route is modified" do
-      vehicle_journey = create(:vehicle_journey)
-      route = vehicle_journey.route
-      expect { route.stop_points.first.update(position: route.stop_points.size); p route.reload.stop_areas.map(&:id) }.to(change { vehicle_journey.reload.checksum } )
-    end
 
-    it "changes when a vjas is updated" do
+    let(:checksum_owner) do
       vehicle_journey = create(:vehicle_journey)
-      expect{vehicle_journey.vehicle_journey_at_stops.last.update_attribute(:departure_time, Time.now)}.to change{vehicle_journey.reload.checksum}
-    end
-
-    it "changes when a vjas is added" do
-      vehicle_journey = create(:vehicle_journey)
-      @update_calls = Hash.new { |hash, key| hash[key] = 0 }
-      allow_any_instance_of(Chouette::VehicleJourney).to receive(:update_checksum_without_callbacks!).and_wrap_original do |m, *opts|
-        @update_calls[m.receiver.id] += 1
-        m.call(*opts)
+      3.times do |i|
+        create(
+          :vehicle_journey_at_stop,
+          vehicle_journey: vehicle_journey,
+          arrival_time: "0#{i}:00",
+          departure_time: "0#{i}:00",
+        ).run_callbacks(:commit)
       end
-      expect{create(:vehicle_journey_at_stop, vehicle_journey: vehicle_journey)}.to change{vehicle_journey.reload.checksum}
-      expect(@update_calls.size).to eq 1
-      expect(@update_calls[vehicle_journey.id]).to eq 1
+      vehicle_journey.reload.save # this to trigger the day offsets computation
+      vehicle_journey
     end
 
-    it "changes when a vjas is deleted" do
-      vehicle_journey = create(:vehicle_journey)
-      3.times do
-        create(:vehicle_journey_at_stop, vehicle_journey: vehicle_journey).run_callbacks(:commit)
-      end
-      vjas = vehicle_journey.vehicle_journey_at_stops.last
-      expect{vjas.destroy; vjas.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a vjas is created",
+                    ->{ create(:vehicle_journey_at_stop, vehicle_journey: checksum_owner) }
+
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a vjas is updated",
+                    ->{ checksum_owner.vehicle_journey_at_stops.last.update_attribute(:departure_time, Time.now) }
+
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a vjas is deleted",
+                    -> {
+                      vjas = checksum_owner.vehicle_journey_at_stops.last
+                      vjas.destroy
+                      vjas.run_callbacks(:commit)
+                    }
+
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a footnote is added",
+                    -> {
+                      footnote = create :footnote
+                      checksum_owner.footnotes << footnote
+                      checksum_owner.save
+                    }
+
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a footnote is updated",
+                    -> { footnote.reload.update(label: "mkmkmk") } do
+        let(:footnote){ create :footnote }
+        before { checksum_owner.footnotes << footnote }
     end
 
-    it "changes when a footnote is added" do
-      vehicle_journey = create(:vehicle_journey)
-      footnote = create :footnote
 
-      expect{vehicle_journey.footnotes << footnote; vehicle_journey.save}.to change{vehicle_journey.checksum}
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a footnote is deleted",
+                    -> {
+                      footnote.destroy
+                      footnote.run_callbacks(:commit)
+                    },
+                    reload: true do
+        let(:footnote){ create :footnote }
+        before do
+          checksum_owner.footnotes << footnote
+          checksum_owner.save
+          footnote.reload
+        end
     end
 
-    it "changes when a footnote is updated" do
-      vehicle_journey = create(:vehicle_journey)
-      footnote = create :footnote
-      vehicle_journey.footnotes << footnote
-      expect{footnote.reload.update(label: "mkmkmk")}.to change{vehicle_journey.reload.checksum}
-    end
-
-    it "changes when a footnote is deleted" do
-      vehicle_journey = create(:vehicle_journey)
-      footnote = create :footnote
-      vehicle_journey.footnotes << footnote
-      vehicle_journey.save
-      footnote.reload
-
-      expect{footnote.destroy; footnote.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
-    end
-
-    it "changes when a RoutingConstraintZone is deleted" do
-      vehicle_journey = create(:vehicle_journey)
-      rcz = create  :routing_constraint_zone, route_id: vehicle_journey.route.id
-      vehicle_journey.ignored_routing_contraint_zone_ids = [rcz.id]
-      vehicle_journey.save!
-      expect{rcz.destroy; rcz.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a RoutingConstraintZone is deleted",
+                    -> {
+                      rcz.destroy
+                      rcz.run_callbacks(:commit)
+                    },
+                    reload: true do
+        let(:rcz){ create :routing_constraint_zone, route_id: checksum_owner.route.id }
+        before(:each) do
+          checksum_owner.ignored_routing_contraint_zone_ids = [rcz.id]
+          checksum_owner.save!
+          rcz.reload
+        end
     end
 
     context "when a custom_field is added" do
-      let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {}) }
+      # CustomField don't trigger an automoatic checksum calcultation, we need to force it
+
+      let(:checksum_owner){ create(:vehicle_journey, custom_field_values: {}) }
       context "when the custom_field has the :ignore_empty_value_in_checksums option enabled" do
         let(:custom_field) do
            create :custom_field,
@@ -164,47 +179,47 @@ describe Chouette::VehicleJourney, :type => :model do
                   code: :energy_ignored,
                   name: :energy,
                   resource_type: "VehicleJourney",
-                  options: {ignore_empty_value_in_checksums: true}
+                  options: { ignore_empty_value_in_checksums: true }
          end
 
-        it "should not change the checksum" do
-          expect{ custom_field }.to_not change { vehicle_journey.current_checksum_source }
-        end
+         it_behaves_like 'it works with both checksums modes',
+                        "should not change the checksum",
+                        -> { custom_field; AF83::ChecksumManager.watch(checksum_owner); checksum_owner.save },
+                        change: false
       end
 
       context "when the custom_field hasn't the :ignore_empty_value_in_checksums option enabled" do
-        let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {}) }
         let(:custom_field) do
            create :custom_field,
                   field_type: :string,
-                  code: :energy_ignored,
+                  code: :energy,
                   name: :energy,
                   resource_type: "VehicleJourney"
          end
 
-        it "should change the checksum" do
-          expect{ custom_field }.to change { vehicle_journey.current_checksum_source }
-        end
+         it_behaves_like 'it works with both checksums modes',
+                        "should change the checksum",
+                        -> { p "/// FOOO"; custom_field; AF83::ChecksumManager.watch(checksum_owner); checksum_owner.save }
+
       end
     end
 
     context "when custom_field_values change" do
-      let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {custom_field.code.to_s => former_value}) }
+      let(:checksum_owner){ create(:vehicle_journey, custom_field_values: {custom_field.code.to_s => former_value}) }
       let(:custom_field){ create :custom_field, field_type: :string, code: :energy, name: :energy, resource_type: "VehicleJourney" }
       let(:former_value){ "foo" }
       let(:value){ "bar" }
-      before do
-        @checksum_source = vehicle_journey.checksum_source
-      end
 
-      it "should update the checksum" do
-        vehicle_journey.custom_field_values = {custom_field.code.to_s => value}
-        vehicle_journey.save
-        expect(vehicle_journey.checksum_source).to_not eq @checksum_source
-      end
+      it_behaves_like 'it works with both checksums modes',
+                     "should change the checksum",
+                     -> {
+                       checksum_owner.custom_field_values = {custom_field.code.to_s => value}
+                       checksum_owner.save
+                     }
+
 
       context "with an attachment custom_field" do
-        let(:vehicle_journey) do
+        let(:checksum_owner) do
           custom_field
           vj = create(:vehicle_journey)
           vj.custom_field_energy = File.open(fixtures_path("test_1/file.txt"))
@@ -213,18 +228,17 @@ describe Chouette::VehicleJourney, :type => :model do
         end
         let(:custom_field){ create :custom_field, field_type: :attachment, code: :energy, name: :energy, resource_type: "VehicleJourney" }
 
-        it "should update the checksum" do
-          expect(CustomField::Instance::Attachment).to receive(:digest).and_call_original
-          vehicle_journey.custom_field_energy = File.open(fixtures_path("test_2/file.txt"))
-          vehicle_journey.save
-          expect(vehicle_journey.checksum_source).to_not eq @checksum_source
-        end
+        it_behaves_like 'it works with both checksums modes',
+                       "should change the checksum",
+                       -> {
+                         checksum_owner.custom_field_energy = File.open(fixtures_path("test_2/file.txt"))
+                         checksum_owner.save
+                       }
 
-        it "should not calculate the digest if the vale does not change" do
-          expect(CustomField::Instance::Attachment).to_not receive(:digest).and_call_original
-          vehicle_journey.reload.save
-          expect(vehicle_journey.checksum_source).to eq @checksum_source
-        end
+        it_behaves_like 'it works with both checksums modes',
+                       "should not change the checksum",
+                       -> { checksum_owner.reload.save },
+                       change: false
       end
     end
   end

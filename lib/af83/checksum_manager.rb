@@ -58,6 +58,10 @@ module AF83::ChecksumManager
     current.after_create object
   end
 
+  def self.after_destroy object
+    current.after_destroy object
+  end
+
   def self.transaction
     start_transaction
     yield
@@ -111,7 +115,7 @@ module AF83::ChecksumManager
     parents.group_by(&:first).map{ |klass, v| "#{v.size} #{klass}" }.to_sentence
   end
 
-  def self.child_update_parents object
+  def self.child_after_save object
     if object.changed? || object.destroyed?
       parents = checksum_parents object
       log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
@@ -119,7 +123,7 @@ module AF83::ChecksumManager
     end
   end
 
-  def self.child_load_parents object
+  def self.child_before_destroy object
     parents = checksum_parents object
 
     log "Prepare request for #{object.class.name}##{object.id} deletion checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
@@ -128,7 +132,7 @@ module AF83::ChecksumManager
     @_parents_for_checksum_update[object_signature(object)] = parents
   end
 
-  def self.child_update_loaded_parents object
+  def self.child_after_destroy object
     if @_parents_for_checksum_update.present? && @_parents_for_checksum_update[object_signature(object)].present?
       parents = @_parents_for_checksum_update[object_signature(object)]
       log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
@@ -193,7 +197,14 @@ module AF83::ChecksumManager
   end
 
   class Base
+    def object_signature object
+      AF83::ChecksumManager.object_signature object
+    end
+
     def after_create object
+    end
+
+    def after_destroy object
     end
 
     def log msg
@@ -201,7 +212,7 @@ module AF83::ChecksumManager
     end
 
     def update_object_synchronously object, force_save: false
-      serialized_object = SerializedObject.new(object)
+      serialized_object = SerializedObject.new(object, load_object: true)
       if serialized_object.need_save || force_save
         serialized_object.object.update_checksum_without_callbacks!
       else
@@ -214,6 +225,7 @@ module AF83::ChecksumManager
   class Inline < Base
     # We update the checksums right away
     def watch object, _
+      log "watch: #{object_signature(object)}"
       update_object_synchronously object
     end
   end
@@ -231,8 +243,9 @@ module AF83::ChecksumManager
     end
 
     def watch object, from: nil
+      log "watch: #{object_signature(object)} from: #{from.inspect}"
       ensure_tenant_did_not_change!
-      push_on_stack SerializedObject.new(object), from
+      push_on_stack SerializedObject.new(object, load_object: from.nil?), from
       if from.nil?
         # we are in the before_save callback
         mark_dirty object
@@ -243,11 +256,17 @@ module AF83::ChecksumManager
       begin
         return if resolution_stack.empty?
         Apartment::Tenant.switch @current_tenant do
-          sentinel = resolution_stack.size ** 2 # If I'm correct, the max complexity here is n(n+1)/2
+          # If I'm correct, the max complexity here is n(n+1)/2
+          # The +1 is to prevent an error when te stack contains a single element
+          sentinel = (resolution_stack.size + 1) ** 2
           object = resolution_stack.shift
           while object && sentinel > 0
-            count = resolution_children_count[object.signature]
-            log "resolving checksum for #{object.signature}: #{count} pending children"
+            count = resolution_children_count[object.signature]&.size
+            if count
+              log "resolving checksum for #{object.signature}: #{count} children"
+            else
+              log "resolving checksum for #{object.signature}: NOT FOUND"
+            end
             if count.nil?
               # the object no longer exists (most likely a new record that is now saved with another signature)
               log "SKIP OBJECT"
@@ -259,8 +278,8 @@ module AF83::ChecksumManager
               log "Updating"
               update_object_synchronously object, force_save: true
               dirty_object_instances(object).map(&:reload)
-              AF83::ChecksumManager.child_load_parents(object.object).each do |parent|
-                resolution_children_count[SerializedObject.new(parent).signature] -= 1
+              AF83::ChecksumManager.checksum_parents(object.object).each do |parent|
+                resolution_children_count[SerializedObject.new(parent).signature].delete object.signature
               end
             else
               log "Pushed back"
@@ -298,6 +317,11 @@ module AF83::ChecksumManager
       resolution_children_count[new_signature] = count
     end
 
+    def after_destroy object
+      log "after_destroy #{object}"
+      dirty_objects.delete object_signature(object)
+    end
+
     protected
 
     def resolution_stack
@@ -313,15 +337,16 @@ module AF83::ChecksumManager
     end
 
     def mark_dirty object
-      dirty_objects[SerializedObject.new(object).signature].push object
+      dirty_objects[object_signature(object)].push(object)
     end
 
     def is_dirty? object
-      dirty_objects.key? SerializedObject.new(object).signature
+      signature = object_signature(object)
+      dirty_objects.key?(signature) && dirty_objects[signature].size > 1
     end
 
     def dirty_object_instances object
-      dirty_objects[SerializedObject.new(object).signature]
+      dirty_objects[object_signature(object)]
     end
 
     def push_on_stack object, from
@@ -329,10 +354,10 @@ module AF83::ChecksumManager
         resolution_stack.push object
       end
 
-      resolution_children_count[object.signature] ||= 0
+      resolution_children_count[object.signature] ||= Set.new
 
       if from && from.class.try(:is_checksum_enabled?) && !from.destroyed?
-        resolution_children_count[object.signature] += 1
+        resolution_children_count[object.signature] << object_signature(from)
       end
     end
   end
