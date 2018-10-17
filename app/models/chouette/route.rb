@@ -246,8 +246,8 @@ module Chouette
         costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
         update_column :costs, costs
       elsif retry_if_empty
-        Rails.logger.info "Waycosts came back empty, trying again in 1 second"
-        calculate_costs! delay: 1.second, should_retry: false
+        Rails.logger.info "Waycosts came back empty, trying again in 5 seconds"
+        calculate_costs! delay: 5.seconds, should_retry: false
       end
     end
 
