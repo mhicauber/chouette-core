@@ -5,15 +5,15 @@ module ChecksumSupport
 
   included do |into|
     before_save do
-      AF83::ChecksumManager.watch self
+      Chouette::ChecksumManager.watch self
     end
 
     after_create do
-      AF83::ChecksumManager.after_create self
+      Chouette::ChecksumManager.after_create self
     end
 
     after_destroy do
-      AF83::ChecksumManager.after_destroy self
+      Chouette::ChecksumManager.after_destroy self
     end
 
     Referential.register_model_with_checksum self
@@ -24,7 +24,7 @@ module ChecksumSupport
     def is_checksum_enabled?; true end
 
     def has_checksum_children klass, opts={}
-      AF83::ChecksumManager.current.log "Define callback in #{klass} to update checksums #{self.model_name}"
+      Chouette::ChecksumManager.current.log "Define callback in #{klass} to update checksums #{self.model_name}"
       unless klass.respond_to?(:checksum_parent_relations)
         klass.define_singleton_method :checksum_parent_relations do
           @checksum_parent_relations ||= {}
@@ -32,9 +32,9 @@ module ChecksumSupport
       end
       klass.checksum_parent_relations[self] = opts
 
-      klass.after_save     { AF83::ChecksumManager.child_after_save(self) }
-      klass.before_destroy { AF83::ChecksumManager.child_before_destroy(self) }
-      klass.after_destroy  { AF83::ChecksumManager.child_after_destroy(self) }
+      klass.after_save     { Chouette::ChecksumManager.child_after_save(self) }
+      klass.before_destroy { Chouette::ChecksumManager.child_before_destroy(self) }
+      klass.after_destroy  { Chouette::ChecksumManager.child_after_destroy(self) }
     end
   end
 
@@ -75,26 +75,26 @@ module ChecksumSupport
   def update_checksum
     if self.checksum_source_changed?
       self.checksum = Digest::SHA256.new.hexdigest(self.checksum_source)
-      AF83::ChecksumManager.current.log("Changed #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
+      Chouette::ChecksumManager.current.log("Changed #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
     end
   end
 
   def update_checksum!
     _checksum_source = current_checksum_source
     update checksum_source: _checksum_source, checksum: Digest::SHA256.new.hexdigest(_checksum_source)
-    AF83::ChecksumManager.current.log("Updated #{self.class.name}:#{id} checksum: #{self.checksum}")
+    Chouette::ChecksumManager.current.log("Updated #{self.class.name}:#{id} checksum: #{self.checksum}")
   end
 
   def update_checksum_without_callbacks!
     set_current_checksum_source
     _checksum = Digest::SHA256.new.hexdigest(checksum_source)
-    AF83::ChecksumManager.current.log("Compute checksum for #{self.class.name}:#{id} checksum_source:'#{checksum_source}' checksum: #{_checksum}")
+    Chouette::ChecksumManager.current.log("Compute checksum for #{self.class.name}:#{id} checksum_source:'#{checksum_source}' checksum: #{_checksum}")
     if _checksum != self.checksum
       self.checksum = _checksum
       self.class.where(id: self.id).update_all(checksum: _checksum, checksum_source: checksum_source) unless self.new_record?
-      AF83::ChecksumManager.current.log("Updated without callback #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
+      Chouette::ChecksumManager.current.log("Updated without callback #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
     else
-      AF83::ChecksumManager.current.log("Checksum remained unchanged")
+      Chouette::ChecksumManager.current.log("Checksum remained unchanged")
     end
   end
 end

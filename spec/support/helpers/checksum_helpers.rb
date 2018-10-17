@@ -15,9 +15,9 @@ RSpec.shared_examples 'it works with both checksums modes' do |label, operation,
   context "With transactional checksum updates" do
     it label do
       checksum_owner
-      AF83::ChecksumManager.start_transaction
+      Chouette::ChecksumManager.start_transaction
       instance_exec(&operation)
-      expect { AF83::ChecksumManager.commit }.send(to_or_to_not, change {
+      expect { Chouette::ChecksumManager.commit }.send(to_or_to_not, change {
         checksum_owner.reload if opts[:reload]
         checksum_owner.checksum
       })

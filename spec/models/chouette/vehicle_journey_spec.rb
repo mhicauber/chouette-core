@@ -184,7 +184,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
          it_behaves_like 'it works with both checksums modes',
                         "should not change the checksum",
-                        -> { custom_field; AF83::ChecksumManager.watch(checksum_owner); checksum_owner.save },
+                        -> { custom_field; Chouette::ChecksumManager.watch(checksum_owner); checksum_owner.save },
                         change: false
       end
 
@@ -199,7 +199,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
          it_behaves_like 'it works with both checksums modes',
                         "should change the checksum",
-                        -> { p "/// FOOO"; custom_field; AF83::ChecksumManager.watch(checksum_owner); checksum_owner.save }
+                        -> { p "/// FOOO"; custom_field; Chouette::ChecksumManager.watch(checksum_owner); checksum_owner.save }
 
       end
     end

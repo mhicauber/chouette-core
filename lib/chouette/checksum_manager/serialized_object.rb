@@ -1,4 +1,4 @@
-module AF83::ChecksumManager
+module Chouette::ChecksumManager
   class SerializedObject
     def self.new object, opts={}
       return object if object.is_a?(SerializedObject)

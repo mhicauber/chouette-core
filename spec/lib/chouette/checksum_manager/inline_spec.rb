@@ -1,5 +1,5 @@
-RSpec.describe AF83::ChecksumManager::Inline do
-  let(:manager){ AF83::ChecksumManager::Inline.new }
+RSpec.describe Chouette::ChecksumManager::Inline do
+  let(:manager){ Chouette::ChecksumManager::Inline.new }
   let(:route){ create(:route) }
 
   context "#watch" do

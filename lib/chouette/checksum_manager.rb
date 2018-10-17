@@ -1,4 +1,4 @@
-module AF83::ChecksumManager
+module Chouette::ChecksumManager
   THREAD_VARIABLE_NAME = "current_checksum_manager".freeze
 
   class NotInTransactionError < StandardError; end
@@ -7,7 +7,7 @@ module AF83::ChecksumManager
 
   def self.current
     current_manager = Thread.current.thread_variable_get THREAD_VARIABLE_NAME
-    current_manager || self.current = AF83::ChecksumManager::Inline.new
+    current_manager || self.current = Chouette::ChecksumManager::Inline.new
   end
 
   def self.current= manager
@@ -39,16 +39,16 @@ module AF83::ChecksumManager
   def self.start_transaction
     raise AlreadyInTransactionError if in_transaction?
     log "=== NEW TRANSACTION ==="
-    self.current = AF83::ChecksumManager::Transactional.new
+    self.current = Chouette::ChecksumManager::Transactional.new
   end
 
   def self.in_transaction?
-    current.is_a?(AF83::ChecksumManager::Transactional)
+    current.is_a?(Chouette::ChecksumManager::Transactional)
   end
 
   def self.commit
     current.log "=== COMMITTING TRANSACTION ==="
-    raise NotInTransactionError unless current.is_a?(AF83::ChecksumManager::Transactional)
+    raise NotInTransactionError unless current.is_a?(Chouette::ChecksumManager::Transactional)
     current.commit
     log "=== DONE COMMITTING TRANSACTION ==="
     self.current = nil
@@ -136,7 +136,7 @@ module AF83::ChecksumManager
     if @_parents_for_checksum_update.present? && @_parents_for_checksum_update[object_signature(object)].present?
       parents = @_parents_for_checksum_update[object_signature(object)]
       log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
-      parents.each { |parent| AF83::ChecksumManager.watch parent, from: object }
+      parents.each { |parent| Chouette::ChecksumManager.watch parent, from: object }
       @_parents_for_checksum_update.delete object
     end
   end

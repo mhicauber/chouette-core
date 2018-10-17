@@ -1,7 +1,7 @@
-module AF83::ChecksumManager
+module Chouette::ChecksumManager
   class Base
     def object_signature object
-      AF83::ChecksumManager.object_signature object
+      Chouette::ChecksumManager.object_signature object
     end
 
     def after_create object
@@ -11,7 +11,7 @@ module AF83::ChecksumManager
     end
 
     def log msg
-      AF83::ChecksumManager.log msg
+      Chouette::ChecksumManager.log msg
     end
 
     def update_object_synchronously object, force_save: false

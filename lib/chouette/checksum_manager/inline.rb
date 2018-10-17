@@ -1,4 +1,4 @@
-module AF83::ChecksumManager  
+module Chouette::ChecksumManager  
   class Inline < Base
     # We update the checksums right away
     def watch object, _

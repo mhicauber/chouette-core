@@ -1,4 +1,4 @@
-module AF83::ChecksumManager
+module Chouette::ChecksumManager
   class Transactional < Base
     def initialize
       @current_tenant = Apartment::Tenant.current
@@ -47,7 +47,7 @@ module AF83::ChecksumManager
               log "Updating"
               update_object_synchronously object, force_save: true
               dirty_object_instances(object).map(&:reload)
-              AF83::ChecksumManager.checksum_parents(object.object).each do |parent|
+              Chouette::ChecksumManager.checksum_parents(object.object).each do |parent|
                 resolution_children_count[SerializedObject.new(parent).signature].delete object.signature
               end
             else
