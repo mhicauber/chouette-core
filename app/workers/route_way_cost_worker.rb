@@ -1,7 +1,7 @@
 class RouteWayCostWorker
   include Sidekiq::Worker
 
-  def perform(referential_id, route_id)
+  def perform(referential_id, route_id, retry_if_empty=true)
     Referential.find(referential_id).switch
     route = Chouette::Route.find_by id: route_id
     unless route.present?
@@ -9,6 +9,6 @@ class RouteWayCostWorker
       return
     end
 
-    route.calculate_costs
+    route.calculate_costs retry_if_empty
   end
 end

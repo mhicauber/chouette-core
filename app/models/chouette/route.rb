@@ -231,14 +231,24 @@ module Chouette
       journey_pattern
     end
 
-    def calculate_costs!
-      RouteWayCostWorker.perform_async(referential.id, id) if TomTom.enabled?
+    def calculate_costs! delay: 0, should_retry: true
+      return unless TomTom.enabled?
+      if delay > 0
+        RouteWayCostWorker.perform_in(delay, referential.id, id, should_retry)
+      else
+        RouteWayCostWorker.perform_async(referential.id, id, should_retry)
+      end
     end
 
-    def calculate_costs
+    def calculate_costs retry_if_empty=false
       way_costs = TomTom.evaluate WayCost.from(stop_areas)
-      costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
-      update_column :costs, costs
+      if way_costs.present?
+        costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
+        update_column :costs, costs
+      elsif retry_if_empty
+        Rails.logger.info "Waycosts came back empty, trying again in 1 second"
+        calculate_costs! delay: 1.second, should_retry: false
+      end
     end
 
     protected

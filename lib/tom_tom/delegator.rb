@@ -8,7 +8,12 @@ module TomTom
     end
 
     def evaluate(way_costs)
-      return [] unless way_costs.present?
+      unless way_costs.present?
+        Rails.logger.info "#{self.class.name}: No waycost present."
+        return []
+      end
+
+      Rails.logger.info "#{self.class.name}: #{way_costs.size} waycosts to be evaluated"
 
       local_costs = []
       pending_costs = []
@@ -34,9 +39,7 @@ module TomTom
       false
     end
 
-    def after_coster(way_cost)
-
-    end
+    def after_coster(way_cost); end
 
   end
 end
