@@ -100,7 +100,8 @@ module Chouette::ChecksumManager
      end
      if object.respond_to? has_many
        reflection = klass.reflections[has_many.to_s]
-       if reflection
+       # XXX: SOME OPTIM POSSIBLE HERE
+       if reflection && !reflection.options[:through]
          parents += [reflection.klass.name].product(object.send(has_many).pluck(reflection.foreign_key).compact)
        else
          # the relation is not a true ActiveRecord Relation
