@@ -20,6 +20,10 @@ RSpec.describe AF83::ChecksumManager::Transactional do
       end
     end
 
+    after(:each) do
+      AF83::ChecksumManager.commit if AF83::ChecksumManager.in_transaction?
+    end
+
     it 'should use a transactional manager' do
       expect(AF83::ChecksumManager.current).to be_a(AF83::ChecksumManager::Transactional)
       AF83::ChecksumManager.commit
