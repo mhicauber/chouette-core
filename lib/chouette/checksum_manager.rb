@@ -38,8 +38,8 @@ module Chouette::ChecksumManager
 
   def self.start_transaction
     raise AlreadyInTransactionError if in_transaction?
-    log "=== NEW TRANSACTION ==="
     self.current = Chouette::ChecksumManager::Transactional.new
+    log "=== NEW TRANSACTION ==="
   end
 
   def self.in_transaction?
@@ -48,7 +48,7 @@ module Chouette::ChecksumManager
 
   def self.commit
     current.log "=== COMMITTING TRANSACTION ==="
-    raise NotInTransactionError unless current.is_a?(Chouette::ChecksumManager::Transactional)
+    raise NotInTransactionError unless in_transaction?
     current.commit
     log "=== DONE COMMITTING TRANSACTION ==="
     self.current = nil

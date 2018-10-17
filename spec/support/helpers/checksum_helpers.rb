@@ -14,15 +14,19 @@ RSpec.shared_examples 'it works with both checksums modes' do |label, operation,
 
   context "With transactional checksum updates" do
     it label do
-      checksum_owner
-      Chouette::ChecksumManager.start_transaction
-      instance_exec(&operation)
-      expect { Chouette::ChecksumManager.commit }.send(to_or_to_not, change {
-        checksum_owner.reload if opts[:reload]
-        checksum_owner.checksum
-      })
-      expect { checksum_owner.reload }.to_not change { checksum_owner.checksum }
-      expect { checksum_owner.update_checksum_without_callbacks! }.to_not change { checksum_owner.reload.checksum }
+      begin
+        checksum_owner
+        Chouette::ChecksumManager.start_transaction
+        instance_exec(&operation)
+        expect { Chouette::ChecksumManager.commit }.send(to_or_to_not, change {
+          checksum_owner.reload if opts[:reload]
+          checksum_owner.checksum
+        })
+        expect { checksum_owner.reload }.to_not change { checksum_owner.checksum }
+        expect { checksum_owner.update_checksum_without_callbacks! }.to_not change { checksum_owner.reload.checksum }
+      ensure
+        Chouette::ChecksumManager.commit if Chouette::ChecksumManager.in_transaction?
+      end
     end
   end
 end

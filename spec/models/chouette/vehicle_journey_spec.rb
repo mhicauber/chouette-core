@@ -108,7 +108,8 @@ describe Chouette::VehicleJourney, :type => :model do
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a vjas is created",
-                    ->{ create(:vehicle_journey_at_stop, vehicle_journey: checksum_owner) }
+                    ->{ create(:vehicle_journey_at_stop, vehicle_journey: checksum_owner) },
+                    reload: true
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a vjas is updated",
@@ -120,7 +121,8 @@ describe Chouette::VehicleJourney, :type => :model do
                       vjas = checksum_owner.vehicle_journey_at_stops.last
                       vjas.destroy
                       vjas.run_callbacks(:commit)
-                    }
+                    },
+                    reload: true
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a footnote is added",
@@ -128,11 +130,13 @@ describe Chouette::VehicleJourney, :type => :model do
                       footnote = create :footnote
                       checksum_owner.footnotes << footnote
                       checksum_owner.save
-                    }
+                    },
+                    reload: true
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a footnote is updated",
-                    -> { footnote.reload.update(label: "mkmkmk") } do
+                    -> { footnote.reload.update(label: "mkmkmk") },
+                    reload: true do
         let(:footnote){ create :footnote }
         before { checksum_owner.footnotes << footnote }
     end
