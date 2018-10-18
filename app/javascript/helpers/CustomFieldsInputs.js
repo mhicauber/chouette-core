@@ -19,13 +19,21 @@ export default class CustomFieldsInputs extends Component {
 
   listInput(cf){
     let list_values = this.options(cf).list_values
+    console.log(this.options(cf))
+    let required = !!this.options(cf).required
+    console.log(required)
     let keys = _.orderBy(_.keys(list_values), function(key){ return list_values[key] })
+    let data = _.map(keys, (k) => {
+      let v = this.options(cf).list_values[k]
+      return {id: k, text: (v.length > 0 ? v : '\u00A0')}
+    })
+    if(!required){
+      data.unshift({id: "", text: I18n.t('none')})
+    }
+    console.log(data)
     return(
       <Select2
-        data={_.map(keys, (k) => {
-          let v = this.options(cf).list_values[k]
-          return {id: k, text: (v.length > 0 ? v : '\u00A0')}
-        })}
+        data={data}
         ref={'custom_fields.' + cf.code}
         className='form-control'
         defaultValue={cf.value !== undefined ? cf.value : this.options(cf).default}

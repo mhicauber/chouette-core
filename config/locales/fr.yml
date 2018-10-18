@@ -1,6 +1,7 @@
 fr:
   "true": "Oui"
   "false": "Non"
+  "none": "Aucun(e)"
   "unknown": "Non précisé"
   label_with_colon: "%{label} : "
 

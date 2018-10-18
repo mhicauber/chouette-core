@@ -1,6 +1,7 @@
 en:
   "true": "Yes"
   "false": "No"
+  "none": "None"
   "unknown": "Unknown"
   label_with_colon: "%{label}: "
 
