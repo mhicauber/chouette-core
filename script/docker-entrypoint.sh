@@ -15,7 +15,10 @@ case $command in
     ;;
   front)
     if [ "$CHOUETTE_MIGRATE" = "true" ]; then
-      bundle exec rake db:migrate db:seed || exit $?
+      bundle exec rake db:migrate || exit $?
+    fi
+    if [ "$CHOUETTE_SEED" = "true" ]; then
+      bundle exec rake db:seed || exit $?
     fi
     exec bundle exec rails server -b 0.0.0.0
     ;;
