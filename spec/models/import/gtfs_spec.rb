@@ -42,7 +42,6 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "created referential" do
-
     let(:import) { build_import 'google-sample-feed.zip' }
 
     it "is named with the import name" do
@@ -495,6 +494,26 @@ RSpec.describe Import::Gtfs do
         expect do
           import.import_calendar_dates
         end.to(change { Import::Message.count }.by(1))
+      end
+    end
+  end
+
+  describe "#import" do
+    context "when there is an issue with the source file" do
+      let(:import) { build_import 'google-sample-feed.zip' }
+      it "should fail" do
+        allow(import.source).to receive(:agencies){ raise GTFS::InvalidSourceException }
+        expect { import.import }.to_not raise_error
+        expect(import.status).to eq :failed
+      end
+    end
+  end
+
+  describe "#referential_metadata" do
+    context 'without calendar_dates.xml' do
+      let(:import) { build_import 'google-sample-feed-no-calendar_dates.zip' }
+      it "should not raise an error" do
+        expect { import.referential_metadata }.to_not raise_error(GTFS::InvalidSourceException)
       end
     end
   end

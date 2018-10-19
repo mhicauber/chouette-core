@@ -112,7 +112,10 @@ class Import::Gtfs < Import::Base
     start_dates ||= []
     end_dates ||= []
 
-    included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
+    included_dates = []
+    if source.entries.include?('calendar_dates.txt')
+      included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
+    end
 
     min_date = Date.parse (start_dates + [included_dates.min]).compact.min
     min_date = [min_date, Date.current.beginning_of_year - PERIOD_EXTREME_VALUE].max
