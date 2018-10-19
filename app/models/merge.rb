@@ -472,7 +472,10 @@ class Merge < ApplicationModel
               vehicle_journey.vehicle_journey_at_stops.each_with_index do |vehicle_journey_at_stop, index|
                 at_stop_attributes = vehicle_journey_at_stop.attributes.merge(
                   id: nil,
-                  stop_point_id: existing_associated_journey_pattern.stop_points[index].id
+                  stop_point_id: existing_associated_journey_pattern.stop_points[index].id,
+                  # we need this to prevent the ChecksumManager from spawning another instance of the VehicleJourney
+                  # Yes, this should be handled by Rails. No, we won't upograde Rails just for that :)
+                  vehicle_journey: new_vehicle_journey
                 )
                 new_vehicle_journey.vehicle_journey_at_stops.build at_stop_attributes
               end

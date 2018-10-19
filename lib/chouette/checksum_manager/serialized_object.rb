@@ -15,6 +15,7 @@ module Chouette::ChecksumManager
       else
         @need_save = true
       end
+      @need_save = opts[:need_save] if opts.key?(:need_save)
     end
 
     def signature opts={}

@@ -87,33 +87,55 @@ module Chouette::ChecksumManager
       has_many = opts[:relation] || parent_model.model_name.plural
 
       if object.respond_to? belongs_to
-       reflection = klass.reflections[belongs_to.to_s]
-       if reflection
-         parent_id = object.send(reflection.foreign_key)
-         parent_class = reflection.klass.name
-       else
-         # the relation is not a true ActiveRecord Relation
-         parent = object.send(belongs_to)
-         parents << [parent.class.name, parent.id]
-       end
-       parents << [parent_class, parent_id] if parent_id
-     end
-     if object.respond_to? has_many
-       reflection = klass.reflections[has_many.to_s]
-       # XXX: SOME OPTIM POSSIBLE HERE
-       if reflection && !reflection.options[:through]
-         parents += [reflection.klass.name].product(object.send(has_many).pluck(reflection.foreign_key).compact)
-       else
-         # the relation is not a true ActiveRecord Relation
-         parents += object.send(has_many).map {|parent| [parent.class.name, parent.id] }
-       end
-     end
+        reflection = klass.reflections[belongs_to.to_s]
+        if reflection
+          if object.association(belongs_to.intern).loaded?
+            log "parent is already loaded"
+            parents << SerializedObject.new(object.send(belongs_to), need_save: true, load_object: true)
+          else
+            log "parent is not loaded but can be inferred from reflection"
+            parent_id = object.send(reflection.foreign_key)
+            parent_class = reflection.klass.name
+          end
+        else
+          # the relation is not a true ActiveRecord Relation
+          log "parent has to be loaded"
+          parent = object.send(belongs_to)
+          parents << [parent.class.name, parent.id]
+        end
+        parents << [parent_class, parent_id] if parent_id
+      end
+
+      if object.respond_to? has_many
+        # XXX: SOME OPTIM POSSIBLE HERE
+        if reflection && object.association(has_many.intern).loaded?
+          log "parents are already loaded"
+          parents += object.send(has_many).map{|p| SerializedObject.new(p, need_save: true)}
+        else
+          if reflection && !reflection.options[:through]
+            log "parent are not loaded but can be inferred from reflection"
+            parents += [reflection.klass.name].product(object.send(has_many).pluck(reflection.foreign_key).compact)
+          else
+            log "parents have to be loaded"
+            # the relation is not a true ActiveRecord Relation
+            parents += object.send(has_many).map { |p| SerializedObject.new(p, need_save: true, load_object: true)}
+          end
+        end
+      end
     end
     parents.compact
   end
 
   def self.parents_to_sentence parents
-    parents.group_by(&:first).map{ |klass, v| "#{v.size} #{klass}" }.to_sentence
+    parents.map do |p|
+      if p.is_a?(Array)
+        p
+      elsif p.respond_to?(:serialized_object)
+        p.serialized_object
+      else
+       [p.class.name, p.id]
+     end
+    end.group_by(&:first).map{ |klass, v| "#{v.size} #{klass}" }.to_sentence
   end
 
   def self.child_after_save object

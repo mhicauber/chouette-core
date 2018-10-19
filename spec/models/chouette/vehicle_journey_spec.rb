@@ -113,7 +113,8 @@ describe Chouette::VehicleJourney, :type => :model do
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a vjas is updated",
-                    ->{ checksum_owner.vehicle_journey_at_stops.last.update_attribute(:departure_time, Time.now) }
+                    ->{ checksum_owner.vehicle_journey_at_stops.last.update_attribute(:departure_time, Time.now) },
+                    reload: true
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a vjas is deleted",

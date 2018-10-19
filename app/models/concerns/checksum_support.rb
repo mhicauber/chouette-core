@@ -94,7 +94,7 @@ module ChecksumSupport
       self.class.where(id: self.id).update_all(checksum: _checksum, checksum_source: checksum_source) unless self.new_record?
       Chouette::ChecksumManager.current.log("Updated without callback #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
     else
-      Chouette::ChecksumManager.current.log("Checksum remained unchanged")
+      Chouette::ChecksumManager.current.log("Checksum remained unchanged: #{_checksum}")
     end
   end
 end

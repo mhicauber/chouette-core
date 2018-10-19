@@ -1068,39 +1068,44 @@ end
   # it { is_expected.to validate_uniqueness_of :objectid }
 
   describe 'checksum' do
+    let(:checksum_owner) { create(:time_table) }
+
     it_behaves_like 'checksum support'
 
-    it "handles newly built dates and periods" do
-      time_table = build(:time_table)
-      time_table.periods.build period_start: Time.now, period_end: 1.month.from_now
-      time_table.dates.build date: Time.now
-      time_table.save!
-      expect{time_table.update_checksum!}.to_not change{time_table.checksum}
-      expect(time_table.dates.count).to eq 1
-      expect(time_table.periods.count).to eq 1
-    end
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a vjas is created",
+                    ->{
+                      checksum_owner.update_checksum!
+                    },
+                    change: false,
+                    more: ->{
+                      expect(checksum_owner.dates.count).to eq 1
+                      expect(checksum_owner.periods.count).to eq 1
+                    } do
+                      let(:checksum_owner) {
+                        checksum_owner = build(:time_table)
+                        checksum_owner.periods.build period_start: Time.now, period_end: 1.month.from_now
+                        checksum_owner.dates.build date: Time.now
+                        checksum_owner.save!
+                        checksum_owner
+                      }
+                    end
 
-    it "changes when a date is updated" do
-      time_table = create(:time_table)
-      expect{time_table.dates.last.update_attribute(:date, Time.now)}.to change{time_table.reload.checksum}
-    end
+    it_behaves_like 'it works with both checksums modes',
+                    'changes when a date is updated',
+                    ->{ checksum_owner.dates.last.update_attribute(:date, Time.now) }
 
-    it "changes when a date is added" do
-      time_table = create(:time_table)
-      expect(time_table).to receive(:update_checksum_without_callbacks!).at_least(:once).and_call_original
-      expect{create(:time_table_date, time_table: time_table, date: 1.year.ago)}.to change{time_table.checksum}
-    end
+    it_behaves_like 'it works with both checksums modes',
+                    'changes when a date is added',
+                    ->{ create(:time_table_date, time_table: checksum_owner, date: 1.year.ago) }
 
-    it "changes when a period is updated" do
-      time_table = create(:time_table)
-      expect{time_table.periods.last.update_attribute(:period_start, Time.now)}.to change{time_table.reload.checksum}
-    end
+    it_behaves_like 'it works with both checksums modes',
+                    'changes when a period is updated',
+                    ->{ checksum_owner.periods.last.update_attribute(:period_start, Time.now) }
 
-    it "changes when a period is added" do
-      time_table = create(:time_table)
-      expect(time_table).to receive(:update_checksum_without_callbacks!).at_least(:once).and_call_original
-      expect{create(:time_table_period, time_table: time_table)}.to change{time_table.checksum}
-    end
+    it_behaves_like 'it works with both checksums modes',
+                    'changes when a period is added',
+                    ->{ create(:time_table_period, time_table: checksum_owner) }
   end
 
   describe "#excluded_days" do
