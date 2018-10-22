@@ -40,8 +40,8 @@ RSpec.describe JourneyPatternOfferService do
       end
       it 'should detect the holes' do
         expect(service.holes).to match_array [
-          (period_start...circulation_day),
-          (circulation_day.next...period_end.next)
+          (period_start..circulation_day.prev_day),
+          (circulation_day.next..period_end)
         ]
       end
     end
@@ -57,8 +57,8 @@ RSpec.describe JourneyPatternOfferService do
 
         it 'should detect the holes' do
           expect(service.holes).to match_array [
-            (period_start...circulation_day),
-            ((circulation_day + 1)...period_end.next)
+            (period_start..circulation_day.prev_day),
+            ((circulation_day + 1)..period_end)
           ]
         end
       end
@@ -92,7 +92,7 @@ RSpec.describe JourneyPatternOfferService do
         end
 
         it 'should not return any hole' do
-          expect(service.holes).to match_array [((circulation_day - 3)...circulation_day)]
+          expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
         end
       end
 
@@ -103,7 +103,7 @@ RSpec.describe JourneyPatternOfferService do
         end
 
         it 'should detect the holes' do
-          expect(service.holes).to match_array [(period_start...period_end.next)]
+          expect(service.holes).to match_array [(period_start..period_end)]
         end
       end
 
@@ -114,7 +114,163 @@ RSpec.describe JourneyPatternOfferService do
         end
 
         it 'should detect the holes' do
-          expect(service.holes).to match_array [(period_start...period_end.next)]
+          expect(service.holes).to match_array [(period_start..period_end)]
+        end
+      end
+
+      context 'with 2 timetables' do
+        let(:time_table_2) { create :time_table, periods_count: 0, dates_count: 0 }
+        let(:time_tables) { [time_table, time_table_2] }
+
+        context 'with no hole' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day)
+            time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
+          end
+
+          it 'should not return any hole' do
+            expect(service.holes).to match_array []
+          end
+        end
+
+        context 'with a small hole' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day.prev_day)
+            time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
+          end
+
+          it 'should not return any hole' do
+            expect(service.holes).to match_array []
+          end
+        end
+
+        context 'with a large hole' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day - 4)
+            time_table_2.periods.create!(period_start: circulation_day, period_end: period_end)
+          end
+
+          it 'should not return any hole' do
+            expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+          end
+        end
+      end
+    end
+    
+    context 'with a second vehicle_journey' do
+      let!(:vehicle_journey_2) { create :vehicle_journey, journey_pattern: journey_pattern, time_tables: time_tables_2 }
+      context 'with the same time_table' do
+        let(:time_tables_2) { time_tables }
+
+        context 'with a single day period of circulation' do
+          let(:circulation_day) { (period_start + 10.days).beginning_of_week }
+
+          context 'matching application days' do
+            before do
+              time_table.update int_day_types: ApplicationDaysSupport::MONDAY
+              time_table.periods.create!(period_start: circulation_day.prev_day, period_end: circulation_day)
+            end
+
+            it 'should detect the holes' do
+              expect(service.holes).to match_array [
+                (period_start..circulation_day.prev_day),
+                ((circulation_day + 1)..period_end)
+              ]
+            end
+          end
+
+          context 'with no hole' do
+            before do
+              time_table.periods.create!(period_start: period_start, period_end: circulation_day)
+              time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
+            end
+
+            it 'should not return any hole' do
+              expect(service.holes).to match_array []
+            end
+          end
+
+          context 'with a small hole' do
+            before do
+              time_table.periods.create!(period_start: period_start, period_end: circulation_day.prev_day)
+              time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
+            end
+
+            it 'should not return any hole' do
+              expect(service.holes).to match_array []
+            end
+          end
+
+          context 'with a large hole' do
+            before do
+              time_table.periods.create!(period_start: period_start, period_end: circulation_day - 4)
+              time_table.periods.create!(period_start: circulation_day, period_end: period_end)
+            end
+
+            it 'should not return any hole' do
+              expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+            end
+          end
+
+          context 'not matching days' do
+            before do
+              time_table.update int_day_types: ApplicationDaysSupport::ALL_DAYS
+              time_table.periods.create!(period_start: circulation_day + 365, period_end: circulation_day + 400)
+            end
+
+            it 'should detect the holes' do
+              expect(service.holes).to match_array [(period_start..period_end)]
+            end
+          end
+
+          context 'not matching application days' do
+            before do
+              time_table.update int_day_types: ApplicationDaysSupport::TUESDAY
+              time_table.periods.create!(period_start: circulation_day.prev_day, period_end: circulation_day)
+            end
+
+            it 'should detect the holes' do
+              expect(service.holes).to match_array [(period_start..period_end)]
+            end
+          end
+        end
+      end
+
+      context 'with a distinct time_table' do
+        let(:time_tables_2) { [time_table_2] }
+        let(:time_table_2) { create :time_table, periods_count: 0, dates_count: 0 }
+
+        context 'with no hole' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day)
+            time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
+          end
+
+          it 'should not return any hole' do
+            expect(service.holes).to match_array []
+          end
+        end
+
+        context 'with a small hole' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day.prev_day)
+            time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
+          end
+
+          it 'should not return any hole' do
+            expect(service.holes).to match_array []
+          end
+        end
+
+        context 'with a large hole' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day - 4)
+            time_table_2.periods.create!(period_start: circulation_day, period_end: period_end)
+          end
+
+          it 'should not return any hole' do
+            expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+          end
         end
       end
     end

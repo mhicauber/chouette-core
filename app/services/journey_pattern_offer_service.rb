@@ -1,6 +1,8 @@
 class JourneyPatternOfferService
   MIN_HOLE_SIZE = 3
 
+  attr_reader :journey_pattern
+
   def initialize(journey_pattern)
     @journey_pattern = journey_pattern
   end
@@ -24,13 +26,14 @@ class JourneyPatternOfferService
   def holes
     @holes ||= begin
       dates = circulated_dates
+      Rails.logger.debug "[JourneyPatternOfferService id:#{journey_pattern.id}] circulated_dates:\n#{JSON.pretty_generate(circulated_dates)}"
       previous_period = { finish: period_start.prev_day }
       dates.push(start: period_end.next)
       current_period = dates.shift
       holes = []
       while current_period
         if (current_period[:start] - previous_period[:finish]) > MIN_HOLE_SIZE
-          holes << (previous_period[:finish].next...current_period[:start])
+          holes << (previous_period[:finish].next..current_period[:start].prev_day)
         end
         previous_period = current_period
         current_period = dates.shift
@@ -38,8 +41,6 @@ class JourneyPatternOfferService
       holes
     end
   end
-
-  private
 
   def circulated_dates
     ActiveRecord::Base.connection.execute(query).map do |r|
@@ -52,6 +53,9 @@ class JourneyPatternOfferService
       end
     end
   end
+
+  private
+
 
   def compute_period
     @period_start = nil
