@@ -223,7 +223,7 @@ class Export::Gtfs < Export::Base
           service_id:  service_id,
           id: trip_id,
           #headsign: TO DO + store that field at import
-          #short_name: TO DO + store that field at import
+          short_name: vehicle_journey.published_journey_name,
           direction_id: ((vehicle_journey.route.wayback == 'outbound' ? 0 : 1) if vehicle_journey.route.wayback.present?),
           #block_id: TO DO
           #shape_id: TO DO

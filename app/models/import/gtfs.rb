@@ -286,7 +286,7 @@ class Import::Gtfs < Import::Base
       route.prevent_costs_calculation = true
       route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
       # TODO better name ?
-      name = route.published_name = trip.short_name.presence || trip.headsign.presence || route.wayback.to_s.capitalize
+      name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
       route.name = name
       save_model route, resource: resource
 
@@ -294,7 +294,7 @@ class Import::Gtfs < Import::Base
       save_model journey_pattern, resource: resource
 
       vehicle_journey = journey_pattern.vehicle_journeys.build route: route
-      vehicle_journey.published_journey_name = trip.headsign.presence || trip.id
+      vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       save_model vehicle_journey, resource: resource
 
       time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
