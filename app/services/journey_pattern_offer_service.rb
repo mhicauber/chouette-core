@@ -23,7 +23,6 @@ class JourneyPatternOfferService
 
   def holes
     @holes ||= begin
-      p circulated_dates
       dates = circulated_dates
       previous_period = { finish: period_start.prev_day }
       dates.push(start: period_end.next)
