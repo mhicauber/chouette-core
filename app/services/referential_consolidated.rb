@@ -8,7 +8,7 @@ class ReferentialConsolidated
 
   def paginated_lines
     @paginated_lines ||= begin
-      line_ids = @vehicle_journeys.joins(route: :line).pluck('lines.id')
+      line_ids = @vehicle_journeys.joins(route: :line).reorder(nil).pluck('DISTINCT(lines.id)')
       lines = Chouette::Line.where(id: line_ids).order(:name)
       lines.paginate page: params[:page], per_page: params[:per_page] || 10
     end
