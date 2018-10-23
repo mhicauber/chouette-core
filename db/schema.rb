@@ -800,6 +800,18 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.string "type"
   end
 
+  create_table "stat_journey_pattern_courses_by_dates", id: :bigserial, force: :cascade do |t|
+    t.integer "journey_pattern_id", limit: 8
+    t.integer "route_id",           limit: 8
+    t.integer "line_id",            limit: 8
+    t.date    "date"
+    t.integer "count",                        default: 0
+  end
+
+  add_index "stat_journey_pattern_courses_by_dates", ["journey_pattern_id"], name: "journey_pattern_id", using: :btree
+  add_index "stat_journey_pattern_courses_by_dates", ["line_id"], name: "line_id", using: :btree
+  add_index "stat_journey_pattern_courses_by_dates", ["route_id"], name: "route_id", using: :btree
+
   create_table "stop_area_providers", id: :bigserial, force: :cascade do |t|
     t.string   "objectid"
     t.string   "name"
@@ -945,6 +957,7 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.text    "checksum_source"
   end
 
+  add_index "time_table_dates", ["in_out"], name: "date_in_out", using: :btree
   add_index "time_table_dates", ["time_table_id"], name: "index_time_table_dates_on_time_table_id", using: :btree
 
   create_table "time_table_periods", id: :bigserial, force: :cascade do |t|
@@ -956,6 +969,8 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.text    "checksum_source"
   end
 
+  add_index "time_table_periods", ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end", using: :btree
+  add_index "time_table_periods", ["period_start", "period_end"], name: "period_dates", using: :btree
   add_index "time_table_periods", ["time_table_id"], name: "index_time_table_periods_on_time_table_id", using: :btree
 
   create_table "time_tables", id: :bigserial, force: :cascade do |t|
