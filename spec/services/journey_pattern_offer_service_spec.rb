@@ -22,12 +22,6 @@ RSpec.describe JourneyPatternOfferService do
     expect(service.period_end).to eq period_end
   end
 
-  it 'should detect holes' do
-    expect(service.holes).to be_present
-    expect(service.holes.first.min).to eq period_start
-    expect(service.holes.first.max).to eq period_end
-  end
-
   context 'with a vehicle_journey' do
     let!(:vehicle_journey) { create :vehicle_journey, journey_pattern: journey_pattern, time_tables: time_tables }
     let(:time_tables) { [time_table] }
@@ -38,11 +32,11 @@ RSpec.describe JourneyPatternOfferService do
       before do
         time_table.dates.create(date: circulation_day, in_out: true)
       end
-      it 'should detect the holes' do
-        expect(service.holes).to match_array [
-          (period_start..circulation_day.prev_day),
-          (circulation_day.next..period_end)
-        ]
+
+      it 'should detect the circulation days' do
+        expect(service.circulation_dates).to eq(
+          circulation_day => 1
+        )
       end
     end
 
@@ -55,11 +49,10 @@ RSpec.describe JourneyPatternOfferService do
           time_table.periods.create!(period_start: circulation_day.prev_day, period_end: circulation_day)
         end
 
-        it 'should detect the holes' do
-          expect(service.holes).to match_array [
-            (period_start..circulation_day.prev_day),
-            ((circulation_day + 1)..period_end)
-          ]
+        it 'should detect the circulation days' do
+          expect(service.circulation_dates).to eq(
+            circulation_day => 1
+          )
         end
       end
 
@@ -69,8 +62,10 @@ RSpec.describe JourneyPatternOfferService do
           time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
         end
 
-        it 'should not return any hole' do
-          expect(service.holes).to match_array []
+        it 'should detect the circulation days' do
+          period_start.upto(period_end).each do |date|
+            expect(service.circulation_dates[date]).to eq 1
+          end
         end
       end
 
@@ -80,8 +75,13 @@ RSpec.describe JourneyPatternOfferService do
           time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
         end
 
-        it 'should not return any hole' do
-          expect(service.holes).to match_array []
+        it 'should detect the circulation days' do
+          period_start.upto(circulation_day.prev_day).each do |date|
+            expect(service.circulation_dates[date]).to eq 1
+          end
+          circulation_day.next.upto(period_end).each do |date|
+            expect(service.circulation_dates[date]).to eq 1
+          end
         end
       end
 
@@ -91,8 +91,26 @@ RSpec.describe JourneyPatternOfferService do
           time_table.periods.create!(period_start: circulation_day, period_end: period_end)
         end
 
-        it 'should not return any hole' do
-          expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+        it 'should detect the circulation days' do
+          period_start.upto(circulation_day - 4).each do |date|
+            expect(service.circulation_dates[date]).to eq 1
+          end
+          circulation_day.next.upto(period_end).each do |date|
+            expect(service.circulation_dates[date]).to eq 1
+          end
+        end
+      end
+
+      context 'with an overlap' do
+        before do
+          time_table.periods.create!(period_start: period_start, period_end: circulation_day.next)
+          time_table.periods.create!(period_start: circulation_day.prev_day, period_end: period_end)
+        end
+
+        it 'should detect the circulation days' do
+          period_start.upto(period_end).each do |date|
+            expect(service.circulation_dates[date]).to eq 1
+          end
         end
       end
 
@@ -102,8 +120,8 @@ RSpec.describe JourneyPatternOfferService do
           time_table.periods.create!(period_start: circulation_day + 365, period_end: circulation_day + 400)
         end
 
-        it 'should detect the holes' do
-          expect(service.holes).to match_array [(period_start..period_end)]
+        it 'should detect the circulation days' do
+          expect(service.circulation_dates).to eq({})
         end
       end
 
@@ -113,8 +131,8 @@ RSpec.describe JourneyPatternOfferService do
           time_table.periods.create!(period_start: circulation_day.prev_day, period_end: circulation_day)
         end
 
-        it 'should detect the holes' do
-          expect(service.holes).to match_array [(period_start..period_end)]
+        it 'should detect the circulation days' do
+          expect(service.circulation_dates).to eq({})
         end
       end
 
@@ -128,8 +146,10 @@ RSpec.describe JourneyPatternOfferService do
             time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
           end
 
-          it 'should not return any hole' do
-            expect(service.holes).to match_array []
+          it 'should detect the circulation days' do
+            period_start.upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
           end
         end
 
@@ -139,8 +159,13 @@ RSpec.describe JourneyPatternOfferService do
             time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
           end
 
-          it 'should not return any hole' do
-            expect(service.holes).to match_array []
+          it 'should detect the circulation days' do
+            period_start.upto(circulation_day.prev_day).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+            circulation_day.next.upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
           end
         end
 
@@ -150,13 +175,18 @@ RSpec.describe JourneyPatternOfferService do
             time_table_2.periods.create!(period_start: circulation_day, period_end: period_end)
           end
 
-          it 'should not return any hole' do
-            expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+          it 'should detect the circulation days' do
+            period_start.upto(circulation_day - 4).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+            circulation_day.next.upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
           end
         end
       end
     end
-    
+
     context 'with a second vehicle_journey' do
       let!(:vehicle_journey_2) { create :vehicle_journey, journey_pattern: journey_pattern, time_tables: time_tables_2 }
       context 'with the same time_table' do
@@ -171,11 +201,10 @@ RSpec.describe JourneyPatternOfferService do
               time_table.periods.create!(period_start: circulation_day.prev_day, period_end: circulation_day)
             end
 
-            it 'should detect the holes' do
-              expect(service.holes).to match_array [
-                (period_start..circulation_day.prev_day),
-                ((circulation_day + 1)..period_end)
-              ]
+            it 'should detect the circulation days' do
+              expect(service.circulation_dates).to eq(
+                circulation_day => 2
+              )
             end
           end
 
@@ -185,8 +214,10 @@ RSpec.describe JourneyPatternOfferService do
               time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
             end
 
-            it 'should not return any hole' do
-              expect(service.holes).to match_array []
+            it 'should detect the circulation days' do
+              period_start.upto(period_end).each do |date|
+                expect(service.circulation_dates[date]).to eq 2
+              end
             end
           end
 
@@ -196,8 +227,13 @@ RSpec.describe JourneyPatternOfferService do
               time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
             end
 
-            it 'should not return any hole' do
-              expect(service.holes).to match_array []
+            it 'should detect the circulation days' do
+              period_start.upto(circulation_day.prev_day).each do |date|
+                expect(service.circulation_dates[date]).to eq 2
+              end
+              circulation_day.next.upto(period_end).each do |date|
+                expect(service.circulation_dates[date]).to eq 2
+              end
             end
           end
 
@@ -207,8 +243,26 @@ RSpec.describe JourneyPatternOfferService do
               time_table.periods.create!(period_start: circulation_day, period_end: period_end)
             end
 
-            it 'should not return any hole' do
-              expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+            it 'should detect the circulation days' do
+              period_start.upto(circulation_day - 4).each do |date|
+                expect(service.circulation_dates[date]).to eq 2
+              end
+              circulation_day.next.upto(period_end).each do |date|
+                expect(service.circulation_dates[date]).to eq 2
+              end
+            end
+          end
+
+          context 'with an overlap' do
+            before do
+              time_table.periods.create!(period_start: period_start, period_end: circulation_day.next)
+              time_table.periods.create!(period_start: circulation_day.prev_day, period_end: period_end)
+            end
+
+            it 'should detect the circulation days' do
+              period_start.upto(period_end).each do |date|
+                expect(service.circulation_dates[date]).to eq 2
+              end
             end
           end
 
@@ -218,8 +272,8 @@ RSpec.describe JourneyPatternOfferService do
               time_table.periods.create!(period_start: circulation_day + 365, period_end: circulation_day + 400)
             end
 
-            it 'should detect the holes' do
-              expect(service.holes).to match_array [(period_start..period_end)]
+            it 'should detect the circulation days' do
+              expect(service.circulation_dates).to eq({})
             end
           end
 
@@ -229,8 +283,8 @@ RSpec.describe JourneyPatternOfferService do
               time_table.periods.create!(period_start: circulation_day.prev_day, period_end: circulation_day)
             end
 
-            it 'should detect the holes' do
-              expect(service.holes).to match_array [(period_start..period_end)]
+            it 'should detect the circulation days' do
+              expect(service.circulation_dates).to eq({})
             end
           end
         end
@@ -246,8 +300,10 @@ RSpec.describe JourneyPatternOfferService do
             time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
           end
 
-          it 'should not return any hole' do
-            expect(service.holes).to match_array []
+          it 'should detect the circulation days' do
+            period_start.upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
           end
         end
 
@@ -257,8 +313,13 @@ RSpec.describe JourneyPatternOfferService do
             time_table_2.periods.create!(period_start: circulation_day.next, period_end: period_end)
           end
 
-          it 'should not return any hole' do
-            expect(service.holes).to match_array []
+          it 'should detect the circulation days' do
+            period_start.upto(circulation_day.prev_day).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+            circulation_day.next.upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
           end
         end
 
@@ -268,8 +329,32 @@ RSpec.describe JourneyPatternOfferService do
             time_table_2.periods.create!(period_start: circulation_day, period_end: period_end)
           end
 
-          it 'should not return any hole' do
-            expect(service.holes).to match_array [((circulation_day - 3)..circulation_day.prev_day)]
+          it 'should detect the circulation days' do
+            period_start.upto(circulation_day - 4).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+            circulation_day.next.upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+          end
+        end
+
+        context 'with an overlap' do
+          before do
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day.next)
+            time_table_2.periods.create!(period_start: circulation_day.prev_day, period_end: period_end)
+          end
+
+          it 'should detect the circulation days' do
+            period_start.upto(circulation_day - 2).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+            (circulation_day + 2).upto(period_end).each do |date|
+              expect(service.circulation_dates[date]).to eq 1
+            end
+            circulation_day.prev_day.upto(circulation_day.next).each do |date|
+              expect(service.circulation_dates[date]).to eq 2
+            end
           end
         end
       end
