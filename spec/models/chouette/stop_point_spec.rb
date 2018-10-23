@@ -9,7 +9,7 @@ describe Chouette::StopPoint, :type => :model do
       stop_area = create :stop_area
       stop_point = build :stop_point, stop_area_id: nil
       expect(stop_point).to_not be_valid
-      stop_point.stop_area_id = 42
+      stop_point.stop_area_id = Chouette::StopArea.last.id + 1
       expect(stop_point).to_not be_valid
       stop_point.stop_area_id = stop_area.id
       expect(stop_point).to be_valid
