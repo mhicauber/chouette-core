@@ -36,7 +36,7 @@ end
 
 module DeviseControllerHelper
 
-  def setup_user permissions=nil
+  def setup_user permissions: nil
     before do
       @request.env["devise.mapping"] = Devise.mappings[:user]
       permissions ||= Support::Permissions.all_permissions
@@ -47,8 +47,8 @@ module DeviseControllerHelper
     end
   end
 
-  def login_user permissions=nil
-    setup_user permissions
+  def login_user permissions: nil
+    setup_user permissions: permissions
     before do
       sign_in @user
     end
