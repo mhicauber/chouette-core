@@ -25,14 +25,37 @@ class TimeTravel
       month = "0#{month}" if month < 10
       day = today.getDate()
       day = "0#{month}" if day < 10
-      @overview.showDay "#{today.getFullYear()}-#{month}-#{day}"
+      date = "#{today.getFullYear()}-#{month}-#{day}"
+      @overview.showDay date
+      @pushDate date
       e.preventDefault()
       false
 
     @searchDateBt.click (e)=>
-      @overview.showDay @searchDateInput.val() if @searchDateInput.val().length > 0
+      date = @searchDateInput.val()
+      if @searchDateInput.val().length > 0
+        @overview.showDay date
+        @pushDate date
+
       e.preventDefault()
       false
+
+  formatHref: (href, date)->
+    param_name = "#{@overview.container.attr('id')}_date"
+    href = href.replace new RegExp("[\?\&]#{param_name}\=[0-9\-]*"), ''
+    if href.indexOf('?') > 0
+      href += '&'
+    else
+      href += '?'
+    href + "#{param_name}=#{encodeURIComponent date}"
+
+  pushDate: (date)->
+    location = @formatHref(document.location.pathname + document.location.search, date)
+    window.history.pushState({}, "", location)
+    for link in @overview.container.find('.pagination a')
+      $link = $(link)
+      $link.attr 'href', @formatHref($link.attr('href'), date)
+
 
   scrolledTo: (progress)->
     @prevBt.removeClass 'disabled'
@@ -44,10 +67,15 @@ class window.ReferentialOverview
   constructor: (selector)->
     @container = $(selector)
     @timeTravel = new TimeTravel(this)
+    param_name = "#{@container.attr('id')}_date"
+    date = new URL(document.location.href).searchParams.get(param_name)
+
     @currentOffset = 0
     $(document).scroll (e)=>
       @documentScroll(e)
     @documentScroll pageY: $(document).scrollTop()
+    if date
+      @showDay date
 
   showDay: (date)->
     day = @container.find(".day.#{date}")
