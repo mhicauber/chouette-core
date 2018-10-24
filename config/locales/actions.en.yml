@@ -32,7 +32,7 @@ en:
     wait_for_submission: "Please wait..."
   are_you_sure: Are you sure?
   back: "Go Back"
-  cancel_firm: You're about to cancel your current work. Are you sure ?
+  cancel_confirm: You're about to cancel your current work. Are you sure ?
   cancel: "Cancel"
   no_result_text: "No Results"
   ok: Ok
