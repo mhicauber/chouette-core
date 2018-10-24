@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ImportObserver, type: :observer do
-  let(:user) { create :user }
+  let(:user) { create :user, confirmed_at: Time.now }
   let(:workbench_import) { create(:workbench_import, creator: user.name) }
   let(:referential) { create :referential }
  
@@ -37,10 +37,10 @@ RSpec.describe ImportObserver, type: :observer do
       workbench_import.save
     end
 
-    xit 'should schedule mailer on import finished' do
-      expect do
-        workbench_import.update(status: 'successful')
-      end.to change { ActionMailer::Base.deliveries.count }.by(1)
+    it 'should schedule mailer on import finished' do
+      expect(MailerJob).to receive(:perform_later).with 'ImportMailer', 'finished', anything
+      workbench_import.status = 'successful'
+      workbench_import.save
     end
   end
 end

@@ -1,5 +1,5 @@
 h2 style=mailer_style(:h2)
-  = t('mailers.export_mailer.created.body', export_name: @export.name)
+  = t('mailers.export_mailer.finished.body', export_name: @export.name, status: I18n.t("statuses.#{@export.status}"))
   br
   = mailer_button(t('mailers.export_mailer.button'), workbench_export_url(@export.workbench, @export))
 

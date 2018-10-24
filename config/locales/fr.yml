@@ -65,3 +65,15 @@ fr:
   undefined: 'non renseigné'
   "yes": oui
   "no": non
+
+  statuses:
+    new:        Nouveau
+    pending:    En attente
+    successful: Succès
+    ok:         Succès
+    warning:    Avertissement
+    failed:     Échec
+    error:      Échec
+    running:    En cours
+    aborted:    Annulé
+    canceled:   Annulé

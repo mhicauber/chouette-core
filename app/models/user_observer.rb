@@ -1,7 +1,7 @@
 class UserObserver < ActiveRecord::Observer
 
   def after_create(user)
-    return unless enabled?
+    return unless enabled? && user.confirmed_at.nil?
     MailerJob.perform_later("UserMailer", "created", ['support@enroute.paris', 'chouette-marcom@af83.com'])
   end
 

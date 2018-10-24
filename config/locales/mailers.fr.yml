@@ -25,15 +25,15 @@ fr:
         subject: L'import est terminé
         body: |
           "Bonjour, l'import est terminé 
-          Vous avez lancé l'import %{import_name}. Il est maintenant terminé.
+          Vous avez lancé l'import %{import_name}. Il est maintenant terminé. L'opération est %{status}.
           Pour y accéder :"
     export_mailer:
       button: Voir export
-      created:
+      finished:
         subject: L'export est terminé
         body: |
           "Bonjour, l'export est terminé 
-          Vous avez lancé l'export %{export_name}. Il est maintenant terminé.
+          Vous avez lancé l'export %{export_name}. Il est maintenant terminé. L'opération est %{status}.
           Pour y accéder :"
     merge_mailer:
       button: Voir offre finalisée
@@ -41,7 +41,7 @@ fr:
         subject: L'export est terminé
         body: |
           "Bonjour, l'export est terminé 
-          Vous avez lancé l'export %{merge_name}. Il est maintenant terminé.
+          Vous avez lancé l'export %{merge_name}. Il est maintenant terminé. L'opération est %{status}.
           Pour y accéder :"
     subscription_mailer:
       created:
@@ -82,7 +82,7 @@ fr:
         subject: La validation est terminée
         body: |
           "Bonjour, la validation est terminée
-          Vous avez lancé une validation sur %{ref_name}. Elle est maintenant terminée.
+          Vous avez lancé une validation sur %{ref_name}. Elle est maintenant terminée. L'opération est %{status}.
           Pour y accéder :"
     aggregate_mailer:
       finished:
@@ -90,5 +90,5 @@ fr:
         subject: L'agrégation est terminée
         body: |
           "Bonjour, l'agrégation est terminée
-          Vous avez lancé l'agrégation %{agg_name}. Elle est maintenant terminée.
+          Vous avez lancé l'agrégation %{agg_name}. Elle est maintenant terminée. L'opération est %{status}.
           Pour y accéder :"

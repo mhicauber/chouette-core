@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe MergeObserver, type: :observer do
-  let(:user) {create :user}
+  let(:user) {create :user, confirmed_at: Time.now}
   let(:workbench){ create :workbench }
   let(:ref1) { create :referential, workbench: workbench, organisation: workbench.organisation }
   let(:ref2) { create :referential, workbench: workbench, organisation: workbench.organisation }
@@ -39,7 +39,7 @@ RSpec.describe MergeObserver, type: :observer do
       aggregate.save
     end
 
-    xit 'should schedule mailer on aggregate finish' do
+    it 'should schedule mailer on aggregate finish' do
       expect(MailerJob).to receive(:perform_later).with 'AggregateMailer', 'finished', anything
       aggregate.status = 'successful'
       aggregate.save

@@ -27,7 +27,7 @@ module OperationSupport
       @keep_operations
     end
 
-    def self.finished_statuses
+    def finished_statuses
      %w(successful failed canceled)
     end
   end

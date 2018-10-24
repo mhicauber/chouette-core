@@ -26,7 +26,7 @@ en:
         subject: The import is over
         body: |
           "Hello, the import is over
-          You launched the %{import_name} import. It is now over.
+          You launched the %{import_name} import. It is now over. It is %{status}
           To view it :"
     export_mailer:
       button: See export
@@ -34,7 +34,7 @@ en:
         subject: The export is over
         body: |
           "Hello, the export is over
-          You launched the %{export_name} export. It is now over.
+          You launched the %{export_name} export. It is now over. It is %{status}
           To view it :"
     merge_mailer:
       button: See current offer
@@ -42,7 +42,7 @@ en:
         subject: Merge is done
         body: |
           "Hello, The merge
-          You launched the %{merge_name} merge. It is now over.
+          You launched the %{merge_name} merge. It is now over. It is %{status}
           To view it :"
     subscription_mailer:
       created:
@@ -82,7 +82,7 @@ en:
         subject: Compliance Check set is over
         body: |
           "Hello, the compliance check set is done
-          You started the validation of %{ref_name} referentual. The operation is now over.
+          You started the validation of %{ref_name} referentual. The operation is now over. It is %{status}
           To access it :"
     aggregate_mailer:
       finished:
@@ -90,5 +90,5 @@ en:
         subject: The aggregation is over
         body: |
           "Hello, the aggregation is over
-          You started the aggregation %{agg_name}. The operation is now over.
+          You started the aggregation %{agg_name}. The operation is now over. It is %{status}
           To access it :"

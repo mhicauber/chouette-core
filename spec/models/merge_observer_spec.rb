@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe MergeObserver, type: :observer do
-  let(:user) { create :user }
+  let(:user) { create :user, confirmed_at: Time.now }
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
@@ -42,7 +42,7 @@ RSpec.describe MergeObserver, type: :observer do
       merge.save
     end
 
-    xit 'should schedule mailer on merge finish' do
+    it 'should schedule mailer on merge finish' do
       expect(MailerJob).to receive(:perform_later).with 'MergeMailer', 'finished', anything
       merge.status = 'successful'
       merge.save

@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe ExportObserver, type: :observer do
-  let(:user) { create :user }
+  let(:user) { create :user, confirmed_at: Time.now }
   let(:parent) { create(:workbench_import, creator: user.name) }
   let(:referential) { create :referential }
+  let(:export) { create(:gtfs_export, creator: user.name) }
  
   context "when notifications are disabled" do
     before(:each) do
@@ -15,7 +16,7 @@ RSpec.describe ExportObserver, type: :observer do
     end
 
     it 'should not schedule mailer' do
-      expect(MailerJob).to_not receive(:perform_later).with 'ExportMailer', 'created', anything
+      expect(MailerJob).to_not receive(:perform_later).with 'ExportMailer', 'finished', anything
       create(:gtfs_export, creator: user.name).save
     end  
 
@@ -31,13 +32,15 @@ RSpec.describe ExportObserver, type: :observer do
      end
     
     it 'should observe export create' do
-      expect(ExportObserver.instance).to receive(:after_create)
-      create(:gtfs_export, creator: user.name).save
+      expect(ExportObserver.instance).to receive(:after_update)
+      export.status = 'successful'
+      export.save
     end
 
-    xit 'should schedule mailer on import create' do
-      expect(MailerJob).to receive(:perform_later).with 'ExportMailer', 'created', anything
-      create(:gtfs_export, creator: user.name).save
+    it 'should schedule mailer on import create' do
+      expect(MailerJob).to receive(:perform_later).with 'ExportMailer', 'finished', anything
+      export.status = 'successful'
+      export.save
     end
   end
 end

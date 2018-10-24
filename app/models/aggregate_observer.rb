@@ -4,7 +4,7 @@ class AggregateObserver < ActiveRecord::Observer
     return unless email_sendable_for?(aggregate)
     aggregate = aggregate
     user = User.find_by_name(aggregate.creator)
-    MailerJob.perform_later("MergeMailer", "finished", [aggregate.id, user.id])
+    MailerJob.perform_later("AggregateMailer", "finished", [aggregate.id, user.id])
   end
 
   private
