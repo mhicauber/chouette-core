@@ -11,7 +11,17 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
     end
   end
 
+  def index
+    render json: imports_map
+  end
+
   private
+
+  def imports_map
+    @current_workbench.imports.collect do |import|
+      {id: import.id, name: import.name, status: import.status, referential_ids: @current_workbench.referentials.map(&:id)}
+    end
+  end
 
   def workbench_import_params
     permitted_keys = %i(name file)
