@@ -31,10 +31,6 @@ class Merge < ApplicationModel
     following_referentials = self.workbench.output.referentials.where('created_at > ?', self.new.created_at)
     workbench.merges.where(new_id: following_referentials.pluck(:id))
   end
-  
-  def self.finished_statuses
-    %w(successful failed)
-  end
 
   def merge
     # Step 1 : Before

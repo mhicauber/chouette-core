@@ -84,3 +84,11 @@ fr:
           "Bonjour, la validation est terminée
           Vous avez lancé une validation sur %{ref_name}. Elle est maintenant terminée.
           Pour y accéder :"
+    aggregate_mailer:
+      finished:
+        button: Voir Agrégation
+        subject: L'agrégation est terminée
+        body: |
+          "Bonjour, l'agrégation est terminée
+          Vous avez lancé l'agrégation %{agg_name}. Elle est maintenant terminée.
+          Pour y accéder :"

@@ -84,3 +84,11 @@ en:
           "Hello, the compliance check set is done
           You started the validation of %{ref_name} referentual. The operation is now over.
           To access it :"
+    aggregate_mailer:
+      finished:
+        button: See Aggregation
+        subject: The aggregation is over
+        body: |
+          "Hello, the aggregation is over
+          You started the aggregation %{agg_name}. The operation is now over.
+          To access it :"
