@@ -6,7 +6,7 @@ class Aggregate < ActiveRecord::Base
 
   validates :workgroup, presence: true
 
-  after_commit :aggregate, :on => :create
+  after_commit :aggregate, on: :create
 
   delegate :output, to: :workgroup
 
@@ -25,7 +25,7 @@ class Aggregate < ActiveRecord::Base
     prepare_new
 
     referentials.each do |source|
-      ReferentialCopy.new(source: source, target: new).copy
+      ReferentialCopy.new(source: source, target: new).copy!
     end
 
     if after_aggregate_compliance_control_set.present?
@@ -36,7 +36,7 @@ class Aggregate < ActiveRecord::Base
   rescue => e
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
     failed!
-    raise e #if Rails.env.test?
+    raise e if Rails.env.test?
   end
 
   private
