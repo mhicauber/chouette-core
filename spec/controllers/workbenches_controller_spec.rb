@@ -14,6 +14,51 @@ RSpec.describe WorkbenchesController, :type => :controller do
     end
   end
 
+  describe 'DELETE delete_referentials' do
+    let(:referential) { create(:referential, workbench: workbench, organisation: workbench.organisation) }
+    let(:request) do
+      delete :delete_referentials, id: workbench.id, referentials: [referential.id]
+    end
+
+    context 'with an active referential' do
+      before { referential.active! }
+
+      it 'should schedule a deletion' do
+        expect(ReferentialDestroyWorker).to receive(:perform_async).with(referential.id).once
+        request
+        expect(referential.reload.ready?).to be_falsy
+      end
+    end
+
+    context 'with a merged referential' do
+      before { referential.merged! }
+
+      it 'should do nothing' do
+        expect(ReferentialDestroyWorker).to_not receive(:perform_async)
+        expect { request }.to_not(change { referential.reload.state })
+      end
+    end
+
+    context 'with a failed referential' do
+      before { referential.failed! }
+
+      it 'should schedule a deletion' do
+        expect(ReferentialDestroyWorker).to receive(:perform_async).with(referential.id).once
+        request
+        expect(referential.reload.ready?).to be_falsy
+      end
+    end
+
+    context 'with a referential from another workbench' do
+      let(:referential) { create(:referential) }
+
+      it 'should do nothing' do
+        expect(ReferentialDestroyWorker).to_not receive(:perform_async)
+        expect { request }.to_not(change { referential.reload.state })
+      end
+    end
+  end
+
   describe 'PATCH update' do
     let(:workbench_params){
       {

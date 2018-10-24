@@ -32,6 +32,8 @@ class WorkbenchesController < ChouetteController
   def delete_referentials
     referentials = resource.referentials.where(id: params[:referentials])
     referentials.each do |referential|
+      next unless policy(referential).destroy?
+
       ReferentialDestroyWorker.perform_async(referential.id)
       referential.update_attribute(:ready, false)
     end

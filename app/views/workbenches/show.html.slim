@@ -65,7 +65,7 @@
               ],
               selectable: ->(ref) { \
                 @workbench.referentials.include?(ref) && \
-                  !ref.pending? \
+                  policy(ref).destroy? \
               },
               cls: 'table has-filter has-search',
               action: :index
