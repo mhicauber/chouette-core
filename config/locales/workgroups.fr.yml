@@ -23,3 +23,13 @@ fr:
   activerecord:
     models:
       workgroup: Groupe de travail
+    attributes:
+      workgroup:
+        sentinel_min_hole_size: Taille minimum d'un trou d'offre
+        sentinel_delay: Distance de détection
+
+  formtastic:
+    hints:
+      workgroup:
+        sentinel_min_hole_size: Durée minimum d'un trou d'offre pour qu'il soit signalé.
+        sentinel_delay: Une valeur de 0 désactive la détection de trous

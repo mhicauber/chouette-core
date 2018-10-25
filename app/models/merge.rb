@@ -627,6 +627,7 @@ class Merge < ApplicationModel
   def after_save_current
     referentials.each(&:merged!)
     Stat::JourneyPatternCoursesByDate.compute_for_referential(new)
+    HoleSentinel.new(workbench).watch!
   end
 
   def save_model!(model)

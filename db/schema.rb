@@ -1124,6 +1124,8 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.integer  "owner_id",                   limit: 8
     t.integer  "output_id",                  limit: 8
     t.hstore   "compliance_control_set_ids"
+    t.integer  "sentinel_min_hole_size",               default: 3
+    t.integer  "sentinel_delay",                       default: 7
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

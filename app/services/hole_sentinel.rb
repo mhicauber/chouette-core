@@ -7,10 +7,11 @@ class HoleSentinel
     holes = {}
 
     return holes unless referential.present?
+    return holes unless days_ahead.positive?
 
     referential.switch do
       referential.lines.each do |line|
-        line_holes = Stat::JourneyPatternCoursesByDate.holes_for_line(line)
+        line_holes = Stat::JourneyPatternCoursesByDate.where('date >= CURRENT_DATE').holes_for_line(line)
 
         # first we check that the next hole is soon enough for us to care about
         next unless line_holes.exists?
@@ -25,6 +26,13 @@ class HoleSentinel
     holes
   end
 
+  def watch!
+    holes = incoming_holes
+    return unless holes.present?
+
+    SentinelMailer.notify_incoming_holes(@workbench, holes).deliver_now
+  end
+
   protected
 
   def referential
@@ -32,10 +40,10 @@ class HoleSentinel
   end
 
   def min_hole_size
-    3
+    @workbench.workgroup.sentinel_min_hole_size
   end
 
   def days_ahead
-    7.days
+    @workbench.workgroup.sentinel_delay.days
   end
 end

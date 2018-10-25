@@ -64,6 +64,22 @@ RSpec.describe HoleSentinel do
           expect(subject[line2.id]).to be_nil
         end
       end
+
+      context 'with a hole in the past' do
+        before(:each) do
+          -20.upto(-10).each do |i|
+            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+          end
+          -9.upto(-3).each do |i|
+            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 0, line_id: line.id
+          end
+          -3.upto(30).each do |i|
+            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+          end
+        end
+
+        it { should be_empty }
+      end
     end
   end
 end

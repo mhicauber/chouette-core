@@ -24,7 +24,7 @@ fr:
       finished:
         subject: L'import est terminé
         body: |
-          "Bonjour, l'import est terminé 
+          "Bonjour, l'import est terminé
           Vous avez lancé l'import %{import_name}. Il est maintenant terminé. L'opération est %{status}.
           Pour y accéder :"
     export_mailer:
@@ -32,7 +32,7 @@ fr:
       finished:
         subject: L'export est terminé
         body: |
-          "Bonjour, l'export est terminé 
+          "Bonjour, l'export est terminé
           Vous avez lancé l'export %{export_name}. Il est maintenant terminé. L'opération est %{status}.
           Pour y accéder :"
     merge_mailer:
@@ -40,7 +40,7 @@ fr:
       finished:
         subject: L'export est terminé
         body: |
-          "Bonjour, l'export est terminé 
+          "Bonjour, l'export est terminé
           Vous avez lancé l'export %{merge_name}. Il est maintenant terminé. L'opération est %{status}.
           Pour y accéder :"
     subscription_mailer:
@@ -51,7 +51,7 @@ fr:
       button: Confirmer l'inscription
       subject: Instructions de confirmation
       body: |
-        "Bonjour %{email} ! 
+        "Bonjour %{email} !
         Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:"
     password_mailer:
       updated:
@@ -92,3 +92,8 @@ fr:
           "Bonjour, l'agrégation est terminée
           Vous avez lancé l'agrégation %{agg_name}. Elle est maintenant terminée. L'opération est %{status}.
           Pour y accéder :"
+    sentinel_mailer:
+      incoming_holes:
+        subject: Des trous d'offre ont été détectés dans le groupe de travail %{workbench_name}
+        body: "Des trous d'offre ont été détectés dans le groupe de travail %{workbench_name} :"
+        hole: "Sur la ligne <a href='%{line_url}'>\"%{line_name}\"</a>, à partir du %{date}"

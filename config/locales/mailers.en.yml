@@ -52,7 +52,7 @@ en:
       button: Confirm the subscription
       subject: Instructions of confirmation
       body: |
-        "Hello %{email} ! 
+        "Hello %{email} !
         You can now confirm your subscription by clicking on the following link"
     password_mailer:
       updated:
@@ -92,3 +92,8 @@ en:
           "Hello, the aggregation is over
           You started the aggregation %{agg_name}. The operation is now over. It is %{status}
           To access it :"
+    sentinel_mailer:
+      incoming_holes:
+        subject: Lack of offer have been detected in the workbench %{workbench_name}
+        body: "Lack of offer have been detected in the workbench %{workbench_name} :"
+        hole: "On the line <a href='%{line_url}'>\"%{line_name}\"</a>, from %{date}"
