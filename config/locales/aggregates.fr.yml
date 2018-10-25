@@ -1,14 +1,14 @@
 fr:
   aggregates:
-    referential_name: "Offre aggrégée %{date}"
+    referential_name: "Offre agrégée %{date}"
     index:
-      title: "Aggregations de l'offre"
+      title: "Agrégations de l'offre"
     new:
-      title: "Nouvelle aggregation de l'offre"
+      title: "Nouvelle agrégation de l'offre"
     show:
-      title: "Aggregation de l'offre %{name}"
+      title: "Agrégation de l'offre %{name}"
     actions:
-      create: Aggréger des Jeux de Données
+      create: Agréger des Jeux de Données
     statuses:
       new: Nouveau
       pending: En attente
@@ -19,9 +19,9 @@ fr:
   activerecord:
     models:
       aggregate:
-        zero:  "Aggregations d'offre"
-        one:   "Aggregation de l'offre"
-        other: "Aggregations d'offre"
+        zero:  "Agrégations d'offre"
+        one:   "Agrégation de l'offre"
+        other: "Agrégations d'offre"
     attributes:
       aggregate:
         created_at: "Créé le"
@@ -40,5 +40,5 @@ fr:
         aggregate:
           attributes:
             base:
-              multiple_process: "Une autre aggregation est déjà en cours"
+              multiple_process: "Une autre agrégation est déjà en cours"
               no_referential: Vous devez choisir au moins un jeu de données
