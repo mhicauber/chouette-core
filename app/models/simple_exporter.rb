@@ -16,7 +16,9 @@ class SimpleExporter < SimpleInterface
 
     @statuses = ""
 
-    process_collection
+    ActiveRecord::Base.cache do
+      process_collection
+    end
 
     self.status ||= :success
   rescue SimpleInterface::FailedOperation
@@ -112,6 +114,9 @@ class SimpleExporter < SimpleInterface
       print_state if @current_line % 20 == 0 || i > 0
       @current_line += 1
       @csv << row
+      self.configuration.after_actions(:each_row).each do |action|
+        action.call self
+      end
     end
   end
 

@@ -104,6 +104,8 @@ class SimpleInterface < ApplicationModel
   end
 
   def push_in_journal data
+    return if configuration.skip_journal
+
     line = (@current_line || 0) + 1
     line += 1 if configuration.headers
     @_errors ||= []
@@ -120,7 +122,7 @@ class SimpleInterface < ApplicationModel
   end
 
   class Configuration
-    attr_accessor :headers, :separator, :key, :context, :encoding, :ignore_failures, :scope
+    attr_accessor :headers, :separator, :key, :context, :encoding, :ignore_failures, :scope, :skip_journal
     attr_reader :columns
 
     def initialize import_name, opts={}
@@ -129,13 +131,14 @@ class SimpleInterface < ApplicationModel
       @headers = opts.has_key?(:headers) ? opts[:headers] : true
       @separator = opts[:separator] || ","
       @encoding = opts[:encoding]
-      @columns = opts[:columns] || []
+      @columns = opts[:columns]&.dup || []
       @custom_handler = opts[:custom_handler]
       @before = opts[:before]
       @after = opts[:after]
       @ignore_failures = opts[:ignore_failures]
-      @context = opts[:context] || {}
+      @context = opts[:context]&.dup || {}
       @scope = opts[:scope]
+      @skip_journal = opts[:skip_journal]
     end
 
     def on_relation relation_name
@@ -161,7 +164,8 @@ class SimpleInterface < ApplicationModel
         after: @after,
         ignore_failures: @ignore_failures,
         context: @context,
-        scope: @scope
+        scope: @scope,
+        skip_journal: @skip_journal
       }
     end
 

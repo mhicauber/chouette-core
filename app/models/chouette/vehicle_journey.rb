@@ -119,15 +119,15 @@ module Chouette
     # returns VehicleJourneys with at least 1 day in their time_tables
     # included in the given range
     def self.with_matching_timetable date_range
-      out = []
       time_tables = Chouette::TimeTable.where(id: self.joins("INNER JOIN time_tables_vehicle_journeys ON vehicle_journeys.id = time_tables_vehicle_journeys.vehicle_journey_id").pluck('time_tables_vehicle_journeys.time_table_id')).overlapping(date_range)
-      time_tables = time_tables.select do |time_table|
+      time_tables = time_tables.includes(:dates, :periods).select(:id, :start_date, :end_date, :int_day_types)
+      time_table_ids = time_tables.map do |time_table|
         range = date_range
         range = date_range & (time_table.start_date-1.day..time_table.end_date+1.day) || [] if time_table.start_date.present? && time_table.end_date.present?
-        range.any?{|d| time_table.include_day?(d) }
-      end
-      out += time_tables.map{|t| t.vehicle_journey_ids}.flatten
-      where(id: out)
+        range.any?{|d| time_table.include_day?(d) } ? time_table.id : nil
+      end.compact
+
+      joins('INNER JOIN time_tables_vehicle_journeys ON vehicle_journeys.id = time_tables_vehicle_journeys.vehicle_journey_id').where('time_tables_vehicle_journeys.time_table_id' => time_table_ids).distinct
     end
 
     # TODO: Remove this validator
