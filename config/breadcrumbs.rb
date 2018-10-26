@@ -297,8 +297,13 @@ crumb :vehicle_journeys do |referential, route|
   parent :route, referential, route
 end
 
-crumb :workgroup do |w|
+crumb :workgroup do |_|
   link I18n.t('workgroups.edit.title')
+end
+
+crumb :workgroup_aggregation_settings do
+  link I18n.t('workgroups.edit_aggregation.title')
+  parent :workgroup
 end
 
 crumb :api_keys do |workbench|

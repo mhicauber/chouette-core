@@ -14,6 +14,12 @@
       overflow: hidden
       border-right: 1px solid $lightgrey
       border-top: 1px solid $lightgrey
+      &.small
+        max-width: 50px
+        text-align: center
+        .fa
+          font-size: 1.3em
+          line-height: 1.4em
       &.first
         flex: 0 1 auto
       .cell
@@ -25,6 +31,9 @@
           background-color: lighten($lightergrey, 3%)
         select
           max-width: calc(100%)
+          min-width: 200px
+        .select2
+          margin-top: -5px
         &.organisation-name, &.control-set-name
           font-weight: bold
           white-space: nowrap
