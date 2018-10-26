@@ -7,6 +7,7 @@ class Workbench < ApplicationModel
   belongs_to :stop_area_referential
   belongs_to :output, class_name: 'ReferentialSuite'
   belongs_to :workgroup
+  belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
@@ -25,11 +26,29 @@ class Workbench < ApplicationModel
   validates :prefix, presence: true
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}
   validates :output, presence: true
+  validate  :locked_referential_to_aggregate_belongs_to_output
 
   has_many :referentials, dependent: :destroy
   has_many :referential_metadatas, through: :referentials, source: :metadatas
 
   before_validation :initialize_output
+
+  def locked_referential_to_aggregate_belongs_to_output
+    return unless locked_referential_to_aggregate.present?
+    return if locked_referential_to_aggregate.referential_suite == output
+
+    errors.add(
+      :locked_referential_to_aggregate,
+      I18n.t('workbenches.errors.locked_referential_to_aggregate.must_belong_to_output')
+    )
+  end
+
+  def locked_referential_to_aggregate_with_log
+    locked_referential_to_aggregate_without_log.tap do |ref|
+      Rails.logger.warn "Locked Referential for Workbench##{id} has been deleted" unless ref.present?
+    end
+  end
+  alias_method_chain :locked_referential_to_aggregate, :log
 
   def self.normalize_prefix input
     input ||= ""
@@ -56,12 +75,17 @@ class Workbench < ApplicationModel
     end
   end
 
+  def referential_to_aggregate
+    locked_referential_to_aggregate || output.current
+  end
+
   def calendars
     workgroup.calendars.where('(organisation_id = ? OR shared = ?)', organisation.id, true)
   end
 
   def self.default
-    self.last if self.count == 1
+    return last if count == 1
+
     where(name: DEFAULT_WORKBENCH_NAME).last || last
   end
 

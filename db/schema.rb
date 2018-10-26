@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181003124924) do
+ActiveRecord::Schema.define(version: 20181026085531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -104,9 +104,9 @@ ActiveRecord::Schema.define(version: 20181003124924) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -1079,19 +1079,21 @@ ActiveRecord::Schema.define(version: 20181003124924) do
 
   create_table "workbenches", id: :bigserial, force: :cascade do |t|
     t.string   "name"
-    t.integer  "organisation_id",                  limit: 8
+    t.integer  "organisation_id",                    limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "line_referential_id",              limit: 8
-    t.integer  "stop_area_referential_id",         limit: 8
-    t.integer  "output_id",                        limit: 8
+    t.integer  "line_referential_id",                limit: 8
+    t.integer  "stop_area_referential_id",           limit: 8
+    t.integer  "output_id",                          limit: 8
     t.string   "objectid_format"
-    t.integer  "workgroup_id",                     limit: 8
+    t.integer  "workgroup_id",                       limit: 8
     t.hstore   "owner_compliance_control_set_ids"
     t.string   "prefix"
+    t.integer  "locked_referential_to_aggregate_id"
   end
 
   add_index "workbenches", ["line_referential_id"], name: "index_workbenches_on_line_referential_id", using: :btree
+  add_index "workbenches", ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id", using: :btree
   add_index "workbenches", ["organisation_id"], name: "index_workbenches_on_organisation_id", using: :btree
   add_index "workbenches", ["stop_area_referential_id"], name: "index_workbenches_on_stop_area_referential_id", using: :btree
   add_index "workbenches", ["workgroup_id"], name: "index_workbenches_on_workgroup_id", using: :btree

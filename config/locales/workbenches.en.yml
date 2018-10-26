@@ -24,6 +24,10 @@ en:
     actions:
       show_output: "Merge Transport Offer"
       affect_ccset: "Configure"
+    errors:
+      locked_referential_to_aggregate:
+        must_belong_to_output: Must belong to workbench's output
+
   activerecord:
     models:
       workbench:
