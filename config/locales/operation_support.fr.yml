@@ -1,0 +1,13 @@
+fr:
+  operation_support:
+    statuses:
+      aborted:    Annulé
+      canceled:   Annulé
+      error:      Échec
+      failed:     Échec
+      new:        Nouveau
+      ok:         Succès
+      pending:    En attente
+      running:    En cours
+      successful: Succès
+      warning:    Avertissement

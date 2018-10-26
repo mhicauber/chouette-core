@@ -22,6 +22,6 @@ RSpec.describe AggregateMailer, type: :mailer do
   end
 
   it 'should have correct body' do
-    expect(email.body).to have_content I18n.t("mailers.aggregate_mailer.finished.body", agg_name: aggregate.name, status: I18n.t("statuses.#{aggregate.status}"))
+    expect(email.body).to have_content I18n.t("mailers.aggregate_mailer.finished.body", agg_name: aggregate.name, status: I18n.t("operation_support.statuses.#{aggregate.status}"))
   end
 end

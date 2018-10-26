@@ -1,5 +1,5 @@
 h2 style=mailer_style(:h2)
-  = t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("statuses.#{@ccset.status}"))
+  = t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("operation_support.statuses.#{@ccset.status}"))
   br
   = mailer_button(t('mailers.compliance_check_set_mailer.finished.button'), workbench_compliance_check_set_url(@ccset.workbench, @ccset))
 

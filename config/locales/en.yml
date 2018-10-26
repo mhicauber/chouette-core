@@ -65,14 +65,3 @@ en:
   undefined: 'undefined'
   "yes": yes
   "no": no
-
-  status:
-    new:        New
-    pending:    Pending
-    successful: Successful
-    ok:         Successful
-    warning:    Warning
-    failed:     Failed
-    running:    Running
-    aborted:    Aborted
-    canceled:   Canceled
