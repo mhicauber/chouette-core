@@ -3,11 +3,11 @@ module TableBuilderHelper
     attr_reader :key, :name, :attribute, :sortable
 
     def initialize(key: nil, name: '', attribute:, sortable: true, link_to: nil, **opts)
-      if key.nil? && name.empty?
-        raise ColumnMustHaveKeyOrNameError
-      end
+      raise ColumnMustHaveKeyOrNameError if name != false && key.nil? && name.empty?
+
       opts ||= {}
       @key = key
+      name = '' if name == false
       @name = name
       @attribute = attribute
       @sortable = sortable
@@ -26,7 +26,7 @@ module TableBuilderHelper
     end
 
     def header_label(model = nil)
-      return @name if @name.present?
+      return @name unless @name.nil?
 
       # Transform `Chouette::Line` into "line"
       model_key = model.to_s.underscore
