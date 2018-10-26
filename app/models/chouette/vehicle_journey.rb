@@ -122,7 +122,7 @@ module Chouette
       time_table_ids = Chouette::TimeTable.joins(
         :vehicle_journeys
       ).merge(self.all).applied_at_least_once_in_ids(date_range)
-      joins(:time_tables).where("time_tables.id" => time_table_ids)
+      joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
 
     # TODO: Remove this validator

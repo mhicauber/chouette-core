@@ -248,11 +248,11 @@ RSpec.describe Export::Gtfs, type: :model do
       #   calendar_date.exception_type.should eq(date.in_out ? '1' : '2')
       # end
 
-    ################################
-    # Test (5) trips.txt export
-    ################################
+      ################################
+      # Test (5) trips.txt export
+      ################################
 
-    targets_zip_path = File.join(tmp_dir, '/test_trips.zip')
+      targets_zip_path = File.join(tmp_dir, '/test_trips.zip')
 
       GTFS::Target.open(targets_zip_path) do |target|
         gtfs_export.export_vehicle_journeys_to target
@@ -279,11 +279,11 @@ RSpec.describe Export::Gtfs, type: :model do
       random_gtfs_trip = source.trips.detect {|t| t.service_id == random_vj_period.first.object_id.to_s && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
       expect(random_gtfs_trip).not_to be_nil
 
-    ################################
-    # Test (6) stop_times.txt export
-    ################################
+      ################################
+      # Test (6) stop_times.txt export
+      ################################
 
-    stop_times_zip_path = File.join(tmp_dir, '/stop_times.zip')
+      stop_times_zip_path = File.join(tmp_dir, '/stop_times.zip')
       GTFS::Target.open(stop_times_zip_path) do |target|
         gtfs_export.export_vehicle_journey_at_stops_to target
       end
