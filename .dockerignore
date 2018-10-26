@@ -18,3 +18,5 @@ public/javascripts/translations.js
 /spec/fixtures/target_*
 /tmp/*
 /vendor/bundle/*
+/.sass
+/.sass-cache
