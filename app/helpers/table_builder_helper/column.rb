@@ -2,7 +2,7 @@ module TableBuilderHelper
   class Column
     attr_reader :key, :name, :attribute, :sortable
 
-    def initialize(key: nil, name: '', attribute:, sortable: true, link_to: nil, **opts)
+    def initialize(key: nil, name: nil, attribute:, sortable: true, link_to: nil, **opts)
       raise ColumnMustHaveKeyOrNameError if name != false && key.nil? && name.empty?
 
       opts ||= {}

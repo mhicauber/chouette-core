@@ -1089,7 +1089,7 @@ ActiveRecord::Schema.define(version: 20181026085531) do
     t.integer  "workgroup_id",                       limit: 8
     t.hstore   "owner_compliance_control_set_ids"
     t.string   "prefix"
-    t.integer  "locked_referential_to_aggregate_id"
+    t.integer  "locked_referential_to_aggregate_id", limit: 8
   end
 
   add_index "workbenches", ["line_referential_id"], name: "index_workbenches_on_line_referential_id", using: :btree
