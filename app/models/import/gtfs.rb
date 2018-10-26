@@ -112,7 +112,10 @@ class Import::Gtfs < Import::Base
     start_dates ||= []
     end_dates ||= []
 
-    included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
+    included_dates = []
+    if source.entries.include?('calendar_dates.txt')
+      included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
+    end
 
     min_date = Date.parse (start_dates + [included_dates.min]).compact.min
     min_date = [min_date, Date.current.beginning_of_year - PERIOD_EXTREME_VALUE].max
@@ -420,6 +423,8 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendar_dates
+    return unless source.entries.include?('calendar_dates.txt')
+    
     create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
       comment = "Calendar #{calendar_date.service_id}"
       unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
