@@ -1,5 +1,6 @@
 fr:
   workbenches:
+    current_offer: Offre courante
     show:
       title: "Offre de transport %{name}"
     edit:

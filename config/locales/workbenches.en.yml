@@ -1,5 +1,6 @@
 en:
   workbenches:
+    current_offer: Current offer
     show:
       title: "Transport offer %{name}"
     edit:

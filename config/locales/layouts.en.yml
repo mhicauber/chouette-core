@@ -25,7 +25,6 @@ en:
         workgroup: Workgroup offers
         edit_workgroup: App configuration
       configuration: Settings
-      workgroup_configuration:  Application
       workbench_configuration: Workbench
       organisation_configuration: My organization
       security_configuration: Security
@@ -38,6 +37,10 @@ en:
       portal: Portal (POSTIF)
       support: Support
       shapes: Shapes
+      workgroup:
+        subtitle: Application
+        edit_control_sets: Controls settings
+        edit_aggregation: Aggregation settings
     history_tag:
       title: "Metadatas"
       created_at: "Created at"

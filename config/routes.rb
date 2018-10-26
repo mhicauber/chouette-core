@@ -34,6 +34,9 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :workgroups do
+    member do
+      get :edit_aggregation
+    end
     resource :output, controller: :workgroup_outputs
     resources :aggregates
     resources :calendars do
