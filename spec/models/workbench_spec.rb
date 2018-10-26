@@ -31,6 +31,64 @@ RSpec.describe Workbench, :type => :model do
     Workbench.set_callback(:validation, :before, :initialize_output)
   end
 
+  context 'aggregation setup' do
+    context 'locked_referential_to_aggregate' do
+      let(:workbench) { create(:workbench) }
+
+      it 'should be nil by default' do
+        expect(workbench.locked_referential_to_aggregate).to be_nil
+      end
+
+      it 'should only take values from the workbench output' do
+        referential = create(:referential)
+        workbench.locked_referential_to_aggregate = referential
+        expect(workbench).to_not be_valid
+        referential.referential_suite = workbench.output
+        expect(workbench).to be_valid
+      end
+
+      it 'should not log a warning if the referential exists' do
+        referential = create(:referential)
+        referential.referential_suite = workbench.output
+        workbench.update locked_referential_to_aggregate: referential
+        expect(Rails.logger).to_not receive(:warn)
+        expect(workbench.locked_referential_to_aggregate).to eq referential
+      end
+
+      it 'should log a warning if the referential does not exist anymore' do
+        workbench.update_column :locked_referential_to_aggregate_id, Referential.last.id.next
+        expect(Rails.logger).to receive(:warn)
+        expect(workbench.locked_referential_to_aggregate).to be_nil
+      end
+    end
+
+    context 'referential_to_aggregate' do
+      let(:workbench) { create(:workbench) }
+      let(:referential) { create(:referential) }
+      let(:latest_referential) { create(:referential) }
+
+      before(:each) do
+        referential.update referential_suite: workbench.output
+        latest_referential.update referential_suite: workbench.output
+        workbench.output.update current: latest_referential
+      end
+
+      it 'should point to the current output' do
+        expect(workbench.referential_to_aggregate).to eq latest_referential
+      end
+
+      context 'when designated a referential_to_aggregate' do
+        before do
+          workbench.update locked_referential_to_aggregate: referential
+        end
+
+        it 'should use this referential instead' do
+          expect(workbench.referential_to_aggregate).to eq referential
+        end
+      end
+    end
+  end
+
   context "normalize_prefix" do
     it "should ensure the resulting prefix is valid" do
       workbench = create(:workbench)
