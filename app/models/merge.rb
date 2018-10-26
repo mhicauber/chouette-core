@@ -636,6 +636,14 @@ class Merge < ApplicationModel
     Rails.logger.debug { "Created #{model.inspect}" }
   end
 
+  def clean_scope
+    scope = parent.merges
+    if parent.locked_referential_to_aggregate_id.present?
+      scope = scope.where("new_id IS NULL OR new_id != #{parent.locked_referential_to_aggregate_id}")
+    end
+    scope
+  end
+
   class MetadatasMerger
 
     attr_reader :merge_metadatas, :referential
