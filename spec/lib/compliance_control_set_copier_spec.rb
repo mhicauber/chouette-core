@@ -36,7 +36,7 @@ RSpec.describe ComplianceControlSetCopier do
           # Slowness of tests constrains us to create a minimum of objects in the DB,
           # hence only one example :(
           counts = object_counts
-          subject.copy(cc_set.id, ref.id)
+          subject.copy(cc_set.id, ref.id, 1)
 
           # Did not change the original objects
           # Correct numbers
@@ -71,7 +71,7 @@ RSpec.describe ComplianceControlSetCopier do
         let( :cck )        { ComplianceCheck.last }
 
         it 'into the compliance_check nodes' do
-          subject.copy(cc_set.id, ref.id)
+          subject.copy(cc_set.id, ref.id, 1)
 
           # Set
           expect( cck_set.name ).to eq(mk_name(cc_set.name))
@@ -90,7 +90,7 @@ RSpec.describe ComplianceControlSetCopier do
         end
 
         it 'returns the newly-created ComplianceCheckSet' do
-          expect(subject.copy(cc_set.id, ref.id)).to eq(cck_set)
+          expect(subject.copy(cc_set.id, ref.id, 1)).to eq(cck_set)
         end
       end
 

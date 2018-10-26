@@ -1,18 +1,94 @@
 en:
   mailers:
+    info_contact: 'If you have any question, please send an email to '
     audit_mailer:
       audit:
         subject: "Audit automatique du %{date}"
-    
+
     calendar_mailer:
       sent_by: "Sent by"
       created:
         subject: A new shared calendar has been created
-        body: "A new shared calendar %{cal_name} has been added by STIF. You can now view it in the <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>list of shared calendars</a>."
+        body: |
+          "Hello, a new calendar has been shared
+          In your organization, the %{cal_name} calendar has been shared.
+          To view it :
+          <a href='%{cal_url}' target='_blank' style='color:#333333;'>Calendar</a>"
       updated:
         subject: A shared calendar has been updated
-        body: "A new shared calendar %{cal_name} has been updated by STIF. You can now view it in the <a href='%{cal_index_url}' target='_blank' style='color:#333333;'>list of shared calendars</a>."
+        body: |
+          "Hello, a new shared calendar %{cal_name} has been updated.
+          To view it :
+          <a href='%{cal_url}' target='_blank' style='color:#333333;'>Calendar</a>."
+    import_mailer:
+      button: See Import
+      finished:
+        subject: The import is over
+        body: |
+          "Hello, the import is over
+          You launched the %{import_name} import. It is now over. It is %{status}
+          To view it :"
+    export_mailer:
+      button: See export
+      finished:
+        subject: The export is over
+        body: |
+          "Hello, the export is over
+          You launched the %{export_name} export. It is now over. It is %{status}
+          To view it :"
+    merge_mailer:
+      button: See current offer
+      finished:
+        subject: Merge is done
+        body: |
+          "Hello, The merge
+          You launched the %{merge_name} merge. It is now over. It is %{status}
+          To view it :"
     subscription_mailer:
       created:
         subject: A new user signed up
         body: "A new user signed up:"
+    confirmation_mailer:
+      button: Confirm the subscription
+      subject: Instructions of confirmation
+      body: |
+        "Hello %{email} ! 
+        You can now confirm your subscription by clicking on the following link"
+    password_mailer:
+      updated:
+        subject: Set up new password
+        body: |
+          "Hello, you forgot your password
+          You asked to set up a new one.
+          To start the process :"
+    user_mailer:
+      created:
+        subject: New registered user on Chouette
+        body: |
+          "Hello, a new user just subscribed on the platform
+          Name : %{user_name}
+          Organization : %{orga_name}
+          Email : %{user_mail}"
+    invitation_mailer:
+      button: Accept the invitation
+      subject: Invitation on the Chouette application
+      body: |
+        "Hello %{email},
+        This message is an invit to use the Chouette app, you can access it by clicking on the following link :"
+      ignore: If you don't want to access it, you can ignore the message. Your account won't be created until you click the link above and you define a password.
+    compliance_check_set_mailer:
+      finished:
+        button: See compliance check set
+        subject: Compliance Check set is over
+        body: |
+          "Hello, the compliance check set is done
+          You started the validation of %{ref_name} referentual. The operation is now over. It is %{status}
+          To access it :"
+    aggregate_mailer:
+      finished:
+        button: See Aggregation
+        subject: The aggregation is over
+        body: |
+          "Hello, the aggregation is over
+          You started the aggregation %{agg_name}. The operation is now over. It is %{status}
+          To access it :"

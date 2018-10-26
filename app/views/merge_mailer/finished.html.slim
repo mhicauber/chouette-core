@@ -1,0 +1,30 @@
+h2 style=mailer_style(:h2)
+  = t('mailers.merge_mailer.finished.body', merge_name: @merge.name, status: I18n.t("operation_support.statuses.#{@merge.status}"))
+  br
+  = mailer_button(t('mailers.merge_mailer.button'), workbench_merge_url(@merge.workbench, @merge))
+
+table style=mailer_style(:content_table)
+  tr
+    th colspan=2
+      h3 style=mailer_style(:h3)
+        = User.ts.capitalize + ":"
+  - %i(name).each do |attr|
+    tr
+      th style=mailer_style(:th)
+        = @user.class.tmf(attr) + ":"
+      td = @user.send attr
+  tr
+    th style=mailer_style(:th)
+      = @user.class.tmf(:email) + ":"
+    td = mailer_link_to @user.email, "mailto:#{@user.name}<#{@user.email}>"
+
+  tr
+    th colspan=2
+      h3 style=mailer_style(:h3)
+        = Organisation.ts.capitalize + ":"
+  - %i(name).each do |attr|
+    tr
+      th style=mailer_style(:th)
+        = @user.organisation.class.tmf(attr) + ":"
+      td
+        = @user.organisation.send attr

@@ -14,4 +14,4 @@
 
           .row.options
             .col-md-12.new_password
-              = link_to t('devise.links.sign_in'), new_session_path(resource_name)
+              = mailer_link_to t('devise.links.sign_in'), new_session_path(resource_name)

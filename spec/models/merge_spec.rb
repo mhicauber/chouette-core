@@ -217,12 +217,12 @@ RSpec.describe Merge do
     end
 
     context "when the control_set fails" do
-      it "should reset referential state" do
+      it "should reset referential state to active" do
         merge.merge
         check_set = ComplianceCheckSet.last
         ComplianceCheckSet.where.not(id: check_set.id).update_all notified_parent_at: Time.now
         expect(check_set.referential).to eq referential
-        merge.compliance_check_sets.update_all status:  :successful
+        merge.compliance_check_sets.update_all status: :successful
         check_set.update status: :failed
         check_set.do_notify_parent
         expect(referential.reload.state).to eq :active

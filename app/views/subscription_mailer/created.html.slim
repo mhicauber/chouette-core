@@ -1,36 +1,28 @@
-table style="border-collapse:collapse;font-family:'Open Sans', Arial, sans serif;width:550px;margin:0px auto;color:#333333;"
+h2 style=mailer_style(:h2)
+  = t('mailers.subscription_mailer.created.body')
 
-  thead
+table style=mailer_style(:content_table)
+  tr
+    th colspan=2
+      h3 style=mailer_style(:h3)
+        = User.ts.capitalize + ":"
+  - %i(name).each do |attr|
     tr
-      th
-        .jumbotron style="background-color:#007fbb;color:#fff;padding:20px 25px;margin-bottom:0px;text-align:left;"
-          h1.brandname style="display:inline-block;font-size:20px;font-weight:700;text-transform:uppercase;margin:0;"
-            = t('brandname')
+      th style=mailer_style(:th)
+        = @user.class.tmf(attr) + ":"
+      td = @user.send attr
+  tr
+    th style=mailer_style(:th)
+      = @user.class.tmf(:email) + ":"
+    td = mailer_link_to @user.email, "mailto:#{@user.name}<#{@user.email}>"
 
-  tbody
+  tr
+    th colspan=2
+      h3 style=mailer_style(:h3)
+        = Organisation.ts.capitalize + ":"
+  - %i(name).each do |attr|
     tr
-      td style="padding:40px 0px 20px 0px;" colspan=2
-        p style="font-size:14px;font-weight:700;margin:0px 0px 10px 0px;"
-          h2 = t('mailers.user_mailer.created.body')
-
-    tr
-      th colspan=2 style="text-align: left"
-        h3 = User.ts.capitalize + ":"
-    - %i(name).each do |attr|
-      tr
-        th style="width: 120px; text-align: left"
-          = @user.class.tmf(attr) + ":"
-        td = @user.send attr
-    tr
-      th style="width: 120px; text-align: left"
-        = @user.class.tmf(:email) + ":"
-      td = link_to @user.email, "mailto:#{@user.name}<#{@user.email}>"
-
-    tr
-      th colspan=2 style="text-align: left"
-        h3 = Organisation.ts.capitalize + ":"
-    - %i(name).each do |attr|
-      tr
-        th style="width: 120px; text-align: left"
-          = @user.organisation.class.tmf(attr) + ":"
-        td = @user.organisation.send attr
+      th style=mailer_style(:th)
+        = @user.organisation.class.tmf(attr) + ":"
+      td
+        = @user.organisation.send attr

@@ -26,6 +26,10 @@ module OperationSupport
     def keep_operations
       @keep_operations
     end
+
+    def finished_statuses
+     %w(successful failed canceled)
+    end
   end
 
   def name
@@ -73,7 +77,7 @@ module OperationSupport
   end
 
   def create_compliance_check_set(context, control_set, referential)
-    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id, context
+    ComplianceControlSetCopier.new.copy control_set.id, referential.id, nil, self.class.name, id, context
   end
 
   def worker_class_name

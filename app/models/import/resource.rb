@@ -25,7 +25,7 @@ class Import::Resource < ApplicationModel
         next unless (control_set = workbench.compliance_control_set(key)).present?
         compliance_check_set = workbench_import_check_set key
         if compliance_check_set.nil?
-          ComplianceControlSetCopier.new.copy control_set.id, referential_id, root_import.class.name, root_import.id, key
+          ComplianceControlSetCopier.new.copy control_set.id, referential_id, nil, root_import.class.name, root_import.id, key
           wait_for_controls = true
         end
       end

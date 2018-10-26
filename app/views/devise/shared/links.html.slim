@@ -3,19 +3,19 @@
 
     - if controller_name != 'sessions'
       li
-        = link_to t('devise.sessions.new.title'), new_session_path(resource_name)
+        = mailer_link_to t('devise.sessions.new.title'), new_session_path(resource_name)
 
     li
-      = link_to t('subscriptions.actions.new'), new_subscription_path
+      = mailer_link_to t('subscriptions.actions.new'), new_subscription_path
 
     - if devise_mapping.recoverable? && controller_name != 'passwords'
       li
-        = link_to t('devise.passwords.new'), new_password_path(resource_name)
+        = mailer_link_to t('devise.passwords.new'), new_password_path(resource_name)
 
     - if devise_mapping.confirmable? && controller_name != 'confirmations'
       li
-        = link_to t('devise.confirmations.new'), new_confirmation_path(resource_name)
+        = mailer_link_to t('devise.confirmations.new'), new_confirmation_path(resource_name)
 
     - if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks'
       li
-        = link_to t('devise.unlock.new.title'), new_unlock_path(resource_name)
+        = mailer_link_to t('devise.unlock.new.title'), new_unlock_path(resource_name)
