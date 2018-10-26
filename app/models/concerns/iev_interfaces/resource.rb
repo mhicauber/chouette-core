@@ -56,6 +56,9 @@ module IevInterfaces::Resource
     update_status_from_messages
     save!
     self
+  rescue
+    failed!
+    raise
   end
 
   def inc_rows_count
@@ -64,6 +67,10 @@ module IevInterfaces::Resource
 
   def update_status_from_importer(importer_status)
     update status: status_from_importer(importer_status)
+  end
+
+  def failed!
+    update status: :ERROR
   end
 
   def update_status_from_messages

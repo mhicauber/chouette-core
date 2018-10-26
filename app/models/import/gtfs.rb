@@ -423,6 +423,8 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendar_dates
+    return unless source.entries.include?('calendar_dates.txt')
+    
     create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
       comment = "Calendar #{calendar_date.service_id}"
       unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
