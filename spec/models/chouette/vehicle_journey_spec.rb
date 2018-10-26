@@ -355,7 +355,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
       let(:timetable){
         tt = create :time_table, dates_count: 0, periods_count: 0
-        create :time_table_period, period_start: start_date-1.month, period_end: start_date-1.day, time_table: tt
+        create :time_table_period, period_start: start_date-1.month, period_end: start_date, time_table: tt
         create(:time_table_date, :date => start_date, in_out: false, time_table: tt)
         tt
       }

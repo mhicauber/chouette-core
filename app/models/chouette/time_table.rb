@@ -72,6 +72,45 @@ module Chouette
     validates_associated :dates
     validates_associated :periods
 
+    def self.applied_at_least_once_in(date_range)
+      self.where(id: applied_at_least_once_in_ids(date_range))
+    end
+
+    def self.applied_at_least_once_in_ids(date_range)
+      query =  <<-SQL
+        WITH  dates AS (
+          #{dates_subquery(date_range)}
+        ), applicable_dates_subquery AS (
+          #{applicable_dates_subquery}
+        )
+        #{self.select('DISTINCT(time_tables.id)').joins("INNER JOIN applicable_dates_subquery ON applicable_dates_subquery.time_table_id = time_tables.id").to_sql}
+      SQL
+
+      ::ActiveRecord::Base.connection.execute(query).map{|r| r['id']}
+    end
+
+    def self.dates_subquery(date_range)
+      <<-SQL
+      select CURRENT_DATE + i AS date
+      from generate_series(#{(date_range.min - Time.now.to_date).to_i}, #{(date_range.max - Time.now.to_date).to_i}) i
+      SQL
+    end
+
+    def self.applicable_dates_subquery
+      <<-SQL
+      SELECT dates.date, time_tables.id AS time_table_id
+      FROM dates
+        LEFT JOIN  #{Apartment::Tenant.current}.time_tables ON 1=1
+        LEFT JOIN  #{Apartment::Tenant.current}."time_table_dates" AS excluded_dates ON excluded_dates."time_table_id" = "time_tables"."id" AND excluded_dates.date = dates.date AND excluded_dates.in_out = false
+        LEFT JOIN  #{Apartment::Tenant.current}."time_table_dates" AS included_dates ON included_dates."time_table_id" = "time_tables"."id" AND included_dates.date = dates.date AND included_dates.in_out = true
+        LEFT JOIN  #{Apartment::Tenant.current}."time_table_periods" AS periods ON periods."time_table_id" = "time_tables"."id" AND periods.period_start <= dates.date AND periods.period_end >= dates.date
+      WHERE
+        (included_dates.id IS NOT NULL OR (periods.id IS NOT NULL AND (time_tables.int_day_types & POW(2, ((DATE_PART('dow', dates.date)::int+6)%7)+2)::int) > 0) AND excluded_dates.id IS NULL)
+      GROUP BY dates.date, time_tables.id
+      ORDER BY dates.date ASC
+      SQL
+    end
+
     def continuous_dates
       in_days = self.dates.where(in_out: true).sort_by(&:date)
       chunk = {}
