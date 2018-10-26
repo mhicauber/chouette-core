@@ -197,8 +197,8 @@ class Import::Gtfs < Import::Base
 
     Import::Gtfs.benchmark(self, :import_calendars)
     Import::Gtfs.benchmark(self, :import_calendar_dates)
-    Import::Gtfs.benchmark(self, :import_stop_times)
     Import::Gtfs.benchmark(self, :import_trips)
+    Import::Gtfs.benchmark(self, :import_stop_times)
   end
 
   def import_agencies
