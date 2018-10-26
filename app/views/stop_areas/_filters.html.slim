@@ -20,7 +20,7 @@
 
     .form-group.togglable class=filter_item_class(params[:q], :area_type_eq_any)
       = f.label Chouette::StopArea.tmf('area_type'), required: false, class: 'control-label'
-      = f.input :area_type_eq_any, checked: params[:q] && params[:q][:area_type_eq_any], collection: Chouette::AreaType.options, as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + w[0] + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+      = f.input :area_type_eq_any, checked: params[:q] && params[:q][:area_type_eq_any], collection: area_type_options, as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + w[0] + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
     .form-group.togglable class=filter_item_class(params[:q], :by_status)
       = f.label Chouette::StopArea.tmf('status'), required: false, class: 'control-label'
