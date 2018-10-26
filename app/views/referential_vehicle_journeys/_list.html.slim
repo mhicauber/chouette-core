@@ -33,8 +33,9 @@
           ), \
           [@starting_stop, @ending_stop].compact.map{|stop| \
             TableBuilderHelper::Column.new( \
+              key: stop.id == @starting_stop.id ? :starting_stop : :ending_stop, \
               attribute: Proc.new {|v| v.vehicle_journey_at_stops.where("stop_points.stop_area_id" => stop.id).last&.arrival_local }, \
-              sortable: false, \
+              sortable: true, \
               name: stop.name \
             )\
           }, \

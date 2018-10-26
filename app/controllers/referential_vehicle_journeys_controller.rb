@@ -61,6 +61,11 @@ class ReferentialVehicleJourneysController < ChouetteController
         scope.order_by_departure_time(direction)
       when "arrival_time"
         scope.order_by_arrival_time(direction)
+      when "starting_stop", "ending_stop"
+        sa = params[:sort] == "starting_stop" ? @starting_stop : @ending_stop
+        stop_point_ids = @starting_stop.stop_points.pluck(:id)
+        vehicle_journey_ids = referential.vehicle_journey_at_stops.joins(:stop_point).where(stop_point_id: stop_point_ids).order("departure_time #{direction}").pluck(:vehicle_journey_id)
+        scope.order("array_position(CAST(ARRAY#{vehicle_journey_ids} AS BIGINT[]), vehicle_journeys.id)")
       else
         scope.order "#{params[:sort]} #{direction}"
     end
