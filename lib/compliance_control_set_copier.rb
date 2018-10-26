@@ -9,7 +9,7 @@ class ComplianceControlSetCopier
   def copy cc_set_id, referential_id, creator_id, parent_type=nil, parent_id=nil, context=nil
     @cc_set_id      = cc_set_id
     @referential_id = referential_id
-    @creator_id = creator_id
+    @creator_id     = creator_id
     @parent_type    = parent_type
     @parent_id      = parent_id
     @context        = context || :manual
@@ -30,7 +30,7 @@ class ComplianceControlSetCopier
     make_ccks_from_ccs
     # Copy all cc_blocks -> cck_blocks
     make_cck_blocks
-    
+
     cck_set.perform_async
   end
 

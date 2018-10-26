@@ -47,14 +47,14 @@ class Merge < ApplicationModel
   end
 
   def before_merge_compliance_control_sets
-    workbench.workgroup.before_merge_compliance_control_sets.map do |key, label|
+    workbench.workgroup.before_merge_compliance_control_sets.map do |key, _|
       cc_set = workbench.compliance_control_set(key)
       cc_set.present? ? [key, cc_set] : nil
     end.compact
   end
 
   def after_merge_compliance_control_sets
-    workbench.workgroup.after_merge_compliance_control_sets.map do |key, label|
+    workbench.workgroup.after_merge_compliance_control_sets.map do |key, _|
       cc_set = workbench.compliance_control_set(key)
       cc_set.present? ? [key, cc_set] : nil
     end.compact
