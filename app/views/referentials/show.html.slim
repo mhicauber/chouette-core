@@ -10,7 +10,7 @@
         - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin), format: :short), end: l(@referential.try(:validity_period).try(:end), format: :short)) : '-')
         - attributes[@referential.human_attribute_name(:organisation)] = @referential.organisation.name
         - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at, format: :short) : '-' unless @referential.in_referential_suite?
-        - attributes[@referential.human_attribute_name(:created_from)] = Referential.find(@referential.created_from_id).name if !!@referential.created_from_id
+        - attributes[@referential.human_attribute_name(:created_from)] = @referential&.created_from&.name.presence
         = definition_list t('metadatas'), attributes
 
     - unless @referential.ready?
