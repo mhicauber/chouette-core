@@ -49,7 +49,7 @@ describe "workbenches/show", :type => :view do
 
   context "without permission" do
     it "should disable all the checkboxes" do
-      expect(rendered).to have_box_for_item same_organisation_referential, false
+      expect(rendered).to have_box_for_item same_organisation_referential, true
       expect(rendered).to have_box_for_item different_organisation_referential, true
     end
   end
