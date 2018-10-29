@@ -45,7 +45,7 @@
     .menu-item.panel
       = main_nav_menu_item 'layouts.navbar.configuration'.t do
         - if policy(workbench).edit?
-          = link_to [:edit, workbench], class: 'list-group-item' do
+          = link_to [:edit_controls, workbench], class: 'list-group-item' do
             span = 'layouts.navbar.workbench_configuration'.t
         - if policy(workbench.workgroup).edit?
           h5= 'layouts.navbar.workgroup.subtitle'.t
