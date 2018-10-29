@@ -1,4 +1,4 @@
 fr:
   export_messages:
     success: Succès
-    no_matching_journey: Aucun trajet correspondant
+    no_matching_journey: L'export ne peut pas produire de résultat car il n'y a pas de données d'offre de transport pendant la période donnée
