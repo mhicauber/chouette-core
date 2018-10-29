@@ -8,6 +8,8 @@ Rails.application.configure do
   SmartEnv.set :RAILS_HOST, default: 'http://www.example.com'
   SmartEnv.set :IEV_URL, default: 'http://localhost:8080'
 
+  SmartEnv.add_boolean :VERBOSE_SPECS, default: false
+
   # The test environment is used exclusively to run your application's
   # test suite. You never need to work with it otherwise. Remember that
   # your test database is "scratch space" for the test suite and is wiped
@@ -66,7 +68,7 @@ Rails.application.configure do
 
   config.i18n.available_locales = %i[fr en]
 
-  if ENV['VERBOSE_SPECS'].present?
+  if SmartEnv.boolean('VERBOSE_SPECS')
     config.logger = Logger.new(STDOUT)
     config.logger.level = Logger::ERROR
     config.active_record.logger = nil
