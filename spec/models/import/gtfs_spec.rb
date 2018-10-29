@@ -26,6 +26,10 @@ RSpec.describe Import::Gtfs do
     Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file), creator: "test", name: "test"
   end
 
+  before(:each) do
+    allow(import).to receive(:save_model).and_wrap_original { |m, *args| m.call(*args); args.first.run_callbacks(:commit) }
+  end
+
   context "when the file is not directly accessible" do
     let(:import) {
       Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture('google-sample-feed.zip')
@@ -240,68 +244,9 @@ RSpec.describe Import::Gtfs do
       allow(import).to receive(:save_model).and_wrap_original { |m, model| m.call(model); model.run_callbacks(:commit) }
     end
 
-    it "should not calculate costs" do
-      expect_any_instance_of(Chouette::Route).to_not receive(:calculate_costs!)
-      expect{import.import_trips}.to change{Chouette::Route.count}
-    end
-
-    it "should create a Route for each trip" do
+    it 'should store the trips in memory' do
       import.import_trips
-
-      defined_attributes = [
-        "lines.registration_number", :wayback, :name, :published_name
-      ]
-      expected_attributes = [
-        ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
-        ["AB", "inbound", "to Airport", "to Airport"],
-        ["STBA", "inbound", "Shuttle", "Shuttle"],
-        ["CITY", "outbound", "Outbound", "Outbound"],
-        ["CITY", "inbound", "Inbound", "Inbound"],
-        ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
-        ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
-        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "inbound", "to Airport", "to Airport"],
-        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "inbound", "to Airport", "to Airport"]
-      ]
-
-      expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
-    end
-
-    it "should create a JourneyPattern for each trip" do
-      import.import_trips
-
-      defined_attributes = [
-        :name
-      ]
-      expected_attributes = [
-        "to Bullfrog", "to Airport", "Shuttle", "Outbound", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
-      ]
-
-      expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
-    end
-
-    it "should create a VehicleJourney for each trip" do
-      import.import_trips
-
-      defined_attributes = ->(v) {
-        [v.published_journey_name, v.time_tables.first&.comment]
-      }
-      expected_attributes = [
-        ["AB1", "Calendar FULLW"],
-        ["AB2", "Calendar FULLW"],
-        ["STBA", "Calendar FULLW"],
-        ["CITY1", "Calendar FULLW"],
-        ["CITY2", "Calendar FULLW"],
-        ["BFC1", "Calendar FULLW"],
-        ["BFC2", "Calendar FULLW"],
-        ["AAMV1", "Calendar WE"],
-        ["AAMV2", "Calendar WE"],
-        ["AAMV3", "Calendar WE"],
-        ["AAMV4", "Calendar WE"]
-      ]
-
-      expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+      expect(import.instance_variable_get('@trips').size).to eq 11
     end
   end
 
@@ -326,6 +271,56 @@ RSpec.describe Import::Gtfs do
       end
     end
 
+    it "should create a Route for each trip" do
+      import.import_stop_times
+      defined_attributes = [
+        "lines.registration_number", :wayback, :name, :published_name
+      ]
+      expected_attributes = [
+        ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
+        ["AB", "inbound", "to Airport", "to Airport"],
+        ["CITY", "inbound", "Inbound", "Inbound"],
+        ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
+        ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
+        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
+        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
+        ["AAMV", "inbound", "to Airport", "to Airport"]
+      ]
+      expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
+    end
+
+    it "should create a JourneyPattern for each trip" do
+      p import.referential.journey_patterns.pluck(:name)
+
+      import.import_stop_times
+      defined_attributes = [
+        :name
+      ]
+      expected_attributes = [
+        "to Bullfrog", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
+      ]
+      p import.referential.journey_patterns.pluck(:name)
+      expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
+    end
+
+    it "should create a VehicleJourney for each trip" do
+      import.import_stop_times
+      defined_attributes = ->(v) {
+        [v.published_journey_name, v.time_tables.first&.comment]
+      }
+      expected_attributes = [
+        ["CITY2", "Calendar FULLW"],
+        ["AB1", "Calendar FULLW"],
+        ["AB2", "Calendar FULLW"],
+        ["BFC1", "Calendar FULLW"],
+        ["BFC2", "Calendar FULLW"],
+        ["AAMV1", "Calendar WE"],
+        ["AAMV3", "Calendar WE"],
+        ["AAMV4", "Calendar WE"]
+      ]
+      expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+    end
+
     it "should create a VehicleJourneyAtStop for each stop_time" do
       import.import_stop_times
 
@@ -337,26 +332,27 @@ RSpec.describe Import::Gtfs do
         "stop_areas.registration_number", :position, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset,
       ]
       expected_attributes = [
-        ['EMSI', 0, t('2000-01-01 06:30:00 UTC'), t('2000-01-01 06:28:00 UTC'),0,0],
-        ['DADAN', 1, t('2000-01-01 06:37:00 UTC'), t('2000-01-01 06:35:00 UTC'),0,0],
-        ['NADAV', 2, t('2000-01-01 06:44:00 UTC'), t('2000-01-01 06:42:00 UTC'),0,0],
-        ['NANAA', 3, t('2000-01-01 06:51:00 UTC'), t('2000-01-01 06:49:00 UTC'),0,0],
-        ['STAGECOACH', 4, t('2000-01-01 06:58:00 UTC'), t('2000-01-01 06:56:00 UTC'),0,0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC'),0,0],
-        ['BULLFROG', 1, t('2000-01-01 08:15:00 UTC'), t('2000-01-01 08:10:00 UTC'),0,0],
-        ['BULLFROG', 0, t('2000-01-01 12:05:00 UTC'), t('2000-01-01 12:05:00 UTC'),0,0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 12:15:00 UTC'), t('2000-01-01 12:15:00 UTC'),0,0],
-        ['BULLFROG', 0, t('2000-01-01 08:20:00 UTC'), t('2000-01-01 08:20:00 UTC'),0,0],
-        ['FUR_CREEK_RES', 1, t('2000-01-01 09:20:00 UTC'), t('2000-01-01 09:20:00 UTC'),0,0],
-        ['FUR_CREEK_RES', 0, t('2000-01-01 11:00:00 UTC'), t('2000-01-01 11:00:00 UTC'),0,0],
-        ['BULLFROG', 1, t('2000-01-01 12:00:00 UTC'), t('2000-01-01 12:00:00 UTC'),0,0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC'),0,0],
-        ['AMV', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'),0,0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 13:00:00 UTC'), t('2000-01-01 13:00:00 UTC'),0,0],
-        ['AMV', 1, t('2000-01-01 14:00:00 UTC'), t('2000-01-01 14:00:00 UTC'),1,1],
-        ['AMV', 0, t('2000-01-01 15:00:00 UTC'), t('2000-01-01 15:00:00 UTC'),0,0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'),0,0]
+        ['EMSI', 0, t('2000-01-01 06:30:00 UTC'), t('2000-01-01 06:28:00 UTC'), 0, 0],
+        ['DADAN', 1, t('2000-01-01 06:37:00 UTC'), t('2000-01-01 06:35:00 UTC'), 0, 0],
+        ['NADAV', 2, t('2000-01-01 06:44:00 UTC'), t('2000-01-01 06:42:00 UTC'), 0, 0],
+        ['NANAA', 3, t('2000-01-01 06:51:00 UTC'), t('2000-01-01 06:49:00 UTC'), 0, 0],
+        ['STAGECOACH', 4, t('2000-01-01 06:58:00 UTC'), t('2000-01-01 06:56:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC'), 0, 0],
+        ['BULLFROG', 1, t('2000-01-01 08:15:00 UTC'), t('2000-01-01 08:10:00 UTC'), 0, 0],
+        ['BULLFROG', 0, t('2000-01-01 12:05:00 UTC'), t('2000-01-01 12:05:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 12:15:00 UTC'), t('2000-01-01 12:15:00 UTC'), 0, 0],
+        ['BULLFROG', 0, t('2000-01-01 08:20:00 UTC'), t('2000-01-01 08:20:00 UTC'), 0, 0],
+        ['FUR_CREEK_RES', 1, t('2000-01-01 09:20:00 UTC'), t('2000-01-01 09:20:00 UTC'), 0, 0],
+        ['FUR_CREEK_RES', 0, t('2000-01-01 11:00:00 UTC'), t('2000-01-01 11:00:00 UTC'), 0, 0],
+        ['BULLFROG', 1, t('2000-01-01 12:00:00 UTC'), t('2000-01-01 12:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC'), 0, 0],
+        ['AMV', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 13:00:00 UTC'), t('2000-01-01 13:00:00 UTC'), 0, 0],
+        ['AMV', 1, t('2000-01-01 14:00:00 UTC'), t('2000-01-01 14:00:00 UTC'), 1, 1],
+        ['AMV', 0, t('2000-01-01 15:00:00 UTC'), t('2000-01-01 15:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'), 0, 0]
       ]
+
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
   end
