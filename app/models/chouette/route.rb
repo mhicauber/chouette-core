@@ -111,7 +111,9 @@ module Chouette
 
     def clean_join_tables!
       vehicle_journey_ids = vehicle_journeys.pluck(:id)
-      tables = Chouette::VehicleJourney.reflections.values.select do |r|
+      return unless vehicle_journey_ids.present?
+      
+      Chouette::VehicleJourney.reflections.values.select do |r|
         r.is_a?(::ActiveRecord::Reflection::HasAndBelongsToManyReflection)
       end.each do |reflection|
         sql = %[
