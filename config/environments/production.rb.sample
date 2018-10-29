@@ -103,7 +103,7 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: SmartEnv['MAIL_HOST'] }
 
-  # Configure the e-mail address which will be shown in Devise::Maile
+  # Configure the e-mail address which will be shown in Devise::Mailer
   config.mailer_sender = SmartEnv['MAIL_FROM']
   config.action_mailer.default_options = { from: SmartEnv['MAIL_FROM'] }
   config.action_mailer.smtp_settings = { address: SmartEnv['SMTP_HOST'] }
