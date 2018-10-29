@@ -174,6 +174,9 @@ group :development do
     gem 'better_errors'
     gem 'binding_of_caller'
   end
+
+  gem 'derailed_benchmarks'
+  gem 'stackprof'
 end
 
 group :test do
