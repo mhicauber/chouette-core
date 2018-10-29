@@ -2,5 +2,5 @@ object @import
 
 attributes :id, :name, :status
 node :referential_ids do |i|
-  i.workbench.referentials.map(&:id)
+  i.children.collect(&:referential_id).compact
 end
