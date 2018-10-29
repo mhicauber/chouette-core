@@ -9,6 +9,7 @@ Rails.application.configure do
   SmartEnv.add_boolean :RAILS_SERVE_STATIC_FILES, default: true
   SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
   SmartEnv.add :MAIL_FROM
+  SmartEnv.add :MAIL_HOST
   SmartEnv.add :SMTP_HOST
   SmartEnv.add :MAIL_ASSETS_URL_BASE
   SmartEnv.add :AUTH_SETTINGS, default: '{
@@ -100,7 +101,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.default_url_options = { :host => ENV.fetch('MAIL_HOST') } if ENV['MAIL_HOST']
+  config.action_mailer.default_url_options = { host: SmartEnv['MAIL_HOST'] }
 
   # Configure the e-mail address which will be shown in Devise::Maile
   config.mailer_sender = SmartEnv['MAIL_FROM']
