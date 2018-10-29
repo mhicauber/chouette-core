@@ -1,30 +1,4 @@
 h2 style=mailer_style(:h2)
-  = t('mailers.aggregate_mailer.finished.body', agg_name: @aggregate.name, status: I18n.t("aggregates.statuses.#{@aggregate.status}"))
+  == t('mailers.aggregate_mailer.finished.body', agg_name: @aggregate.name, status: I18n.t("aggregates.statuses.#{@aggregate.status}"))
   br
   = mailer_button(t('mailers.aggregate_mailer.finished.button'), workgroup_aggregate_url(@aggregate.workgroup, @aggregate))
-
-table style=mailer_style(:content_table)
-  tr
-    th colspan=2
-      h3 style=mailer_style(:h3)
-        = User.ts.capitalize + ":"
-  - %i(name).each do |attr|
-    tr
-      th style=mailer_style(:th)
-        = @user.class.tmf(attr) + ":"
-      td = @user.send attr
-  tr
-    th style=mailer_style(:th)
-      = @user.class.tmf(:email) + ":"
-    td = mailer_link_to @user.email, "mailto:#{@user.name}<#{@user.email}>"
-
-  tr
-    th colspan=2
-      h3 style=mailer_style(:h3)
-        = Organisation.ts.capitalize + ":"
-  - %i(name).each do |attr|
-    tr
-      th style=mailer_style(:th)
-        = @user.organisation.class.tmf(attr) + ":"
-      td
-        = @user.organisation.send attr

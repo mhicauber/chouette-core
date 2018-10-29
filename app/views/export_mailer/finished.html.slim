@@ -1,5 +1,5 @@
 h2 style=mailer_style(:h2)
-  = t('mailers.export_mailer.finished.body', export_name: @export.name, status: I18n.t("operation_support.statuses.#{@export.status}"))
+  == t('mailers.export_mailer.finished.body', export_name: @export.name, status: I18n.t("operation_support.statuses.#{@export.status}"))
   br
   = mailer_button(t('mailers.export_mailer.button'), workbench_export_url(@export.workbench, @export))
 
@@ -7,24 +7,37 @@ table style=mailer_style(:content_table)
   tr
     th colspan=2
       h3 style=mailer_style(:h3)
-        = User.ts.capitalize + ":"
-  - %i(name).each do |attr|
-    tr
-      th style=mailer_style(:th)
-        = @user.class.tmf(attr) + ":"
-      td = @user.send attr
-  tr
-    th style=mailer_style(:th)
-      = @user.class.tmf(:email) + ":"
-    td = mailer_link_to @user.email, "mailto:#{@user.name}<#{@user.email}>"
+        = @export.class.ts.capitalize + ":"
 
   tr
-    th colspan=2
-      h3 style=mailer_style(:h3)
-        = Organisation.ts.capitalize + ":"
-  - %i(name).each do |attr|
+    th style=mailer_style(:th)
+      = @export.class.tmf(:name) + ":"
+    td= @export.name
+  tr
+    th style=mailer_style(:th)
+      = @export.class.tmf(:status) + ":"
+    td= I18n.t("operation_support.statuses.#{@export.status}")
+  - if @export.children.any?
+    - files = @export.children.map(&:file).select(&:present?)
+    - if files.any?
+      tr
+        th style=mailer_style(:th)
+          = I18n.t("activerecord.attributes.export.files") + ":"
+        td
+      - @export.children.each do |e|
+        tr
+          td style=mailer_style(:th)
+            = e.class.human_name + ":"
+          td
+            = e.file.present? ? link_to(e.file.file.filename, e.file.url) : "-"
+    - else
+      tr
+        th style=mailer_style(:th)
+          = I18n.t("activerecord.attributes.export.files") + ":"
+        td= '-'
+
+  - else
     tr
       th style=mailer_style(:th)
-        = @user.organisation.class.tmf(attr) + ":"
-      td
-        = @user.organisation.send attr
+        = I18n.t("activerecord.attributes.export.files")
+      td= @export.file.present? ? link_to(t("actions.download"), @export.file.url) : "-"

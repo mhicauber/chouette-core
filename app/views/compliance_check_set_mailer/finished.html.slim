@@ -1,5 +1,5 @@
 h2 style=mailer_style(:h2)
-  = t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("operation_support.statuses.#{@ccset.status}"))
+  == t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("operation_support.statuses.#{@ccset.status}"))
   br
   = mailer_button(t('mailers.compliance_check_set_mailer.finished.button'), workbench_compliance_check_set_url(@ccset.workbench, @ccset))
 
@@ -7,24 +7,16 @@ table style=mailer_style(:content_table)
   tr
     th colspan=2
       h3 style=mailer_style(:h3)
-        = User.ts.capitalize + ":"
-  - %i(name).each do |attr|
-    tr
-      th style=mailer_style(:th)
-        = @user.class.tmf(attr) + ":"
-      td = @user.send attr
+        = ComplianceCheckSet.ts.capitalize + ":"
   tr
     th style=mailer_style(:th)
-      = @user.class.tmf(:email) + ":"
-    td = mailer_link_to @user.email, "mailto:#{@user.name}<#{@user.email}>"
-
+      = I18n.t("compliance_check_sets.show.metadatas.referential") + ":"
+    td= @ccset.referential.nil? ? '' : mailer_link_to(@ccset.referential.name, referential_url(@ccset.referential))
   tr
-    th colspan=2
-      h3 style=mailer_style(:h3)
-        = Organisation.ts.capitalize + ":"
-  - %i(name).each do |attr|
-    tr
-      th style=mailer_style(:th)
-        = @user.organisation.class.tmf(attr) + ":"
-      td
-        = @user.organisation.send attr
+    th style=mailer_style(:th)
+      = I18n.t("compliance_check_sets.show.metadatas.status") + ":"
+    td= I18n.t("operation_support.statuses.#{@ccset.status}")
+  tr
+    th style=mailer_style(:th)
+      = ComplianceCheckSet.tmf(:context) + ":"
+    td= @ccset.context_i18n

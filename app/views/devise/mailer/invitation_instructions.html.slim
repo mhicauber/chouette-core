@@ -1,12 +1,8 @@
 h2 style=mailer_style(:h2)
-  p = t("mailer.invitation_mailer.body", email: @resource.enail)
-
+  p== t("mailer.invitation_mailer.body", email: @resource.enail)
   br
-
-  = mailer_button(t("mailers.invitation_mailer.button"), accept_invitation_url(@resource, :invitation_token => @token))
-
-  p = t("mailers.invitation_mailer.ignore").html_safe
-  
+  p= mailer_button(t("mailers.invitation_mailer.button"), accept_invitation_url(@resource, :invitation_token => @token))
+  p= t("mailers.invitation_mailer.ignore").html_safe
 
 table style=mailer_style(:content_table)
   tr
@@ -33,6 +29,3 @@ table style=mailer_style(:content_table)
         = @resource.organisation.class.tmf(attr) + ":"
       td
         = @resource.organisation.send attr
-
-
-

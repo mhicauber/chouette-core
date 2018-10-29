@@ -7,21 +7,22 @@ html
 
   body
     table style=mailer_style(:primary_table)
-      thead
-        tr
-          - if content_for :header
-            = yield :header
-          - else
-            = mail_header
+      tr
+        - if content_for :header
+          = yield :header
+        - else
+          = mail_header
 
-      tbody style=mailer_style(:tbody)
-        tr
-          td= yield
-        tr
-          td style=mailer_style(:info)
-            = "mailers.info_contact".t
-            - email = Rails.application.config.action_mailer.default_options[:from]
-            = mailer_link_to email, "mailto:#{email}"
+      tr style=mailer_style(:tbody)
+        td
+          table
+            tr
+              td= yield
+            tr
+              td style=mailer_style(:info)
+                = "mailers.info_contact".t
+                - email = Rails.application.config.action_mailer.default_options[:from]
+                = mailer_link_to email, "mailto:#{email}"
 
     p style=mailer_style(:footer)
       = mail_footer
