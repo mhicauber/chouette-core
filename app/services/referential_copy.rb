@@ -200,7 +200,6 @@ class ReferentialCopy
       error << model.attributes
       error << model.errors.messages
       error = error.join("\n")
-      puts e.backtrace
       raise SaveError.new(error)
     end
   end
