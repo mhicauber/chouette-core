@@ -45,12 +45,6 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
             ).to be_truthy
           end
         end
-
-        it 'should be idempotent' do
-          expect { Stat::JourneyPatternCoursesByDate.populate_for(journey_pattern) }.to_not(
-            change { Stat::JourneyPatternCoursesByDate.count }
-          )
-        end
       end
 
       context 'with a hole' do

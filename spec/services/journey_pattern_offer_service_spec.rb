@@ -25,7 +25,7 @@ RSpec.describe JourneyPatternOfferService do
   context 'with a vehicle_journey' do
     let!(:vehicle_journey) { create :vehicle_journey, journey_pattern: journey_pattern, time_tables: time_tables }
     let(:time_tables) { [time_table] }
-    let(:time_table) { create :time_table, periods_count: 0, dates_count: 0 }
+    let(:time_table) { create :time_table, periods_count: 0, dates_count: 0, int_day_types: ApplicationDaysSupport::EVERYDAY }
     let(:circulation_day) { period_start + 10 }
 
     context 'with a single day of circulation' do
@@ -59,7 +59,7 @@ RSpec.describe JourneyPatternOfferService do
           before do
             time_table.dates.create!(date: circulation_day, in_out: false)
           end
-          
+
           it 'should detect the circulation days' do
             expect(service.circulation_dates).to be_empty
           end
