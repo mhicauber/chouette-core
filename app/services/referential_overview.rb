@@ -85,7 +85,7 @@ class ReferentialOverview
       @holes ||= begin
         holes = Stat::JourneyPatternCoursesByDate.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
         holes = merge_periods holes, join: true
-        holes.select { |h| h.size >= workbench.workgroup.sentinel_min_hole_size } 
+        holes.select { |h| h.size >= @referential.workbench.workgroup.sentinel_min_hole_size }
       end
     end
 
@@ -118,7 +118,7 @@ class ReferentialOverview
         current = periods.first
         periods[1..-1].each do |p|
           test = p.start <= current.end
-          test = test || p.start == current.end + 1
+          test = test || join && p.start == current.end + 1
           if test
             current.end = p.end
           else
