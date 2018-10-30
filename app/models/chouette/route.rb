@@ -100,12 +100,28 @@ module Chouette
       vehicle_journeys.find_each do |vj|
         vj.vehicle_journey_at_stops.delete_all
       end
+      clean_join_tables!
       vehicle_journeys.delete_all
       journey_patterns.delete_all
       stop_points.delete_all
       routing_constraint_zones.delete_all
       Chouette::Route.where(opposite_route_id: self.id).update_all(opposite_route_id: nil)
       self.delete
+    end
+
+    def clean_join_tables!
+      vehicle_journey_ids = vehicle_journeys.pluck(:id)
+      return unless vehicle_journey_ids.present?
+      
+      Chouette::VehicleJourney.reflections.values.select do |r|
+        r.is_a?(::ActiveRecord::Reflection::HasAndBelongsToManyReflection)
+      end.each do |reflection|
+        sql = %[
+          DELETE FROM #{reflection.join_table}
+          WHERE #{reflection.foreign_key} IN (#{vehicle_journey_ids.join(',')});
+        ]
+        self.class.connection.execute sql
+      end
     end
 
     def duplicate opposite=false
