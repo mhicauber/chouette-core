@@ -2,6 +2,16 @@ fr:
   workgroups:
     edit:
       title: "Paramétrages de l'application"
+    edit_aggregation:
+      title: Paramétrage de l'agrégation
+      disclaimer: |
+        <h3>Sélection des offres finalisées</h3>
+        <p>Par défaut l'agrégation du groupe de travail utilise les dernières offres finalisées dans chaque espace de travail.</p>
+        <p>Vous pouvez ici sélectionner une offre finalisée particulière si l'un des espaces de travail rencontre des difficultés
+        à fournir une offre pertinente. Cette sélection restera en place jusqu'à une nouvelle intervention de votre part.</p>
+    edit_hole_sentinel:
+      title: "Paramétrages de la détection de trous d'offre"
+
     compliance_control_sets:
       after_import: Après Import
       after_import_by_workgroup: Après Import (Groupe)
@@ -15,3 +25,13 @@ fr:
   activerecord:
     models:
       workgroup: Groupe de travail
+    attributes:
+      workgroup:
+        sentinel_min_hole_size: Taille minimum d'un trou d'offre
+        sentinel_delay: Distance de détection
+
+  formtastic:
+    hints:
+      workgroup:
+        sentinel_min_hole_size: Durée minimum d'un trou d'offre pour qu'il soit signalé.
+        sentinel_delay: Une valeur de 0 désactive la détection de trous

@@ -1,4 +1,4 @@
-- breadcrumb :compliance_check_sets, @workbench
+- breadcrumb :compliance_check_sets, @parent
 
 .page_content
   .container-fluid
@@ -14,7 +14,7 @@
                   key: :id, \
                   attribute: 'id', \
                   link_to: lambda do |compliance_check_set| \
-                    workbench_compliance_check_set_path(compliance_check_set.workbench_id, compliance_check_set.id) \
+                    workbench_compliance_check_set_path(compliance_check_set.workbench.id, compliance_check_set.id) \
                   end \
                 ), \
                 TableBuilderHelper::Column.new( \

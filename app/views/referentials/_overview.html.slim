@@ -67,6 +67,9 @@
                 - line.periods.each do |period|
                   .period style=period.html_style class=period.html_class
                     .title=period.title
+                - line.holes.each do |hole|
+                  .period.hole style=hole.html_style class=hole.html_class
+                    .title=hole.title
           - else
             = replacement_msg t('referential_lines.search_no_results')
 

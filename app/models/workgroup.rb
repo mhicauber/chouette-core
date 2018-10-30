@@ -110,7 +110,7 @@ class Workgroup < ApplicationModel
   end
 
   def aggregatable_referentials
-    workbenches.map { |w| w.output.current }.compact
+    workbenches.map { |w| w.referential_to_aggregate }.compact
   end
 
   def compliance_control_set key

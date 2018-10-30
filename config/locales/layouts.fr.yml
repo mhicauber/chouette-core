@@ -25,7 +25,6 @@ fr:
         workgroup: Offre du groupe de travail
         edit_workgroup: Configuration de l'application
       configuration: Paramétrages
-      workgroup_configuration:  Application
       workbench_configuration: Espace de travail
       organisation_configuration: Mon organisation
       security_configuration: Sécurité
@@ -38,6 +37,11 @@ fr:
       portal: Portail (POSTIF)
       support: Support
       shapes: Tracés
+      workgroup:
+        subtitle: Application
+        edit_control_sets: Jeux de Contrôle
+        edit_aggregation: Agrégation
+        edit_hole_sentinel: Détection de trous d'offre
     history_tag:
       title: "Métadonnées"
       created_at: "Créé le"

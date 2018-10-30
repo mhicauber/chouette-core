@@ -1,7 +1,7 @@
 fr:
   workgroup_outputs:
     show:
-      title: Aggréger des jeux de données
+      title: Agréger des jeux de données
       see_current_output: "Voir l'Offre actuelle"
       table_headers:
         ended_at: "Date et heure de création"

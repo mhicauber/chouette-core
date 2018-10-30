@@ -167,6 +167,27 @@ RSpec.describe Merge do
     expect(Merge.count).to eq 8
   end
 
+  it "should not remove referentials locked for aggregation" do
+    workbench = referential.workbench
+    locked_merge = Merge.create!(workbench: workbench, referentials: [referential, referential])
+    locked_merge.update status: :successful
+    locked = create(:referential, referential_suite: workbench.output)
+    locked_merge.update new: locked
+    workbench.update locked_referential_to_aggregate: locked
+    m = nil
+    3.times do
+      m = Merge.create!(workbench: workbench, referentials: [referential, referential])
+      m.update status: :successful
+    end
+    expect(Merge.count).to eq 4
+    Merge.keep_operations = 2
+    Merge.last.clean_previous_operations
+    expect(Merge.count).to eq 3
+    expect { locked_merge.reload }.to_not raise_error
+    expect { locked.reload }.to_not raise_error
+    expect { m.reload }.to_not raise_error
+  end
+
   context "#prepare_new" do
     context "with no current output" do
       let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }

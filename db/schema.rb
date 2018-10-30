@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181003124924) do
+ActiveRecord::Schema.define(version: 20181029104832) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -104,9 +104,9 @@ ActiveRecord::Schema.define(version: 20181003124924) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -800,6 +800,18 @@ ActiveRecord::Schema.define(version: 20181003124924) do
     t.string "type"
   end
 
+  create_table "stat_journey_pattern_courses_by_dates", id: :bigserial, force: :cascade do |t|
+    t.integer "journey_pattern_id", limit: 8
+    t.integer "route_id",           limit: 8
+    t.integer "line_id",            limit: 8
+    t.date    "date"
+    t.integer "count",                        default: 0
+  end
+
+  add_index "stat_journey_pattern_courses_by_dates", ["journey_pattern_id"], name: "journey_pattern_id", using: :btree
+  add_index "stat_journey_pattern_courses_by_dates", ["line_id"], name: "line_id", using: :btree
+  add_index "stat_journey_pattern_courses_by_dates", ["route_id"], name: "route_id", using: :btree
+
   create_table "stop_area_providers", id: :bigserial, force: :cascade do |t|
     t.string   "objectid"
     t.string   "name"
@@ -945,6 +957,7 @@ ActiveRecord::Schema.define(version: 20181003124924) do
     t.text    "checksum_source"
   end
 
+  add_index "time_table_dates", ["in_out"], name: "date_in_out", using: :btree
   add_index "time_table_dates", ["time_table_id"], name: "index_time_table_dates_on_time_table_id", using: :btree
 
   create_table "time_table_periods", id: :bigserial, force: :cascade do |t|
@@ -956,6 +969,8 @@ ActiveRecord::Schema.define(version: 20181003124924) do
     t.text    "checksum_source"
   end
 
+  add_index "time_table_periods", ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end", using: :btree
+  add_index "time_table_periods", ["period_start", "period_end"], name: "period_dates", using: :btree
   add_index "time_table_periods", ["time_table_id"], name: "index_time_table_periods_on_time_table_id", using: :btree
 
   create_table "time_tables", id: :bigserial, force: :cascade do |t|
@@ -1079,19 +1094,21 @@ ActiveRecord::Schema.define(version: 20181003124924) do
 
   create_table "workbenches", id: :bigserial, force: :cascade do |t|
     t.string   "name"
-    t.integer  "organisation_id",                  limit: 8
+    t.integer  "organisation_id",                    limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "line_referential_id",              limit: 8
-    t.integer  "stop_area_referential_id",         limit: 8
-    t.integer  "output_id",                        limit: 8
+    t.integer  "line_referential_id",                limit: 8
+    t.integer  "stop_area_referential_id",           limit: 8
+    t.integer  "output_id",                          limit: 8
     t.string   "objectid_format"
-    t.integer  "workgroup_id",                     limit: 8
+    t.integer  "workgroup_id",                       limit: 8
     t.hstore   "owner_compliance_control_set_ids"
     t.string   "prefix"
+    t.integer  "locked_referential_to_aggregate_id", limit: 8
   end
 
   add_index "workbenches", ["line_referential_id"], name: "index_workbenches_on_line_referential_id", using: :btree
+  add_index "workbenches", ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id", using: :btree
   add_index "workbenches", ["organisation_id"], name: "index_workbenches_on_organisation_id", using: :btree
   add_index "workbenches", ["stop_area_referential_id"], name: "index_workbenches_on_stop_area_referential_id", using: :btree
   add_index "workbenches", ["workgroup_id"], name: "index_workbenches_on_workgroup_id", using: :btree
@@ -1107,6 +1124,8 @@ ActiveRecord::Schema.define(version: 20181003124924) do
     t.integer  "owner_id",                   limit: 8
     t.integer  "output_id",                  limit: 8
     t.hstore   "compliance_control_set_ids"
+    t.integer  "sentinel_min_hole_size",               default: 3
+    t.integer  "sentinel_delay",                       default: 7
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

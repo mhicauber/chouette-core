@@ -1,5 +1,6 @@
 fr:
   workbenches:
+    current_offer: Offre courante
     show:
       title: "Offre de transport %{name}"
     edit:
@@ -24,6 +25,9 @@ fr:
     actions:
       show_output: "Finaliser l'Offre"
       affect_ccset: "Configurer"
+    errors:
+      locked_referential_to_aggregate:
+        must_belong_to_output: Doit être une offre finalisée
   activerecord:
     models:
       workbench:

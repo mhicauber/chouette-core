@@ -14,19 +14,24 @@
   .row
     .col-lg-12
       .select-table
-        = table_builder_2 aggregate.referentials,
+        = table_builder_2 @workgroup.workbenches.joins(:organisation).order('organisations.name'),
           [ \
             TableBuilderHelper::Column.new( \
               key: :organisation_name, \
               name: Organisation.ts.capitalize, \
-              attribute: Proc.new {|r| r.organisation.name }, \
+              attribute: Proc.new {|w| w.organisation.name }, \
               sortable: false\
             ), \
             TableBuilderHelper::Column.new( \
-              key: :name, \
-              attribute: :name, \
+              name: Referential.tmf(:name), \
+              attribute: Proc.new {|w| w.referential_to_aggregate.try(:name) || '-' }, \
               sortable: false\
-          )], cls: 'table'
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: false, \
+              attribute: Proc.new {|w| w.locked_referential_to_aggregate.present? ? '<span class="fa fa-lock"></span>'.html_safe : '' }, \
+              sortable: false\
+            )], cls: 'table'
 
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_merge_form'
