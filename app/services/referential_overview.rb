@@ -11,7 +11,7 @@ class ReferentialOverview
   end
 
   def lines
-    filtered_lines.includes(:company).map{|l| Line.new(l, @referential, period.first, h)}
+    filtered_lines.includes(:company).order(:name).map { |l| Line.new(l, @referential, period.first, h) }
   end
 
   def period
@@ -81,21 +81,29 @@ class ReferentialOverview
       @referential_periods ||= @referential.metadatas.include_lines([@referential_line.id]).map(&:periodes).flatten.sort{|p1, p2| p1.first <=> p2.first}
     end
 
+    def holes
+      @holes ||= begin
+        holes = Stat::JourneyPatternCoursesByDate.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
+        holes = merge_periods holes, join: true
+        holes.select { |h| h.size >= @referential.workbench.workgroup.sentinel_min_hole_size }
+      end
+    end
+
     def periods
       @periods ||= begin
-        periods = referential_periods.flatten.map{|p| Period.new p, @start, h}
+        periods = referential_periods.flatten.map { |p| Period.new p, @start, h }
         periods = fill_periods periods
         periods = merge_periods periods
         periods
       end
     end
 
-    def fill_periods periods
+    def fill_periods(periods)
       [].tap do |out|
         previous = OpenStruct.new(end: period.first - 1.day)
         (periods + [OpenStruct.new(start: period.last + 1.day)]).each do |p|
           if p.start > previous.end + 1.day
-            out << Period.new((previous.end+1.day..p.start-1.day), @start, h).tap{|p| p.empty = true}
+            out << Period.new((previous.end+1.day..p.start - 1.day), @start, h).tap { |pp| pp.empty = true }
           end
           out << p if p.respond_to?(:end)
           previous = p
@@ -103,11 +111,15 @@ class ReferentialOverview
       end
     end
 
-    def merge_periods periods
+    def merge_periods(periods, join: false)
+      return periods unless periods.size > 1
+
       [].tap do |out|
         current = periods.first
         periods[1..-1].each do |p|
-          if p.start <= current.end
+          test = p.start <= current.end
+          test = test || join && p.start == current.end + 1
+          if test
             current.end = p.end
           else
             out << current
@@ -125,7 +137,7 @@ class ReferentialOverview
     def html_style
       {
         width: "#{width}px"
-      }.map{|k, v| "#{k}: #{v}"}.join("; ")
+      }.map{|k, v| "#{k}: #{v}"}.join('; ')
     end
 
     def html_class
@@ -137,11 +149,12 @@ class ReferentialOverview
       attr_accessor :empty
       attr_accessor :h
 
-      def initialize period, start, h
+      def initialize(period, start, h, opts={})
         @period = period
         @start = start
         @empty = false
         @h = h
+        @hole = opts[:hole]
       end
 
       def start
@@ -152,12 +165,16 @@ class ReferentialOverview
         @period.last
       end
 
-      def end= val
+      def end=(val)
         @period = (start..val)
       end
 
+      def size
+        @period.count
+      end
+
       def width
-        @period.count * Day::WIDTH
+        size * Day::WIDTH
       end
 
       def left
@@ -168,7 +185,7 @@ class ReferentialOverview
         {
           width: "#{width}px",
           left: "#{left}px",
-        }.map{|k, v| "#{k}: #{v}"}.join("; ")
+        }.map{|k, v| "#{k}: #{v}"}.join('; ')
       end
 
       def empty?
@@ -180,7 +197,7 @@ class ReferentialOverview
       end
 
       def title
-        h.l(self.start, format: :short) + " - " + h.l(self.end, format: :short)
+        h.l(self.start, format: :short) + ' - ' + h.l(self.end, format: :short)
       end
 
       def html_class

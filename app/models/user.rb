@@ -49,7 +49,7 @@ class User < ApplicationModel
 
   # Callback invoked by DeviseCasAuthenticable::Model#authernticate_with_cas_ticket
   def cas_extra_attributes=(extra_attributes)
-     self.class.cas_updater&.update self, extra_attributes 
+     self.class.cas_updater&.update self, extra_attributes
   end
 
   def has_permission?(permission)
@@ -58,6 +58,10 @@ class User < ApplicationModel
 
   def can_monitor_sidekiq?
     has_permission?("sidekiq.monitor")
+  end
+
+  def email_recipient
+    "#{name} <#{email}>"
   end
 
   private

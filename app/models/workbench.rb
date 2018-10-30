@@ -9,6 +9,7 @@ class Workbench < ApplicationModel
   belongs_to :workgroup
   belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 
+  has_many :users, through: :organisation
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
   has_many :networks, through: :line_referential
@@ -101,6 +102,10 @@ class Workbench < ApplicationModel
 
   def compliance_control_set_ids=(compliance_control_set_ids)
     self.owner_compliance_control_set_ids = (owner_compliance_control_set_ids || {}).merge compliance_control_set_ids
+  end
+
+  def sentinel_notifications_recipients
+    users.map(&:email_recipient)
   end
 
   private

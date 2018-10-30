@@ -1,7 +1,7 @@
 en:
   workgroups:
     edit:
-      title: "Paramétrages de l'application"
+      title: "Application Settings"
       edit_aggregation:
         title: Aggregation settings
         disclaimer: |
@@ -9,6 +9,8 @@ en:
           <p>By default, the workspace offer aggregation uses the latest merged offer from each workspace</p>
           <p>If a workspace has troubles providing a coherent offer, you can here select a specific offer to be used
           during aggregation. This selection will remain in place upon further action from your part.</p>
+      edit_hole_sentinel:
+        title: "Holes detection settings"
 
     compliance_control_sets:
       after_import: After Import

@@ -10,6 +10,11 @@ crumb :workgroup do |workgroup|
   link workgroup.name, workgroup_path(workgroup)
 end
 
+crumb :workgroup_hole_sentinel_settings do
+  link I18n.t('workgroups.edit_hole_sentinel.title')
+  parent :workgroup
+end
+
 crumb :workbench_configure do |workbench|
   link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
   parent :workbench, workbench
@@ -103,7 +108,7 @@ crumb :time_table do |referential, time_table|
 end
 
 crumb :compliance_check_sets do |ccset_parent|
-  link I18n.t('compliance_check_sets.index.title'), [ccset_parent, :compliance_check_sets]
+  link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
   parent ccset_parent.class.name.downcase.intern, ccset_parent
 end
 

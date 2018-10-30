@@ -9,6 +9,8 @@ class WorkgroupsController < ChouetteController
 
   def workgroup_params
     params[:workgroup].permit(
+      :sentinel_min_hole_size,
+      :sentinel_delay,
       workbenches_attributes: [
         :id,
         :locked_referential_to_aggregate_id,

@@ -65,6 +65,7 @@ end
 
 gem 'activerecord-postgis-adapter', "~> 3.0.0"
 gem 'polylines'
+gem 'bulk_insert'
 
 # Codifligne API
 gem 'codifligne', af83: 'stif-codifline-api'

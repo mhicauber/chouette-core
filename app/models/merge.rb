@@ -91,7 +91,7 @@ class Merge < ApplicationModel
   rescue => e
     Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
     failed!
-    raise e if Rails.env.test?
+    raise e# if Rails.env.test?
   end
 
   def prepare_new
@@ -625,13 +625,15 @@ class Merge < ApplicationModel
   end
 
   def after_save_current
-    referentials.each &:merged!
+    referentials.each(&:merged!)
+    Stat::JourneyPatternCoursesByDate.compute_for_referential(new)
+    HoleSentinel.new(workbench).watch!
   end
 
   def save_model!(model)
     unless model.save
       Rails.logger.info "Can't save #{model.class.name} : #{model.errors.inspect}"
-      raise ActiveRecord::RecordNotSaved.new("Invalid #{model.class.name} : #{model.errors.inspect}")
+      raise ActiveRecord::RecordNotSaved, "Invalid #{model.class.name} : #{model.errors.inspect}"
     end
     Rails.logger.debug { "Created #{model.inspect}" }
   end
@@ -645,7 +647,6 @@ class Merge < ApplicationModel
   end
 
   class MetadatasMerger
-
     attr_reader :merge_metadatas, :referential
     def initialize(merge_referential, referential)
       @merge_metadatas = merge_referential.metadatas

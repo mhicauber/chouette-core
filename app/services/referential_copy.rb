@@ -1,7 +1,7 @@
 class ReferentialCopy
   extend Enumerize
 
-  attr_accessor :source, :target, :status, :last_error, :logger
+  attr_accessor :source, :target, :status, :last_error
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
@@ -14,7 +14,7 @@ class ReferentialCopy
     @logger ||= Rails.logger
   end
 
-  def copy
+  def copy(raise_error: false)
     copy_metadatas
     copy_time_tables
     copy_purchase_windows
@@ -28,6 +28,11 @@ class ReferentialCopy
   rescue SaveError => e
     logger.error e.message
     failed! e.message
+    raise if raise_error
+  end
+
+  def copy!
+    copy raise_error: true
   end
 
   private
@@ -108,6 +113,9 @@ class ReferentialCopy
       # we copy the journey_patterns
       copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
         retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid, :position], [:objectid, :position]
+        copy_collection journey_pattern, new_journey_pattern, :courses_stats do |_, new_stat|
+          new_stat.route = new_route
+        end
         copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
           new_vj.route = new_route
           retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables, [:checksum], [:checksum]
