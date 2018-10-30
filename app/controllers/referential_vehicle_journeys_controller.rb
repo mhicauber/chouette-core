@@ -39,6 +39,8 @@ class ReferentialVehicleJourneysController < ChouetteController
         else
           @q.with_ordered_stop_area_ids(@starting_stop.id, @ending_stop.id)
         end
+    elsif @ending_stop
+      @q = @q.with_stop_area_id(@ending_stop.id)
     end
 
     @q = @q.ransack(params[:q])
@@ -63,9 +65,15 @@ class ReferentialVehicleJourneysController < ChouetteController
         scope.order_by_arrival_time(direction)
       when "starting_stop", "ending_stop"
         sa = params[:sort] == "starting_stop" ? @starting_stop : @ending_stop
-        stop_point_ids = @starting_stop.stop_points.pluck(:id)
-        vehicle_journey_ids = referential.vehicle_journey_at_stops.joins(:stop_point).where(stop_point_id: stop_point_ids).order("departure_time #{direction}").pluck(:vehicle_journey_id)
-        scope.order("array_position(CAST(ARRAY#{vehicle_journey_ids} AS BIGINT[]), vehicle_journeys.id)")
+        if sa.present?
+          stop_point_ids = sa.stop_points.pluck(:id)
+          if stop_point_ids.present?
+            scope = scope.joins("INNER JOIN vehicle_journey_at_stops order_vjas ON order_vjas.vehicle_journey_id = vehicle_journeys.id")
+            scope = scope.where('order_vjas.stop_point_id' => stop_point_ids)
+            scope = scope.order("(('2000/01/01 ' || order_vjas.departure_time)::timestamp + (order_vjas.departure_day_offset::text || ' days')::interval) #{direction}")
+          end
+        end
+        scope
       else
         scope.order "#{params[:sort]} #{direction}"
     end
