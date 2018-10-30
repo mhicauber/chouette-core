@@ -6,43 +6,44 @@ fr:
         subject: "Audit automatique du %{date}"
     calendar_mailer:
       sent_by: "Envoyé par"
-      button: Voir modèle de calendrier
+      button: Voir le modèle de calendrier
       created:
         subject: Un modèle de calendrier vient d'être partagé
         body: |
-          "Bonjour, un nouveau modèle de calendrier a été partagé.
-          Au sein de votre organisation, le modèle de calendrier %{cal_name} a été partagé.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Au sein de votre organisation, le modèle de calendrier "%{cal_name}" a été partagé.<br/><br/>
       updated:
         subject: Un modèle de calendrier a été modifié
         body: |
-          "Bonjour, un modèle de calendrier partagé a été modifié.
-          Au sein de votre organisation, le modèle de calendrier partagé %{cal_name} a été modifié.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Au sein de votre organisation, le modèle de calendrier partagé "%{cal_name}" a été modifié.<br/><br/>
     import_mailer:
-      button: Voir import
+      button: Voir l'import
       finished:
         subject: L'import est terminé
         body: |
-          "Bonjour, l'import est terminé
-          Vous avez lancé l'import %{import_name}. Il est maintenant terminé. L'opération est %{status}.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Vous avez lancé l'import "%{import_name}". <br/>
+          Il est maintenant terminé.<br/>
+          Le statut de l'opération est : %{status}.<br/><br/>
     export_mailer:
-      button: Voir export
+      button: Voir l'export
       finished:
         subject: L'export est terminé
         body: |
-          "Bonjour, l'export est terminé
-          Vous avez lancé l'export %{export_name}. Il est maintenant terminé. L'opération est %{status}.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Vous avez lancé l'export "%{export_name}".<br/>
+          Il est maintenant terminé. <br/>
+          Le statut de l'opération est : %{status}.<br/><br/>
     merge_mailer:
-      button: Voir offre finalisée
+      button: Voir l'offre finalisée
       finished:
-        subject: L'export est terminé
+        subject: La finalisation est terminée
         body: |
-          "Bonjour, l'export est terminé
-          Vous avez lancé l'export %{merge_name}. Il est maintenant terminé. L'opération est %{status}.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Vous avez lancé la finalisation "%{merge_name}".<br/>
+          Elle est maintenant terminée.<br/>
+          Le statut de l'opération est : %{status}.<br/><br/>
     subscription_mailer:
       created:
         subject: Un nouvel utilisateur s'est inscrit
@@ -51,49 +52,50 @@ fr:
       button: Confirmer l'inscription
       subject: Instructions de confirmation
       body: |
-        "Bonjour %{email} !
-        Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:"
+        Bonjour %{email} !<br/><br/>
+        Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:<br/>
     password_mailer:
       updated:
         subject: Réinitialiser votre mot de passe
         body: |
-          "Bonjour, vous avez oublié votre mot de passe
-          Vous avez demandé à réinitialiser votre mot de passe.
-          Pour démarrer la procédure :"
+          Bonjour,<br/><br/>
+          Vous avez demandé à réinitialiser votre mot de passe.<br/><br/>
         button: Réinitialiser mon mot de passe
     user_mailer:
       created:
         subject: Un nouvel inscrit sur Chouette
         body: |
-          "Bonjour, un nouvel utilisateur vient de s'inscrire
-          Nom : %{user_name}
-          Organisation : %{orga_name}
-          Mail : %{user_mail}"
+          Bonjour,<br/><br/>
+          Un nouvel utilisateur vient de s'inscrire.<br/>
     invitation_mailer:
       button: Accepter l'invitation
       subject: Invitation sur l'application Chouette
       body: |
-        "Bonjour %{email},
-        Ce message est une invitation pour accéder à Chouette, vous pouvez l'accepter en cliquant sur le lien suivant :"
+        Bonjour %{email},<br/><br/>
+        Ce message est une invitation pour accéder à Chouette, vous pouvez l'accepter en cliquant sur le lien suivant :
       ignore: Si vous ne souhaitez pas accepter cette invitation, ignorez ce message. Votre compte ne sera pas créé tant que vous n'accédez pas au lien ci-dessus et que vous ne définissez un mot de passe.
     compliance_check_set_mailer:
       finished:
-        button: Voir Validation
+        button: Voir la Validation
         subject: La validation est terminée
         body: |
-          "Bonjour, la validation est terminée
-          Vous avez lancé une validation sur %{ref_name}. Elle est maintenant terminée. L'opération est %{status}.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Vous avez lancé une validation sur "%{ref_name}".<br/>
+          Elle est maintenant terminée.<br/>
+          Le statut de l'opération est : %{status}.<br/><br/>
     aggregate_mailer:
       finished:
-        button: Voir Agrégation
+        button: Voir l'Agrégation
         subject: L'agrégation est terminée
         body: |
-          "Bonjour, l'agrégation est terminée
-          Vous avez lancé l'agrégation %{agg_name}. Elle est maintenant terminée. L'opération est %{status}.
-          Pour y accéder :"
+          Bonjour,<br/><br/>
+          Vous avez lancé l'agrégation "%{agg_name}". <br/>
+          Elle est maintenant terminée.<br/>
+          Le statut de l'opération est : %{status}.<br/><br/>
     sentinel_mailer:
-      incoming_holes:
-        subject: Des trous d'offre ont été détectés dans le groupe de travail %{workbench_name}
-        body: "Des trous d'offre ont été détectés dans le groupe de travail %{workbench_name} :"
-        hole: "Sur la ligne <a href='%{line_url}'>\"%{line_name}\"</a>, à partir du %{date}"
+      finished:
+        button: Voir les trous d'offre
+        subject: Présence de trous d'offre dans l'offre finalisée
+        body: |
+          Des trous d'offre ont été détecté dans l'offre finalisée %{referential_name}.<br/>
+          Nous vous conseillons d'analyser les données d'offre afin de détecter les problèmes éventuels.<br/><br/>

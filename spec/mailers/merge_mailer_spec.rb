@@ -25,6 +25,6 @@ RSpec.describe MergeMailer, type: :mailer do
   end
 
   it 'should have correct body' do
-    expect(email.body).to have_content I18n.t("mailers.merge_mailer.finished.body", merge_name: merge.name, status: I18n.t("operation_support.statuses.#{merge.status}"))
+  expect(email.body.raw_source).to include I18n.t("mailers.merge_mailer.finished.body", merge_name: merge.name, status: I18n.t("operation_support.statuses.#{merge.status}"))
   end
 end

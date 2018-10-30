@@ -19,6 +19,6 @@ RSpec.describe ExportMailer, type: :mailer do
   end
 
   it 'should have correct body' do
-    expect(email.body).to have_content I18n.t("mailers.export_mailer.finished.body", export_name: export.name, status: I18n.t("operation_support.statuses.#{export.status}"))
+    expect(email.body.raw_source).to include I18n.t("mailers.export_mailer.finished.body", export_name: export.name, status: I18n.t("operation_support.statuses.#{export.status}"))
   end
 end

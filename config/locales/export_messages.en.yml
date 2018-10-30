@@ -1,4 +1,4 @@
 en:
   export_messages:
     success: Success
-    no_matching_journey: No matching journey found
+    no_matching_journey: Export can't produce a file because there is no offer data in the requested period.

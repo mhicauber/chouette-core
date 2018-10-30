@@ -20,7 +20,7 @@ RSpec.describe CalendarMailer, type: :mailer do
     end
 
     it 'should have correct body' do
-      expect(email.body).to have_content I18n.t("mailers.calendar_mailer.#{type}.body", cal_name: calendar.name, cal_index_url: workgroup_calendars_url(calendar.workgroup))
+      expect(email.body.raw_source).to include I18n.t("mailers.calendar_mailer.#{type}.body", cal_name: calendar.name, cal_index_url: workgroup_calendars_url(calendar.workgroup))
     end
   end
 

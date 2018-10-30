@@ -7,7 +7,7 @@ RSpec.describe AggregateMailer, type: :mailer do
   let(:ref2) { create :referential, workbench: workbench, organisation: workbench.organisation }
 
   let(:aggregate) { Aggregate.create(workgroup: referential.workgroup, referentials: [ref1, ref2]) }
-  let(:email)    { AggregateMailer.send('finished', aggregate.id, user.id) }
+  let(:email) { AggregateMailer.send('finished', aggregate.id, user.id) }
 
   it 'should deliver email to user' do
     expect(email).to deliver_to user.email
@@ -18,10 +18,10 @@ RSpec.describe AggregateMailer, type: :mailer do
   end
 
   it 'should have subject' do
-    expect(email).to have_subject I18n.t("mailers.aggregate_mailer.finished.subject")
+    expect(email).to have_subject I18n.t('mailers.aggregate_mailer.finished.subject')
   end
 
   it 'should have correct body' do
-    expect(email.body).to have_content I18n.t("mailers.aggregate_mailer.finished.body", agg_name: aggregate.name, status: I18n.t("operation_support.statuses.#{aggregate.status}"))
+    expect(email.body.raw_source).to include I18n.t('mailers.aggregate_mailer.finished.body', agg_name: aggregate.name, status: I18n.t("operation_support.statuses.#{aggregate.status}"))
   end
 end

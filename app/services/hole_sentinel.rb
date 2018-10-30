@@ -30,7 +30,7 @@ class HoleSentinel
     holes = incoming_holes
     return unless holes.present?
 
-    SentinelMailer.notify_incoming_holes(@workbench, holes).deliver_now
+    SentinelMailer.notify_incoming_holes(@workbench, referential).deliver_now
   end
 
   protected

@@ -1,21 +1,4 @@
-table style="border-collapse:collapse;font-family:'Open Sans', Arial, sans serif;width:550px;margin:0px auto;color:#333333;"
-
-  thead
-    tr
-      th
-        .jumbotron style="background-color:#007fbb;color:#fff;padding:20px 25px;margin-bottom:0px;text-align:left;"
-          h1.brandname style="display:inline-block;font-size:20px;font-weight:700;text-transform:uppercase;margin:0;"
-            = t('brandname')
-
-  tbody style="font-family: 'Lucida Console', Monaco, monospace; white-space: nowrap; line-height: 2em;"
-    tr
-      td style="padding-top: 20px"
-       = t('mailers.sentinel_mailer.incoming_holes.body', workbench_name: @workbench.name)
-       ul
-        - @holes.each do |line_id, date|
-          - line = Chouette::Line.find(line_id)
-          - query = { q: { id_eq: line_id }, "q_referential_#{@workbench.output.current.slug}_overview" => { id_eq: line_id } }
-          - query["q_referential_#{@workbench.output.current.slug}_overview"] = { id_eq: line_id }
-          - query["referential_#{@workbench.output.current.slug}_overview_date"] = date.l(format: "%Y-%m-%d")
-          li
-            = t('mailers.sentinel_mailer.incoming_holes.hole', line_name: line.name, date: date.l(format: :short), line_url: url_for([@workbench.output.current, query])).html_safe
+h2 style=mailer_style(:h2)
+  == t('mailers.sentinel_mailer.finished.body', referential_name: @referential.name)
+  br
+  = mailer_button(t('mailers.sentinel_mailer.finished.button'), referential_url(@referential))

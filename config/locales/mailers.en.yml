@@ -10,40 +10,41 @@ en:
       created:
         subject: A new shared calendar has been created
         body: |
-          "Hello, a new calendar has been shared
-          In your organization, the %{cal_name} calendar has been shared.
-          To view it :
-          <a href='%{cal_url}' target='_blank' style='color:#333333;'>Calendar</a>"
+          Hello,<br/><br/>
+          A new calendar has been shared.<br/>
+          In your organization, the %{cal_name} calendar has been shared.<br/><br/>
       updated:
         subject: A shared calendar has been updated
         body: |
-          "Hello, a new shared calendar %{cal_name} has been updated.
-          To view it :
-          <a href='%{cal_url}' target='_blank' style='color:#333333;'>Calendar</a>."
+          Hello,<br/><br/>
+          A new shared calendar %{cal_name} has been updated.<br/><br/>
     import_mailer:
       button: See Import
       finished:
         subject: The import is over
         body: |
-          "Hello, the import is over
-          You launched the %{import_name} import. It is now over. It is %{status}
-          To view it :"
+          Hello,<br/><br/>
+          You launched the import %{import_name}.<br/>
+          It is now over.<br/>
+          The operation status is : %{status}<br/><br/>
     export_mailer:
       button: See export
       finished:
         subject: The export is over
         body: |
-          "Hello, the export is over
-          You launched the %{export_name} export. It is now over. It is %{status}
-          To view it :"
+          Hello,<br/><br/>
+          You launched the export %{export_name}.<br/>
+          It is now over.<br/>
+          The operation status is %{status}<br/><br/>
     merge_mailer:
       button: See current offer
       finished:
         subject: Merge is done
         body: |
-          "Hello, The merge
-          You launched the %{merge_name} merge. It is now over. It is %{status}
-          To view it :"
+          Hello,<br/><br/>
+          You launched the merge %{merge_name}.<br/>
+          It is now over.<br/>
+          The operation status is %{status}<br/><br/>
     subscription_mailer:
       created:
         subject: A new user signed up
@@ -52,48 +53,50 @@ en:
       button: Confirm the subscription
       subject: Instructions of confirmation
       body: |
-        "Hello %{email} !
-        You can now confirm your subscription by clicking on the following link"
+        Hello %{email} !<br/><br/>
+        You can now confirm your subscription by clicking on the following link<br/>
     password_mailer:
       updated:
         subject: Set up new password
         body: |
-          "Hello, you forgot your password
-          You asked to set up a new one.
-          To start the process :"
+          Hello,<br/><br/>
+          You forgot your password.<br/>
+          You asked to set up a new one.<br/><br/>
     user_mailer:
       created:
         subject: New registered user on Chouette
         body: |
-          "Hello, a new user just subscribed on the platform
-          Name : %{user_name}
-          Organization : %{orga_name}
-          Email : %{user_mail}"
+          Hello,<br/><br/>
+          A new user just subscribed on the platform<br/>
     invitation_mailer:
       button: Accept the invitation
       subject: Invitation on the Chouette application
       body: |
-        "Hello %{email},
-        This message is an invit to use the Chouette app, you can access it by clicking on the following link :"
+        Hello %{email},<br/><br/>
+        This message is an invit to use the Chouette app, you can access it by clicking on the following link :
       ignore: If you don't want to access it, you can ignore the message. Your account won't be created until you click the link above and you define a password.
     compliance_check_set_mailer:
       finished:
         button: See compliance check set
         subject: Compliance Check set is over
         body: |
-          "Hello, the compliance check set is done
-          You started the validation of %{ref_name} referentual. The operation is now over. It is %{status}
-          To access it :"
+          Hello,<br/><br/>
+          The compliance check set is done.<br/>
+          You started the validation on %{ref_name}.<br/>
+          The operation is now over.<br/>
+          The operation status is %{status}<br/><br/>
     aggregate_mailer:
       finished:
         button: See Aggregation
         subject: The aggregation is over
         body: |
-          "Hello, the aggregation is over
+          Hello, the aggregation is over
           You started the aggregation %{agg_name}. The operation is now over. It is %{status}
-          To access it :"
+          The operation status is %{status}<br/><br/>
     sentinel_mailer:
-      incoming_holes:
-        subject: Lack of offer have been detected in the workbench %{workbench_name}
-        body: "Lack of offer have been detected in the workbench %{workbench_name} :"
-        hole: "On the line <a href='%{line_url}'>\"%{line_name}\"</a>, from %{date}"
+      finished:
+        button: See lacks of offer
+        subject: Lack of offer have been detected in finalized offer
+        body: |
+          Lack of offer has been detected in the finalized offer %{referential_name}.<br/>
+          We encourage you to study offer datas to detect possible problems.<br/><br/>
