@@ -2,13 +2,6 @@ require "rails_helper"
 
 RSpec.describe Import::Gtfs do
 
-  let(:referential) do
-    create :referential do |referential|
-      referential.line_referential.update objectid_format: "netex"
-      referential.stop_area_referential.update objectid_format: "netex"
-    end
-  end
-
   let(:workbench) do
     create :workbench do |workbench|
       workbench.line_referential.update objectid_format: "netex"
@@ -265,7 +258,7 @@ RSpec.describe Import::Gtfs do
       }
 
       import.import_stop_times
-      referential.vehicle_journeys.map(&:route).uniq.each do |route|
+      import.referential.vehicle_journeys.map(&:route).uniq.each do |route|
         expect(calculated).to include(route)
       end
     end
