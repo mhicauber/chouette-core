@@ -10,6 +10,11 @@ crumb :workgroup do |workgroup|
   link workgroup.name, workgroup_path(workgroup)
 end
 
+crumb :workgroup_hole_sentinel_settings do
+  link I18n.t('workgroups.edit_hole_sentinel.title')
+  parent :workgroup
+end
+
 crumb :workbench_configure do |workbench|
   link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
   parent :workbench, workbench
