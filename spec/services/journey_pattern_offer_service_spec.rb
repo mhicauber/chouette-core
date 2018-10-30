@@ -54,6 +54,16 @@ RSpec.describe JourneyPatternOfferService do
             circulation_day => 1
           )
         end
+
+        context 'and excluded' do
+          before do
+            time_table.dates.create!(date: circulation_day, in_out: false)
+          end
+          
+          it 'should detect the circulation days' do
+            expect(service.circulation_dates).to be_empty
+          end
+        end
       end
 
       context 'with no hole' do

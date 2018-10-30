@@ -65,7 +65,7 @@ class JourneyPatternOfferService
       LEFT JOIN  #{referential.slug}."time_table_dates" AS included_dates ON included_dates."time_table_id" = "time_tables"."id" AND included_dates.date = dates.date AND included_dates.in_out = true
       LEFT JOIN  #{referential.slug}."time_table_periods" AS periods ON periods."time_table_id" = "time_tables"."id" AND periods.period_start <= dates.date AND periods.period_end >= dates.date
     WHERE
-      (included_dates.id IS NOT NULL OR (periods.id IS NOT NULL AND (time_tables.int_day_types & POW(2, ((DATE_PART('dow', dates.date)::int+6)%7)+2)::int) > 0))
+      (included_dates.id IS NOT NULL OR (periods.id IS NOT NULL AND (time_tables.int_day_types & POW(2, ((DATE_PART('dow', dates.date)::int+6)%7)+2)::int) > 0) AND excluded_dates.id IS NULL)
       AND vehicle_journeys.journey_pattern_id = #{@journey_pattern.id}
     GROUP BY dates.date, vehicle_journeys.id
     ORDER BY dates.date ASC
