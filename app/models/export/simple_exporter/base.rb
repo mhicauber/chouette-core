@@ -90,6 +90,13 @@ class Export::SimpleExporter::Base < Export::Base
           vals[:message_key] = :success
         end
       end
+
+      if vals[:criticity] == :warning
+        continue unless log_level_greater_than?(LOG_LEVEL_WARN)
+      elsif vals[:criticity] == :info
+        continue unless log_level_greater_than?(LOG_LEVEL_INFO)
+      end
+
       vals[:resource_attributes] = journal_item[:row]
 
       if journal_item[:message].present?

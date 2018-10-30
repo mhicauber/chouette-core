@@ -10,6 +10,38 @@ class Export::Base < ActiveRecord::Base
 
   validates :type, :referential_id, presence: true
 
+  LOG_LEVEL_ERROR = :ERROR
+  LOG_LEVEL_WARN  = :WARN
+  LOG_LEVEL_INFO  = :INFO
+  LOG_LEVEL_DEBUG = :DEBUG
+  LOG_LEVELS = [LOG_LEVEL_ERROR, LOG_LEVEL_WARN, LOG_LEVEL_INFO, LOG_LEVEL_DEBUG].freeze
+
+  @@log_level = LOG_LEVEL_WARN
+
+  def self.log_level
+    @@log_level
+  end
+
+  def self.log_level=(level)
+    return unless LOG_LEVELS.include?(level)
+
+    @@log_level = level
+  end
+
+  def log_level
+    self.class.log_level
+  end
+
+  def self.log_level_greater_than?(level)
+    return false unless LOG_LEVELS.include?(level)
+
+    LOG_LEVELS.index(@@log_level) >= LOG_LEVELS.index(level)
+  end
+
+  def log_level_greater_than?(level)
+    self.class.log_level_greater_than?(level)
+  end
+
   def self.messages_class_name
     "Export::Message"
   end
