@@ -19,6 +19,6 @@ RSpec.describe UserMailer, type: :mailer do
   end
 
   it 'should have correct body' do
-    expect(email.body).to have_content I18n.t("mailers.user_mailer.created.body", user_name: user.name, orga_name: user.organisation.name, user_mail: user.email)
+    expect(email.body.raw_source).to include I18n.t("mailers.user_mailer.created.body", user_name: user.name, orga_name: user.organisation.name, user_mail: user.email)
   end
 end
