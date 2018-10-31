@@ -1,6 +1,11 @@
 class ImportObserver < ActiveRecord::Observer
   observe Import::Workbench
 
+  def before_save(import)
+    @@previous_import_statuses ||= {}
+    @@previous_import_statuses[import.id] = import.status_was
+  end
+
   def after_commit(import)
     return unless email_sendable_for?(import)
 
@@ -11,6 +16,9 @@ class ImportObserver < ActiveRecord::Observer
   private
 
   def email_sendable_for?(import)
+    previous_status = @@previous_import_statuses.delete import.id
+    return false if import.class.finished_statuses.include?(previous_status)
+
     import.finished?
   end
 end

@@ -13,8 +13,11 @@ RSpec.describe ImportObserver, type: :observer do
   end
 
   it 'should schedule mailer on import finished' do
-    expect(MailerJob).to receive(:perform_later).with 'ImportMailer', 'finished', anything
+    expect(MailerJob).to receive(:perform_later).with('ImportMailer', 'finished', anything).exactly(:once)
     workbench_import.status = 'successful'
+    workbench_import.save
+    workbench_import.run_callbacks(:commit)
+    workbench_import.touch
     workbench_import.save
     workbench_import.run_callbacks(:commit)
   end
