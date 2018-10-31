@@ -25,3 +25,9 @@ en:
   activerecord:
     models:
       workgroup: Workgroup
+
+  formtastic:
+    hints:
+      workgroup:
+        sentinel_min_hole_size: (in days) Minimum length of a hole for it to be signaled.
+        sentinel_delay: (in days) A value of 0 disables the sentinel

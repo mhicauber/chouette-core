@@ -33,5 +33,5 @@ fr:
   formtastic:
     hints:
       workgroup:
-        sentinel_min_hole_size: Durée minimum d'un trou d'offre pour qu'il soit signalé.
-        sentinel_delay: Une valeur de 0 désactive la détection de trous
+        sentinel_min_hole_size: (en jours) Durée minimum d'un trou d'offre pour qu'il soit signalé.
+        sentinel_delay: (en jours) Une valeur de 0 désactive la détection de trous
