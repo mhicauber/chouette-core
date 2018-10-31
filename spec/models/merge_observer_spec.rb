@@ -12,14 +12,16 @@ RSpec.describe MergeObserver, type: :observer do
   let(:merge) { Merge.create(workbench: referential.workbench, referentials: [referential, referential], creator: user.name) }
 
   it 'should observe merge finish' do
-    expect(MergeObserver.instance).to receive(:after_update)
+    expect(MergeObserver.instance).to receive(:after_commit)
     merge.status = 'successful'
     merge.save
+    merge.run_callbacks(:commit)
   end
 
   it 'should schedule mailer on merge finish' do
     expect(MailerJob).to receive(:perform_later).with 'MergeMailer', 'finished', anything
     merge.status = 'successful'
     merge.save
+    merge.run_callbacks(:commit)
   end
 end
