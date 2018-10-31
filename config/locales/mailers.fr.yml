@@ -16,7 +16,7 @@ fr:
         subject: Un modèle de calendrier a été modifié
         body: |
           Bonjour,<br/><br/>
-          Au sein de votre organisation, le modèle de calendrier partagé "%{cal_name}" a été modifié.<br/><br/>
+          Au sein de votre organisation, le modèle de calendrier partagé "%{cal_name}" a été modifié.
     import_mailer:
       button: Voir l'import
       finished:
@@ -25,7 +25,7 @@ fr:
           Bonjour,<br/><br/>
           Vous avez lancé l'import "%{import_name}". <br/>
           Il est maintenant terminé.<br/>
-          Le statut de l'opération est : %{status}.<br/><br/>
+          Le statut de l'opération est : %{status}.
     export_mailer:
       button: Voir l'export
       finished:
@@ -34,7 +34,7 @@ fr:
           Bonjour,<br/><br/>
           Vous avez lancé l'export "%{export_name}".<br/>
           Il est maintenant terminé. <br/>
-          Le statut de l'opération est : %{status}.<br/><br/>
+          Le statut de l'opération est : %{status}.
     merge_mailer:
       button: Voir l'offre finalisée
       finished:
@@ -43,7 +43,7 @@ fr:
           Bonjour,<br/><br/>
           Vous avez lancé la finalisation "%{merge_name}".<br/>
           Elle est maintenant terminée.<br/>
-          Le statut de l'opération est : %{status}.<br/><br/>
+          Le statut de l'opération est : %{status}.
     subscription_mailer:
       created:
         subject: Un nouvel utilisateur s'est inscrit
@@ -59,7 +59,7 @@ fr:
         subject: Réinitialiser votre mot de passe
         body: |
           Bonjour,<br/><br/>
-          Vous avez demandé à réinitialiser votre mot de passe.<br/><br/>
+          Vous avez demandé à réinitialiser votre mot de passe.
         button: Réinitialiser mon mot de passe
     user_mailer:
       created:
@@ -82,7 +82,7 @@ fr:
           Bonjour,<br/><br/>
           Vous avez lancé une validation sur "%{ref_name}".<br/>
           Elle est maintenant terminée.<br/>
-          Le statut de l'opération est : %{status}.<br/><br/>
+          Le statut de l'opération est : %{status}.
     aggregate_mailer:
       finished:
         button: Voir l'Agrégation
@@ -91,11 +91,11 @@ fr:
           Bonjour,<br/><br/>
           Vous avez lancé l'agrégation "%{agg_name}". <br/>
           Elle est maintenant terminée.<br/>
-          Le statut de l'opération est : %{status}.<br/><br/>
+          Le statut de l'opération est : %{status}.
     sentinel_mailer:
       finished:
         button: Voir les trous d'offre
         subject: Présence de trous d'offre dans l'offre finalisée
         body: |
           Des trous d'offre ont été détecté dans l'offre finalisée %{referential_name}.<br/>
-          Nous vous conseillons d'analyser les données d'offre afin de détecter les problèmes éventuels.<br/><br/>
+          Nous vous conseillons d'analyser les données d'offre afin de détecter les problèmes éventuels.
