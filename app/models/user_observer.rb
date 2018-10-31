@@ -8,9 +8,9 @@ class UserObserver < ActiveRecord::Observer
   private
 
   def enabled?
-    return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
-
     return false unless Rails.configuration.respond_to?(:subscriptions_notifications_recipients)
+
+    return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
 
     !!Rails.configuration.enable_subscriptions_notifications
   end
