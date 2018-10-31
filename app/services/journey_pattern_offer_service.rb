@@ -3,17 +3,19 @@ class JourneyPatternOfferService
 
   attr_reader :journey_pattern
 
-  def initialize(journey_pattern, referential: nil)
+  def initialize(journey_pattern, referential: nil, line: nil, route: nil)
     @journey_pattern = journey_pattern
     @referential = referential
+    @line = line
+    @route = route
   end
 
   def line
-    @journey_pattern.line
+    @line ||= @route&.line || @journey_pattern.line
   end
 
   def referential
-    @referential ||= @journey_pattern.referential
+    @referential ||= @route&.referential || @journey_pattern.referential
   end
 
   def period_start
