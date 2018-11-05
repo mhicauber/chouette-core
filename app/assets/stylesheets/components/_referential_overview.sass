@@ -272,7 +272,6 @@
       .period
         height: 100%
         top: 0
-        background: #aedd8a
         position: absolute
         box-shadow: 0 0 10px rgba(0,0,0,0.5)
         z-index: 2
@@ -301,14 +300,8 @@
           z-index: 3
         &.hole
           z-index: 3
-          background: #e49393
         &.empty
           z-index: 1
-          background: rgb(244, 67, 67)
-          background: repeating-linear-gradient(-45deg, #f5e1cf,#f5e1cf 12px,#e49393 12px,#e49393 25px)
-          &.accepted
-            background: #f19039
-            background: repeating-linear-gradient(-45deg, #f5e1cf,#f5e1cf 12px,#f19039 12px,#f19039 25px)
         &:hover
           z-index: 3
           &:after
@@ -316,6 +309,40 @@
             .title
               background-color: transparentize(white, 0.1)
 
+  .right, .legend
+    .period, .period-container
+      &, &:before
+        background: #aedd8a
+      &.hole
+        &, &:before
+          background: #e49393
+      &.empty
+        &, &:before
+          background: rgb(244, 67, 67)
+          background: repeating-linear-gradient(-45deg, #f5e1cf,#f5e1cf 12px,#e49393 12px,#e49393 25px)
+        &.accepted
+          &, &:before
+            background: #f19039
+            background: repeating-linear-gradient(-45deg, #f5e1cf,#f5e1cf 12px,#f19039 12px,#f19039 25px)
+
+  .legend
+    margin: 10px 0
+    padding: 5px 0 0 0
+    float: left
+    li.period-container
+      list-style-type: none
+      float: left
+      padding-left: 40px
+      margin-right: 20px
+      background: none !important
+      position: relative
+      &:before
+        content: ""
+        position: absolute
+        left: 0px
+        top: -5px
+        width: 30px
+        height: 30px
   &.sticky
     .time-travel
       position: fixed

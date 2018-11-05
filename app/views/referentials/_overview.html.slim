@@ -73,6 +73,12 @@
           - else
             = replacement_msg t('referential_lines.search_no_results')
 
+
+  ul.legend
+    li.period-container= 'referentials.overview.legend.period'.t
+    li.period-container.empty= 'referentials.overview.legend.empty'.t
+    li.period-container.empty.accepted= 'referentials.overview.legend.accepted'.t
+    li.period-container.hole= 'referentials.overview.legend.hole'.t
   = new_pagination overview, 'pull-right'
 
 - content_for :javascript do

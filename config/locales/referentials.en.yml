@@ -61,6 +61,11 @@ en:
         today: Today
         prev_page: Prev. page
         next_page: Next page
+      legend:
+        period: Managed period
+        empty: Not managed period
+        accepted: Not managed period (length < 7 days)
+        hole: Lack of offer
     states:
       pending:  Pending
       failed:   Failed
