@@ -32,7 +32,7 @@
         - if workbench.all_referentials.present?
           .list-group
             - workbench.all_referentials.order(created_at: :desc).limit(5).each do |referential|
-              = link_to referential.name, referential_path(referential), class: 'list-group-item'
+              = link_to referential.name.truncate(60), referential_path(referential), class: 'list-group-item'
         - else
           .panel-body
             em.small.text-muted = t('workbenches.index.offers.no_content')
