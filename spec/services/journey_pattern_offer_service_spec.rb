@@ -97,15 +97,15 @@ RSpec.describe JourneyPatternOfferService do
 
       context 'with a large hole' do
         before do
-          time_table.periods.create!(period_start: period_start, period_end: circulation_day - 4)
-          time_table.periods.create!(period_start: circulation_day, period_end: period_end)
+          time_table.periods.create!(period_start: period_start, period_end: circulation_day - 2)
+          time_table.periods.create!(period_start: circulation_day + 2, period_end: period_end)
         end
 
         it 'should detect the circulation days' do
-          period_start.upto(circulation_day - 4).each do |date|
+          period_start.upto(circulation_day - 2).each do |date|
             expect(service.circulation_dates[date]).to eq 1
           end
-          circulation_day.next.upto(period_end).each do |date|
+          (circulation_day + 3).upto(period_end).each do |date|
             expect(service.circulation_dates[date]).to eq 1
           end
         end
@@ -181,15 +181,15 @@ RSpec.describe JourneyPatternOfferService do
 
         context 'with a large hole' do
           before do
-            time_table.periods.create!(period_start: period_start, period_end: circulation_day - 4)
-            time_table_2.periods.create!(period_start: circulation_day, period_end: period_end)
+            time_table.periods.create!(period_start: period_start, period_end: circulation_day - 2)
+            time_table_2.periods.create!(period_start: circulation_day + 2, period_end: period_end)
           end
 
           it 'should detect the circulation days' do
-            period_start.upto(circulation_day - 4).each do |date|
+            period_start.upto(circulation_day - 2).each do |date|
               expect(service.circulation_dates[date]).to eq 1
             end
-            circulation_day.next.upto(period_end).each do |date|
+            (circulation_day + 3).upto(period_end).each do |date|
               expect(service.circulation_dates[date]).to eq 1
             end
           end
@@ -249,15 +249,15 @@ RSpec.describe JourneyPatternOfferService do
 
           context 'with a large hole' do
             before do
-              time_table.periods.create!(period_start: period_start, period_end: circulation_day - 4)
-              time_table.periods.create!(period_start: circulation_day, period_end: period_end)
+              time_table.periods.create!(period_start: period_start, period_end: circulation_day - 2)
+              time_table.periods.create!(period_start: circulation_day + 2, period_end: period_end)
             end
 
             it 'should detect the circulation days' do
-              period_start.upto(circulation_day - 4).each do |date|
+              period_start.upto(circulation_day - 2).each do |date|
                 expect(service.circulation_dates[date]).to eq 2
               end
-              circulation_day.next.upto(period_end).each do |date|
+              (circulation_day + 3).upto(period_end).each do |date|
                 expect(service.circulation_dates[date]).to eq 2
               end
             end
