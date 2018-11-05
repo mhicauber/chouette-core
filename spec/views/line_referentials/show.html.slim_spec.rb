@@ -9,6 +9,8 @@ describe "/line_referentials/show", :type => :view do
 
   before :each do
     controller.request.path_parameters[:id] = line_referential.id
+    assign :syncs, line_referential.line_referential_syncs
+    
     allow(view).to receive(:params).and_return({action: :show})
     allow(view).to receive(:resource).and_return(line_referential)
 
