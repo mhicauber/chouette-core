@@ -5,12 +5,12 @@ class ExportObserver < ActiveRecord::Observer
     return unless email_sendable_for?(export)
 
     user = User.find_by(name: export.creator)
-    MailerJob.perform_later('ExportMailer', 'finished', [export.id, user.id])
+    MailerJob.perform_later('ExportMailer', 'finished', [export.id, user.id, export.status])
   end
 
   private
 
   def email_sendable_for?(export)
-    export.finished?
+    export.finished? && export.changes.include?('status')
   end
 end

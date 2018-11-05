@@ -6,16 +6,14 @@ RSpec.describe ImportObserver, type: :observer do
   let(:referential) { create :referential }
 
   it 'should observe import finish' do
-    expect(ImportObserver.instance).to receive(:after_commit)
+    expect(ImportObserver.instance).to receive(:after_update).exactly(:once)
     workbench_import.status = 'successful'
     workbench_import.save
-    workbench_import.run_callbacks(:commit)
   end
 
   it 'should schedule mailer on import finished' do
-    expect(MailerJob).to receive(:perform_later).with 'ImportMailer', 'finished', anything
+    expect(MailerJob).to receive(:perform_later).with('ImportMailer', 'finished', anything).exactly(:once)
     workbench_import.status = 'successful'
     workbench_import.save
-    workbench_import.run_callbacks(:commit)
   end
 end
