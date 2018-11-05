@@ -99,6 +99,10 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = { address: ENV.fetch('SMTP_HOST') }
   config.action_mailer.asset_host    = ENV.fetch('MAIL_ASSETS_URL_BASE')
 
+  config.to_prepare do
+    Devise::Mailer.layout "mailer"
+  end
+
   config.accept_user_creation = ENV.fetch('ACCEPT_USER_CREATION','0')=='1'?true:false
 
   config.chouette_authentication_settings = JSON.parse(ENV.fetch('AUTH_SETTINGS','{
