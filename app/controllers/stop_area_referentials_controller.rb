@@ -5,6 +5,7 @@ class StopAreaReferentialsController < ChouetteController
   def show
     show! do
       @stop_area_referential = StopAreaReferentialDecorator.decorate(@stop_area_referential)
+      @syncs =  @stop_area_referential.stop_area_referential_syncs
     end
   end
 
