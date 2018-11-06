@@ -42,6 +42,7 @@ class WorkbenchImportWorker
     entry_group_streams = zip_service.subdirs
     entry_group_streams.each_with_index(&method(:upload_entry_group))
     workbench_import.update total_steps: @entries
+    handle_corrupt_zip_file unless @subdir_uploaded
   rescue Exception => e
     logger.error e.message
     workbench_import.update( current_step: @entries, status: 'failed' )
@@ -49,6 +50,7 @@ class WorkbenchImportWorker
   end
 
   def upload_entry_group entry, element_count
+    @subdir_uploaded = true
     update_object_state entry, element_count.succ
     unless entry.ok?
       workbench_import.update( current_step: @entries, status: 'failed' )
