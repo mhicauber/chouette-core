@@ -24,7 +24,7 @@ class TimeTravel
       month = today.getMonth() + 1
       month = "0#{month}" if month < 10
       day = today.getDate()
-      day = "0#{month}" if day < 10
+      day = "0#{day}" if day < 10
       date = "#{today.getFullYear()}-#{month}-#{day}"
       @overview.showDay date
       @pushDate date
