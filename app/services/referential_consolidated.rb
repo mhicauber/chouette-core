@@ -15,7 +15,7 @@ class ReferentialConsolidated
   end
 
   def lines
-    @lines ||= paginated_lines.to_a.map {|l| Line.new(self, l, @vehicle_journeys, params) }
+    paginated_lines.to_a.map { |l| Line.new(self, l, @vehicle_journeys, params) }
   end
 
   def _should_highlight?
@@ -66,9 +66,7 @@ class ReferentialConsolidated
     delegate id: :ar_model
 
     def routes
-      @routes ||= begin
-        ar_model.routes.order(:name).map {|r| Route.new(self, r, @all_vehicle_journeys, params) }
-      end
+      ar_model.routes.order(:name).map { |r| Route.new(self, r, @all_vehicle_journeys, params) }
     end
   end
 
@@ -86,9 +84,7 @@ class ReferentialConsolidated
     end
 
     def vehicle_journeys
-      @vehicle_journeys ||= begin
-        ar_model.vehicle_journeys.select(:id, :published_journey_name, :route_id, :journey_pattern_id).map {|vj| VehicleJourney.new(self, vj, @all_vehicle_journeys, params, vehicle_journey_at_stops: vehicle_journey_at_stops[vj.id]) }
-      end
+      ar_model.vehicle_journeys.select(:id, :published_journey_name, :route_id, :journey_pattern_id).map { |vj| VehicleJourney.new(self, vj, @all_vehicle_journeys, params, vehicle_journey_at_stops: vehicle_journey_at_stops[vj.id]) }
     end
 
     def highlighted_journeys
@@ -115,7 +111,7 @@ class ReferentialConsolidated
     end
 
     def stop_points
-      @stop_points ||= ar_model.stop_points.map {|sp| StopPoint.new(self, sp, @all_vehicle_journeys, params, stop_area: stop_areas[sp.stop_area_id]) }
+      ar_model.stop_points.map {|sp| StopPoint.new(self, sp, @all_vehicle_journeys, params, stop_area: stop_areas[sp.stop_area_id])}
     end
   end
 
