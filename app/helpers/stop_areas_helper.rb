@@ -95,8 +95,11 @@ module StopAreasHelper
     end
   end
 
-  def area_type_options
-    kind = current_user.organisation.has_feature?("route_stop_areas_all_types") ? :all : :commercial
+  def area_type_options(kind = nil)
+    kind ||= current_user.organisation.has_feature?("route_stop_areas_all_types") ? :all : :commercial
+    
+    return [] if kind == :all && !current_user.organisation.has_feature?("route_stop_areas_all_types")
+
     Chouette::AreaType.options(kind)
   end
 
