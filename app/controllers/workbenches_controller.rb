@@ -1,7 +1,7 @@
 class WorkbenchesController < ChouetteController
   before_action :query_params, only: [:show]
   include RansackDateFilter
-  before_action only: [:show] { set_date_time_params("validity_period", Date) }
+  before_action(only: [:show]) { set_date_time_params("validity_period", Date) }
   defaults resource_class: Workbench
 
   include PolicyChecker

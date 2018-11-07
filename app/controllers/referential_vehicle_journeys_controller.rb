@@ -5,8 +5,8 @@ class ReferentialVehicleJourneysController < ChouetteController
   include ReferentialSupport
   include RansackDateFilter
 
-  before_action only: [:index] { set_date_time_params("purchase_window", Date, prefix: :purchase_window) }
-  before_action only: [:index] { set_date_time_params("time_table", Date, prefix: :time_table) }
+  before_action(only: [:index]) { set_date_time_params("purchase_window", Date, prefix: :purchase_window) }
+  before_action(only: [:index]) { set_date_time_params("time_table", Date, prefix: :time_table) }
 
   defaults :resource_class => Chouette::VehicleJourney, collection_name: :vehicle_journeys
 

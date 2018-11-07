@@ -152,7 +152,7 @@ class LinesController < ChouetteController
    # Fake ransack filter
   def ransack_status scope
     return scope unless params[:q].try(:[], :status)
-    return scope if params[:q][:status].values.uniq.length == 1
+    return scope if params[:q][:status].size > 1 && params[:q][:status].values.uniq.length == 1
 
     @status = {
       activated: params[:q][:status]['activated'] == 'true',

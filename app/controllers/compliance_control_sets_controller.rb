@@ -2,7 +2,7 @@ class ComplianceControlSetsController < ChouetteController
   include PolicyChecker
   defaults resource_class: ComplianceControlSet
   include RansackDateFilter
-  before_action only: [:index] { set_date_time_params("updated_at", DateTime) }
+  before_action(only: [:index]) { set_date_time_params("updated_at", DateTime) }
   respond_to :html
 
   def index

@@ -2,7 +2,7 @@ class UserObserver < ActiveRecord::Observer
   def after_create(user)
     return unless enabled? && user.confirmed_at.nil?
 
-    MailerJob.perform_later('UserMailer', 'created', Rails.configuration.subscriptions_notifications_recipients)
+    MailerJob.perform_later('UserMailer', 'created', [user.id, Rails.configuration.subscriptions_notifications_recipients])
   end
 
   private

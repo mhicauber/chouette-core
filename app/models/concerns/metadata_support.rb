@@ -83,7 +83,7 @@ module MetadataSupport
       end
     end
 
-    def new_ostruct_member name
+    def new_ostruct_member! name
       @_initialized_members ||= []
       unless is_timestamp_attr?(name)
         timestamp_attr_name = timestamp_attr(name)

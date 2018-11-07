@@ -33,7 +33,7 @@ RSpec.describe RoutesController, type: :controller do
       get :index, line_id: route.line_id,
           referential_id: referential.id
     end
-    
+
     it_behaves_like "line and referential linked"
     it_behaves_like "redirected to referential_line_path(referential,line)"
   end
@@ -125,7 +125,7 @@ RSpec.describe RoutesController, type: :controller do
             referential_id: route.line.line_referential_id,
             line_id: route.line_id,
             id: route.id,
-            opposite: TRUE
+            opposite: true
         end.to change { Chouette::Route.count }.by(1)
 
         new_route = Chouette::Route.last
@@ -151,7 +151,7 @@ RSpec.describe RoutesController, type: :controller do
             referential_id: duplicated.line.line_referential_id,
             line_id: duplicated.line_id,
             id: duplicated.id,
-            opposite: TRUE
+            opposite: true
         end.to change { Chouette::Route.count }.by(1)
 
         expect(Chouette::Route.last.name).to eq(I18n.t('routes.opposite', name: duplicated.name))

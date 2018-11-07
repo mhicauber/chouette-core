@@ -6,7 +6,7 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:af83) { |name| "https://github.com/af83/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.2.8'
+gem 'rails', '~> 4.2.10'
 gem 'rack-protection', '~> 1.5.5'
 
 # Use SCSS for stylesheets
@@ -73,7 +73,7 @@ gem 'codifligne', af83: 'stif-codifline-api'
 gem 'reflex', af83: 'stif-reflex-api'
 
 # Authentication
-gem 'devise', '~> 3.5.4'
+gem 'devise'
 gem 'devise_cas_authenticatable'
 gem 'devise-encryptable'
 gem 'devise_invitable'
@@ -96,7 +96,7 @@ gem 'cocoon'
 gem 'slim-rails', '~> 3.1'
 gem 'formtastic', '3.1.5'
 gem 'RedCloth', '~> 4.3.0'
-gem 'simple_form', '~> 3.1.0'
+gem 'simple_form'
 gem 'font-awesome-sass', '~> 4.7'
 gem 'will_paginate-bootstrap'
 gem 'gretel'
@@ -209,7 +209,7 @@ group :test, :development do
   gem 'rb-inotify', require: RUBY_PLATFORM.include?('linux') && 'rb-inotify'
   gem 'rb-fsevent', require: RUBY_PLATFORM.include?('darwin') && 'rb-fsevent'
   gem 'transpec'
-  gem 'shoulda-matchers', '~> 3.1'
+  gem 'shoulda-matchers'
   gem "teaspoon-jasmine"
   gem "phantomjs"
   gem 'parallel_tests'

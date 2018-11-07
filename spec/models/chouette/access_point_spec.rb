@@ -13,7 +13,6 @@ describe Chouette::AccessPoint, :type => :model do
   it { is_expected.to validate_numericality_of :latitude }
   it { is_expected.to validate_numericality_of :longitude }
   
-
   describe ".latitude" do
     it "should accept -90 value" do
       subject = create :access_point

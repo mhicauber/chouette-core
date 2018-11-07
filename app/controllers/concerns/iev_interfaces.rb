@@ -2,7 +2,7 @@ module IevInterfaces
   extend ActiveSupport::Concern
 
   included do
-    before_action only: [:index] { set_date_time_params("started_at", DateTime) }
+    before_action(only: [:index]) { set_date_time_params("started_at", DateTime) }
     before_action :ransack_status_params, only: [:index]
     respond_to :html
     belongs_to :workbench
