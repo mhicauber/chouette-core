@@ -16,6 +16,13 @@ class ExportsController < ChouetteController
     end
   end
 
+  def new
+    referentials = parent.referentials.exportable.pluck(:id)
+    referentials += parent.workgroup.output.referentials.pluck(:id)
+    @referentials = Referential.where(id: referentials).order("created_at desc")
+    new!
+  end
+
   private
 
   def index_model
