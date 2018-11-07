@@ -24,10 +24,15 @@ const makeMonthsOptions = (monthSelected) => {
   return arr
 }
 
-const makeYearsOptions = (yearSelected) => {
+const makeYearsOptions = (startYear, endYear) => {
   let arr = []
-  let startYear = new Date().getFullYear() - 3
-  for(let i = startYear; i <= startYear + 6; i++) {
+
+  let todayYear = new Date().getFullYear()
+
+  let newStartYear = Number.parseInt(startYear) < todayYear ? Number.parseInt(startYear) - 3 : todayYear - 3
+  let newEndYear = Number.parseInt(endYear) > todayYear ? Number.parseInt(endYear) + 6 : todayYear + 6
+
+  for(let i = newStartYear; i <= newEndYear; i++) {
     arr.push(<option key={i}>{i}</option>)
   }
   return arr
@@ -73,7 +78,7 @@ export default function PeriodForm({modal, timetable, metas, onOpenAddPeriodForm
                             {makeMonthsOptions(modal.modalProps.begin.month)}
                           </select>
                           <select value={modal.modalProps.begin.year} onChange={(e) => onUpdatePeriodForm(e, 'begin', 'year', modal.modalProps)} id="q_validity_period_begin_gteq_1i" className="date required form-control">
-                            {makeYearsOptions(modal.modalProps.begin.year)}
+                            {makeYearsOptions(modal.modalProps.begin.year, modal.modalProps.end.year)}
                           </select>
                         </div>
                       </div>
@@ -88,7 +93,7 @@ export default function PeriodForm({modal, timetable, metas, onOpenAddPeriodForm
                             {makeMonthsOptions(modal.modalProps.end.month)}
                           </select>
                           <select value={modal.modalProps.end.year} onChange={(e) => onUpdatePeriodForm(e, 'end', 'year', modal.modalProps)} id="q_validity_period_end_gteq_1i" className="date required form-control">
-                            {makeYearsOptions(modal.modalProps.end.year)}
+                            {makeYearsOptions(modal.modalProps.begin.year, modal.modalProps.end.year)}
                           </select>
                         </div>
                       </div>
