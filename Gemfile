@@ -141,7 +141,6 @@ gem 'sidekiq', require: ['sidekiq', 'sidekiq/web']
 gem 'sidekiq-limit_fetch'
 gem 'whenever', github: 'af83/whenever', require: false # '~> 0.9'
 gem 'rake'
-gem 'devise-async'
 gem 'apartment', '~> 1.0.0'
 gem 'aasm'
 gem 'activerecord-nulldb-adapter' if ENV['RAILS_DB_ADAPTER'] == 'nulldb'

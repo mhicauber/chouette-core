@@ -211,8 +211,6 @@ GEM
       responders
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
-    devise-async (0.10.2)
-      devise (>= 3.2, < 4.0)
     devise-encryptable (0.2.0)
       devise (>= 2.1.0)
     devise-i18n (1.1.2)
@@ -666,7 +664,6 @@ DEPENDENCIES
   deep_cloneable (~> 2.0.0)
   derailed_benchmarks
   devise (~> 3.5.4)
-  devise-async
   devise-encryptable
   devise-i18n
   devise_cas_authenticatable
