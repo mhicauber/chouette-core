@@ -4,8 +4,9 @@ class ImportObserver < ActiveRecord::Observer
   def after_update(import)
     return unless email_sendable_for?(import)
 
-    user = User.find_by(name: import.creator)
-    MailerJob.perform_later('ImportMailer', 'finished', [import.id, user.id, import.status]) if user
+    import.notify_relevant_users 'ImportMailer', 'finished' do |recipients|
+      [import.id, recipients, import.status]
+    end
   end
 
   private
@@ -13,5 +14,4 @@ class ImportObserver < ActiveRecord::Observer
   def email_sendable_for?(import)
     import.finished? && import.changes.include?('status')
   end
-
 end

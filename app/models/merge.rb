@@ -1,5 +1,6 @@
 class Merge < ApplicationModel
   include OperationSupport
+  include NotifiableSupport
 
   belongs_to :workbench
 

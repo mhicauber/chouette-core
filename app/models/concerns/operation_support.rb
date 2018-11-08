@@ -3,7 +3,7 @@ module OperationSupport
 
   included do |into|
     into.extend Enumerize
-
+    
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }
 

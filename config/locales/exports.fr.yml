@@ -90,6 +90,7 @@ fr:
         parent: Parent
         referential_id: Jeu de données
         referential: Jeu de données
+        notification_target: Destinataire(s) des notifications
       export:
         <<: *attrs
         base:

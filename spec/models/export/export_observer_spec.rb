@@ -2,19 +2,12 @@ require 'rails_helper'
 
 RSpec.describe ExportObserver, type: :observer do
   let(:user) { create :user, confirmed_at: Time.now }
+  let(:notification_target) { nil }
   let(:parent) { create(:workbench_import, creator: user.name) }
   let(:referential) { create :referential }
-  let(:export) { create(:gtfs_export, creator: user.name) }
+  subject(:export) { create(:gtfs_export, creator: user.name, notification_target: notification_target, user: user) }
+  let(:mailer) { ExportMailer }
+  let(:observer) { ExportObserver }
 
-  it 'should observe export create' do
-    expect(ExportObserver.instance).to receive(:after_update).exactly(:once)
-    export.status = 'successful'
-    export.save
-  end
-
-  it 'should schedule mailer on import create' do
-    expect(MailerJob).to receive(:perform_later).with('ExportMailer', 'finished', anything).exactly(:once)
-    export.status = 'successful'
-    export.save
-  end
+  it_behaves_like 'a notifiable operation'
 end

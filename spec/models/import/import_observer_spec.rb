@@ -2,18 +2,10 @@ require 'rails_helper'
 
 RSpec.describe ImportObserver, type: :observer do
   let(:user) { create :user, confirmed_at: Time.now }
-  let(:workbench_import) { create(:workbench_import, creator: user.name) }
+  subject(:workbench_import) { create(:workbench_import, creator: user.name, user: user, notification_target: notification_target) }
   let(:referential) { create :referential }
+  let(:mailer) { ImportMailer }
+  let(:observer) { ImportObserver }
 
-  it 'should observe import finish' do
-    expect(ImportObserver.instance).to receive(:after_update).exactly(:once)
-    workbench_import.status = 'successful'
-    workbench_import.save
-  end
-
-  it 'should schedule mailer on import finished' do
-    expect(MailerJob).to receive(:perform_later).with('ImportMailer', 'finished', anything).exactly(:once)
-    workbench_import.status = 'successful'
-    workbench_import.save
-  end
+  it_behaves_like 'a notifiable operation'
 end

@@ -3,6 +3,7 @@ require 'net/http/post/multipart'
 class Export::Base < ActiveRecord::Base
   include Rails.application.routes.url_helpers
   include OptionsSupport
+  include NotifiableSupport
 
   self.table_name = "exports"
 

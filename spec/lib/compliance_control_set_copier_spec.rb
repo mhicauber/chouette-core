@@ -92,6 +92,14 @@ RSpec.describe ComplianceControlSetCopier do
         it 'returns the newly-created ComplianceCheckSet' do
           expect(subject.copy(cc_set.id, ref.id, 1)).to eq(cck_set)
         end
+
+        it 'uses the given block' do
+          subject.copy(cc_set.id, ref.id, 1) do |set|
+            set.notification_target = :user
+          end
+
+          expect(cck_set.notification_target).to eq "user"
+        end
       end
 
     end

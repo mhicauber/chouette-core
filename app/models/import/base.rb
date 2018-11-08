@@ -1,6 +1,7 @@
 class Import::Base < ApplicationModel
   self.table_name = "imports"
   include OptionsSupport
+  include NotifiableSupport
 
   PERIOD_EXTREME_VALUE = 15.years
 

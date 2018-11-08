@@ -97,6 +97,7 @@ en:
         ignore_last_word: "ignore last word"
         ignore_end_chars: "ignore last chars"
         referential: Referential
+        notification_target: Notifications recipients
       import:
         <<: *attrs
         base:
