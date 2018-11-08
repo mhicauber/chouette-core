@@ -118,6 +118,10 @@ class Workgroup < ApplicationModel
     ComplianceControlSet.where(id: id).last if id.present?
   end
 
+  def owner_workbench
+    workbenches.find_by organisation_id: owner_id
+  end
+
   private
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t

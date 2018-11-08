@@ -31,13 +31,17 @@ module NotifiableSupport
     update_column :notified_recipients_at, Time.now
   end
 
+  def workbench_for_notifications
+    workbench
+  end
+
   def notification_recipients
     return [] unless notification_target.present?
 
     users = if notification_target.to_s == 'user'
       [user]
     else
-      workbench.users
+      workbench_for_notifications.users
     end
 
     users.compact.map(&:email_recipient)

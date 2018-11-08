@@ -1,8 +1,7 @@
 class AggregateMailer < ApplicationMailer
-
-  def finished aggregate_id, user_id
+  def finished(aggregate_id, recipients, status=nil)
     @aggregate = Aggregate.find(aggregate_id)
-    @user = User.find(user_id)
-    mail to: @user.email, subject: t('mailers.aggregate_mailer.finished.subject')
+    @status = status || @aggregate.status
+    mail bcc: recipients, subject: t('mailers.aggregate_mailer.finished.subject')
   end
 end

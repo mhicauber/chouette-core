@@ -35,6 +35,7 @@ fr:
         operator: Utilisateur
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"
+        notification_target: Destinataire(s) des notifications
     errors:
       models:
         aggregate:

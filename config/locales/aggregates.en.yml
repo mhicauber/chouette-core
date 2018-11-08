@@ -36,6 +36,7 @@ en:
         operator: User
         available_referentials: "Avalaible data spaces"
         selected_referentials: "Selected data spaces"
+        notification_target: Notifications recipients
     errors:
       models:
         aggregate:

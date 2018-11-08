@@ -2,7 +2,7 @@ RSpec.shared_examples_for 'a notifiable operation' do
   let(:notification_target) { nil }
 
   before(:each) do
-    workbench = subject.workbench
+    workbench = subject.workbench_for_notifications
     3.times do
       workbench.organisation.users << create(:user)
     end
@@ -45,7 +45,7 @@ RSpec.shared_examples_for 'a notifiable operation' do
     let(:notification_target) { :workbench }
 
     it 'should schedule mailer when finished' do
-      expect(MailerJob).to receive(:perform_later).with(mailer.name, 'finished', [subject.id, subject.workbench.users.map(&:email_recipient), 'successful']).exactly(:once)
+      expect(MailerJob).to receive(:perform_later).with(mailer.name, 'finished', [subject.id, subject.workbench_for_notifications.users.map(&:email_recipient), 'successful']).exactly(:once)
       subject.status = 'successful'
       subject.save
       expect(subject.notified_recipients?).to be_truthy
