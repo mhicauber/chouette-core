@@ -7,6 +7,7 @@ fr:
       title: "Nouvelle agrégation de l'offre"
     show:
       title: "Agrégation de l'offre %{name}"
+      finalized_offer: "Offre finalisée"
     actions:
       create: Agréger des Jeux de Données
     statuses:
@@ -35,7 +36,6 @@ fr:
         operator: Utilisateur
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"
-        merge: Offre finalisées
     errors:
       models:
         aggregate:

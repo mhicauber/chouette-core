@@ -7,6 +7,7 @@ en:
       title: "New aggregated offer"
     show:
       title: "Aggregated offer %{name}"
+      finalized_offer: "Merged offer"
     actions:
       create: Aggregated data spaces
       rollback: Rollback
@@ -36,7 +37,6 @@ en:
         operator: User
         available_referentials: "Avalaible data spaces"
         selected_referentials: "Selected data spaces"
-        merge: Merged offer
     errors:
       models:
         aggregate:
