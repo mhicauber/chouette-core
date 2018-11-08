@@ -91,6 +91,12 @@ describe Chouette::VehicleJourney, :type => :model do
 
   describe 'checksum' do
     it_behaves_like 'checksum support'
+    it "changes when the route is modified" do
+      vehicle_journey = create(:vehicle_journey)
+      route = vehicle_journey.route
+      expect { route.stop_points.first.update(position: route.stop_points.size); p route.reload.stop_areas.map(&:id) }.to(change { vehicle_journey.reload.checksum } )
+    end
+
     it "changes when a vjas is updated" do
       vehicle_journey = create(:vehicle_journey)
       expect{vehicle_journey.vehicle_journey_at_stops.last.update_attribute(:departure_time, Time.now)}.to change{vehicle_journey.reload.checksum}
