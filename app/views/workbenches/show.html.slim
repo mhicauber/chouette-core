@@ -26,7 +26,7 @@
               [ \
                 TableBuilderHelper::Column.new( \
                   key: :name, \
-                  attribute: Proc.new {|w| w.name.truncate(60)}, \
+                  attribute: 'name', \
                   link_to: lambda do |referential| \
                     referential_path(referential) \
                   end \
