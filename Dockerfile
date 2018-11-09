@@ -29,7 +29,7 @@ RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
 # Use a Gemfile.docker file to use temporary activerecord-nulldb-adapter
 COPY Gemfile Gemfile.lock /app/
 RUN apt-get update && apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core && \
-    cd /app && bundle install --without development test --path vendor/bundle && \
+    cd /app && bundle install --deployment --jobs 4 --without development test && \
     apt-get -y remove build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core && \
     rm -rf /var/lib/gems/2.3.0/cache/ vendor/bundle/ruby/2.3.0/cache /root/.bundle/ && \
     apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
