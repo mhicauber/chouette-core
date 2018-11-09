@@ -15,7 +15,7 @@
         = definition_list t('metadatas'), attributes
 
     - unless @referential.ready?
-      - if operation = @referential.last_operation
+      - if (operation = @referential.last_operation) && policy(operation).show?
         .jumbotron
             = import_status(operation.status)
             - url = operation.is_a?(Import::Base) ? [operation.workbench, operation.parent || operation] : [@referential, operation]

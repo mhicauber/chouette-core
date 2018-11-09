@@ -1,7 +1,7 @@
 class ImportPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope
+      scope.where(workbench_id: user.organisation.workbench_ids)
     end
   end
 
