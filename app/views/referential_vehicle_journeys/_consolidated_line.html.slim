@@ -5,7 +5,7 @@
       | &nbsp;
     strong= consolidated_line.name
   .routes
-    - consolidated_line.routes.each do |route|
+    - consolidated_line.each_route do |route|
       .route
         .head class="#{route.highlighted? ? 'highlighted' : ''}"
           = link_to '#', class: 'toggle-route' do
@@ -71,7 +71,7 @@
                        = "(#{sp.stop_area.time_zone_formatted_offset})"
           .t2e-item-list.w80
             div
-              - route.vehicle_journeys.each do |journey|
+              - route.each_vehicle_journey do |journey|
                 .t2e-item class="#{journey.highlighted? ? 'highlighted' : ''}"
                   .th
                     div

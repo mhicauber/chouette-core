@@ -77,16 +77,20 @@ module Chouette
     end
 
     def self.applied_at_least_once_in_ids(date_range)
-      query =  <<-SQL
-        WITH  dates AS (
-          #{dates_subquery(date_range)}
-        ), applicable_dates_subquery AS (
-          #{applicable_dates_subquery}
-        )
-        #{self.select('DISTINCT(time_tables.id)').joins("INNER JOIN applicable_dates_subquery ON applicable_dates_subquery.time_table_id = time_tables.id").to_sql}
-      SQL
+      ids = Set.new
+      date_range.each_slice(200) do |range|
+        query =  <<-SQL
+          WITH  dates AS (
+            #{dates_subquery(range)}
+          ), applicable_dates_subquery AS (
+            #{applicable_dates_subquery}
+          )
+          #{self.select('DISTINCT(time_tables.id)').joins("INNER JOIN applicable_dates_subquery ON applicable_dates_subquery.time_table_id = time_tables.id").to_sql}
+        SQL
 
-      ::ActiveRecord::Base.connection.execute(query).map{|r| r['id']}
+        ids += ::ActiveRecord::Base.connection.execute(query).map{|r| r['id']}
+      end
+      ids.to_a
     end
 
     def self.dates_subquery(date_range)

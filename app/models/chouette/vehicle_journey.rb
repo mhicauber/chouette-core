@@ -121,7 +121,7 @@ module Chouette
     def self.with_matching_timetable date_range
       time_table_ids = Chouette::TimeTable.joins(
         :vehicle_journeys
-      ).merge(self.all).applied_at_least_once_in_ids(date_range)
+      ).merge(self.all).overlapping(date_range)
       joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
 

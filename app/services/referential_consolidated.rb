@@ -8,7 +8,7 @@ class ReferentialConsolidated
 
   def paginated_lines
     @paginated_lines ||= begin
-      line_ids = @vehicle_journeys.joins(route: :line).reorder(nil).pluck('DISTINCT(lines.id)')
+      line_ids = @vehicle_journeys.joins(route: :line).reorder(nil).pluck('lines.id').uniq
       lines = Chouette::Line.where(id: line_ids).order(:name)
       lines.paginate page: params[:page], per_page: params[:per_page] || 10
     end
@@ -16,6 +16,10 @@ class ReferentialConsolidated
 
   def lines
     paginated_lines.to_a.map { |l| Line.new(self, l, @vehicle_journeys, params) }
+  end
+
+  def each_line
+    paginated_lines.each { |l| yield Line.new(self, l, @vehicle_journeys, params) }
   end
 
   def _should_highlight?
@@ -68,6 +72,12 @@ class ReferentialConsolidated
     def routes
       ar_model.routes.order(:name).map { |r| Route.new(self, r, @all_vehicle_journeys, params) }
     end
+
+    def each_route
+      ar_model.routes.order(:name).find_each do |r|
+        yield Route.new(self, r, @all_vehicle_journeys, params)
+      end
+    end
   end
 
   class Route < Base
@@ -85,6 +95,12 @@ class ReferentialConsolidated
 
     def vehicle_journeys
       ar_model.vehicle_journeys.select(:id, :published_journey_name, :route_id, :journey_pattern_id).map { |vj| VehicleJourney.new(self, vj, @all_vehicle_journeys, params, vehicle_journey_at_stops: vehicle_journey_at_stops[vj.id]) }
+    end
+
+    def each_vehicle_journey
+      ar_model.vehicle_journeys.select(:id, :published_journey_name, :route_id, :journey_pattern_id).find_each do |vj|
+        yield VehicleJourney.new(self, vj, @all_vehicle_journeys, params, vehicle_journey_at_stops: vehicle_journey_at_stops[vj.id])
+      end
     end
 
     def highlighted_journeys
