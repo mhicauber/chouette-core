@@ -5,6 +5,7 @@
 .DS_Store
 
 /.bundle/config
+/Jenkinsfile
 
 /public/javascripts/i18n.js
 /public/javascripts/translations.js
