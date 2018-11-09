@@ -173,6 +173,7 @@ module Chouette
     has_checksum_children VehicleJourneyAtStop
     has_checksum_children PurchaseWindow
     has_checksum_children Footnote
+    has_checksum_children StopPoint
 
     def set_default_values
       if number.nil?
