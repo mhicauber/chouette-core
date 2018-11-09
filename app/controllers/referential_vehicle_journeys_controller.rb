@@ -26,6 +26,8 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   def collection
     @q ||= end_of_association_chain
+    # We filter as much as as possible BEFORE the expensive queries
+    @q = @q.with_companies(params[:q][:company_id_eq_any]) if params[:q] && params[:q][:company_id_eq_any]
     @q = @q.with_stop_area_ids(params[:q][:stop_area_ids]) if params[:q] && params[:q][:stop_area_ids]
     @q = ransack_period_range(scope: @q, error_message:  t('vehicle_journeys.errors.purchase_window'), query: :in_purchase_window, prefix: :purchase_window)
     @q = ransack_period_range(scope: @q, error_message:  t('vehicle_journeys.errors.time_table'), query: :with_matching_timetable, prefix: :time_table)

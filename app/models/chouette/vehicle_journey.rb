@@ -46,6 +46,8 @@ module Chouette
     before_validation :set_default_values,
       :calculate_vehicle_journey_at_stop_day_offset
 
+    scope :with_companies, ->(ids){ where(company_id: ids) }
+
     scope :with_stop_area_ids, ->(ids){
       _ids = ids.select(&:present?).map(&:to_i)
       if _ids.present?
@@ -119,9 +121,20 @@ module Chouette
     # returns VehicleJourneys with at least 1 day in their time_tables
     # included in the given range
     def self.with_matching_timetable date_range
-      time_table_ids = Chouette::TimeTable.joins(
+      scope = Chouette::TimeTable.joins(
         :vehicle_journeys
-      ).merge(self.all).overlapping(date_range)
+      ).merge(self.all)
+
+      min_date = scope.joins(:periods).select('time_table_periods.period_start').order('time_table_periods.period_start').first.period_start
+      max_date = scope.joins(:periods).select('time_table_periods.period_end').order('time_table_periods.period_end').last.period_end
+
+      return none unless min_date && max_date
+
+      date_range = date_range & (min_date..max_date)
+
+      return none unless date_range.count > 0
+
+      time_table_ids = scope.overlapping(date_range).applied_at_least_once_in_ids(date_range)
       joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
 
