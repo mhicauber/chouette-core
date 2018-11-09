@@ -18,19 +18,20 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 # To force rebuild every week
 ARG WEEK
 
-# Install ruby, native dependencies, bundler and yarn
+# Install ruby and bundler
 RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
     apt-get install -y --no-install-recommends ruby2.3 locales && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
-    apt-get install -y --no-install-recommends libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 cron && \
     gem2.3 install --no-ri --no-rdoc bundler
 
+ENV DEV_PACKAGES="build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
+ENV RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6 cron"
+
 # Install bundler packages
-# Use a Gemfile.docker file to use temporary activerecord-nulldb-adapter
 COPY Gemfile Gemfile.lock /app/
-RUN apt-get update && apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core && \
+RUN apt-get -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES && \
     cd /app && bundle install --deployment --jobs 4 --without development test && \
-    apt-get -y remove build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core && \
+    apt-get -y remove $DEV_PACKAGES && \
     rm -rf /var/lib/gems/2.3.0/cache/ vendor/bundle/ruby/2.3.0/cache /root/.bundle/ && \
     apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
