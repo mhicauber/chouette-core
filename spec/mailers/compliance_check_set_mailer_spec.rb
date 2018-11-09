@@ -1,13 +1,13 @@
 require "rails_helper"
 
-RSpec.describe MergeMailer, type: :mailer do
+RSpec.describe ComplianceCheckSetMailer, type: :mailer do
   let(:user) {create :user}
 
   let(:ccset) { create :compliance_check_set, metadata: {creator_id: user.id} }
-  let(:email)    { ComplianceCheckSetMailer.send('finished', ccset.id, user.id) }
+  let(:email)    { ComplianceCheckSetMailer.send('finished', ccset.id, [user.email_recipient]) }
 
   it 'should deliver email to user' do
-    expect(email).to deliver_to user.email
+    expect(email).to bcc_to user.email
   end
 
   it 'should have correct from' do
