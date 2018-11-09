@@ -365,7 +365,7 @@ describe Chouette::VehicleJourney, :type => :model do
       end
     end
 
-    context "with a time table with no matching period but not the right extra day" do
+    context "with a time table with no matching period but the right extra day" do
       let(:start_date){end_date - 1.day}
       let(:end_date){Time.now.end_of_week.to_date}
 

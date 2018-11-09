@@ -124,15 +124,17 @@ module Chouette
       scope = Chouette::TimeTable.joins(
         :vehicle_journeys
       ).merge(self.all)
-
-      min_date = scope.joins(:periods).select('time_table_periods.period_start').order('time_table_periods.period_start').first.period_start
-      max_date = scope.joins(:periods).select('time_table_periods.period_end').order('time_table_periods.period_end').last.period_end
+      dates_scope = scope.joins(:dates).select('time_table_dates.date').order('time_table_dates.date').where('time_table_dates.in_out' => true)
+      min_date = scope.joins(:periods).select('time_table_periods.period_start').order('time_table_periods.period_start').first&.period_start
+      min_date = [min_date, dates_scope.first&.date].compact.min
+      max_date = scope.joins(:periods).select('time_table_periods.period_end').order('time_table_periods.period_end').last&.period_end
+      max_date = [max_date, dates_scope.last&.date].compact.max
 
       return none unless min_date && max_date
 
       date_range = date_range & (min_date..max_date)
 
-      return none unless date_range.count > 0
+      return none unless date_range && date_range.count > 0
 
       time_table_ids = scope.overlapping(date_range).applied_at_least_once_in_ids(date_range)
       joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
