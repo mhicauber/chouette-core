@@ -41,7 +41,7 @@ RSpec.describe JourneyPatternOfferService do
     end
 
     context 'with a single day period of circulation' do
-      let(:circulation_day) { (period_start + 10.days).beginning_of_week }
+      let(:circulation_day) { (period_start + 15.days).beginning_of_week }
 
       context 'matching application days' do
         before do
@@ -203,7 +203,7 @@ RSpec.describe JourneyPatternOfferService do
         let(:time_tables_2) { time_tables }
 
         context 'with a single day period of circulation' do
-          let(:circulation_day) { (period_start + 10.days).beginning_of_week }
+          let(:circulation_day) { (period_start + 15.days).beginning_of_week }
 
           context 'matching application days' do
             before do
