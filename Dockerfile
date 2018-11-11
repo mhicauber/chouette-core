@@ -76,7 +76,7 @@ COPY --from=assets-builder /app/public/packs/ /app/public/packs/
 
 RUN cd /app && \
     RAILS_ENV=production bundle exec whenever --output '/proc/1/fd/1' --update-crontab chouette --set 'environment=production&bundle_command=bundle exec' --roles=app,db,web && \
-    ([ -n "$VERSION" ] && echo "{'build_name': '$VERSION'}" > config/version.json) || true
+    ([ -n "$VERSION" ] && echo "{\"build_name\": \"$VERSION\"}" > config/version.json) || true
 
 WORKDIR /app
 VOLUME /app/public/uploads
