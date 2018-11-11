@@ -1,11 +1,14 @@
-.git
-Dockerfile
+/.git
+/Dockerfile
+/.gitignore
+/README.md
 .DS_Store
-.gitignore
-README.md
 
-public/javascripts/i18n.js
-public/javascripts/translations.js
+/.bundle/config
+/Jenkinsfile
+
+/public/javascripts/i18n.js
+/public/javascripts/translations.js
 
 /config/development_toolbar.rb
 /coverage/*
