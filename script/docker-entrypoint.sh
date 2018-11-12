@@ -11,7 +11,7 @@ case $command in
     exec bundle exec sidekiq -e production
     ;;
   sync)
-    exec bash launch-cron
+    exec bash ./script/launch-cron
     ;;
   front)
     if [ "$RUN_MIGRATIONS" = "true" ]; then
