@@ -5,8 +5,6 @@ module NotifiableSupport
     extend Enumerize
     enumerize :notification_target, in: %w[user workbench], default: :user
     belongs_to :user
-
-    validates :notification_target, presence: true
   end
 
   module ClassMethods
