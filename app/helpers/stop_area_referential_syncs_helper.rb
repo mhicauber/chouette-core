@@ -5,7 +5,7 @@ module StopAreaReferentialSyncsHelper
   end
 
   def stop_area_referential_sync_created_at(stop_area_ref_sync)
-    l(last_stop_area_ref_sync_message(stop_area_ref_sync).created_at, format: :short_with_time)
+    l(stop_area_ref_sync.ended_at, format: :short_with_time) if stop_area_ref_sync.ended_at
   end
 
   def stop_area_referential_sync_status(stop_area_ref_sync)
