@@ -41,14 +41,6 @@ class WorkbenchesController < ChouetteController
     redirect_to resource
   end
 
-  def edit_controls
-    edit!
-  end
-
-  def update_controls
-    update!
-  end
-
   private
 
   def workbench_params
@@ -134,4 +126,9 @@ class WorkbenchesController < ChouetteController
     copy_params.delete('archived_at_null')
     copy_params
   end
+
+  protected
+
+  alias_method :edit_controls, :edit
+  alias_method :update_controls, :update
 end
