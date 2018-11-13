@@ -8,6 +8,7 @@ RSpec.describe MergeObserver, type: :observer do
   let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
   let(:referential) { create :referential, workbench: workbench, organisation: workbench.organisation }
   let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3), referential: referential) }
+  let(:notification_target) { nil }
 
   subject(:merge) do
     Merge.create workbench: referential.workbench,

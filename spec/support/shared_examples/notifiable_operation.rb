@@ -15,7 +15,11 @@ RSpec.shared_examples_for 'a notifiable operation' do
   end
 
   context 'without notification_target' do
-    it 'should schedule mailer when finished' do
+    before(:each) do
+      subject.notification_target = nil
+    end
+
+    it 'should not schedule mailer when finished' do
       expect(MailerJob).to_not receive(:perform_later)
       subject.status = 'successful'
       subject.save
@@ -31,7 +35,9 @@ RSpec.shared_examples_for 'a notifiable operation' do
   end
 
   context 'with notification_target set to user' do
-    let(:notification_target) { :user }
+    before(:each) do
+      subject.notification_target = :user
+    end
 
     it 'should schedule mailer when finished' do
       expect(MailerJob).to receive(:perform_later).with(mailer.name, 'finished', [subject.id, [user.email_recipient], 'successful']).exactly(:once)
@@ -42,7 +48,9 @@ RSpec.shared_examples_for 'a notifiable operation' do
   end
 
   context 'with notification_target set to workbench' do
-    let(:notification_target) { :workbench }
+    before(:each) do
+      subject.notification_target = :workbench
+    end
 
     it 'should schedule mailer when finished' do
       expect(MailerJob).to receive(:perform_later).with(mailer.name, 'finished', [subject.id, subject.workbench_for_notifications.users.map(&:email_recipient), 'successful']).exactly(:once)

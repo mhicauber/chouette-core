@@ -1,10 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe MergeObserver, type: :observer do
+RSpec.describe AggregateObserver, type: :observer do
   let(:user) { create :user, confirmed_at: Time.now }
   let(:workbench) { create :workbench }
   let(:ref1) { create :referential, workbench: workbench, organisation: workbench.organisation }
   let(:ref2) { create :referential, workbench: workbench, organisation: workbench.organisation }
+  let(:notification_target) { nil }
 
   subject(:aggregate) do
     Aggregate.create(
