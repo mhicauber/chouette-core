@@ -361,7 +361,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
       let(:timetable){
         tt = create :time_table, dates_count: 0, periods_count: 0
-        create :time_table_period, period_start: start_date-1.month, period_end: start_date-1.day, time_table: tt
+        create :time_table_period, period_start: start_date-1.month, period_end: start_date, time_table: tt
         create(:time_table_date, :date => start_date, in_out: false, time_table: tt)
         tt
       }
@@ -371,7 +371,7 @@ describe Chouette::VehicleJourney, :type => :model do
       end
     end
 
-    context "with a time table with no matching period but not the right extra day" do
+    context "with a time table with no matching period but the right extra day" do
       let(:start_date){end_date - 1.day}
       let(:end_date){Time.now.end_of_week.to_date}
 

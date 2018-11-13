@@ -46,6 +46,8 @@ module Chouette
     before_validation :set_default_values,
       :calculate_vehicle_journey_at_stop_day_offset
 
+    scope :with_companies, ->(ids){ where(company_id: ids) }
+
     scope :with_stop_area_ids, ->(ids){
       _ids = ids.select(&:present?).map(&:to_i)
       if _ids.present?
@@ -119,15 +121,23 @@ module Chouette
     # returns VehicleJourneys with at least 1 day in their time_tables
     # included in the given range
     def self.with_matching_timetable date_range
-      out = []
-      time_tables = Chouette::TimeTable.where(id: self.joins("INNER JOIN time_tables_vehicle_journeys ON vehicle_journeys.id = time_tables_vehicle_journeys.vehicle_journey_id").pluck('time_tables_vehicle_journeys.time_table_id')).overlapping(date_range)
-      time_tables = time_tables.select do |time_table|
-        range = date_range
-        range = date_range & (time_table.start_date-1.day..time_table.end_date+1.day) || [] if time_table.start_date.present? && time_table.end_date.present?
-        range.any?{|d| time_table.include_day?(d) }
-      end
-      out += time_tables.map{|t| t.vehicle_journey_ids}.flatten
-      where(id: out)
+      scope = Chouette::TimeTable.joins(
+        :vehicle_journeys
+      ).merge(self.all)
+      dates_scope = scope.joins(:dates).select('time_table_dates.date').order('time_table_dates.date').where('time_table_dates.in_out' => true)
+      min_date = scope.joins(:periods).select('time_table_periods.period_start').order('time_table_periods.period_start').first&.period_start
+      min_date = [min_date, dates_scope.first&.date].compact.min
+      max_date = scope.joins(:periods).select('time_table_periods.period_end').order('time_table_periods.period_end').last&.period_end
+      max_date = [max_date, dates_scope.last&.date].compact.max
+
+      return none unless min_date && max_date
+
+      date_range = date_range & (min_date..max_date)
+
+      return none unless date_range && date_range.count > 0
+
+      time_table_ids = scope.overlapping(date_range).applied_at_least_once_in_ids(date_range)
+      joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
 
     # TODO: Remove this validator

@@ -25,10 +25,17 @@ class ReferentialVehicleJourneysController < ChouetteController
   private
 
   def collection
-    @q ||= end_of_association_chain.select("vehicle_journeys.id", "vehicle_journeys.journey_pattern_id", "vehicle_journeys.route_id", "vehicle_journeys.objectid", "vehicle_journeys.published_journey_name")
+    @q ||= end_of_association_chain
+    # We filter as much as as possible BEFORE the expensive queries
+
+    if params[:q] && params[:q][:company_id_eq_any]
+      company_ids = params[:q][:company_id_eq_any].delete_if(&:blank?)
+      @q = @q.with_companies(company_ids) unless company_ids.empty?
+    end
     @q = @q.with_stop_area_ids(params[:q][:stop_area_ids]) if params[:q] && params[:q][:stop_area_ids]
     @q = ransack_period_range(scope: @q, error_message:  t('vehicle_journeys.errors.purchase_window'), query: :in_purchase_window, prefix: :purchase_window)
     @q = ransack_period_range(scope: @q, error_message:  t('vehicle_journeys.errors.time_table'), query: :with_matching_timetable, prefix: :time_table)
+    @q = @q.select("vehicle_journeys.id", "vehicle_journeys.journey_pattern_id", "vehicle_journeys.route_id", "vehicle_journeys.objectid", "vehicle_journeys.published_journey_name")
     @starting_stop = params[:q] && params[:q][:stop_areas] && params[:q][:stop_areas][:start].present? ? Chouette::StopArea.find(params[:q][:stop_areas][:start]) : nil
     @ending_stop = params[:q] && params[:q][:stop_areas] && params[:q][:stop_areas][:end].present? ? Chouette::StopArea.find(params[:q][:stop_areas][:end]) : nil
 

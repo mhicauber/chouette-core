@@ -1,5 +1,5 @@
 .row.consolidated-view
-  - @consolidated.lines.each do |line|
+  - @consolidated.each_line do |line|
     = render partial: "consolidated_line", object: line
   .col-md-12
     = new_pagination @consolidated.paginated_lines, 'pull-right'
