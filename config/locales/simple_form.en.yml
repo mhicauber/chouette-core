@@ -10,7 +10,9 @@ en:
       mark: '*'
     error_notification:
       default_message: "Please review the problems below:"
-
+    include_blanks:
+      defaults:
+        notification_target: "Without notification"
   helpers:
     submit:
       create: Submit
