@@ -5,7 +5,7 @@ module LineReferentialSyncsHelper
   end
 
   def line_referential_sync_created_at(line_ref_sync)
-    l(last_line_ref_sync_message(line_ref_sync).created_at, format: :short_with_time)
+    l(line_ref_sync.ended_at, format: :short_with_time) if line_ref_sync.ended_at
   end
 
   def line_referential_sync_status(line_ref_sync)
