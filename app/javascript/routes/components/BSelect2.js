@@ -83,6 +83,7 @@ class BSelect2 extends Component{
   render() {
     return (
       <Select2
+        id={this.props.id}
         value={ this.props.value.stoparea_id }
         onSelect={ this.props.onSelect }
         ref='newSelect'
