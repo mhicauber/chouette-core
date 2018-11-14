@@ -39,12 +39,14 @@ class ExportsController < ChouetteController
   end
 
   def export_params
-    permitted_keys = %i(name type referential_id)
+    permitted_keys = %i(name type referential_id notification_target)
     export_class = params[:export] && params[:export][:type] && params[:export][:type].safe_constantize
     if export_class
       permitted_keys += export_class.options.keys
     end
-    params.require(:export).permit(permitted_keys)
+    export_params = params.require(:export).permit(permitted_keys)
+    export_params[:user_id] ||= current_user.id
+    export_params
   end
 
   def decorate_collection(exports)

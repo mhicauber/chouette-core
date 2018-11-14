@@ -42,6 +42,7 @@ fr:
         context: Contexte
         context_i18n: Contexte
         status: Statut
+        notification_target: Destinataire(s) des notifications
       compliance_check_resource:
         name: Nom de la ligne
         status: État

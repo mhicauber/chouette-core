@@ -89,6 +89,7 @@ en:
         files: "Outputs"
         parent: Parent
         referential_id: Referential
+        notification_target: Notifications recipients
       export:
         <<: *attrs
         base:

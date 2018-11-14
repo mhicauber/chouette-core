@@ -44,6 +44,7 @@ en:
         compliance_control_set: Compliance control set
         name: Name
         status: Status
+        notification_target: Notifications recipients
       compliance_check_resources:
         name: Name of the line
         status: Status

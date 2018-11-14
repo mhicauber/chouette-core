@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181029104832) do
+ActiveRecord::Schema.define(version: 20181107144431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,16 +73,19 @@ ActiveRecord::Schema.define(version: 20181029104832) do
   add_index "access_points", ["objectid"], name: "access_points_objectid_key", unique: true, using: :btree
 
   create_table "aggregates", id: :bigserial, force: :cascade do |t|
-    t.integer  "workgroup_id",    limit: 8
+    t.integer  "workgroup_id",           limit: 8
     t.string   "status"
     t.string   "name"
-    t.integer  "referential_ids", limit: 8,              array: true
-    t.integer  "new_id",          limit: 8
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.integer  "referential_ids",        limit: 8,              array: true
+    t.integer  "new_id",                 limit: 8
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.string   "creator"
     t.datetime "started_at"
     t.datetime "ended_at"
+    t.string   "notification_target"
+    t.datetime "notified_recipients_at"
+    t.integer  "user_id",                limit: 8
   end
 
   add_index "aggregates", ["workgroup_id"], name: "index_aggregates_on_workgroup_id", using: :btree
@@ -220,6 +223,9 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.datetime "notified_parent_at"
     t.jsonb    "metadata",                            default: {}
     t.string   "context"
+    t.string   "notification_target"
+    t.datetime "notified_recipients_at"
+    t.integer  "user_id",                   limit: 8
   end
 
   add_index "compliance_check_sets", ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id", using: :btree
@@ -353,8 +359,8 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.string   "status"
     t.string   "current_step_id"
     t.float    "current_step_progress"
-    t.integer  "workbench_id",          limit: 8
-    t.integer  "referential_id",        limit: 8
+    t.integer  "workbench_id",           limit: 8
+    t.integer  "referential_id",         limit: 8
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -363,13 +369,16 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.datetime "ended_at"
     t.string   "token_upload"
     t.string   "type"
-    t.integer  "parent_id",             limit: 8
+    t.integer  "parent_id",              limit: 8
     t.string   "parent_type"
     t.datetime "notified_parent_at"
-    t.integer  "current_step",                    default: 0
-    t.integer  "total_steps",                     default: 0
+    t.integer  "current_step",                     default: 0
+    t.integer  "total_steps",                      default: 0
     t.string   "creator"
     t.hstore   "options"
+    t.string   "notification_target"
+    t.datetime "notified_recipients_at"
+    t.integer  "user_id",                limit: 8
   end
 
   add_index "exports", ["referential_id"], name: "index_exports_on_referential_id", using: :btree
@@ -475,8 +484,8 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.string   "status"
     t.string   "current_step_id"
     t.float    "current_step_progress"
-    t.integer  "workbench_id",          limit: 8
-    t.integer  "referential_id",        limit: 8
+    t.integer  "workbench_id",           limit: 8
+    t.integer  "referential_id",         limit: 8
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -485,13 +494,16 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.datetime "ended_at"
     t.string   "token_download"
     t.string   "type"
-    t.integer  "parent_id",             limit: 8
+    t.integer  "parent_id",              limit: 8
     t.string   "parent_type"
     t.datetime "notified_parent_at"
-    t.integer  "current_step",                    default: 0
-    t.integer  "total_steps",                     default: 0
+    t.integer  "current_step",                     default: 0
+    t.integer  "total_steps",                      default: 0
     t.string   "creator"
     t.hstore   "options"
+    t.string   "notification_target"
+    t.datetime "notified_recipients_at"
+    t.integer  "user_id",                limit: 8
   end
 
   add_index "imports", ["referential_id"], name: "index_imports_on_referential_id", using: :btree
@@ -599,15 +611,18 @@ ActiveRecord::Schema.define(version: 20181029104832) do
   add_index "lines", ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
 
   create_table "merges", id: :bigserial, force: :cascade do |t|
-    t.integer  "workbench_id",    limit: 8
-    t.integer  "referential_ids", limit: 8,              array: true
+    t.integer  "workbench_id",           limit: 8
+    t.integer  "referential_ids",        limit: 8,              array: true
     t.string   "creator"
     t.string   "status"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.integer  "new_id",          limit: 8
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.integer  "new_id",                 limit: 8
+    t.string   "notification_target"
+    t.datetime "notified_recipients_at"
+    t.integer  "user_id",                limit: 8
   end
 
   add_index "merges", ["workbench_id"], name: "index_merges_on_workbench_id", using: :btree
@@ -957,7 +972,6 @@ ActiveRecord::Schema.define(version: 20181029104832) do
     t.text    "checksum_source"
   end
 
-  add_index "time_table_dates", ["in_out"], name: "date_in_out", using: :btree
   add_index "time_table_dates", ["time_table_id"], name: "index_time_table_dates_on_time_table_id", using: :btree
 
   create_table "time_table_periods", id: :bigserial, force: :cascade do |t|
@@ -970,7 +984,6 @@ ActiveRecord::Schema.define(version: 20181029104832) do
   end
 
   add_index "time_table_periods", ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end", using: :btree
-  add_index "time_table_periods", ["period_start", "period_end"], name: "period_dates", using: :btree
   add_index "time_table_periods", ["time_table_id"], name: "index_time_table_periods_on_time_table_id", using: :btree
 
   create_table "time_tables", id: :bigserial, force: :cascade do |t|

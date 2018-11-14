@@ -11,6 +11,14 @@
                 = label_tag ComplianceControlSet.ts, nil, class: 'string required col-sm-4 col-xs-5 control-label'
                 .col-sm-8.col-xs-7
                   = select_tag :compliance_control_set, options_from_collection_for_select(@compliance_control_sets, "id", "name"), class: 'select optional form-control', required: true
+
+          .row
+            .col-lg-12
+              .form-group
+                = label_tag ComplianceCheckSet.tmf(:notification_target), nil, class: 'string required col-sm-4 col-xs-5 control-label'
+                .col-sm-8.col-xs-7
+                  = select_tag :notification_target, options_for_select(ComplianceCheckSet.notification_target_options), class: 'select optional form-control'
+
               .separator
         = cancel_button
         = button_tag t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'select_compliance_control_set'

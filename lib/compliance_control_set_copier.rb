@@ -6,13 +6,14 @@ class ComplianceControlSetCopier
 
   attr_reader :cc_set_id, :referential_id
 
-  def copy cc_set_id, referential_id, creator_id, parent_type=nil, parent_id=nil, context=nil
+  def copy(cc_set_id, referential_id, creator_id, parent_type = nil, parent_id = nil, context = nil, &block)
     @cc_set_id      = cc_set_id
     @referential_id = referential_id
     @creator_id     = creator_id
     @parent_type    = parent_type
     @parent_id      = parent_id
     @context        = context || :manual
+    @block          = block
     copy_set
 
     cck_set
@@ -92,10 +93,13 @@ class ComplianceControlSetCopier
       parent_type: @parent_type,
       parent_id: @parent_id,
       context: @context,
+      user_id: @creator_id,
       metadata: {
         creator_id: @creator_id
       }
-    )
+    ) do |cck_set|
+      @block&.call(cck_set)
+    end
   end
   def control_id_to_check
     # Map: compliance_control_id -> compliance_check

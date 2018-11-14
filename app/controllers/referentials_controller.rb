@@ -72,7 +72,9 @@ class ReferentialsController < ChouetteController
   end
 
   def validate
-    check_set = ComplianceControlSetCopier.new.copy(params[:compliance_control_set], params[:id], current_user.id)
+    check_set = ComplianceControlSetCopier.new.copy(params[:compliance_control_set], params[:id], current_user.id) do |cck_set|
+      cck_set.notification_target = params[:notification_target]
+    end
     flash[:notice] = t('notice.referentials.validate')
     redirect_to workbench_compliance_check_set_path(referential.workbench_id, check_set)
   end

@@ -1,5 +1,5 @@
 class ComplianceCheckSet < ApplicationModel
-  extend Enumerize
+  include NotifiableSupport
 
   has_metadata
 
@@ -103,7 +103,7 @@ class ComplianceCheckSet < ApplicationModel
     if self.class.finished_statuses.include?(status)
       attributes[:ended_at] = Time.now
     end
-  
+
     update attributes
     import_resource&.next_step
   end

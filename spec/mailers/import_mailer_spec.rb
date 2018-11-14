@@ -5,10 +5,10 @@ RSpec.describe ImportMailer, type: :mailer do
   let(:user)    { create(:user) }
   let(:referential) {create :referential}
   let(:import) {create :gtfs_import, referential: referential, parent: create(:workbench_import, creator: user.name)}
-  let(:email)    { ImportMailer.send('finished', import.id, user.id) }
+  let(:email)    { ImportMailer.send('finished', import.id, [user.email_recipient]) }
 
   it 'should deliver email to user' do
-    expect(email).to deliver_to user.email
+    expect(email).to bcc_to user.email
   end
 
   it 'should have correct from' do

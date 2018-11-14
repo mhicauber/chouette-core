@@ -8,20 +8,18 @@ RSpec.describe MergeObserver, type: :observer do
   let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
   let(:referential) { create :referential, workbench: workbench, organisation: workbench.organisation }
   let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3), referential: referential) }
+  let(:notification_target) { nil }
 
-  let(:merge) { Merge.create(workbench: referential.workbench, referentials: [referential, referential], creator: user.name) }
-
-  it 'should observe merge finish' do
-    expect(MergeObserver.instance).to receive(:after_commit)
-    merge.status = 'successful'
-    merge.save
-    merge.run_callbacks(:commit)
+  subject(:merge) do
+    Merge.create workbench: referential.workbench,
+                 referentials: [referential, referential],
+                 creator: user.name,
+                 user: user,
+                 notification_target: notification_target
   end
 
-  it 'should schedule mailer on merge finish' do
-    expect(MailerJob).to receive(:perform_later).with 'MergeMailer', 'finished', anything
-    merge.status = 'successful'
-    merge.save
-    merge.run_callbacks(:commit)
-  end
+  let(:mailer) { MergeMailer }
+  let(:observer) { MergeObserver }
+
+  it_behaves_like 'a notifiable operation'
 end

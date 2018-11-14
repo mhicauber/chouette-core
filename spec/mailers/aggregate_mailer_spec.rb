@@ -7,10 +7,10 @@ RSpec.describe AggregateMailer, type: :mailer do
   let(:ref2) { create :referential, workbench: workbench, organisation: workbench.organisation }
 
   let(:aggregate) { Aggregate.create(workgroup: referential.workgroup, referentials: [ref1, ref2]) }
-  let(:email) { AggregateMailer.send('finished', aggregate.id, user.id) }
+  let(:email) { AggregateMailer.send('finished', aggregate.id, [user.email_recipient]) }
 
   it 'should deliver email to user' do
-    expect(email).to deliver_to user.email
+    expect(email).to bcc_to user.email
   end
 
   it 'should have correct from' do

@@ -2,7 +2,7 @@ class SentinelMailer < ApplicationMailer
   def notify_incoming_holes(workbench, referential)
     @referential = referential
     mail(
-      to: workbench.sentinel_notifications_recipients,
+      bcc: workbench.sentinel_notifications_recipients,
       subject: t('mailers.sentinel_mailer.finished.subject')
     )
   end

@@ -11,3 +11,6 @@ en:
       running:    Running
       successful: Successful
       warning:    Warning
+    notification_targets:
+      user:       User
+      workbench:  Workbench

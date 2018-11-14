@@ -4,13 +4,14 @@ class ExportObserver < ActiveRecord::Observer
   def after_update(export)
     return unless email_sendable_for?(export)
 
-    user = User.find_by(name: export.creator)
-    MailerJob.perform_later('ExportMailer', 'finished', [export.id, user.id, export.status])
+    export.notify_relevant_users 'ExportMailer', 'finished' do |recipients|
+      [export.id, recipients, export.status]
+    end
   end
 
   private
 
   def email_sendable_for?(export)
-    export.finished? && export.changes.include?('status')
+    export.finished? && export.notified_recipients_at.blank?
   end
 end

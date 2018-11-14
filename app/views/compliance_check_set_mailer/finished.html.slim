@@ -1,22 +1,4 @@
 h2 style=mailer_style(:h2)
   == 'mailers.hello'.t
-p== t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("operation_support.statuses.#{@ccset.status}"))
+p== t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("operation_support.statuses.#{@status}"))
 p= mailer_button(t('mailers.compliance_check_set_mailer.finished.button'), workbench_compliance_check_set_url(@ccset.workbench, @ccset))
-
-table style=mailer_style(:content_table)
-  tr
-    th colspan=2
-      h3 style=mailer_style(:h3)
-        = ComplianceCheckSet.ts.capitalize + ":"
-  tr
-    th style=mailer_style(:th)
-      = I18n.t("compliance_check_sets.show.metadatas.referential") + ":"
-    td= @ccset.referential.nil? ? '' : mailer_link_to(@ccset.referential.name, referential_url(@ccset.referential))
-  tr
-    th style=mailer_style(:th)
-      = I18n.t("compliance_check_sets.show.metadatas.status") + ":"
-    td= I18n.t("operation_support.statuses.#{@ccset.status}")
-  tr
-    th style=mailer_style(:th)
-      = ComplianceCheckSet.tmf(:context) + ":"
-    td= @ccset.context_i18n

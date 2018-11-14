@@ -20,8 +20,9 @@ class AggregatesController < ChouetteController
   end
 
   def aggregate_params
-    aggregate_params = params.require(:aggregate).permit(:referential_ids)
+    aggregate_params = params.require(:aggregate).permit(:referential_ids, :notification_target)
     aggregate_params[:referential_ids] = aggregate_params[:referential_ids].split(",")
+    aggregate_params[:user_id] ||= current_user.id
     aggregate_params
   end
 end

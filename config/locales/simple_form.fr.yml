@@ -10,7 +10,9 @@ fr:
       mark: '*'
     error_notification:
       default_message: "S'il vous plaît examiner les problèmes ci-dessous:"
-
+    include_blanks:
+      defaults:
+        notification_target: "Aucune notification"
   helpers:
     submit:
       create: Valider

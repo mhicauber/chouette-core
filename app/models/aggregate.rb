@@ -1,5 +1,6 @@
 class Aggregate < ActiveRecord::Base
   include OperationSupport
+  include NotifiableSupport
 
   belongs_to :workgroup
   has_many :compliance_check_sets, -> { where(parent_type: "Aggregate") }, foreign_key: :parent_id, dependent: :destroy
@@ -37,6 +38,10 @@ class Aggregate < ActiveRecord::Base
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
     failed!
     raise e if Rails.env.test?
+  end
+
+  def workbench_for_notifications
+    workgroup.owner_workbench
   end
 
   private

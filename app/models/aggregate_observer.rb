@@ -3,13 +3,14 @@ class AggregateObserver < ActiveRecord::Observer
   def after_update(aggregate)
     return unless email_sendable_for?(aggregate)
 
-    user = User.find_by(name: aggregate.creator)
-    MailerJob.perform_later('AggregateMailer', 'finished', [aggregate.id, user.id]) if user
+    aggregate.notify_relevant_users 'AggregateMailer', 'finished' do |recipients|
+      [aggregate.id, recipients, aggregate.status]
+    end
   end
 
   private
 
   def email_sendable_for?(aggregate)
-    Aggregate.finished_statuses.include?(aggregate.status)
+    Aggregate.finished_statuses.include?(aggregate.status) && aggregate.notified_recipients_at.blank?
   end
 end

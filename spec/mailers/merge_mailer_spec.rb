@@ -10,10 +10,10 @@ RSpec.describe MergeMailer, type: :mailer do
   let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3), referential: referential) }
 
   let(:merge) { Merge.create(workbench: referential.workbench, referentials: [referential, referential]) }
-  let(:email)    { MergeMailer.send('finished', merge.id, user.id) }
+  let(:email)    { MergeMailer.send('finished', merge.id, [user.email_recipient]) }
 
   it 'should deliver email to user' do
-    expect(email).to deliver_to user.email
+    expect(email).to bcc_to user.email
   end
 
   it 'should have correct from' do
