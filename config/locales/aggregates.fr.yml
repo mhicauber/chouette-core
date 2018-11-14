@@ -7,6 +7,7 @@ fr:
       title: "Nouvelle agrégation de l'offre"
     show:
       title: "Agrégation de l'offre %{name}"
+      finalized_offer: "Offre finalisée"
     actions:
       create: Agréger des Jeux de Données
     statuses:

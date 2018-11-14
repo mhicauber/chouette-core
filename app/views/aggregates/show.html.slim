@@ -33,7 +33,7 @@ ruby:
       = table_builder_2 @aggregate.referentials,
         [ \
           TableBuilderHelper::Column.new( \
-            name: Referential.ts.capitalize, \
+            name: I18n.t('aggregates.show.finalized_offer'), \
             attribute: 'name', \
             sortable: false, \
             link_to: lambda do |item| \
