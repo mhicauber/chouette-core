@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181107144431) do
+ActiveRecord::Schema.define(version: 20181114165059) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20181107144431) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -760,7 +760,6 @@ ActiveRecord::Schema.define(version: 20181107144431) do
     t.string   "objectid_format"
     t.datetime "merged_at"
     t.datetime "failed_at"
-    t.datetime "rollbacked_at"
   end
 
   add_index "referentials", ["created_from_id"], name: "index_referentials_on_created_from_id", using: :btree
