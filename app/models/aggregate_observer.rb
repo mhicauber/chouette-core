@@ -11,6 +11,6 @@ class AggregateObserver < ActiveRecord::Observer
   private
 
   def email_sendable_for?(aggregate)
-    Aggregate.finished_statuses.include?(aggregate.status)
+    Aggregate.finished_statuses.include?(aggregate.status) && aggregate.notified_recipients_at.blank?
   end
 end

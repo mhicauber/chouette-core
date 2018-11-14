@@ -12,6 +12,6 @@ class ExportObserver < ActiveRecord::Observer
   private
 
   def email_sendable_for?(export)
-    export.finished? && export.changes.include?('status')
+    export.finished? && export.notified_recipients_at.blank?
   end
 end

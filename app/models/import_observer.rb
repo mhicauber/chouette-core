@@ -12,6 +12,6 @@ class ImportObserver < ActiveRecord::Observer
   private
 
   def email_sendable_for?(import)
-    import.finished? && import.changes.include?('status')
+    import.finished? && import.notified_recipients_at.blank?
   end
 end

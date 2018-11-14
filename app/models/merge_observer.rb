@@ -10,6 +10,6 @@ class MergeObserver < ActiveRecord::Observer
   private
 
   def email_sendable_for?(merge)
-    Merge.finished_statuses.include?(merge.status)
+    Merge.finished_statuses.include?(merge.status) && merge.notified_recipients_at.blank?
   end
 end

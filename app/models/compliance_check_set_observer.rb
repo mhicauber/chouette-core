@@ -12,6 +12,6 @@ class ComplianceCheckSetObserver < ActiveRecord::Observer
   def email_sendable_for?(ccset)
     return false unless ccset.context == 'manual'
 
-    ComplianceCheckSet.finished_statuses.include?(ccset.status)
+    ComplianceCheckSet.finished_statuses.include?(ccset.status) && ccset.notified_recipients_at.blank?
   end
 end
