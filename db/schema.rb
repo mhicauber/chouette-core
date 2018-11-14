@@ -15,8 +15,8 @@ ActiveRecord::Schema.define(version: 20181107144431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20181107144431) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -972,7 +972,6 @@ ActiveRecord::Schema.define(version: 20181107144431) do
     t.text    "checksum_source"
   end
 
-  add_index "time_table_dates", ["in_out"], name: "date_in_out", using: :btree
   add_index "time_table_dates", ["time_table_id"], name: "index_time_table_dates_on_time_table_id", using: :btree
 
   create_table "time_table_periods", id: :bigserial, force: :cascade do |t|
@@ -985,7 +984,6 @@ ActiveRecord::Schema.define(version: 20181107144431) do
   end
 
   add_index "time_table_periods", ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end", using: :btree
-  add_index "time_table_periods", ["period_start", "period_end"], name: "period_dates", using: :btree
   add_index "time_table_periods", ["time_table_id"], name: "index_time_table_periods_on_time_table_id", using: :btree
 
   create_table "time_tables", id: :bigserial, force: :cascade do |t|
