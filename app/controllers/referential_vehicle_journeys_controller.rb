@@ -63,9 +63,9 @@ class ReferentialVehicleJourneysController < ChouetteController
     direction = params[:direction] || "asc"
     case params[:sort]
       when "line"
-        scope.order("lines.name #{direction}").joins(route: :line)
+        scope.select('lines.name').order("lines.name #{direction}").joins(route: :line)
       when "route"
-        scope.order("routes.name #{direction}").joins(:route)
+        scope.select('routes.name').order("routes.name #{direction}").joins(:route)
       when "departure_time"
         scope.order_by_departure_time(direction)
       when "arrival_time"
