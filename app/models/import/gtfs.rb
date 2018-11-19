@@ -368,6 +368,24 @@ class Import::Gtfs < Import::Base
           resource: resource, commit: true
         )
         @status = 'failed'
+      rescue Import::Gtfs::InvalidTimeError => e
+        create_message(
+          {
+            criticity: :error,
+            message_key: 'invalid_stop_time',
+            message_attributes: {
+              time: e.time,
+              trip_id: vehicle_journey.published_journey_name
+            },
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource, commit: true
+        )
+        @status = 'failed'
       end
     end
   end
@@ -377,7 +395,9 @@ class Import::Gtfs < Import::Base
 
       if stop_time.stop_sequence.to_i == 1 # first stop has stop_sequence == 1
         departure_time = GTFS::Time.parse(stop_time.departure_time)
+        raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
         arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+        raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
         raise InvalidTripError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
       end
 
@@ -393,9 +413,12 @@ class Import::Gtfs < Import::Base
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.where(stop_point_id: stop_point.id).last
     departure_time = GTFS::Time.parse(stop_time.departure_time)
-    arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+    raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
 
-    if stop_time.stop_sequence.to_i == 1 # first stop has stop_sequence == 1
+    arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+    raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
+
+    if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence
       @vehicle_journey_at_stop_first_offset = departure_time.day_offset
     end
 
@@ -405,6 +428,8 @@ class Import::Gtfs < Import::Base
     vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset - @vehicle_journey_at_stop_first_offset
 
     # TODO: offset
+
+    @previous_stop_sequence = stop_time.stop_sequence.to_i
 
     save_model vehicle_journey_at_stop, resource: resource
   end
@@ -428,7 +453,7 @@ class Import::Gtfs < Import::Base
 
   def import_calendar_dates
     return unless source.entries.include?('calendar_dates.txt')
-    
+
     create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
       comment = "Calendar #{calendar_date.service_id}"
       unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
@@ -538,4 +563,11 @@ class Import::Gtfs < Import::Base
   end
 
   class InvalidTripError < StandardError; end
+  class InvalidTimeError < StandardError
+    attr_reader :time
+
+    def initialize(time)
+      @time = time
+    end
+  end
 end
