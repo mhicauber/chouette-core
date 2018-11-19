@@ -20,7 +20,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |export| \
-                  workbench_export_path(@workbench, export) \
+                  export.referential.present? ? workbench_export_path(@workbench, export) : nil \
                 end, \
                 sortable: false,\
                 ), \
