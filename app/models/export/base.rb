@@ -1,12 +1,10 @@
 require 'net/http/post/multipart'
 
 class Export::Base < ActiveRecord::Base
-  DEFAULT_CLEAN_FILES_AFTER = 7
-  DEFAULT_CLEAN_AFTER = 90
-
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport
+  include PurgeableResource
 
   self.table_name = "exports"
 
@@ -14,26 +12,7 @@ class Export::Base < ActiveRecord::Base
 
   validates :type, :referential_id, presence: true
 
-  scope :file_purgeable, -> { where("created_at <= ?", clean_files_after.days.ago) }
-  scope :purgeable, -> { where("created_at <= ?", clean_after.days.ago) }
-
   after_create :purge_exports
-
-  def self.clean_files_after=(value)
-    @clean_files_after = value
-  end
-
-  def self.clean_files_after
-    @clean_files_after || DEFAULT_CLEAN_FILES_AFTER
-  end
-
-  def self.clean_after=(value)
-    @clean_after = value
-  end
-
-  def self.clean_after
-    @clean_after || DEFAULT_CLEAN_AFTER
-  end
 
   def self.messages_class_name
     "Export::Message"
