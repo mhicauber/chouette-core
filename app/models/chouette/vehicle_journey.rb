@@ -178,7 +178,11 @@ module Chouette
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
 
         attrs << self.purchase_windows.map(&:checksum).sort if purchase_windows.present?
-        attrs << ignored_routing_contraint_zones.map(&:checksum).sort if ignored_routing_contraint_zones.present?
+
+        # The double condition prevents a SQL query "WHERE 1=0"
+        if ignored_routing_contraint_zone_ids.present? && ignored_routing_contraint_zones.present?
+          attrs << ignored_routing_contraint_zones.map(&:checksum).sort
+        end
       end
     end
 
