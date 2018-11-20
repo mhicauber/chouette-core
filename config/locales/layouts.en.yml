@@ -25,7 +25,6 @@ en:
         workgroup: Workgroup offers
         edit_workgroup: App configuration
       configuration: Settings
-      workbench_configuration: Workbench
       organisation_configuration: My organization
       security_configuration: Security
       tools: Tools
@@ -37,6 +36,9 @@ en:
       portal: Portal (POSTIF)
       support: Support
       shapes: Shapes
+      workbench:
+        subtitle: Workbench
+        edit_control_sets: Controls settings
       workgroup:
         subtitle: Application
         edit_control_sets: Controls settings

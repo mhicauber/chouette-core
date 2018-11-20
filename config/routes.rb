@@ -2,7 +2,11 @@ ChouetteIhm::Application.routes.draw do
   resource :dashboard
   resource :subscriptions, only: :create
 
-  resources :workbenches, except: [:destroy] do
+  resources :workbenches, except: [:destroy, :edit] do
+    member do
+      get :edit_controls
+      put :update_controls
+    end
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
     resources :imports do

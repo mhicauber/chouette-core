@@ -25,7 +25,6 @@ fr:
         workgroup: Offre du groupe de travail
         edit_workgroup: Configuration de l'application
       configuration: Paramétrages
-      workbench_configuration: Espace de travail
       organisation_configuration: Mon organisation
       security_configuration: Sécurité
       tools: Outils
@@ -37,6 +36,9 @@ fr:
       portal: Portail (POSTIF)
       support: Support
       shapes: Tracés
+      workbench:
+        subtitle: Espace de travail
+        edit_control_sets: Jeux de Contrôle
       workgroup:
         subtitle: Application
         edit_control_sets: Jeux de Contrôle
