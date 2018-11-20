@@ -19,6 +19,7 @@ module Chouette
     end
 
     belongs_to :company
+    belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
     belongs_to :route
     belongs_to :journey_pattern
     belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
@@ -166,7 +167,8 @@ module Chouette
       [].tap do |attrs|
         attrs << self.published_journey_name
         attrs << self.published_journey_identifier
-        attrs << self.try(:company).try(:get_objectid).try(:local_id)
+        loaded_company = association(:company).loaded? ? company : company_light
+        attrs << loaded_company.try(:get_objectid).try(:local_id)
         footnotes = self.footnotes
         footnotes += Footnote.for_vehicle_journey(self) if db_lookup && !self.new_record?
         attrs << footnotes.uniq.map(&:checksum).sort
