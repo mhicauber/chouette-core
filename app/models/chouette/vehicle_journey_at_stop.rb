@@ -69,8 +69,11 @@ module Chouette
 
     def checksum_attributes(db_lookup = true)
       [].tap do |attrs|
-        attrs << self.departure_time&.utc.try(:to_s, :time)
-        attrs << self.arrival_time&.utc.try(:to_s, :time)
+        [self.departure_time, self.arrival_time].each do |time|
+          time = time&.utc
+          time = time && "%.2d:%.2d" % [time.hour, time.min]
+          attrs << time
+        end
         attrs << self.departure_day_offset.to_s
         attrs << self.arrival_day_offset.to_s
       end
