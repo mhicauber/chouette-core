@@ -17,10 +17,13 @@ module GTFS
       hours / 24
     end
 
-    FORMAT = /(\d{1,2}):(\d{2}):(\d{2})/
+    FORMAT = /(\d{1,2}):(\d{1,2}):(\d{1,2})/
 
     def self.format_datetime (date_time, offset)
-      "#{date_time.hour+(24*offset)}:#{date_time.min}:#{date_time.sec}"
+      hours = "%.2d" % (date_time.hour+(24*offset))
+      minutes = "%.2d" % date_time.min
+      seconds = "%.2d" % date_time.sec
+      "#{hours}:#{minutes}:#{seconds}"
     end
 
     def self.parse(definition)

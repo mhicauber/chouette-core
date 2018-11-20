@@ -6,8 +6,16 @@ RSpec.describe GTFS::Time do
     expect(GTFS::Time.parse("14:29:00").time).to eq(Time.parse("2000-01-01 14:29:00 +00"))
   end
 
-  it "support hours with a single number" do
+  it "supports hours with a single digit" do
     expect(GTFS::Time.parse("4:29:00").time).to eq(Time.parse("2000-01-01 04:29:00 +00"))
+  end
+
+  it "supports minutes with a single digit" do
+    expect(GTFS::Time.parse("14:0:00").time).to eq(Time.parse("2000-01-01 14:00:00 +00"))
+  end
+
+  it "supports seconds with a single digit" do
+    expect(GTFS::Time.parse("14:00:0").time).to eq(Time.parse("2000-01-01 14:00:00 +00"))
   end
 
   it "return nil for invalid format" do
@@ -22,6 +30,10 @@ RSpec.describe GTFS::Time do
     expect(GTFS::Time.parse("10:00:00").day_offset).to eq(0)
     expect(GTFS::Time.parse("30:00:00").day_offset).to eq(1)
     expect(GTFS::Time.parse("50:00:00").day_offset).to eq(2)
+  end
+
+  it "formats datetime with 2 digits" do
+    expect(GTFS::Time.format_datetime(Time.parse("2000-01-01 04:00:00 +00"), 0)).to eq "04:00:00"
   end
 
 end

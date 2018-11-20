@@ -10,6 +10,7 @@ fr:
     referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
     referential_creation: "Le référentiel %{referential_name} n'a pas pu être créé."
     trip_starting_with_non_zero_day_offset: La course %{trip_id} commence avec un offset non-nul
+    invalid_stop_time: 'La course %{trip_id} comporte un temps de passage invalide: "%{time}"'
     wrong_calendar_in_zip_file: "Le calendrier contenu dans %{source_filename} contient des données incorrectes ou incohérentes"
     gtfs:
       agencies:
