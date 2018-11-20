@@ -57,6 +57,19 @@ module ObjectidSupport
       def ransackable_scopes(auth_object = nil)
         [:with_short_id]
       end
+
+      def reset_objectid_format_cache!
+        @_objectid_format_cache = nil
+      end
+
+      def has_objectid_format? referential_class, referential_find
+        @_objectid_format_cache ||= AF83::SmartCache.new
+        cache_key = { referential_class.name => referential_find }
+        @_objectid_format_cache.fetch cache_key do
+          referential = referential_class.find_by referential_find
+          referential.objectid_format.present?
+        end
+      end
     end
 
     def objectid_formatter
@@ -81,7 +94,7 @@ module ObjectidSupport
     end
 
     def get_objectid
-      objectid_formatter.get_objectid read_attribute(:objectid) if referential.objectid_format && read_attribute(:objectid)
+      objectid_formatter.get_objectid read_attribute(:objectid) if self.class.has_objectid_format?(*referential_identifier) && read_attribute(:objectid)
     end
 
     def objectid
