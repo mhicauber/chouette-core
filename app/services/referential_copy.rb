@@ -53,9 +53,11 @@ class ReferentialCopy
 
   def copy_metadatas
     source.metadatas.each do |metadata|
-      candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
-      candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes)
-      controlled_save! candidate
+      ReferentialMetadata.bulk_insert do |worker|
+        candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
+        candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes)
+        controlled_save! candidate, worker
+      end
     end
   end
 
@@ -119,8 +121,9 @@ class ReferentialCopy
       # we copy the journey_patterns
       copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
         retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid], [:objectid]
-        copy_collection journey_pattern, new_journey_pattern, :courses_stats do |_, new_stat|
-          new_stat.route = new_route
+        copy_bulk_collection journey_pattern.courses_stats do |new_stat_attributes|
+          new_stat_attributes[:journey_pattern_id] = new_journey_pattern.id
+          new_stat_attributes[:route_id] = new_route.id
         end
         copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
           new_vj.route = new_route
@@ -136,7 +139,7 @@ class ReferentialCopy
       # we copy the routing_constraint_zones
       copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
         new_rcz.stop_point_ids = []
-        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points, [:objectid, :position]
+        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points, [:objectid]
       end
     end
   end
@@ -146,6 +149,14 @@ class ReferentialCopy
   # | __ | _|| |__|  _/ _||   /\__ \
   # |_||_|___|____|_| |___|_|_\|___/
   #
+  def copy_bulk_collection collection, &block
+    collection.klass.bulk_insert do |worker|
+      each_item_in_source_collection(collection) do |item|
+        block.call(item) if block_given?
+        worker.add clean_attributes_for_copy item
+      end
+    end
+  end
 
   def copy_collection source_item, target_item, collection_name, &block
     each_item_in_source_collection(source_item.send(collection_name)) do |item|
@@ -196,9 +207,14 @@ class ReferentialCopy
     model.attributes.dup.except(*%w(id created_at updated_at opposite_route_id position))
   end
 
-  def controlled_save! model
+  def controlled_save! model, worker=nil
     begin
-      model.save!
+      if worker
+        model.validate!
+        worker.add clean_attributes_for_copy model
+      else
+        model.save!
+      end
     rescue => e
       error = []
       error << e.message
