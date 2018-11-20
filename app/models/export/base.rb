@@ -17,7 +17,7 @@ class Export::Base < ActiveRecord::Base
   scope :file_purgeable, -> { where("created_at <= ?", clean_files_after.days.ago) }
   scope :purgeable, -> { where("created_at <= ?", clean_after.days.ago) }
 
-  after_save :purge_exports
+  after_create :purge_exports
 
   def self.clean_files_after=(value)
     @clean_files_after = value
@@ -52,8 +52,10 @@ class Export::Base < ActiveRecord::Base
   end
 
   def purge_exports
-    self.class.file_purgeable.each(&:remove_file!)
-    self.class.purgeable.destroy_all
+    workbench.exports.file_purgeable.each do |exp|
+      exp.update(remove_file: true)
+    end
+    workbench.exports.purgeable.destroy_all
   end
 
   def upload_file file

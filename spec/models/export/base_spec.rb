@@ -29,26 +29,48 @@ RSpec.describe Export::Base, type: :model do
   end
 
   describe ".purge_exports" do
+    let(:workbench) { create(:workbench) }
+    let(:other_workbench) { create(:workbench) }
+
     it "removes files from exports older than 7 days" do
       file_purgeable = Timecop.freeze(7.days.ago) do
-        export = create(:workgroup_export)
-        export.file = File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json'))
-        export
+        export = create(
+          :workgroup_export,
+          workbench: workbench,
+          file: File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json'))
+        )
       end
 
-      Export::Workgroup.new.purge_exports
+      other_file_purgeable = Timecop.freeze(7.days.ago) do
+        export = create(
+          :workgroup_export,
+          workbench: other_workbench,
+          file: File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json'))
+        )
+      end
+
+      Export::Workgroup.new(workbench: workbench).purge_exports
 
       expect(file_purgeable.reload.file_url).to be_nil
+      expect(other_file_purgeable.reload.file_url).not_to be_nil
     end
 
     it "removes exports older than 90 days" do
-      Timecop.freeze(90.days.ago) do
-        old_export = create(:workgroup_export)
+      old_export = Timecop.freeze(90.days.ago) do
+        create(:workgroup_export, workbench: workbench)
       end
 
-      expect { Export::Workgroup.new.purge_exports }.to change {
-        Export::Workgroup.purgeable.count
+      other_old_export = Timecop.freeze(90.days.ago) do
+        create(:workgroup_export, workbench: other_workbench)
+      end
+
+      expect { Export::Workgroup.new(workbench: workbench).purge_exports }.to change {
+        old_export.workbench.exports.purgeable.count
       }.from(1).to(0)
+
+      expect { Export::Workgroup.new(workbench: workbench).purge_exports }.not_to change {
+        old_export.workbench.exports.purgeable.count
+      }
     end
   end
 
