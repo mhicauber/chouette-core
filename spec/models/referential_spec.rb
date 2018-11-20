@@ -18,7 +18,8 @@ describe Referential, :type => :model do
         "2018-Hiver-Jezequel-23293MM-Lyon-Nice": "hiver_jezeque_1234567890",
         "-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
         "Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
-        "20179282": "referential_1234567890"
+        "20179282": "referential_1234567890",
+        "2018 2019 Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890"
       }
 
       conditions.each do |name, expected_slug|
