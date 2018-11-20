@@ -4,7 +4,7 @@ en:
       destroy_confirm: "Are you sur to delete this stop area provider ?"
     search_no_results: "No stop area providers"
     index:
-      title: "Stop area proiders"
+      title: "Stop area providers"
     new:
       title: "Add a stop area provider"
     show:
