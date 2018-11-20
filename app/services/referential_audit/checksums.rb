@@ -18,10 +18,17 @@ class ReferentialAudit
         Chouette::VehicleJourney.select(:id, :checksum_source, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :company_id).includes(:company, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
       ]
       models.each do |model|
-        model.klass.cache do
+        lookup = Proc.new {
           model.find_each do |k|
             k.set_current_checksum_source(db_lookup: false)
             faulty << k if k.checksum_source_changed?
+          end
+        }
+        model.klass.cache do
+          if model.klass.respond_to?(:in_workgroup)
+            model.klass.in_workgroup(@referential.workgroup, &lookup)
+          else
+            lookup.call
           end
         end
       end
