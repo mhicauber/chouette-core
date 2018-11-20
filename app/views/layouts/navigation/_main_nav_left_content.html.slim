@@ -45,11 +45,11 @@
     .menu-item.panel
       = main_nav_menu_item 'layouts.navbar.configuration'.t do
         - if policy(workbench).edit?
-          h5= 'layouts.navbar.workgroup.edit_control_sets'.t
+          .workbench_configuration= 'layouts.navbar.workbench.subtitle'.t
           = link_to [:edit_controls, workbench], class: 'list-group-item level-2' do
-            span = 'layouts.navbar.workbench_configuration'.t
+            span = 'layouts.navbar.workbench.edit_control_sets'.t
         - if policy(workbench.workgroup).edit?
-          h5= 'layouts.navbar.workgroup.subtitle'.t
+          .workgroup_configuration= 'layouts.navbar.workgroup.subtitle'.t
           = link_to [:edit, workbench.workgroup], class: 'list-group-item level-2' do
             span = 'layouts.navbar.workgroup.edit_control_sets'.t
           = link_to [:edit_aggregation, workbench.workgroup], class: 'list-group-item level-2' do
