@@ -34,7 +34,6 @@ RSpec.describe VehicleJourneyControl::EmptyTimeTable, :type => :model do
   it "should detect empty timetables" do
     expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
     resource = ComplianceCheckResource.where(reference: succeeding.route.line.objectid).last
-    binding.pry
     expect(resource.status).to eq "ERROR"
     expect(resource.compliance_check_messages.size).to eq 1
     expect(resource.compliance_check_messages.last.status).to eq "ERROR"

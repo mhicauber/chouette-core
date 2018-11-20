@@ -9,7 +9,7 @@ module VehicleJourneyControl
     end
 
     def self.compliance_test compliance_check, vehicle_journey
-      vehicle_journey.time_tables.empty.blank?
+      !vehicle_journey.time_tables.empty.exists?
     end
 
     def self.custom_message_attributes compliance_check, vj
