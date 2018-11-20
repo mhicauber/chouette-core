@@ -182,7 +182,7 @@ module Chouette
       end
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       values = self.slice(*['name', 'published_name', 'wayback']).values
       values.tap do |attrs|
         attrs << self.stop_points.sort_by(&:position).map{|sp| [sp.stop_area_id, sp.for_boarding, sp.for_alighting]}

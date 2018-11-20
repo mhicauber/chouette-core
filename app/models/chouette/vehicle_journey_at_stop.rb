@@ -67,7 +67,7 @@ module Chouette
       offset < 0 || offset > Chouette::VehicleJourneyAtStop.day_offset_max
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       [].tap do |attrs|
         attrs << self.departure_time&.utc.try(:to_s, :time)
         attrs << self.arrival_time&.utc.try(:to_s, :time)

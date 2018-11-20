@@ -20,7 +20,7 @@ module Chouette
 
     validates_presence_of :line
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       attrs = ['code', 'label']
       self.slice(*attrs).values
     end

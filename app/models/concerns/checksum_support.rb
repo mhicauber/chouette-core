@@ -58,7 +58,7 @@ module ChecksumSupport
     end
   end
 
-  def checksum_attributes
+  def checksum_attributes(db_lookup = true)
     self.attributes.values
   end
 
@@ -76,8 +76,8 @@ module ChecksumSupport
       end
   end
 
-  def current_checksum_source
-    source = checksum_replace_nil_or_empty_values(self.checksum_attributes)
+  def current_checksum_source(db_lookup: true)
+    source = checksum_replace_nil_or_empty_values(self.checksum_attributes(db_lookup))
     source += self.custom_fields_checksum if self.respond_to?(:custom_fields_checksum)
     source.map{ |item|
       if item.kind_of?(Array)
@@ -88,8 +88,8 @@ module ChecksumSupport
     }.join(SEPARATOR)
   end
 
-  def set_current_checksum_source
-    self.checksum_source = self.current_checksum_source
+  def set_current_checksum_source(db_lookup: true)
+    self.checksum_source = self.current_checksum_source(db_lookup: db_lookup)
   end
 
   def update_checksum

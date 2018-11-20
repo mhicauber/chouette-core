@@ -20,7 +20,7 @@ class ReferentialAudit
       models.each do |model|
         model.klass.cache do
           model.find_each do |k|
-            k.set_current_checksum_source
+            k.set_current_checksum_source(db_lookup: false)
             faulty << k if k.checksum_source_changed?
           end
         end

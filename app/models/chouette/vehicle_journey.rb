@@ -162,17 +162,17 @@ module Chouette
       "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       [].tap do |attrs|
         attrs << self.published_journey_name
         attrs << self.published_journey_identifier
         attrs << self.try(:company).try(:get_objectid).try(:local_id)
         footnotes = self.footnotes
-        footnotes += Footnote.for_vehicle_journey(self) unless self.new_record?
+        footnotes += Footnote.for_vehicle_journey(self) if db_lookup && !self.new_record?
         attrs << footnotes.uniq.map(&:checksum).sort
 
         vjas =  self.vehicle_journey_at_stops
-        vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) unless self.new_record?
+        vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
 
         attrs << self.purchase_windows.map(&:checksum).sort if purchase_windows.present?
