@@ -1,4 +1,4 @@
-fr:
+en:
   stop_area_providers:
     actions:
       destroy_confirm: "Are you sur to delete this stop area provider ?"
