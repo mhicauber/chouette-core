@@ -172,6 +172,11 @@ en:
         3_vehiclejourney_9: "The vehicle journey %{source_objectid} lacks a bus capacity"
       description: "All journeys must have a bus capacity"
       prerequisite: "None"
+    vehicle_journey_control/empty_time_table:
+      messages:
+        3_vehiclejourney_10: The vehicle journey with %{vj_name} name (%{source_objectid}) has at least one empty timetable (%{tt_names})
+      description: "A vehicle journey cannot have an empty timetable"
+      prerequisite: "A vehicle journey must exist"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
         3_routingconstraint_1: "The Routing Constraint Zone %{source_objectid} references an unactivated stop point (ZDEp) %{target_0_label} (%{target_0_objectid})"
@@ -279,6 +284,8 @@ en:
         one: All vehicle journeys must have a purchase window
       vehicle_journey_control/purchase_window_dates:
         one: The end of sales must be before end of circulation
+      vehicle_journey_control/empty_time_table:
+        one: A vehicle journey cannot have an empty timetable
       routing_constraint_zone_control/maximum_length:
         one: "Maximum length of a routing contraint zone"
       routing_constraint_zone_control/minimum_length:

@@ -5,6 +5,11 @@ FactoryGirl.define do
     sequence(:int_day_types) { (1..7).to_a.map{ |n| 2**(n+1)}.sum }
     calendar nil
 
+    trait :empty do
+      dates_count 0
+      periods_count 0
+    end
+    
     transient do
       dates_count 4
       periods_count 4
