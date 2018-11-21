@@ -9,6 +9,10 @@ git_source(:af83) { |name| "https://github.com/af83/#{name}.git" }
 gem 'rails', '~> 4.2.11'
 gem 'rack-protection', '~> 1.5.5'
 
+gem 'lograge'
+gem 'lograge-sql'
+gem 'ddtrace'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
