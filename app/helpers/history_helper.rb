@@ -43,7 +43,7 @@ module HistoryHelper
     if object.respond_to?(field)
       key = t("layouts.history_tag.#{field}")
       value = object.public_send(field)
-      value = l(value, format: :short) if value.is_a?(Time)
+      value = l(value) if value.is_a?(Time)
       value = t(value.to_s) if value.in?([true, false])
       content_tag(:li, "#{key} : #{value}")
     end

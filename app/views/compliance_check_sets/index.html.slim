@@ -19,7 +19,7 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :creation_date, \
-                  attribute: Proc.new { |n| l(n.created_at, format: :long) if n.created_at } \
+                  attribute: Proc.new { |n| l(n.created_at, format: :short_with_time) if n.created_at } \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :status, \

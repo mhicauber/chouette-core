@@ -9,12 +9,12 @@ en:
     formats:
       hour: "%Hh%M"
       minute: "%M min"
-      short: "%Y/%m/%d"
+      default: "%Y/%m/%d"
       short_with_time: "%Y/%m/%d at %Hh%M"
 
   date:
     formats:
-      short: "%Y/%m/%d"
+      default: "%Y/%m/%d"
       short_with_time: "%Y/%m/%d at %Hh%M"
     abbr_day_names:
     - Sun

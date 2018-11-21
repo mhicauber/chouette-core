@@ -47,7 +47,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :updated_at, \
-                attribute: Proc.new { |tt| l(tt.updated_at, format: :short) } \
+                attribute: Proc.new { |tt| l(tt.updated_at) } \
               ) \
             ],
             cls: 'table has-search'

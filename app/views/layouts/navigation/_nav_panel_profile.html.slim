@@ -5,4 +5,4 @@
     p = current_user.name
     p = current_organisation.name
     p = mail_to current_user.email, current_user.email
-    p = t('last_sync', time: l(current_user.synced_at, format: :short)) if current_user.synced_at
+    p = t('last_sync', time: l(current_user.synced_at)) if current_user.synced_at

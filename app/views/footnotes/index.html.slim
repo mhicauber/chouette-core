@@ -20,7 +20,7 @@
                   p.text-muted.small = Chouette::Footnote.human_attribute_name(:checksum)
                   p.text-muted.small = footnote.checksum
                 p.text-muted
-                  em.small = "Dernière mise à jour le #{l(footnote.updated_at, format: :short)}"
+                  em.small = "Dernière mise à jour le #{l(footnote.updated_at)}"
 
       - else
         = replacement_msg 'Aucune note ne correspond à votre recherche'

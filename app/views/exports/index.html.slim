@@ -40,7 +40,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :started_at, \
-                attribute: Proc.new { |n| l(n.started_at, format: :long) if n.started_at }, \
+                attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :creator, \

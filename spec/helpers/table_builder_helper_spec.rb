@@ -79,8 +79,8 @@ describe TableBuilderHelper, type: :helper do
             <td>#{referential.organisation.name}</td>
             <td>-</td>
             <td>#{referential.lines.count}</td>
-            <td>#{I18n.localize(referential.created_at, format: :short)}</td>
-            <td>#{I18n.localize(referential.updated_at, format: :short)}</td>
+            <td>#{I18n.localize(referential.created_at)}</td>
+            <td>#{I18n.localize(referential.updated_at)}</td>
             <td></td>
             <td class="actions">
                 <div class="btn-group">
@@ -139,8 +139,8 @@ describe TableBuilderHelper, type: :helper do
               else
                 t(
                   'validity_range',
-                  debut: l(w.try(:validity_period).try(:begin), format: :short),
-                  end: l(w.try(:validity_period).try(:end), format: :short)
+                  debut: l(w.try(:validity_period).try(:begin)),
+                  end: l(w.try(:validity_period).try(:end))
                 )
               end
             end
@@ -151,11 +151,11 @@ describe TableBuilderHelper, type: :helper do
           ),
           TableBuilderHelper::Column.new(
             key: :created_at,
-            attribute: Proc.new {|w| l(w.created_at, format: :short)}
+            attribute: Proc.new {|w| l(w.created_at)}
           ),
           TableBuilderHelper::Column.new(
             key: :updated_at,
-            attribute: Proc.new {|w| l(w.updated_at, format: :short)}
+            attribute: Proc.new {|w| l(w.updated_at)}
           ),
           TableBuilderHelper::Column.new(
             key: :merged_at,

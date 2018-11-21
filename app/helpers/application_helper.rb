@@ -35,7 +35,7 @@ module ApplicationHelper
     display = true
     display = policy(object).synchronize? if policy(object).respond_to?(:synchronize?) rescue false
     if display
-      info = t('last_update', time: l(object.updated_at, format: :short))
+      info = t('last_update', time: l(object.updated_at))
       if object.try(:has_metadata?)
         author = object.metadata.modifier_username || t('default_whodunnit')
         info   = "#{info} <br/> #{t('whodunnit', author: author)}"
