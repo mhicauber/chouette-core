@@ -1,27 +1,29 @@
-module DummyControl
-  class Dummy < InternalControl::Base
-    required_features :core_controls
-    
-    store_accessor :control_attributes, :status
+unless Rails.env.production?
+  module DummyControl
+    class Dummy < InternalControl::Base
+      required_features :core_controls
 
-    enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK
+      store_accessor :control_attributes, :status
 
-    def self.default_code; "00-Dummy-00" end
+      enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK
 
-    def self.object_path compliance_check, line
-      line_referential_line_path(line.line_referential, line)
-    end
+      def self.default_code; "00-Dummy-00" end
 
-    def self.collection referential
-      referential.lines
-    end
+      def self.object_path compliance_check, line
+        line_referential_line_path(line.line_referential, line)
+      end
 
-    def self.compliance_test compliance_check, _
-      %w(ignored ok).include? compliance_check.control_attributes["status"].downcase
-    end
+      def self.collection referential
+        referential.lines
+      end
 
-    def self.status_ok_if test, compliance_check
-      compliance_check.control_attributes["status"]
+      def self.compliance_test compliance_check, _
+        %w(ignored ok).include? compliance_check.control_attributes["status"].downcase
+      end
+
+      def self.status_ok_if test, compliance_check
+        compliance_check.control_attributes["status"]
+      end
     end
   end
 end
