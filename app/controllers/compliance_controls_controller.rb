@@ -52,7 +52,7 @@ class ComplianceControlsController < ChouetteController
   private
 
   def begin_of_association_chain
-    nil
+    current_organisation
   end
 
   def compliance_control_class

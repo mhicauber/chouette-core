@@ -2,8 +2,11 @@ RSpec.describe ComplianceControlsController, type: :controller do
   login_user
 
 
-  let(:compliance_control)        { create(:generic_attribute_control_min_max) }
-  let!(:compliance_control_set)   { compliance_control.compliance_control_set }
+  let!(:compliance_control_set)   { create(:compliance_control_set, organisation: @user.organisation) }
+  let!(:compliance_control)        { create(:generic_attribute_control_min_max, compliance_control_set: compliance_control_set) }
+  
+  let!(:compliance_control2)        { create(:generic_attribute_control_min_max) }
+  let(:ccset2)        { compliance_control2.compliance_control_set }
 
   describe 'GET #new' do
     it 'should be successful' do
@@ -27,34 +30,44 @@ RSpec.describe ComplianceControlsController, type: :controller do
     end
   end
 
-  context "on a control_set the user does not own" do
+  context "on a control_set owned by another organization" do
+    describe 'GET #select_type' do
+      it 'should raise an error' do
+        expect {
+          get :select_type, compliance_control_set_id: ccset2.id
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
     describe "GET show" do
-      it 'should be successful' do
-        get :show, compliance_control_set_id: compliance_control_set.id, id: compliance_control.id
-        expect(response).to be_success
+      it 'should raise an error' do
+        expect {
+          get :show, compliance_control_set_id: ccset2.id, id: compliance_control2.id
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     describe 'GET #edit' do
-      it 'should be forbidden' do
-        get :edit, compliance_control_set_id: compliance_control_set.id, id: compliance_control.id
-        expect(response).to have_http_status 403
+      it 'should raise an error' do
+        expect {
+          get :edit, compliance_control_set_id: ccset2.id, id: compliance_control2.id
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     describe 'POST #update' do
-      it 'should be forbidden' do
-        post :update, compliance_control_set_id: compliance_control_set.id, id: compliance_control.id, compliance_control: compliance_control.as_json.merge(type: 'GenericAttributeControl::MinMax')
-        expect(response).to have_http_status 403
+      it 'should raise an error' do
+        expect {
+          post :update, compliance_control_set_id: ccset2.id, id: compliance_control2.id, compliance_control: compliance_control2.as_json.merge(type: 'GenericAttributeControl::MinMax')
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     describe 'DELETE #destroy' do
-      it 'should be forbidden' do
+      it 'should raise an error' do
         expect {
-          delete :destroy, compliance_control_set_id: compliance_control_set.id, id: compliance_control.id
-        }.to change(GenericAttributeControl::MinMax, :count).by(0)
-        expect(response).to have_http_status 403
+          delete :destroy, compliance_control_set_id: ccset2.id, id: compliance_control2.id
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end

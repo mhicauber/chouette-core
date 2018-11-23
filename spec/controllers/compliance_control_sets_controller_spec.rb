@@ -75,4 +75,22 @@ RSpec.describe ComplianceControlSetsController, type: :controller do
       end
     end
   end
+
+  describe "GET show" do
+    context "when ccset belongs to another organization" do
+
+      it "should raise an error" do
+        expect {
+          get :show, id: different_organisation_cc_set.id
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context "when ccset belongs to current_user's organization" do
+      it 'should be successful' do
+        get :show, id: same_organisation_cc_set.id
+        expect(response).to be_success
+      end
+    end
+  end
 end
