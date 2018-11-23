@@ -6,6 +6,7 @@ module IevInterfaces
     before_action :ransack_status_params, only: [:index]
     respond_to :html
     belongs_to :workbench
+    helper_method :collection_name, :collection_class_name
   end
 
   def show
@@ -71,4 +72,6 @@ module IevInterfaces
   def sort_direction
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'desc'
   end
+
+  def collection_class_name; index_model end
 end

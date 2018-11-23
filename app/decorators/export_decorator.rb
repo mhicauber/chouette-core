@@ -16,8 +16,6 @@ class ExportDecorator < AF83::Decorator
   end
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.show_action_link(
-      if: -> () { object.referential.present? }
-    )
+    instance_decorator.show_action_link
   end
 end
