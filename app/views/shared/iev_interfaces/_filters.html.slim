@@ -8,14 +8,14 @@
 
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:q], :status_eq_any)
-      = f.label collection_class_name.human_attribute_name(:status), required: false, class: 'control-label'
+      = f.label index_model.human_attribute_name(:status), required: false, class: 'control-label'
       = f.input :status_eq_any, collection: %w(pending successful warning failed), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + import_status(l) + "</span>").html_safe}, required: false, wrapper_html: { class: "checkbox_list"}
     .form-group.togglable class=filter_item_class(params[:q], :status_eq_any)
-      = f.label collection_class_name.human_attribute_name(:type), required: false, class: 'control-label'
+      = f.label index_model.human_attribute_name(:type), required: false, class: 'control-label'
       = f.input :type_eq_any, collection: @types, as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.human_name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
     .form-group.togglable class=filter_item_class(params[:q], :started_at)
-      = f.label collection_class_name.human_attribute_name(:started_at), required: false, class: 'control-label'
+      = f.label index_model.human_attribute_name(:started_at), required: false, class: 'control-label'
       .filter_menu
         = f.simple_fields_for :started_at do |p|
           = p.input :start_date, as: :date, label: false, wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @begin_range, include_blank: @begin_range ? false : true
