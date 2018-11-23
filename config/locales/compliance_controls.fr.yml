@@ -41,6 +41,7 @@ fr:
         vehicle_journey: Course
         dummy: Dummy
         company: Transporteur
+        stop_area: Arrêt
     actions:
       new: Ajouter
       edit: Editer
@@ -308,6 +309,8 @@ fr:
         one: "Dummy"
       company_control/name_is_present:
         one: "Présence du nom des transporteurs"
+      stop_area_control/time_zone:
+        one: "Les arrêts sont géolocalisés"
 
     attributes:
       compliance_control:

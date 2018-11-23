@@ -41,6 +41,9 @@ en:
         routing_constraint_zone: Routing constraint zone
         journey_pattern: Journey pattern
         vehicle_journey: Vehicle journey
+        dummy: Dummy
+        company: Company
+        stop_area: Stop area
     actions:
       new: Add
       edit: Edit
@@ -306,6 +309,8 @@ en:
         one: "Dummy"
       company_control/name_is_present:
         one: "Company name is present"
+      stop_area_control/time_zone:
+        one: "StopAreas are geolocated"
 
     attributes:
       compliance_control:
