@@ -1,26 +1,26 @@
 = search_form_for @q, url: request.path, html: { method: :get, class: 'form form-filter' } do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_creator_cont)
-      = f.search_field :name_or_creator_cont, class: 'form-control', placeholder: t('imports.filters.name_or_creator_cont')
+      = f.search_field :name_or_creator_cont, class: 'form-control', placeholder: t("#{collection_name}.filters.name_or_creator_cont")
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search
 
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:q], :status_eq_any)
-      = f.label Import::Base.human_attribute_name(:status), required: false, class: 'control-label'
+      = f.label index_model.human_attribute_name(:status), required: false, class: 'control-label'
       = f.input :status_eq_any, collection: %w(pending successful warning failed), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + import_status(l) + "</span>").html_safe}, required: false, wrapper_html: { class: "checkbox_list"}
     .form-group.togglable class=filter_item_class(params[:q], :status_eq_any)
-      = f.label Import::Base.human_attribute_name(:type), required: false, class: 'control-label'
+      = f.label index_model.human_attribute_name(:type), required: false, class: 'control-label'
       = f.input :type_eq_any, collection: @types, as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.human_name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
     .form-group.togglable class=filter_item_class(params[:q], :started_at)
-      = f.label Import::Base.human_attribute_name(:started_at), required: false, class: 'control-label'
+      = f.label index_model.human_attribute_name(:started_at), required: false, class: 'control-label'
       .filter_menu
         = f.simple_fields_for :started_at do |p|
           = p.input :start_date, as: :date, label: false, wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @begin_range, include_blank: @begin_range ? false : true
           = p.input :end_date, as: :date, label: false, wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @end_range, include_blank: @end_range ? false : true
 
   .actions
-    = link_to t('actions.erase'), workbench_imports_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), id: 'import_filter_btn', class: 'btn btn-default'
+    = link_to t('actions.erase'), collection_path, class: 'btn btn-link'
+    = f.submit t('actions.filter'), id: "#{collection_name}_filter_btn", class: 'btn btn-default'

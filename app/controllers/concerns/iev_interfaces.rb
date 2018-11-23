@@ -6,6 +6,7 @@ module IevInterfaces
     before_action :ransack_status_params, only: [:index]
     respond_to :html
     belongs_to :workbench
+    helper_method :collection_name, :index_model
   end
 
   def show
