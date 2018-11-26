@@ -11,13 +11,17 @@ class Chouette::AreaType
   mattr_accessor :all, :commercial, :non_commercial
 
   def self.commercial=(values)
-    @@commercial = COMMERCIAL & values
-    reset_caches!
+    if values.all? {|v| COMMERCIAL.include?(v)}
+      @@commercial = values
+      reset_caches!
+    end
   end
 
   def self.non_commercial=(values)
-    @@non_commercial = NON_COMMERCIAL & values
-    reset_caches!
+    if values.all? {|v| NON_COMMERCIAL.include?(v)}
+      @@non_commercial = values
+      reset_caches!
+    end
   end
 
   @@instances = {}
