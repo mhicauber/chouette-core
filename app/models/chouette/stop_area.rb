@@ -69,7 +69,7 @@ module Chouette
     end
 
     def parent_area_type_must_be_greater
-      return unless self.parent
+      return unless self.parent && has_valid_area_type?
 
       parent_area_type = Chouette::AreaType.find(self.parent.area_type)
       if Chouette::AreaType.find(self.area_type) >= parent_area_type
@@ -85,9 +85,13 @@ module Chouette
       end
     end
 
+    def has_valid_area_type?
+      kind.present? && area_type.present? && Chouette::AreaType.send(self.kind).map(&:to_s).include?(self.area_type)
+    end
+
     def area_type_of_right_kind
       return unless self.kind
-      unless Chouette::AreaType.send(self.kind).map(&:to_s).include?(self.area_type)
+      unless has_valid_area_type?
         errors.add(:area_type, I18n.t('stop_areas.errors.incorrect_kind_area_type'))
       end
     end
