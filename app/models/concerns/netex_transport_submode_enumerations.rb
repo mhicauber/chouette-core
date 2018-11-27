@@ -6,35 +6,65 @@ module NetexTransportSubmodeEnumerations
     enumerize :transport_submode, in: NetexTransportSubmodeEnumerations.transport_submodes
   end
 
+  def transport_mode_and_submode_match
+    return unless transport_mode.present?
+
+    submodes = NetexTransportSubmodeEnumerations.submodes_for_transports
+
+    return if submodes[transport_mode&.to_sym].blank? && transport_submode.blank?
+    return if submodes[transport_mode&.to_sym].include?(transport_submode)
+
+    errors.add(:transport_mode, :submode_mismatch)
+  end
+
   module ClassMethods
     def transport_submodes
       NetexTransportSubmodeEnumerations.transport_submodes
     end
 
-    def sorted_transport_submodes
-      NetexTransportSubmodeEnumerations.sorted_transport_submodes
+    def formatted_submodes_for_transports
+      NetexTransportSubmodeEnumerations.formatted_submodes_for_transports
     end
   end
 
   class << self
     def transport_submodes
-      %w(
-        demandAndResponseBus
-        nightBus
-        airportLinkBus
-        highFrequencyBus
-        expressBus
-        railShuttle
-        suburbanRailway
-        regionalRail
-        interregionalRail
-      )
+      submodes_for_transports.values.flatten.compact
     end
 
     def sorted_transport_submodes
-      transport_submodes.sort_by do |m|
-        I18n.t("enumerize.transport_submode.#{m}").parameterize
-      end
+      transport_submodes.map do |m|
+        I18n.t("enumerize.transport_submode.#{m}")
+      end.sort
+    end
+
+    def submodes_for_transports
+      {
+        bus: [
+          nil,
+          "demandAndResponseBus",
+          "nightBus",
+          "airportLinkBus",
+          "highFrequencyBus",
+          "expressBus"
+        ],
+        rail: %w(
+          railShuttle
+          suburbanRailway
+          regionalRail
+          interregionalRail
+        )
+      }
+    end
+
+    def formatted_submodes_for_transports
+      submodes_for_transports.map do |t,s|
+        {
+          t => s.map do |k|
+            { value: k, label: I18n.t("enumerize.transport_submode.#{ k.presence || 'undefined' }") }
+          end.sort_by { |k| k[:value] ? k[:label] : "" }
+        }
+      end.reduce({}, :merge)
     end
   end
 end

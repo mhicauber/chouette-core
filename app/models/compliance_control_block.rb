@@ -12,6 +12,8 @@ class ComplianceControlBlock < ApplicationModel
   validates :transport_mode, presence: true
   validates :compliance_control_set, presence: true
 
+  validate :transport_mode_and_submode_match
+
   validates_uniqueness_of :condition_attributes, scope: :compliance_control_set_id
 
   def name
