@@ -9,7 +9,7 @@
       .row
         .col-lg-12
           h1
-            span.status_icon = import_status(@import.status)
+            span.status_icon = operation_status(@import.status)
             span = t('.table_state', lines_imported: @import_resources.lines_imported , lines_in_zipfile: @import_resources.lines_in_zipfile )
         - if @import_resources.present?
           .col-lg-12

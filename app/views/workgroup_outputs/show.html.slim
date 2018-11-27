@@ -18,7 +18,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |n| import_status(n.status) }, \
+                attribute: Proc.new { |n| operation_status(n.status) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

@@ -1,32 +1,6 @@
 # -*- coding: utf-8 -*-
 module ImportsHelper
 
-  # Import statuses helper
-  def import_status(status, verbose: false, default_status: nil, i18n_prefix: nil)
-    status ||= default_status
-    return unless status
-    i18n_prefix ||= "imports.status"
-    status = status.to_s.downcase
-    out = if %w[new running pending].include? status
-      content_tag :span, '', class: "fa fa-clock-o"
-    else
-      cls = ''
-      cls = 'success' if status == 'successful'
-      cls = 'success' if status == 'ok'
-      cls = 'warning' if status == 'warning'
-      cls = 'info' if status == 'canceled'
-      cls = 'danger' if %w[failed aborted  error].include? status
-
-      content_tag :span, '', class: "fa fa-circle text-#{cls}"
-    end
-    if verbose
-      out += content_tag :span do
-        txt = "#{i18n_prefix}.#{status}".t(fallback: "")
-      end
-    end
-    out
-  end
-
   # Compliance check set messages
   def bootstrap_class_for_message_criticity(message_criticity)
     case message_criticity.downcase
@@ -53,7 +27,7 @@ module ImportsHelper
         name: label,
         attribute: proc do |n|
           if n.workbench.compliance_control_set(key).present?
-            import_status(
+            operation_status(
               n.workbench_import_check_set(key)&.status,
               verbose: true,
               default_status: (n.status == "ERROR" ? :aborted : :pending)
