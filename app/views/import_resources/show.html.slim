@@ -6,7 +6,7 @@
       .col-lg-12
         - metadata = { 'Bilan d\'import' => link_to(@import_resource.root_import.name, workbench_import_path(@import_resource.root_import.workbench, @import_resource.root_import) ),
             'Jeu de données associé' => ( @import_resource.referential.present? ? link_to(@import_resource.referential.name, referential_path(@import_resource.referential)) : '-' ) }
-        - metadata = metadata.update({t('.status') => import_status(@import_resource.status, verbose: true) })
+        - metadata = metadata.update({t('.status') => operation_status(@import_resource.status, verbose: true) })
         = definition_list t('metadatas'), metadata
 
 
