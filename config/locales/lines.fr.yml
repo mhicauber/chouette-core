@@ -75,7 +75,7 @@ fr:
   activerecord:
     errors:
       models:
-        line:
+        compliance_check_block:
           attributes:
             transport_mode:
               submode_mismatch: "ne correspond pas au sous-mode de transport séléctionné"

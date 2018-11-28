@@ -12,7 +12,7 @@ module NetexTransportSubmodeEnumerations
     submodes = NetexTransportSubmodeEnumerations.submodes_for_transports
 
     return if submodes[transport_mode&.to_sym].blank? && transport_submode.blank?
-    return if submodes[transport_mode&.to_sym].include?(transport_submode)
+    return if submodes[transport_mode&.to_sym]&.include?(transport_submode)
 
     errors.add(:transport_mode, :submode_mismatch)
   end
