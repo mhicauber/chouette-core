@@ -25,8 +25,6 @@ RSpec.describe MergeMailer, type: :mailer do
   end
 
   it 'should have correct body' do
-    puts email.body.raw_source.inspect
-
     # With Rails 4.2.11 upgrade, email body contains \r\n. See #9423
     expect(email.body.raw_source.gsub("\r\n","\n")).to include I18n.t("mailers.merge_mailer.finished.body", merge_name: merge.name, status: I18n.t("operation_support.statuses.#{merge.status}"))
   end
