@@ -20,7 +20,8 @@ RSpec.describe CalendarMailer, type: :mailer do
     end
 
     it 'should have correct body' do
-      expect(email.body.raw_source).to include I18n.t("mailers.calendar_mailer.#{type}.body", cal_name: calendar.name, cal_index_url: workgroup_calendars_url(calendar.workgroup))
+      # With Rails 4.2.11 upgrade, email body contains \r\n. See #9423
+      expect(email.body.raw_source.gsub("\r\n","\n")).to include I18n.t("mailers.calendar_mailer.#{type}.body", cal_name: calendar.name, cal_index_url: workgroup_calendars_url(calendar.workgroup))
     end
   end
 
