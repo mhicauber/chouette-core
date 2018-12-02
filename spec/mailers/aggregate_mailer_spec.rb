@@ -22,6 +22,7 @@ RSpec.describe AggregateMailer, type: :mailer do
   end
 
   it 'should have correct body' do
-    expect(email.body.raw_source).to include I18n.t('mailers.aggregate_mailer.finished.body', agg_name: aggregate.name, status: I18n.t("operation_support.statuses.#{aggregate.status}"))
+    # With Rails 4.2.11 upgrade, email body contains \r\n. See #9423
+    expect(email.body.raw_source.gsub("\r\n","\n")).to include I18n.t('mailers.aggregate_mailer.finished.body', agg_name: aggregate.name, status: I18n.t("operation_support.statuses.#{aggregate.status}")).to_s
   end
 end
