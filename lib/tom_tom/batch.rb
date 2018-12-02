@@ -10,7 +10,7 @@ module TomTom
     def batch(way_costs)
       params = URI.encode_www_form({
         travelMode: 'bus',
-        routeType: 'shortest',
+        routeType: 'fastest',
         traffic: 'false'
       })
       out = []
