@@ -29,6 +29,12 @@ case $command in
   console)
     exec bundle exec rails console production
     ;;
+  migrate)
+    exec bundle exec rake db:migrate
+    ;;
+  seed)
+    exec bundle exec rake db:seed
+    ;;
   *)
     exec $@
 esac
