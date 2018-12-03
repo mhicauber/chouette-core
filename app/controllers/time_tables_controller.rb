@@ -180,7 +180,7 @@ class TimeTablesController < ChouetteController
 
   def sort_column
     @@valid_cols ||= begin
-      valid_cols = %w(id color comment)
+      valid_cols = %w(id color comment updated_at)
       valid_cols << "bounding_dates"
       valid_cols << "vehicle_journeys_count"
       valid_cols << "calendar"
