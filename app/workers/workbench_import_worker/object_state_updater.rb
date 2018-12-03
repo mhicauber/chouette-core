@@ -39,6 +39,7 @@ class WorkbenchImportWorker
           'spurious_dirs'   => entry.spurious.join(', ')
         })
       resource(entry).update status: :ERROR
+      raise Zip::Error
     end
 
     def update_missing_calendar entry
