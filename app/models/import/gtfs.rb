@@ -220,7 +220,8 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stops
-    create_resource(:stops).each(source.stops, slice: 100, transaction: true) do |stop, resource|
+    sorted_stops = source.stops.sort_by { |s| s.parent_station ? 1 : 0 }
+    create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
       if stop.parent_station.present?
         next unless check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
       end
