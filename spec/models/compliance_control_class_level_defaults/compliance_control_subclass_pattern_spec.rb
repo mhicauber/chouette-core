@@ -9,6 +9,7 @@ RSpec.describe ComplianceControl do
         line: 'Line',
         route: 'Route',
         routing_constraint_zone: 'RoutingConstraint',
+        stop_area: "StopArea",
         vehicle_journey: 'VehicleJourney',
         dummy: 'Dummy',
         company: 'Company'
