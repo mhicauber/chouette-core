@@ -2,10 +2,7 @@ require 'net/http'
 class Import::Netex < Import::Base
   before_destroy :destroy_non_ready_referential
 
-  after_commit do
-    main_resource.update_status_from_importer self.status
-    true
-  end
+  after_commit :update_main_resource_status, on:  [:create, :update]
 
   before_save do
     self.referential&.failed! if self.status == 'aborted' || self.status == 'failed'
@@ -15,6 +12,11 @@ class Import::Netex < Import::Base
 
   def main_resource
     @resource ||= parent.resources.find_or_create_by(name: self.name, resource_type: "referential", reference: self.name)
+  end
+
+  def update_main_resource_status
+    main_resource.update_status_from_importer status
+    true
   end
 
   def notify_parent

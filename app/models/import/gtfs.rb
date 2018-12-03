@@ -3,10 +3,7 @@ class Import::Gtfs < Import::Base
 
   after_commit :launch_worker, on: :create
 
-  after_commit do
-    main_resource.update_status_from_importer status
-    true
-  end
+  after_commit :update_main_resource_status, on:  [:create, :update]
 
   def launch_worker
     GtfsImportWorker.perform_async id
@@ -14,6 +11,11 @@ class Import::Gtfs < Import::Base
 
   def main_resource
     @resource ||= parent.resources.find_or_create_by(name: referential_name, resource_type: 'referential', reference: self.name) if parent
+  end
+
+  def update_main_resource_status
+    main_resource.update_status_from_importer status
+    true
   end
 
   def create_resource name
