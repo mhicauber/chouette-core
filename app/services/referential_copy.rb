@@ -112,7 +112,7 @@ class ReferentialCopy
 
       # we copy the journey_patterns
       copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
-        retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid, :position], [:objectid, :position]
+        retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid], [:objectid]
         copy_collection journey_pattern, new_journey_pattern, :courses_stats do |_, new_stat|
           new_stat.route = new_route
         end
@@ -121,7 +121,7 @@ class ReferentialCopy
           retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables, [:checksum], [:checksum]
           retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows, [:checksum], [:checksum, :date_ranges]
           copy_collection vj, new_vj, :vehicle_journey_at_stops do |vjas, new_vjas|
-            query = source.switch { vjas.stop_point.slice(:position, :objectid) }
+            query = source.switch { vjas.stop_point.slice(:objectid) }
             new_vjas.stop_point = new_journey_pattern.stop_points.find_by(query)
           end
         end
@@ -200,6 +200,7 @@ class ReferentialCopy
       error << model.attributes
       error << model.errors.messages
       error = error.join("\n")
+
       raise SaveError.new(error)
     end
   end
