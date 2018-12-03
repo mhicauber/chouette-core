@@ -1,4 +1,6 @@
 class Aggregate < ActiveRecord::Base
+  DEFAULT_KEEP_AGGREGATES = 10
+
   include OperationSupport
   include NotifiableSupport
 
@@ -34,6 +36,13 @@ class Aggregate < ActiveRecord::Base
     else
       save_current
     end
+
+    self.class.keep_operations = if Rails.configuration.respond_to?(:keep_aggregates)
+                                   Rails.configuration.keep_aggregates
+                                 else
+                                   DEFAULT_KEEP_AGGREGATES
+                                 end
+    clean_previous_operations
   rescue => e
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
     failed!
