@@ -14,11 +14,11 @@ RSpec.describe Export::Base, type: :model do
 
     it "removes files from imports older than 7 days" do
       file_purgeable = Timecop.freeze(7.days.ago) do
-        create(:gtfs_import, workbench: workbench)
+        create(:workbench_import, workbench: workbench)
       end
 
       other_file_purgeable = Timecop.freeze(7.days.ago) do
-        create( :gtfs_import, workbench: other_workbench )
+        create( :workbench_import, workbench: other_workbench )
       end
 
       Import::Workbench.new(workbench: workbench).purge_imports
@@ -29,11 +29,11 @@ RSpec.describe Export::Base, type: :model do
 
     it "removes imports older than 90 days" do
       old_import = Timecop.freeze(90.days.ago) do
-        create(:gtfs_import, workbench: workbench)
+        create(:workbench_import, workbench: workbench)
       end
 
       other_old_import = Timecop.freeze(90.days.ago) do
-        create(:gtfs_import, workbench: other_workbench)
+        create(:workbench_import, workbench: other_workbench)
       end
 
       expect { Import::Workbench.new(workbench: workbench).purge_imports }.to change {
