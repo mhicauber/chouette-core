@@ -99,6 +99,9 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = { address: ENV.fetch('SMTP_HOST') } if ENV['SMTP_HOST']
   config.action_mailer.asset_host    = ENV['MAIL_ASSETS_URL_BASE']
 
+  # See #8823
+  config.chouette_email_user = SmartEnv['CHOUETTE_EMAIL_USER']
+
   config.to_prepare do
     Devise::Mailer.layout "mailer"
   end
