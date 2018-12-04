@@ -2,8 +2,11 @@ class Import::Base < ApplicationModel
   self.table_name = "imports"
   include OptionsSupport
   include NotifiableSupport
+  include PurgeableResource
 
   PERIOD_EXTREME_VALUE = 15.years
+
+  after_create :purge_imports
 
   def self.messages_class_name
     "Import::Message"
@@ -43,6 +46,13 @@ class Import::Base < ApplicationModel
       super
     end
 
+  end
+
+  def purge_imports
+    workbench.imports.file_purgeable.each do |import|
+      import.update(remove_file: true)
+    end
+    workbench.imports.purgeable.destroy_all
   end
 
   private

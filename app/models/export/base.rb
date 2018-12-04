@@ -4,12 +4,15 @@ class Export::Base < ActiveRecord::Base
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport
+  include PurgeableResource
 
   self.table_name = "exports"
 
   belongs_to :referential
 
   validates :type, :referential_id, presence: true
+
+  after_create :purge_exports
 
   def self.messages_class_name
     "Export::Message"
@@ -25,6 +28,13 @@ class Export::Base < ActiveRecord::Base
 
   def self.file_extension_whitelist
     %w(zip csv json)
+  end
+
+  def purge_exports
+    workbench.exports.file_purgeable.each do |exp|
+      exp.update(remove_file: true)
+    end
+    workbench.exports.purgeable.destroy_all
   end
 
   def upload_file file
