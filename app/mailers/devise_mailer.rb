@@ -5,20 +5,34 @@ class DeviseMailer < Devise::Mailer
   default template_path: 'devise/mailer' # to make sure that your mailer uses the devise views
 
   def confirmation_instructions(user, token, opts={})
+    return unless email_sending_required?
+
     @user  = User.find(user.id)
     @token = token
     mail to: @user.email, subject: t('mailers.confirmation_mailer.subject')
   end
 
   def invitation_instructions(user, token, opts={})
+    return unless email_sending_required?
+
     @user  = User.find(user.id)
     @token = token
     mail to: @user.email, subject: t('mailers.invitation_mailer.created.subject')
   end
 
-    def reset_password_instructions(user, token, opts={})
-    @user      = User.find(user.id)
+  def reset_password_instructions(user, token, opts={})
+    return unless email_sending_required?
+
+    @user  = User.find(user.id)
     @token = token
     mail to: @user.email, subject: t('mailers.password_mailer.updated.subject')
+  end
+
+  private
+
+  def email_sending_required?
+    return unless Rails.application.config.respond_to?(:chouette_email_user)
+
+    Rails.application.config.chouette_email_user
   end
 end

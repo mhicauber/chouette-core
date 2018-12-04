@@ -51,6 +51,7 @@ module ChouetteIhm
     SmartEnv.add_boolean :NO_TRANSACTION
     SmartEnv.add_boolean :SUBSCRIPTION_NOTIFIER_ENABLED
     SmartEnv.add_boolean :CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT
+    SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
 
     # IEVKIT
     SmartEnv.add :IEVKIT_ACCESS_TOKEN
