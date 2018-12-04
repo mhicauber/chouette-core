@@ -43,7 +43,8 @@ module Chouette
     validates_numericality_of :longitude, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180, :allow_nil => true
 
     validates_format_of :coordinates, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
-    validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
+    # See #9510
+    # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     validates_numericality_of :waiting_time, greater_than_or_equal_to: 0, only_integer: true, if: :waiting_time
     validates :time_zone, inclusion: { in: TZInfo::Timezone.all_country_zone_identifiers }, allow_nil: true, allow_blank: true

@@ -37,7 +37,9 @@ module Chouette
 
     # validates_format_of :registration_number, :with => %r{\A[\d\w_\-]+\Z}, :allow_nil => true, :allow_blank => true
     validates_format_of :stable_id, :with => %r{\A[\d\w_\-]+\Z}, :allow_nil => true, :allow_blank => true
-    validates_format_of :url, :with => %r{\A(https?:\/\/|www)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
+
+    # See #9510
+    # validates_format_of :url, :with => %r{\A(https?:\/\/|www)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     validates_presence_of :name
 

@@ -7,16 +7,6 @@ describe Chouette::Line, :type => :model do
   # it { is_expected.to validate_presence_of :network }
   # it { is_expected.to validate_presence_of :company }
   it { should validate_presence_of :name }
-  
-
-  describe '#url' do
-    it { should allow_value("http://foo.bar").for(:url) }
-    it { should allow_value("https://foo.bar").for(:url) }
-    it { should allow_value("http://www.foo.bar").for(:url) }
-    it { should allow_value("https://www.foo.bar").for(:url) }
-    it { should allow_value("www.foo.bar").for(:url) }
-    it { should_not allow_value("foo.bar").for(:url) }
-  end
 
   describe '#display_name' do
     it 'should display local_id, number, name and company name' do
