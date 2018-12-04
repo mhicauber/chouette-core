@@ -21,6 +21,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |route, evaluator|
+        route.stop_points = []
         create_list(:stop_point, evaluator.stop_points_count, route: route)
         route.reload
         route.update_checksum!

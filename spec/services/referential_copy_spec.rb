@@ -167,33 +167,6 @@ RSpec.describe ReferentialCopy do
 
     before(:each){ referential.switch }
 
-    context "without stop_points" do
-      before(:each){
-        referential.switch do
-          route.stop_points.destroy_all
-          route.opposite_route.stop_points.destroy_all
-        end
-      }
-      it "should copy the routes" do
-        expect{ referential_copy.send(:copy_routes, line_referential.lines.first.reload) }.to change{ target.switch{ Chouette::Route.count } }.by 2
-        former_route = referential.switch { route.reload }
-        former_opposite_route = referential.switch { route.opposite_route.reload }
-        new_route = target.switch{ Chouette::Route.where(name: former_route.name).last }
-        new_opposite_route = target.switch{ new_route.opposite_route }
-        expect(referential_copy.send(:clean_attributes_for_copy, former_route)).to eq referential_copy.send(:clean_attributes_for_copy, new_route)
-        expect(referential_copy.send(:clean_attributes_for_copy, former_opposite_route)).to eq referential_copy.send(:clean_attributes_for_copy, new_opposite_route)
-      end
-
-      context "when the route already exists" do
-        before(:each) do
-          referential_copy.send(:copy_route, route)
-        end
-        it "should fail" do
-          expect{ referential_copy.send(:copy_route, route) }.to raise_error ReferentialCopy::SaveError
-        end
-      end
-    end
-
     context "with stop_points" do
       it "should copy the stop_points" do
         stop_points_count = referential.switch { route.stop_points.count }
