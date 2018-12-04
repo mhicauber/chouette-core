@@ -46,8 +46,7 @@ RSpec.describe Export::Gtfs, type: :model do
       line_referential.lines.each do |line|
         # 2*2 routes with 5 stop_areas each
         factor.times do
-          stop_areas = stop_area_referential.stop_areas.order("random()").limit(5)
-          FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+          FactoryGirl.create :route, line: line, stop_points_count: 5
         end
       end
 

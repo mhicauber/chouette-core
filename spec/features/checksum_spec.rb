@@ -37,15 +37,17 @@ RSpec.describe 'Checksum', type: :feature do
 
   let(:route) do
     stop_area_1 && stop_area_2
-    r = create :route, {
+    r = build :route, {
       name: "name",
       published_name: "published_name",
       wayback: 'inbound',
-      stop_points_count: 0,
+      stop_points: []
     }
-    create :stop_point, stop_area: stop_area_1, route: r, position: 0
-    create :stop_point, stop_area: stop_area_2, route: r, position: 1
-    create :stop_point, stop_area: stop_area_3, route: r, position: 2
+
+    r.stop_points << build(:stop_point, stop_area: stop_area_1, position: 0)
+    r.stop_points << build(:stop_point, stop_area: stop_area_2, position: 1)
+    r.stop_points << build(:stop_point, stop_area: stop_area_3, position: 2)
+    r.save!
     r.reload
   end
 

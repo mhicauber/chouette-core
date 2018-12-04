@@ -285,13 +285,12 @@ RSpec.describe Merge do
       referential.switch do
         line_referential.lines.each do |line|
           factor.times do
-            stop_areas = stop_area_referential.stop_areas.order("random()").limit(5)
-            FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+            FactoryGirl.create :route, line: line, stop_points_count: 5
           end
           # Loop
-          stop_areas = stop_area_referential.stop_areas.order("random()").limit(5)
-          route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
-          route.stop_points.create stop_area: stop_areas.first, position: route.stop_points.size
+          route = FactoryGirl.create :route, line: line, stop_points_count: 5
+          first_stop = route.stop_points.first.stop_area
+          route.stop_points.create stop_area: first_stop, position: route.stop_points.size
           jp = route.full_journey_pattern
           expect(route.stop_points.uniq.count).to eq route.stop_areas.uniq.count + 1
           expect(jp.stop_points.uniq.count).to eq jp.stop_areas.uniq.count + 1

@@ -2,6 +2,15 @@ RSpec.describe RoutesController, type: :controller do
   login_user
 
   let(:route) { create(:route, referential: referential) }
+  let(:stop_area_referential) { referential.workbench.stop_area_referential }
+
+  def stop_points_attributes(route, length: 2)
+    data = route.stop_points.first(length).map.with_index do |sp, i|
+      { position: i, stop_area_id: sp.stop_area_id, for_boarding: sp.for_boarding, for_alighting: sp.for_alighting }
+    end
+
+    data
+  end
 
   it { is_expected.to be_kind_of(ChouetteController) }
 
@@ -42,7 +51,7 @@ RSpec.describe RoutesController, type: :controller do
     before(:each) do
       post :create, line_id: route.line_id,
           referential_id: referential.id,
-          route: { name: "changed", published_name: "published_name"}
+          route: { name: "changed", published_name: "published_name", stop_points_attributes: stop_points_attributes(route, length: 2) }
 
     end
     it_behaves_like "line and referential linked"

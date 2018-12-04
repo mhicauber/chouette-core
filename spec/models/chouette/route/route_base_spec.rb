@@ -7,7 +7,6 @@ RSpec.describe Chouette::Route, :type => :model do
 
   it { is_expected.to enumerize(:direction).in(:straight_forward, :backward, :clockwise, :counter_clockwise, :north, :north_west, :west, :south_west, :south, :south_east, :east, :north_east) }
   it { is_expected.to enumerize(:wayback).in(:outbound, :inbound) }
-  xit { is_expected.to validate_length_of(:stop_point_ids).is_at_least(2) }
   #it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :line }
   it { is_expected.to validate_uniqueness_of :objectid }
@@ -16,6 +15,17 @@ RSpec.describe Chouette::Route, :type => :model do
   it { is_expected.to validate_inclusion_of(:direction).in_array(%i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)) }
   it { is_expected.to validate_inclusion_of(:wayback).in_array(%i(outbound inbound)) }
   
+  it "should have at least 2 stop points" do
+    route1 = build(:route, stop_points: create_list(:stop_point, 2) )
+    expect(route1).to be_valid
+    
+    
+    route2 = build(:route, stop_points: create_list(:stop_point, 1) )
+    expect(route2).not_to be_valid
+    expect(route2.errors.messages[:stop_points]).to be
+    expect(route2.errors.messages[:stop_points]).to include( I18n.t('activerecord.errors.models.route.attributes.stop_points.not_enough_stop_points') )
+  end
+
   context "reordering methods" do
     let(:bad_stop_point_ids){subject.stop_points.map { |sp| sp.id + 1}}
     let(:ident){subject.stop_points.map(&:id)}

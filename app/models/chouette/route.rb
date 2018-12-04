@@ -140,17 +140,19 @@ module Chouette
         atts_for_create[:published_name] = atts_for_create[:name]
         atts_for_create[:opposite_route_id] = self.id
       end
-      new_route = self.class.create!(atts_for_create)
-      duplicate_stop_points(for_route: new_route, opposite: opposite)
+      sp_attributes = duplicate_stop_points(opposite: opposite)
+      new_route = self.class.create!(atts_for_create.merge(stop_points_attributes: sp_attributes))
+
       new_route
     end
 
-    def duplicate_stop_points(for_route:, opposite: false)
-      stop_points.each(&duplicate_stop_point(for_route: for_route, opposite: opposite))
-    end
-    def duplicate_stop_point(for_route:, opposite: false)
-      -> stop_point do
-        stop_point.duplicate(for_route: for_route, opposite: opposite)
+    def duplicate_stop_points(opposite: false)
+      keys = %w(stop_area_id position for_boarding for_alighting)
+      stop_points.map do |sp| 
+        sp_json = sp.as_json.slice(*keys)
+        sp_json['position'] = stop_points.size - sp.position if opposite
+
+        sp_json
       end
     end
 

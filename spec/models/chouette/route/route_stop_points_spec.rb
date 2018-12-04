@@ -102,9 +102,9 @@ RSpec.describe Chouette::Route, :type => :model do
       it "should retreive same stop_area one last and first position" do
         route_loop = create(:route, :line => line)
         first_stop = Chouette::StopPoint.where( :route_id => route_loop.id, :position => 0).first
-        last_stop = create(:stop_point, :route => route_loop, :position => 4, :stop_area => first_stop.stop_area)
+        last_stop = create(:stop_point, :route => route_loop, :position => 7, :stop_area => first_stop.stop_area)
 
-        expect(route_loop.stop_areas.size).to eq(6)
+        expect(route_loop.stop_areas.distinct.size).to eq( route_loop.stop_points.count - 1)
         expect(route_loop.stop_areas.select {|s| s.id == first_stop.stop_area.id}.size).to eq(2)
       end
     end

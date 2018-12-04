@@ -58,11 +58,11 @@ module Chouette
       end
     end
 
-    def duplicate(for_route:, opposite: false)
+    def duplicate(opposite: false)
       keys_for_create = attributes.keys - %w{id objectid created_at updated_at}
       atts_for_create = attributes
         .slice(*keys_for_create)
-        .merge('route_id' => for_route.id)
+        # .merge('route_id' => for_route.id)
       atts_for_create["position"] = self.route.stop_points.size - atts_for_create["position"] if opposite
       self.class.create!(atts_for_create)
     end
