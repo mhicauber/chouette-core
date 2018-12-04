@@ -48,7 +48,7 @@ Rails.application.configure do
   config.action_mailer.asset_host          = ENV.fetch('RAILS_HOST', 'http://localhost:3000')
 
   # See #8823
-  config.chouette_email_user = false
+  config.chouette_email_user = true
 
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = true
