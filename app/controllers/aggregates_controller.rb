@@ -10,6 +10,12 @@ class AggregatesController < ChouetteController
     @aggregate = @aggregate.decorate(context: {workgroup: parent})
   end
 
+  def rollback
+    authorize resource
+    resource.rollback!
+    redirect_to [:workgroup, :output]
+  end
+
   private
 
   def build_resource

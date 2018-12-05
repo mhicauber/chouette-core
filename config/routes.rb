@@ -55,7 +55,11 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :compliance_check_sets, only: [:index, :show]
     resource :output, controller: :workgroup_outputs
-    resources :aggregates
+    resources :aggregates do
+      member do
+        put :rollback
+      end
+    end
     resources :publication_setups do
       resources :publications, only: :show
     end
