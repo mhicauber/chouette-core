@@ -2,8 +2,10 @@ class ReferentialAudit
   class Full
     def perform opts={}
       limit = opts.delete(:limit)
-      referentials = Referential.not_in_referential_suite.uniq
+      referentials = Referential.mergeable.uniq
       referentials += Workbench.all.map { |w| w.output.current }.compact
+      referentials += Workbench.all.map { |w| w.referential_to_aggregate }.compact
+      referentials += Workgroup.all.map { |w| w.output.current }.compact
       referentials = referentials.uniq.sort_by(&:created_at).reverse
       out = []
       if limit
