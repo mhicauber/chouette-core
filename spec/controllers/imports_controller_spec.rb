@@ -6,8 +6,15 @@ RSpec.describe ImportsController, :type => :controller do
   let(:import)    { create :import, workbench: workbench }
 
   describe "GET index" do
-    let(:request){ get :index, workbench_id: workbench.id }
-    it_behaves_like 'checks current_organisation'
+    context 'on a workbench' do
+      let(:request){ get :index, workbench_id: workbench.id }
+      it_behaves_like 'checks current_organisation'
+    end
+
+    context 'on a workgroup' do
+      let(:request){ get :index, workgroup_id: workbench.workgroup_id }
+      it_behaves_like 'checks current_organisation'
+    end
   end
 
   describe 'GET #new' do

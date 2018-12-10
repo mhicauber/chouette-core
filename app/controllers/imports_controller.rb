@@ -39,7 +39,7 @@ class ImportsController < ChouetteController
     ImportDecorator.decorate(
       imports,
       context: {
-        workbench: @workbench
+        workbench: @workbench || @workgroup.workbenches.find_by(organisation_id: current_organisation.id)
       }
     )
   end

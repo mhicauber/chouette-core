@@ -1,4 +1,4 @@
-- breadcrumb :imports, @workbench
+- breadcrumb :imports, parent
 
 .page_content
   .container-fluid
@@ -24,13 +24,10 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |import| \
-                  workbench_import_path(@workbench, import) \
+                  [parent, import] \
                 end \
               ), \
-              TableBuilderHelper::Column.new( \
-                key: :creator, \
-                attribute: 'creator' \
-              ) \
+              *@contextual_cols \
             ],
             cls: 'table has-search'
 

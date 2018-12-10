@@ -27,7 +27,9 @@ fr:
       manual: Manuel
   activerecord:
     models:
-      workgroup: Groupe de travail
+      workgroup:
+        one: Groupe de travail
+        other: Groupes de travail
     attributes:
       workgroup:
         sentinel_min_hole_size: Taille minimum d'un trou d'offre

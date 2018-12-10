@@ -4,17 +4,21 @@ module IevInterfaces
   included do
     before_action only: [:index] { set_date_time_params("started_at", DateTime) }
     before_action :ransack_status_params, only: [:index]
+    before_action :parent
     respond_to :html
-    belongs_to :workbench
-    helper_method :collection_name, :index_model
+    helper_method :collection_name, :index_model, :parent
   end
 
   def show
     show! do
       instance_variable_set "@#{collection_name.singularize}", resource.decorate(context: {
-        workbench: @workbench
+        workbench: @workbench || @workgroup.workbenches.find_by(organisation_id: current_organisation.id)
       })
     end
+  end
+
+  def create
+    create! { [parent, resource] }
   end
 
   def index
@@ -22,6 +26,17 @@ module IevInterfaces
       format.html {
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
+        end
+        @contextual_cols = []
+        if workbench
+          @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
+        else
+          @contextual_cols << TableBuilderHelper::Column.new(
+            key: :workbench,
+            name: Workbench.ts.capitalize,
+            attribute: Proc.new { |n| n.workbench.organisation.name },
+            link_to: Proc.new { |n| n.workbench }
+          )
         end
         collection = decorate_collection(collection)
       }
@@ -32,6 +47,22 @@ module IevInterfaces
 
   def begin_of_association_chain
     current_organisation
+  end
+
+  def parent
+    @parent ||= workgroup || workbench
+  end
+
+  def workbench
+    return unless params[:workbench_id]
+
+    @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
+  end
+
+  def workgroup
+    return unless params[:workgroup_id]
+
+    @workgroup ||= current_organisation.workgroups.find(params[:workgroup_id])
   end
 
   def collection
@@ -46,11 +77,17 @@ module IevInterfaces
     @q = scope.search(params[:q])
 
     unless instance_variable_get "@#{collection_name}"
+      coll = @q.result
       coll = if sort_column && sort_direction
-        @q.result(distinct: true).order(sort_column + ' ' + sort_direction).paginate(page: params[:page], per_page: 10)
+        if sort_column == :workbench
+          coll.joins(workbench: :organisation).order('organisations.name ' + sort_direction)
+        else
+          coll.order(sort_column + ' ' + sort_direction)
+        end
       else
-        @q.result(distinct: true).order(:name).paginate(page: params[:page], per_page: 10)
+        coll.order(:name)
       end
+      coll = coll.paginate(page: params[:page], per_page: 10)
       instance_variable_set "@#{collection_name}", decorate_collection(coll)
     end
     instance_variable_get "@#{collection_name}"
@@ -66,10 +103,13 @@ module IevInterfaces
   end
 
   def sort_column
-    parent.imports.column_names.include?(params[:sort]) ? params[:sort] : 'created_at'
+    return params[:sort] if parent.imports.column_names.include?(params[:sort])
+    return :workbench if params[:sort] == 'workbench'
+
+    'created_at'
   end
 
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'desc'
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'desc'
   end
 end

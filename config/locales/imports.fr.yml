@@ -63,6 +63,7 @@ fr:
       canceled:   Annulé
   import:
     workgroup: Groupe de travail
+    workbench: Espace de travail
     netex:     Netex
     referential_companies: Transporteurs
     gtfs: GTFS
@@ -111,6 +112,7 @@ fr:
         base:
           <<: *attrs
         workbench:
+          <<: *attrs
           automatic_merge: Finalisation automatique des jeux de données importés
   errors:
     messages:

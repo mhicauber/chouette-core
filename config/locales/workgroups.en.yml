@@ -27,7 +27,9 @@ en:
       manual: Manual
   activerecord:
     models:
-      workgroup: Workgroup
+      workgroup:
+        one: Workgroup
+        other: Workgroups
     attributes:
       workgroup:
         nightly_aggregate_enabled: Daily aggregation enabled
