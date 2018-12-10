@@ -52,10 +52,16 @@ describe "/layouts/application", :type => :view do
     before do
       workbench.workgroup.update owner: organisation
       allow(view).to receive_messages :current_user => user
-      render
     end
-    it "should have a link to update the workgroup" do
-      expect(rendered).to have_menu_link_to edit_workgroup_path(workbench.workgroup)
+    it "should not have a link to update the workgroup" do
+      render
+      expect(rendered).to_not have_menu_link_to edit_workgroup_path(workbench.workgroup)
+    end
+    with_permission "workgroups.update" do
+      it "should have a link to update the workgroup" do
+        render
+        expect(rendered).to have_menu_link_to edit_workgroup_path(workbench.workgroup)
+      end
     end
   end
 end
