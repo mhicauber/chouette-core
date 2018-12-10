@@ -18,8 +18,15 @@ RSpec.describe WorkgroupPolicy, type: :policy do
         record.owner = user.organisation
       end
 
-      it "should allow for update" do
-        expect_it.to permit(user_context, record)
+      it "should not allow for update" do
+        expect_it.not_to permit(user_context, record)
+      end
+
+      context "with the permission" do
+        it "should allow for update" do
+          add_permissions('workgroups.update', to_user: user)
+          expect_it.to permit(user_context, record)
+        end
       end
     end
   end
