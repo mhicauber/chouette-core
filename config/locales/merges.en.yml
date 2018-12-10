@@ -7,6 +7,9 @@ en:
       title: "New merged offer"
     show:
       title: "Merged offer %{name}"
+      table:
+        state:
+          title: Worbench current output
     actions:
       create: Merge data spaces
       rollback: Rollback

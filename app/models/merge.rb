@@ -16,6 +16,10 @@ class Merge < ApplicationModel
     workbench
   end
 
+  def is_current?
+    new_id == workbench.output.current_id
+  end
+
   def rollback!
     raise "You cannot rollback to the current version" if current?
     workbench.output.update current: self.new
