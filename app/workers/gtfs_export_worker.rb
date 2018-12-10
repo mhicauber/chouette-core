@@ -1,6 +1,7 @@
 class GTFSExportWorker
   include Sidekiq::Worker
   include Concerns::LongRunningWorker
+  extend Concerns::FailingSupport
 
   attr_reader :gtfs_export
 

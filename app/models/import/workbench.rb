@@ -6,7 +6,7 @@ class Import::Workbench < Import::Base
 
   def launch_worker
     unless Import::Gtfs.accept_file?(file.path)
-      WorkbenchImportWorker.perform_async(id)
+      WorkbenchImportWorker.perform_async_or_fail(id: id)
     else
       import_gtfs
     end

@@ -9,7 +9,7 @@ class Import::Gtfs < Import::Base
   end
 
   def launch_worker
-    GtfsImportWorker.perform_async id
+    GtfsImportWorker.perform_async_or_fail(id: id)
   end
 
   def main_resource

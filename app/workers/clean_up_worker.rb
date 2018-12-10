@@ -1,5 +1,6 @@
 class CleanUpWorker
   include Sidekiq::Worker
+  extend Concerns::FailingSupport
 
   def perform(id, original_state=nil)
     cleaner = CleanUp.find id

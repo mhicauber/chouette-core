@@ -1,13 +1,10 @@
 class AggregateWorker
   include Sidekiq::Worker
   include Concerns::ImportantWorker
+  extend Concerns::FailingSupport
 
   def perform(id)
     aggregate = Aggregate.find(id)
-    begin
-      aggregate.aggregate!
-    rescue
-      aggregate.failed!
-    end
+    aggregate.aggregate!
   end
 end
