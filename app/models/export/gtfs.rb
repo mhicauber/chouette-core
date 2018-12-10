@@ -4,7 +4,7 @@ class Export::Gtfs < Export::Base
   option :duration, required: true, type: :integer, default_value: 200
 
   def launch_worker
-    GTFSExportWorker.perform_async(id)
+    GTFSExportWorker.perform_async_or_fail(id: id)
   end
 
   def zip_file_name

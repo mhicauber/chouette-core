@@ -14,7 +14,9 @@ class LineReferentialSync < ApplicationModel
   private
   def perform_sync
     create_sync_message :info, :new
-    LineReferentialSyncWorker.perform_async(self.id)
+    LineReferentialSyncWorker.perform_async_or_fail(id: id) do 
+      log_failed({})
+    end
   end
 
   # There can be only one instance running

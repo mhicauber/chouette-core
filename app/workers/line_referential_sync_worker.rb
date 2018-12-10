@@ -1,6 +1,7 @@
 class LineReferentialSyncWorker
   include Sidekiq::Worker
   include Concerns::LongRunningWorker
+  extend Concerns::FailingSupport
   
   sidekiq_options retry: true
 
