@@ -238,6 +238,31 @@ describe Referential, :type => :model do
     end
   end
 
+  describe "#workgroup" do
+    
+    context "when is referential" do
+      let(:ref1) {  create(:referential) }
+      let(:ref2) {  create(:workbench_referential) }
+
+      it "should return workbench's workgroup" do
+        expect(ref1.workgroup).to be_nil
+        expect(ref2.workgroup).to eq(ref2.workbench.workgroup)
+      end
+    end
+
+    context "when is merged offer" do
+      let!(:ref_suite) {  ReferentialSuite.create }
+      let!(:workgroup) { create(:workgroup, output: ref_suite) }
+      let(:ref1) {  create(:referential,  referential_suite: ref_suite) }
+      let(:ref2) {  create(:referential) }
+
+      it "should returns workgroup that output is the same as referential suite" do
+        expect(ref1.workgroup).to eq(workgroup)
+        expect(ref2.workgroup).to be_nil
+      end
+    end
+  end
+
   context ".referential_ids_in_periode" do
     it 'should retrieve referential id in periode range' do
       range = ref.metadatas.first.periodes.sample
