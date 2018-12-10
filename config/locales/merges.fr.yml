@@ -11,6 +11,7 @@ fr:
       create: Finaliser des Jeux de Données
       rollback: 'Revenir à cette offre'
       rollback_confirm: Etes vous sûr de vouloir revenir à cette offre finalisée ?
+      see_associated_offer: Voir l'offre associée
     statuses:
       new: Nouveau
       pending: En attente
