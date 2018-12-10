@@ -14,7 +14,7 @@ class WorkgroupPolicy < ApplicationPolicy
   end
 
   def update?
-    record.owner == user.organisation
+    (record.owner == user.organisation) && user.has_permission?('workgroups.update')
   end
 
   def aggregate?
