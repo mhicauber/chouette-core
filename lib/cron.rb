@@ -76,5 +76,11 @@ module Cron
         Import::Netex.abort_old
       end
     end
+
+    def audit_referentials
+      protected_action do
+        AuditMailer.audit_if_enabled
+      end
+    end
   end
 end
