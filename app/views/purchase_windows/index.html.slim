@@ -25,7 +25,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :bounding_dates, \
-                attribute: Proc.new {|w| w.bounding_dates.nil? ? '-' : t('validity_range', debut: l(w.bounding_dates.begin, format: :short), end: l(w.bounding_dates.end, format: :short))},  \
+                attribute: Proc.new {|w| w.bounding_dates.nil? ? '-' : t('validity_range', debut: l(w.bounding_dates.begin), end: l(w.bounding_dates.end))},  \
                 sortable: false \
               ) \
             ],

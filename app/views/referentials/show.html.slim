@@ -7,9 +7,9 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - attributes = {}
         - attributes[@referential.human_attribute_name(:state)] = referential_state(@referential) unless @referential.in_referential_suite?
-        - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin), format: :short), end: l(@referential.try(:validity_period).try(:end), format: :short)) : '-')
+        - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin)), end: l(@referential.try(:validity_period).try(:end))) : '-')
         - attributes[@referential.human_attribute_name(:organisation)] = @referential.organisation.name
-        - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at, format: :short) : '-' unless @referential.in_referential_suite?
+        - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at) : '-' unless @referential.in_referential_suite?
         - if @referential.created_from
           - attributes[@referential.human_attribute_name(:created_from)] = link_to(@referential.created_from.name, @referential.created_from)
         = definition_list t('metadatas'), attributes

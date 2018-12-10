@@ -43,7 +43,7 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :validity_period, \
-                  attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin), format: :short), end: l(w.try(:validity_period).try(:end), format: :short))} \
+                  attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin)), end: l(w.try(:validity_period).try(:end)))} \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :lines, \
@@ -52,15 +52,15 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :created_at, \
-                  attribute: Proc.new {|w| l(w.created_at, format: :short)} \
+                  attribute: Proc.new {|w| l(w.created_at)} \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :updated_at, \
-                  attribute: Proc.new {|w| l(w.updated_at, format: :short)} \
+                  attribute: Proc.new {|w| l(w.updated_at)} \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :merged_at, \
-                  attribute: Proc.new {|w| w.merged_at ? l(w.merged_at, format: :short) : '-'} \
+                  attribute: Proc.new {|w| w.merged_at ? l(w.merged_at) : '-'} \
                 ) \
               ],
               selectable: ->(ref) { \

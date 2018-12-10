@@ -197,7 +197,7 @@ class ReferentialOverview
       end
 
       def title
-        h.l(self.start, format: :short) + ' - ' + h.l(self.end, format: :short)
+        h.l(self.start) + ' - ' + h.l(self.end)
       end
 
       def html_class

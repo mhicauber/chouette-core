@@ -8,8 +8,8 @@
         = definition_list t('metadatas'),
           { Calendar.tmf('shared') => t("#{resource.shared}"),
             Calendar.tmf('organisation') => resource.organisation.name,
-            Calendar.tmf('dates') =>  resource.dates.collect{|d| l(d, format: :short)}.join(', ').html_safe,
-            Calendar.tmf('date_ranges') => resource.periods.map{|d| t('validity_range', debut: l(d.begin, format: :short), end: l(d.end, format: :short))}.join('<br>').html_safe }
+            Calendar.tmf('dates') =>  resource.dates.collect{|d| l(d)}.join(', ').html_safe,
+            Calendar.tmf('date_ranges') => resource.periods.map{|d| t('validity_range', debut: l(d.begin), end: l(d.end))}.join('<br>').html_safe }
 
     - if has_feature?('application_days_on_calendars')
       .row

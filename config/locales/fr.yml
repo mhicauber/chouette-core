@@ -9,12 +9,12 @@ fr:
     formats:
       hour: "%Hh%M"
       minute: "%M min"
-      short: "%d/%m/%Y"
+      default: "%d/%m/%Y"
       short_with_time: "%d/%m/%Y à %Hh%M"
 
   date:
     formats:
-      short: "%d/%m/%Y"
+      default: "%d/%m/%Y"
       short_with_time: "%d/%m/%Y à %Hh%M"
     abbr_day_names:
     - dim
