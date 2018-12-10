@@ -25,7 +25,7 @@ module Chouette
       "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       values = self.slice(*['name', 'published_name', 'registration_number']).values
       values << self.stop_points.sort_by(&:position).map(&:stop_area_id)
       values << self.cleaned_costs

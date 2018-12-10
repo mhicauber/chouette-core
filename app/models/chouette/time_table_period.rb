@@ -9,7 +9,7 @@ module Chouette
 
     validate :start_must_be_before_end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       attrs = ['period_start', 'period_end']
       self.slice(*attrs).values
     end

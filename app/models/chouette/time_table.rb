@@ -50,14 +50,14 @@ module Chouette
       "local-#{self.referential.id}-#{self.id}"
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       [].tap do |attrs|
         attrs << self.int_day_types
         dates = self.dates
-        dates += TimeTableDate.where(time_table_id: self.id)
+        dates += TimeTableDate.where(time_table_id: self.id) if db_lookup
         attrs << dates.map(&:checksum).map(&:to_s).uniq.sort
         periods = self.periods
-        periods += TimeTablePeriod.where(time_table_id: self.id)
+        periods += TimeTablePeriod.where(time_table_id: self.id) if db_lookup
         attrs << periods.map(&:checksum).map(&:to_s).uniq.sort
       end
     end

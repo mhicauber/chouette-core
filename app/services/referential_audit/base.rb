@@ -39,7 +39,6 @@ class ReferentialAudit
   end
 end
 
-require_dependency 'referential_audit/purchase_windows_checksums'
 require_dependency 'referential_audit/vehicle_journey_initial_offset'
 require_dependency 'referential_audit/journey_pattern_distances'
 require_dependency 'referential_audit/checksums'

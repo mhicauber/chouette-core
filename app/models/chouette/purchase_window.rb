@@ -40,7 +40,7 @@ module Chouette
       "local-#{self.referential.id}-#{self.id}"
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       attrs = ['name', 'color']
       ranges_attrs = date_ranges.map{|r| [r.min, r.max]}.flatten.sort
       self.slice(*attrs).values + ranges_attrs

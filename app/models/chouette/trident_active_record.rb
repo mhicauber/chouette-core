@@ -3,8 +3,19 @@ module Chouette
 
     self.abstract_class = true
 
-    def self.current_referential
-      Referential.where(slug: Apartment::Tenant.current).first!
+    class << self
+      attr_reader :current_workgroup
+
+      def current_referential
+        Referential.where(slug: Apartment::Tenant.current).first!
+      end
+
+      def in_workgroup workgroup
+        @current_workgroup = workgroup
+        value = yield
+        @current_workgroup = nil
+        value
+      end
     end
 
     def referential
@@ -16,7 +27,7 @@ module Chouette
     end
 
     def workgroup
-      referential&.workgroup
+      self.class.current_workgroup || referential&.workgroup
     end
 
     def hub_restricted?

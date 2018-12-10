@@ -19,6 +19,7 @@ module Chouette
     end
 
     belongs_to :company
+    belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
     belongs_to :route
     belongs_to :journey_pattern
     belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
@@ -164,21 +165,26 @@ module Chouette
       "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
     end
 
-    def checksum_attributes
+    def checksum_attributes(db_lookup = true)
       [].tap do |attrs|
         attrs << self.published_journey_name
         attrs << self.published_journey_identifier
-        attrs << self.try(:company).try(:get_objectid).try(:local_id)
+        loaded_company = association(:company).loaded? ? company : company_light
+        attrs << loaded_company.try(:get_objectid).try(:local_id)
         footnotes = self.footnotes
-        footnotes += Footnote.for_vehicle_journey(self) unless self.new_record?
+        footnotes += Footnote.for_vehicle_journey(self) if db_lookup && !self.new_record?
         attrs << footnotes.uniq.map(&:checksum).sort
 
         vjas =  self.vehicle_journey_at_stops
-        vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) unless self.new_record?
+        vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
 
         attrs << self.purchase_windows.map(&:checksum).sort if purchase_windows.present?
-        attrs << ignored_routing_contraint_zones.map(&:checksum).sort if ignored_routing_contraint_zones.present?
+
+        # The double condition prevents a SQL query "WHERE 1=0"
+        if ignored_routing_contraint_zone_ids.present? && ignored_routing_contraint_zones.present?
+          attrs << ignored_routing_contraint_zones.map(&:checksum).sort
+        end
       end
     end
 
