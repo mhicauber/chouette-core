@@ -38,7 +38,7 @@ describe "/layouts/application", :type => :view do
 
     expect(rendered).to have_menu_title 'layouts.navbar.configuration'.t
     expect(rendered).to_not have_menu_link_to edit_controls_workbench_path(workbench)
-    expect(rendered).to_not have_menu_link_to edit_workgroup_path(workbench.workgroup)
+    expect(rendered).to_not have_menu_link_to edit_controls_workgroup_path(workbench.workgroup)
   end
 
   with_permission "workbenches.update" do

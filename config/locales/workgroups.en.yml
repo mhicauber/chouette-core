@@ -1,6 +1,6 @@
 en:
   workgroups:
-    edit:
+    edit_controls:
       title: "Application Settings"
       edit_aggregate:
         title: Aggregation settings

@@ -1,6 +1,6 @@
 fr:
   workgroups:
-    edit:
+    edit_controls:
       title: "Paramétrages de l'application"
     edit_aggregate:
       title: Paramétrage de l'agrégation
