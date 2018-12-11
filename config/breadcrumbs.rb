@@ -15,7 +15,7 @@ crumb :workgroup_hole_sentinel_settings do
 end
 
 crumb :workbench_configure do |workbench|
-  link I18n.t('workbenches.edit_controls.title'), edit_controls_workbench_path(workbench)
+  link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
   parent :workbench, workbench
 end
 

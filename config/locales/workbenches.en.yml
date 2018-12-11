@@ -3,11 +3,11 @@ en:
     current_offer: Current offer
     show:
       title: "Transport offer %{name}"
-    edit_controls:
+    edit:
       title: "Configure the workbench"
       link:  "Settings"
       none: "None"
-    update_controls:
+    update:
       title: "Configure the workbench"
     referential_count:
       zero: "There are no referentials in your workbench"

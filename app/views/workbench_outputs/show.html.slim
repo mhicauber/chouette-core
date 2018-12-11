@@ -42,3 +42,21 @@
             action: :index
 
           = new_pagination @workbench_merges, 'pull-right'
+
+    / Modal(s)
+  = modalbox 'mergeRollbackModal' do
+    = simple_form_for [@referential, CleanUp.new] do |f|
+      .modal-header
+        h4.modal-title #{t('simple_form.labels.clean_up.title')}
+      .modal-body
+        .container-fluid
+          .row
+            .col-lg-8.col-ld-offset-2.col-md-8.col-md-offset-2.col-sm-8.col-sm-offset-2.col-xs-12
+              = f.input :date_type, as: :radio_buttons, label: false
+
+            .col-lg-8.col-ld-offset-2.col-md-8.col-md-offset-2.col-sm-8.col-sm-offset-2.col-xs-12
+              label.control-label.begin_date = t('titles.clean_up.begin_date')
+              label.control-label.end_date.hidden = t('titles.clean_up.end_date')
+              = f.input :begin_date, as: :date, label: false, wrapper_html: { class: 'date smart_date' }
+
+              = f.input :end_date, as: :date, label: t('titles.clean_up.end_date'), wrapper_html: { class: 'date cleanup_end_date_wrapper smart_date', id: "end_date" }

@@ -41,14 +41,6 @@ class WorkbenchesController < ChouetteController
     redirect_to resource
   end
 
-  def edit_controls
-    edit!
-  end
-
-  def update_controls
-    update!
-  end
-
   private
 
   def workbench_params

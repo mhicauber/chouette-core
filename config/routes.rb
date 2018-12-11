@@ -16,10 +16,6 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :workbenches, except: [:destroy, :edit], concerns: :iev_interfaces do
-    member do
-      get :edit_controls
-      put :update_controls
-    end
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
 
