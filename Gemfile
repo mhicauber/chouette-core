@@ -103,6 +103,7 @@ gem 'gretel'
 gem 'country_select'
 gem 'flag-icons-rails'
 gem 'i18n-js'
+gem 'clockpicker-rails'
 
 # Format Output
 gem 'json'
