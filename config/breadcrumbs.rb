@@ -307,7 +307,7 @@ crumb :workgroup do |_|
 end
 
 crumb :workgroup_aggregation_settings do
-  link I18n.t('workgroups.edit_aggregation.title')
+  link I18n.t('workgroups.edit_aggregate.title')
   parent :workgroup
 end
 

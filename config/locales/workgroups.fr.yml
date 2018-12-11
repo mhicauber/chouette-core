@@ -2,8 +2,9 @@ fr:
   workgroups:
     edit:
       title: "Paramétrages de l'application"
-    edit_aggregation:
+    edit_aggregate:
       title: Paramétrage de l'agrégation
+      nightly_aggregate: "Lancement quotidien de l'agrégation"
       disclaimer: |
         <h3>Sélection des offres finalisées</h3>
         <p>Par défaut l'agrégation du groupe de travail utilise les dernières offres finalisées dans chaque espace de travail.</p>
@@ -29,6 +30,8 @@ fr:
       workgroup:
         sentinel_min_hole_size: Taille minimum d'un trou d'offre
         sentinel_delay: Distance de détection
+        nightly_aggregate_enabled: Lancement quotidien activé
+        nightly_aggregate_time: Heure du lancement
 
   formtastic:
     hints:

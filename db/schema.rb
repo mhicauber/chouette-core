@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181114165059) do
+ActiveRecord::Schema.define(version: 20181210145713) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20181114165059) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -1130,15 +1130,17 @@ ActiveRecord::Schema.define(version: 20181114165059) do
     t.string   "name"
     t.integer  "line_referential_id",        limit: 8
     t.integer  "stop_area_referential_id",   limit: 8
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.string   "import_types",                         default: [],              array: true
-    t.string   "export_types",                         default: [],              array: true
+    t.datetime "created_at",                                                           null: false
+    t.datetime "updated_at",                                                           null: false
+    t.string   "import_types",                         default: [],                                 array: true
+    t.string   "export_types",                         default: [],                                 array: true
     t.integer  "owner_id",                   limit: 8
     t.integer  "output_id",                  limit: 8
     t.hstore   "compliance_control_set_ids"
     t.integer  "sentinel_min_hole_size",               default: 3
     t.integer  "sentinel_delay",                       default: 7
+    t.time     "nightly_aggregate_time",               default: '2000-01-01 00:00:00'
+    t.boolean  "nightly_aggregate_enabled",            default: false
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
