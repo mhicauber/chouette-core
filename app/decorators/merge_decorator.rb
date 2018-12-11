@@ -12,6 +12,7 @@ class MergeDecorator < AF83::Decorator
       l.href do
         h.rollback_workbench_merge_path(context[:workbench],object)
       end
+      l.data {{ confirm: h.t('merges.actions.rollback_confirm') }}
     end
   end
 end

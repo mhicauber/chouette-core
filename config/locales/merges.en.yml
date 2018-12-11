@@ -10,6 +10,7 @@ en:
     actions:
       create: Merge data spaces
       rollback: Rollback
+      rollback_confirm: Are you sure ?
     statuses:
       new: New
       pending: Pending
