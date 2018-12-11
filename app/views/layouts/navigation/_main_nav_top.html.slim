@@ -26,7 +26,7 @@
             = link_to 'javascript:void(0)', data: { toggle: 'modal', target: '#development-toolbar' }, class: "toolbar-button menu-item" do
               .fa.fa-cog
 
-          = link_to destroy_user_session_path, method: :delete, class: 'menu-item', title: 'Se déconnecter' do
+          = link_to destroy_user_session_path, method: :delete, class: 'menu-item', title: t('devise.links.sign_out'), data: {:confirm =>  t('devise.links.sign_out_confirm')}  do
             span.fa.fa-lg.fa-sign-out
 
   = render 'layouts/navigation/nav_panel_operations'

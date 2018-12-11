@@ -45,6 +45,8 @@ norme Neptune (NFP 99 506)"
       sign_up: "S'inscrire"
       new_password: "Mot de passe oublié ?"
       new_confirmation: "Confirmer mon compte"
+      sign_out: Se déconnecter
+      sign_out_confirm: Etes vous sûr de vouloir vous déconnecter de l'application ?
   simple_form:
     labels:
       user:
