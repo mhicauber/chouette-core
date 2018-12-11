@@ -518,7 +518,6 @@ class Referential < ApplicationModel
   end
 
   def destroy_jobs
-    #Ievkit.delete_jobs(slug)
     true
   end
 

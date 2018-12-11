@@ -14,7 +14,6 @@ unless ENV['NO_RCOV']
     add_filter 'vendor'
     add_filter 'app/exporters/chouette/hub'
     add_filter 'app/maps'
-    add_filter 'lib/ievkit'
   end
 end
 
