@@ -10,7 +10,7 @@ fr:
     edit:
       title: "Editer l'utilisateur %{user}"
     show:
-      title: "Utilisateur %{user}"
+      title: "Utilisateurs"
     index:
       title: "Utilisateurs"
   activerecord:
