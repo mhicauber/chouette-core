@@ -53,6 +53,7 @@ ChouetteIhm::Application.routes.draw do
       put :update_controls
       get :edit_hole_sentinel
     end
+    resources :compliance_check_sets, only: [:index, :show]
     resource :output, controller: :workgroup_outputs
     resources :aggregates
     resources :publication_setups do
@@ -63,12 +64,6 @@ ChouetteIhm::Application.routes.draw do
       member do
         get 'month', defaults: { format: :json }
       end
-    end
-
-    resources :compliance_check_sets, only: [:index, :show] do
-      get :executed, on: :member
-      resources :compliance_checks, only: [:show]
-      resources :compliance_check_messages, only: [:index]
     end
   end
 

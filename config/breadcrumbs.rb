@@ -128,7 +128,11 @@ end
 
 crumb :compliance_check_sets do |ccset_parent|
   link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
-  parent ccset_parent.class.name.downcase.intern, ccset_parent
+  if ccset_parent.is_a?(Workbench)
+    parent :workbench, ccset_parent
+  else
+    parent :imports_parent, ccset_parent
+  end
 end
 
 crumb :compliance_check_set do |ccset_parent, compliance_check_set|

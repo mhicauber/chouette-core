@@ -3,6 +3,7 @@ class ComplianceCheckSetsController < ChouetteController
   include RansackDateFilter
   before_action only: [:index] { set_date_time_params("created_at", DateTime) }
   respond_to :html
+  helper_method :parent
 
   def index
     index! do |format|
@@ -10,7 +11,6 @@ class ComplianceCheckSetsController < ChouetteController
       scope = joins_with_associated_objects(scope).order(sort_column + ' ' + sort_direction) if sort_column && sort_direction
       @q_for_form = scope.ransack(params[:q])
       format.html {
-        @workbench = Workbench.find(params[:workbench_id])
         @compliance_check_sets = ComplianceCheckSetDecorator.decorate(
           @q_for_form.result.paginate(page: params[:page], per_page: 30)
         )
@@ -61,9 +61,11 @@ class ComplianceCheckSetsController < ChouetteController
 
   def parent
     @parent ||= if params[:workgroup_id]
-      current_organisation.workgroups.find params[:workgroup_id]
+      workgroup = current_organisation.workgroups.find params[:workgroup_id]
+      @workbench = workgroup.workbenches.find_by(organisation_id: current_organisation)
+      workgroup
     else
-      current_organisation.workbenches.find params[:workbench_id]
+      @workbench = current_organisation.workbenches.find params[:workbench_id]
     end
   end
 

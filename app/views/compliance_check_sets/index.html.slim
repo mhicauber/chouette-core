@@ -1,5 +1,14 @@
 - breadcrumb :compliance_check_sets, @parent
 
+- extra_cols = []
+- if parent.is_a?(Workgroup)
+  - extra_cols << TableBuilderHelper::Column.new( \
+                    key: :workbench, \
+                    name: Workbench.ts.capitalize, \
+                    attribute: Proc.new { |n| n.workbench.organisation.name }, \
+                    link_to: Proc.new { |n| n.workbench } \
+                  )
+
 .page_content
   .container-fluid
     .row
@@ -14,7 +23,7 @@
                   key: :id, \
                   attribute: 'id', \
                   link_to: lambda do |compliance_check_set| \
-                    workbench_compliance_check_set_path(compliance_check_set.workbench.id, compliance_check_set.id) \
+                    [parent, compliance_check_set] \
                   end \
                 ), \
                 TableBuilderHelper::Column.new( \
@@ -42,8 +51,9 @@
                   attribute: 'name', \
                   link_to: lambda do |compliance_check_set| \
                     executed_workbench_compliance_check_set_path(compliance_check_set.workbench_id, compliance_check_set.id) \
-                  end \
+                  end, \
                 ), \
+                *extra_cols \
               ],
               sortable: true,
               cls: 'table has-filter has-search'
