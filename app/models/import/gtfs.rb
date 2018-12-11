@@ -350,6 +350,7 @@ class Import::Gtfs < Import::Base
           save_model model, resource: resource
         end
         stop_points.each do |stop_time, stop_point|
+          next if stop_point.nil?
           add_stop_point stop_time, stop_point, journey_pattern, resource
         end
         save_model journey_pattern, resource: resource
