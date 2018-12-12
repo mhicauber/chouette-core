@@ -10,7 +10,7 @@ en:
     actions:
       create: Merge data spaces
       rollback: Rollback
-      rollback_confirm: Are you sure ?
+      rollback_confirm: Are you sure to rollback to this finalized offer ?
     statuses:
       new: New
       pending: Pending
