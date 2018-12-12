@@ -53,23 +53,6 @@ module ChouetteIhm
     SmartEnv.add_boolean :CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT
     SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
 
-    # IEVKIT
-    SmartEnv.add :IEVKIT_ACCESS_TOKEN
-    SmartEnv.add :IEVKIT_API_ENDPOINT
-    SmartEnv.add :IEVKIT_AUTO_PAGINATE
-    SmartEnv.add :IEVKIT_CLIENT_ID
-    SmartEnv.add :IEVKIT_DEFAULT_MEDIA_TYPE
-    SmartEnv.add :IEVKIT_LOGIN
-    SmartEnv.add :IEVKIT_NETRC_FILE
-    SmartEnv.add :IEVKIT_PASSWORD
-    SmartEnv.add :IEVKIT_PER_PAGE
-    SmartEnv.add :IEVKIT_PROXY
-    SmartEnv.add :IEVKIT_SECRET
-    SmartEnv.add :IEVKIT_USER_AGENT
-    SmartEnv.add :IEVKIT_WEB_ENDPOINT
-    SmartEnv.add_boolean :IEVKIT_NETRC
-    SmartEnv.add_boolean :IEVKIT_SILENT
-
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 
     # Configure Browserify to use babelify to compile ES6

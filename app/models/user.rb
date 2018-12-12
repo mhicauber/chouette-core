@@ -14,7 +14,7 @@ class User < ApplicationModel
     end
   end
 
-  devise :invitable, :registerable, :validatable, :lockable,
+  devise :invitable, :registerable, :validatable, :lockable, :timeoutable,
          :recoverable, :rememberable, :trackable, :async, authentication_type, *more_devise_modules
 
   if Subscription.enabled?
