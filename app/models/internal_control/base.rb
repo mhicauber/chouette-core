@@ -16,6 +16,10 @@ module InternalControl
       {}
     end
 
+    def self.enabled?(control_type)
+      Rails.application.config.additional_compliance_controls.try :include?, control_type
+    end
+
     def self.check compliance_check
       referential = compliance_check.referential
       referential.switch do

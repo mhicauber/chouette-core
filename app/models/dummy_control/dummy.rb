@@ -1,4 +1,4 @@
-unless Rails.env.production?
+unless InternalControl::Base.enabled?("dummy")
   module DummyControl
     class Dummy < InternalControl::Base
       required_features :core_controls
