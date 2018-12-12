@@ -63,6 +63,10 @@ module Cron
       end
     end
 
+    def check_nightly_aggregates
+      Workgroup.where(nightly_aggregate_enabled: true).each(&:nightly_aggregate!)
+    end
+
     def check_ccset_operations
       protected_action do
         ParentNotifier.new(ComplianceCheckSet).notify_when_finished
