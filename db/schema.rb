@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181210145713) do
+ActiveRecord::Schema.define(version: 20181211145616) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1141,6 +1141,7 @@ ActiveRecord::Schema.define(version: 20181210145713) do
     t.integer  "sentinel_delay",                       default: 7
     t.time     "nightly_aggregate_time",               default: '2000-01-01 00:00:00'
     t.boolean  "nightly_aggregate_enabled",            default: false
+    t.datetime "nightly_aggregated_at"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

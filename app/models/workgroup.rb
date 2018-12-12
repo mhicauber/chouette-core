@@ -81,6 +81,35 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
+  def nightly_aggregate!
+    return unless nightly_aggregate_timeframe?
+
+    last_aggregation_time = aggregates.last&.created_at
+
+    target_referentials = aggregatable_referentials.select do |r|
+      last_aggregation_time.blank? || (r.created_at > last_aggregation_time)
+    end
+
+    if target_referentials.empty?
+      Rails.logger.info "No aggregatable referential found for nighlty aggregate on Workgroup #{name} (Id: #{id})"
+      return
+    end
+
+    aggregates.create!(referentials: target_referentials)
+    update(nightly_aggregated_at: Time.current)
+  end
+
+  def nightly_aggregate_timeframe?
+    return false unless nightly_aggregate_enabled?
+
+    time = nightly_aggregate_time.seconds_since_midnight
+    current = Time.current.seconds_since_midnight
+
+    within_timeframe = (current - time).abs <= 5.minutes
+
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < 5.minutes.ago)
+  end
+
   def import_compliance_control_sets
     self.class.import_compliance_control_sets
   end
