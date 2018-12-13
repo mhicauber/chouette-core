@@ -212,8 +212,9 @@ RSpec.describe Merge do
         ref = create(:workbench_referential, workbench: workbench)
         create(:referential_metadata, lines: [line_referential.lines.first], referential: ref)
         create(:referential_metadata, lines: [line_referential.lines.last], referential: ref)
-        allow(workbench).to receive(:lines){ Chouette::Line.where(id: line_referential.lines.last.id) }
         workbench.output.update current: ref.reload
+
+        allow(workbench).to receive(:lines){ Chouette::Line.where(id: line_referential.lines.last.id) }
       end
 
       after(:each) do
@@ -223,6 +224,16 @@ RSpec.describe Merge do
 
       it "should work" do
         expect{ merge.prepare_new }.to_not raise_error
+      end
+
+      context "when no lines are available anymore" do
+        before do
+          allow(workbench).to receive(:lines){ Chouette::Line.none }
+        end
+
+        it "should work" do
+          expect{ merge.prepare_new }.to_not raise_error
+        end
       end
     end
 
