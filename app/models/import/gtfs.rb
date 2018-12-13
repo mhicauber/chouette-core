@@ -6,7 +6,7 @@ class Import::Gtfs < Import::Base
   after_commit :update_main_resource_status, on:  [:create, :update]
 
   def launch_worker
-    GtfsImportWorker.perform_async_or_fail(id: id)
+    GtfsImportWorker.perform_async_or_fail(self)
   end
 
   def main_resource

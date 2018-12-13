@@ -21,7 +21,7 @@ class Aggregate < ActiveRecord::Base
     update_column :started_at, Time.now
     update_column :status, :running
 
-    AggregateWorker.perform_async_or_fail(id: id)
+    AggregateWorker.perform_async_or_fail(self)
   end
 
   def aggregate!

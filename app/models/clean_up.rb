@@ -26,7 +26,7 @@ class CleanUp < ApplicationModel
 
   def perform_cleanup
     raise "You cannot specify methods (#{methods.inspect}) if you call the CleanUp asynchronously" unless methods.blank?
-    CleanUpWorker.perform_async_or_fail(id: id) do 
+    CleanUpWorker.perform_async_or_fail(self) do 
       log_failed({})
     end
   end

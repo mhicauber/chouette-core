@@ -14,7 +14,7 @@ class LineReferentialSync < ApplicationModel
   private
   def perform_sync
     create_sync_message :info, :new
-    LineReferentialSyncWorker.perform_async_or_fail(id: id) do 
+    LineReferentialSyncWorker.perform_async_or_fail(self) do 
       log_failed({})
     end
   end
