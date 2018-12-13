@@ -224,21 +224,20 @@ class Import::Gtfs < Import::Base
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station ? 1 : 0 }
     create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
-      if stop.parent_station.present?
-        next unless check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
-      end
-
       stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
 
       stop_area.name = stop.name
       stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
-      if stop.parent_station.present?
-        stop_area.parent = stop_area_referential.stop_areas.find_by!(registration_number: stop.parent_station)
-      end
       stop_area.latitude, stop_area.longitude = stop.lat, stop.lon
       stop_area.kind = :commercial
       stop_area.deleted_at = nil
       stop_area.confirmed_at = Time.now
+
+      if stop.parent_station.present?
+        if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
+          stop_area.parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
+        end
+      end
 
       # TODO correct default timezone
 
@@ -541,6 +540,29 @@ class Import::Gtfs < Import::Base
       return false
     end
     true
+  end
+
+  def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
+    parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
+    unless parent
+      create_message(
+        {
+          criticity: :error,
+          message_key: :parent_not_found,
+          message_attributes: {
+            parent_name: parent_station,
+            stop_area_name: stop_area_name,
+          },
+          resource_attributes: {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count,
+            column_number: 0
+          }
+        },
+        resource: resource, commit: true
+      )
+    end
+    return parent
   end
 
   def unless_parent_model_in_error(klass, key, resource)
