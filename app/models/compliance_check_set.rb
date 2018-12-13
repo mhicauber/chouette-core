@@ -113,7 +113,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def perform_async only_internals=false
-    ComplianceCheckSetWorker.perform_async_or_fail(id: id, only_internals: only_internals) do
+    ComplianceCheckSetWorker.perform_async_or_fail(self, only_internals) do
       update status: 'failed'
     end
   end

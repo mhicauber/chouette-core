@@ -14,7 +14,7 @@ class StopAreaReferentialSync < ApplicationModel
   private
   def perform_sync
     create_sync_message :info, :new
-    StopAreaReferentialSyncWorker.perform_async_or_fail(id: id) do
+    StopAreaReferentialSyncWorker.perform_async_or_fail(self) do
       log_failed({})
     end
   end
