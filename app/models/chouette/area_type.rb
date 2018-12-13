@@ -1,27 +1,23 @@
 class Chouette::AreaType
   include Comparable
 
-  COMMERCIAL = %i(zdep zdlp lda gdl).freeze
+  COMMERCIAL = %i(zdep zder zdlp zdlr lda gdl).freeze
   NON_COMMERCIAL = %i(deposit border service_area relief other).freeze
   ALL = COMMERCIAL + NON_COMMERCIAL
 
-  @@commercial = COMMERCIAL
-  @@non_commercial = NON_COMMERCIAL
+  @@commercial ||= %i(zdep zdlp lda gdl).freeze
+  @@non_commercial ||= NON_COMMERCIAL
   @@all = ALL
   mattr_accessor :all, :commercial, :non_commercial
 
   def self.commercial=(values)
-    if values.all? {|v| COMMERCIAL.include?(v)}
-      @@commercial = values
-      reset_caches!
-    end
+    @@commercial = COMMERCIAL & values
+    reset_caches!
   end
 
   def self.non_commercial=(values)
-    if values.all? {|v| NON_COMMERCIAL.include?(v)}
-      @@non_commercial = values
-      reset_caches!
-    end
+    @@non_commercial = NON_COMMERCIAL & values
+    reset_caches!
   end
 
   @@instances = {}
