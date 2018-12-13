@@ -46,7 +46,9 @@ class Workbench < ApplicationModel
 
   def locked_referential_to_aggregate_with_log
     locked_referential_to_aggregate_without_log.tap do |ref|
-      Rails.logger.warn "Locked Referential for Workbench##{id} has been deleted" unless ref.present?
+      if locked_referential_to_aggregate_id.present? && !ref.present?
+        Rails.logger.warn "Locked Referential for Workbench##{id} has been deleted"
+      end
     end
   end
   alias_method_chain :locked_referential_to_aggregate, :log
