@@ -92,19 +92,7 @@ describe Chouette::VehicleJourney, :type => :model do
   describe 'checksum' do
     it_behaves_like 'checksum support'
 
-    let(:checksum_owner) do
-      vehicle_journey = create(:vehicle_journey)
-      3.times do |i|
-        create(
-          :vehicle_journey_at_stop,
-          vehicle_journey: vehicle_journey,
-          arrival_time: "0#{i}:00",
-          departure_time: "0#{i}:00",
-        ).run_callbacks(:commit)
-      end
-      vehicle_journey.reload.save # this to trigger the day offsets computation
-      vehicle_journey
-    end
+    let(:checksum_owner){ create(:vehicle_journey) }
 
     it_behaves_like 'it works with both checksums modes',
                     "changes when a vjas is created",
