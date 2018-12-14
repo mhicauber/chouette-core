@@ -344,6 +344,13 @@ RSpec.describe Import::Gtfs do
 
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
+
+    context 'with invalid stop times' do
+      let(:import) { build_import 'invalid_stop_times.zip' }
+      it "should create no VehicleJourney" do
+        expect{ import.import_stop_times }.to_not change { Chouette::VehicleJourney.count }
+      end
+    end
   end
 
   describe '#import_calendars' do
@@ -499,7 +506,7 @@ RSpec.describe Import::Gtfs do
     context 'without calendar_dates.xml' do
       let(:import) { build_import 'google-sample-feed-no-calendar_dates.zip' }
       it "should not raise an error" do
-        expect { import.referential_metadata }.to_not raise_error(GTFS::InvalidSourceException)
+        expect { import.referential_metadata }.to_not raise_error
       end
     end
   end

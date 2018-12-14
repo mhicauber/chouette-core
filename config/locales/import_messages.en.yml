@@ -10,6 +10,7 @@ en:
     referential_creation_overlapping_existing_referential: "The referential %{referential_name} has not been created because another referential already exists for the same periods and lines: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
     referential_creation: "The referential %{referential_name} has not been created because another referential with the same lines and periods already exists"
     trip_starting_with_non_zero_day_offset: The trip %{trip_id} starts with a non-zero offset
+    trip_with_inconsistent_stop_times: The trip %{trip_id} has inconsistent stop times
     invalid_stop_time: 'The trip %{trip_id} has an invalid stop time: "%{time}"'
     wrong_calendar_in_zip_file: "The calendar file %{source_filename} cannot be parsed, or contains inconsistant data"
     gtfs:

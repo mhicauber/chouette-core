@@ -343,6 +343,8 @@ class Import::Gtfs < Import::Base
 
         stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
+        raise InvalidTripTimesError unless consistent_stop_times(stop_times)
+
         stop_points = stop_times.map do |stop_time|
           [stop_time, import_stop_time(stop_time, route, resource)]
         end
@@ -354,11 +356,12 @@ class Import::Gtfs < Import::Base
         end
         save_model journey_pattern, resource: resource
 
-      rescue Import::Gtfs::InvalidTripError
+      rescue Import::Gtfs::InvalidTripNonZeroFirstOffsetError, Import::Gtfs::InvalidTripTimesError => e
+        message_key = e.is_a?(Import::Gtfs::InvalidTripNonZeroFirstOffsetError) ? 'trip_starting_with_non_zero_day_offset' : 'trip_with_inconsistent_stop_times'
         create_message(
           {
             criticity: :error,
-            message_key: 'trip_starting_with_non_zero_day_offset',
+            message_key: message_key,
             message_attributes: {
               trip_id: vehicle_journey.published_journey_name
             },
@@ -393,6 +396,22 @@ class Import::Gtfs < Import::Base
     end
   end
 
+  def consistent_stop_times(stop_times)
+    times = stop_times.map{|s| [s.arrival_time, s.departure_time]}.flatten.compact
+    times.inject(nil) do |prev, current|
+      current = current.split(':').map &:to_i
+
+      if prev
+        return false if prev.first > current.first
+        return false if prev.first == current.first && prev[1] > current[1]
+        return false if prev.first == current.first && prev[1] == current[1] && prev[2] > current[2]
+      end
+
+      current
+    end
+    true
+  end
+
   def import_stop_time(stop_time, route, resource)
     unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
 
@@ -401,7 +420,7 @@ class Import::Gtfs < Import::Base
         raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
         arrival_time = GTFS::Time.parse(stop_time.arrival_time)
         raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-        raise InvalidTripError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
+        raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
       end
 
       stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
@@ -565,7 +584,8 @@ class Import::Gtfs < Import::Base
     next_step
   end
 
-  class InvalidTripError < StandardError; end
+  class InvalidTripNonZeroFirstOffsetError < StandardError; end
+  class InvalidTripTimesError < StandardError; end
   class InvalidTimeError < StandardError
     attr_reader :time
 
