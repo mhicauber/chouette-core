@@ -497,8 +497,8 @@ class Referential < ApplicationModel
 
   def assign_slug(time_reference = Time)
     self.slug ||= begin
-      prefix = name.parameterize.gsub('-','_').gsub(/[^a-zA-Z_]/,'').gsub(/^_/,'')[0..12]
-      prefix = "referential" if prefix.blank?
+      prefix = name.parameterize.split('-').map { |p| p.gsub(/[^a-z]/, '').presence }
+      prefix = prefix.compact.join('_')[0..12].presence || "referential"
       "#{prefix}_#{time_reference.now.to_i}"
     end if name
   end
