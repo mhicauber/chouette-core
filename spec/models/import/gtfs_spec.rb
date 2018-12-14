@@ -282,8 +282,6 @@ RSpec.describe Import::Gtfs do
     end
 
     it "should create a JourneyPattern for each trip" do
-      p import.referential.journey_patterns.pluck(:name)
-
       import.import_stop_times
       defined_attributes = [
         :name
@@ -291,7 +289,6 @@ RSpec.describe Import::Gtfs do
       expected_attributes = [
         "to Bullfrog", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
       ]
-      p import.referential.journey_patterns.pluck(:name)
       expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
