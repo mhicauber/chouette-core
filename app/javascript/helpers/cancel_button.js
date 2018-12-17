@@ -56,8 +56,8 @@ export default class CancelButton extends Component {
                   <p>{I18n.t('cancel_confirm')}</p>
                 </div>
                 <div className="modal-footer">
-                  <a data-dismiss="modal" className="btn">{I18n.t('cancel')}</a>
-                  <a data-dismiss="modal" className="btn btn-primary" data-method="get" onClick={this.props.onConfirmCancel}>{I18n.t('ok')}</a>
+                  <a data-dismiss="modal" className="btn">{I18n.t('no')}</a>
+                  <a data-dismiss="modal" className="btn btn-primary" data-method="get" onClick={this.props.onConfirmCancel}>{I18n.t('yes')}</a>
                 </div>
               </div>
             </div>

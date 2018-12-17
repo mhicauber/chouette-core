@@ -63,5 +63,5 @@ en:
   brandname: Chouette
   error: "Error"
   undefined: 'undefined'
-  "yes": yes
-  "no": no
+  "yes": Yes
+  "no": No
