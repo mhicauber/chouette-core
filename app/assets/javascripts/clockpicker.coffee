@@ -1,3 +1,2 @@
 $ ->
-  if $(".clockpicker").length
-    $(".clockpicker").clockpicker({ autoclose: true })
+  $(".clockpicker").clockpicker({ autoclose: true })

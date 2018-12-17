@@ -1,4 +1,6 @@
 class Workgroup < ApplicationModel
+  NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
+
   belongs_to :line_referential
   belongs_to :stop_area_referential
   belongs_to :owner, class_name: "Organisation"
@@ -105,9 +107,9 @@ class Workgroup < ApplicationModel
     time = nightly_aggregate_time.seconds_since_midnight
     current = Time.current.seconds_since_midnight
 
-    within_timeframe = (current - time).abs <= 5.minutes
+    within_timeframe = (current - time).abs <= NIGHTLY_AGGREGATE_CRON_TIME
 
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < 5.minutes.ago)
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.ago)
   end
 
   def import_compliance_control_sets
