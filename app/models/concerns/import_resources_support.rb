@@ -22,8 +22,8 @@ module ImportResourcesSupport
     begin
       resource.save!
     rescue
-      Rails.logger.error "Invalid resource: #{resource.errors.inspect}"
-      Rails.logger.error "Last message: #{resource.messages.last.errors.inspect}"
+      Chouette::ErrorsManager.log_error "Invalid resource: #{resource.errors.inspect}"
+      Chouette::ErrorsManager.log_error "Last message: #{resource.messages.last.errors.inspect}"
       raise
     end
     resource.update_status_from_messages

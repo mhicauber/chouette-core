@@ -59,7 +59,7 @@ class Aggregate < ActiveRecord::Base
     publish
     workgroup.aggregated!
   rescue => e
-    Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
+    Chouette::ErrorsManager.handle_error e, 'Aggregate failed'
     failed!
     raise e if Rails.env.test?
   end
@@ -96,7 +96,7 @@ class Aggregate < ActiveRecord::Base
     new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
     unless new.valid?
-      Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
+      Chouette::ErrorsManager.log_error "New referential isn't valid : #{new.errors.inspect}"
     end
 
     begin

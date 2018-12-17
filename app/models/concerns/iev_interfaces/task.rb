@@ -136,17 +136,16 @@ module IevInterfaces::Task
   end
 
   def call_boiv_iev
-    Rails.logger.error("Begin IEV call for import")
+    Rails.logger.debug("Begin IEV call for import")
 
     # Java code expects tasks in NEW status
     # Don't change status before calling iev
 
     Net::HTTP.get iev_callback_url
-    Rails.logger.error("End IEV call for import")
+    Rails.logger.debug("End IEV call for import")
   rescue Exception => e
     aborted!
-    logger.error "IEV server error : #{e.message}"
-    logger.error e.backtrace.inspect
+    Chouette::ErrorsManager.handle_error e, 'IEV server error'
   end
 
   private

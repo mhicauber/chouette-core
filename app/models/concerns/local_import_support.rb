@@ -17,7 +17,7 @@ module LocalImportSupport
     referential&.active!
   rescue => e
     update status: 'failed', ended_at: Time.now
-    Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join('\n')}"
+    Chouette::ErrorsManager.handle_error e, 'Error in GTFS import'
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
@@ -57,7 +57,7 @@ module LocalImportSupport
     begin
       self.referential.save!
     rescue => e
-      Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
+      Chouette::ErrorsManager.log_error "Unable to create referential: #{self.referential.errors.messages}"
       raise
     end
     main_resource.update referential: referential if main_resource
@@ -137,7 +137,7 @@ module LocalImportSupport
     end
 
     unless model.save
-      Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
+      Chouette::ErrorsManager.log_error "Can't save #{model.class.name} : #{model.errors.inspect}"
 
       model.errors.details.each do |key, messages|
         messages.each do |message|

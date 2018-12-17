@@ -96,9 +96,9 @@ class Merge < ApplicationModel
       save_current
     end
   rescue => e
-    Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
+    Chouette::ErrorsManager.handle_error e, 'Merge failed'
     failed!
-    raise e# if Rails.env.test?
+    raise e
   end
 
   def prepare_new
@@ -130,7 +130,7 @@ class Merge < ApplicationModel
 
 
     unless new.valid?
-      Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
+      Chouette::ErrorsManager.log_error "New referential isn't valid : #{new.errors.inspect}"
     end
 
     begin

@@ -48,7 +48,7 @@ module Chouette
               jp.save!
             end
           rescue => e
-            Rails.logger.error e
+            Chouette::ErrorsManager.handle_error e
           end
           item['errors']   = jp.errors if jp.errors.any?
           item['checksum'] = jp.checksum

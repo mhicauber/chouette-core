@@ -39,8 +39,7 @@ class VehicleJourneyImport
         end
       end
     rescue Exception => exception
-      Rails.logger.error(exception.message)
-      Rails.logger.error(exception.backtrace)
+      Chouette::ErrorsManager.handle_error e
       errors.add :base, I18n.t("vehicle_journey_imports.errors.exception")
       false
     end
