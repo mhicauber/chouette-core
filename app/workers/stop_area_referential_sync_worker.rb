@@ -17,7 +17,7 @@ class StopAreaReferentialSyncWorker
       info = Stif::ReflexSynchronization.synchronize
       stop_ref_sync.successful info.merge({processing_time: process_time - start_time})
     rescue Exception => e
-      Chouette::ErrorsManager.handle_error e, 'StopAreaReferentialSyncWorker failed'
+      Chouette::ErrorsManager.handle_error e, message: 'StopAreaReferentialSyncWorker failed'
       stop_ref_sync.failed({
         error: e.message,
         processing_time: process_time - start_time

@@ -22,7 +22,7 @@ module ImportResourcesSupport
     begin
       resource.save!
     rescue
-      Chouette::ErrorsManager.log_error "Invalid resource: #{resource.errors.inspect}"
+      Chouette::ErrorsManager.invalid_model resource
       Chouette::ErrorsManager.log_error "Last message: #{resource.messages.last.errors.inspect}"
       raise
     end

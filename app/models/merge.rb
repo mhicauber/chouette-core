@@ -96,7 +96,7 @@ class Merge < ApplicationModel
       save_current
     end
   rescue => e
-    Chouette::ErrorsManager.handle_error e, 'Merge failed'
+    Chouette::ErrorsManager.handle_error e, message: 'Merge failed'
     failed!
     raise e
   end
@@ -130,7 +130,7 @@ class Merge < ApplicationModel
 
 
     unless new.valid?
-      Chouette::ErrorsManager.log_error "New referential isn't valid : #{new.errors.inspect}"
+      Chouette::ErrorsManager.invalid_model new, message: 'Invalid new referential during Merge'
     end
 
     begin

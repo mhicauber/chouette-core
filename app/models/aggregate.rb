@@ -59,7 +59,7 @@ class Aggregate < ActiveRecord::Base
     publish
     workgroup.aggregated!
   rescue => e
-    Chouette::ErrorsManager.handle_error e, 'Aggregate failed'
+    Chouette::ErrorsManager.handle_error e, message: 'Aggregate failed'
     failed!
     raise e if Rails.env.test?
   end
@@ -96,7 +96,7 @@ class Aggregate < ActiveRecord::Base
     new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
     unless new.valid?
-      Chouette::ErrorsManager.log_error "New referential isn't valid : #{new.errors.inspect}"
+      Chouette::ErrorsManager.invalid_model new, message: 'Invalid new referential during Aggregate'
     end
 
     begin

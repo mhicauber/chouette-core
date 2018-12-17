@@ -41,7 +41,7 @@ class Import::Workbench < Import::Base
   def create_child_import(klass)
     klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
   rescue Exception => e
-    Chouette::ErrorsManager.handle_error e, 'Error while processing GTFS file'
+    Chouette::ErrorsManager.handle_error e, message: 'Error while processing GTFS file'
 
     failed!
   end

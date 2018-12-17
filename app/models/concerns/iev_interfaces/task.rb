@@ -145,7 +145,7 @@ module IevInterfaces::Task
     Rails.logger.debug("End IEV call for import")
   rescue Exception => e
     aborted!
-    Chouette::ErrorsManager.handle_error e, 'IEV server error'
+    Chouette::ErrorsManager.handle_error e, message: 'IEV server error'
   end
 
   private

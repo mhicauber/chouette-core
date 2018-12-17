@@ -13,7 +13,7 @@ class ReferentialCloning < ApplicationModel
     clone!
     successful!
   rescue Exception => e
-    Chouette::ErrorsManager.handle_error e, 'Clone failed'
+    Chouette::ErrorsManager.handle_error e, message: 'Clone failed'
     failed!
   end
 
