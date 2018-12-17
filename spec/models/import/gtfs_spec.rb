@@ -282,8 +282,6 @@ RSpec.describe Import::Gtfs do
     end
 
     it "should create a JourneyPattern for each trip" do
-      p import.referential.journey_patterns.pluck(:name)
-
       import.import_stop_times
       defined_attributes = [
         :name
@@ -291,7 +289,6 @@ RSpec.describe Import::Gtfs do
       expected_attributes = [
         "to Bullfrog", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
       ]
-      p import.referential.journey_patterns.pluck(:name)
       expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
@@ -346,6 +343,13 @@ RSpec.describe Import::Gtfs do
       ]
 
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
+    end
+
+    context 'with invalid stop times' do
+      let(:import) { build_import 'invalid_stop_times.zip' }
+      it "should create no VehicleJourney" do
+        expect{ import.import_stop_times }.to_not change { Chouette::VehicleJourney.count }
+      end
     end
   end
 
@@ -502,7 +506,7 @@ RSpec.describe Import::Gtfs do
     context 'without calendar_dates.xml' do
       let(:import) { build_import 'google-sample-feed-no-calendar_dates.zip' }
       it "should not raise an error" do
-        expect { import.referential_metadata }.to_not raise_error(GTFS::InvalidSourceException)
+        expect { import.referential_metadata }.to_not raise_error
       end
     end
   end
