@@ -4,57 +4,37 @@ module ChecksumSupport
   VALUE_FOR_NIL_ATTRIBUTE = '-'
 
   included do |into|
-    before_save :set_current_checksum_source, :update_checksum
+    before_save do
+      Chouette::ChecksumManager.watch self
+    end
+
+    after_create do
+      Chouette::ChecksumManager.after_create self
+    end
+
+    after_destroy do
+      Chouette::ChecksumManager.after_destroy self
+    end
+
     Referential.register_model_with_checksum self
     into.extend ClassMethods
   end
 
   module ClassMethods
+    def is_checksum_enabled?; true end
 
     def has_checksum_children klass, opts={}
-      parent_class = self
-      belongs_to = opts[:relation] || self.model_name.singular
-      has_many = opts[:relation] || self.model_name.plural
-
-      Rails.logger.debug "Define callback in #{klass} to update checksums #{self.model_name} (via #{has_many}/#{belongs_to})"
-
-
-      load_parents = ->(child){
-        parents = []
-        parents << child.send(belongs_to) if child.respond_to? belongs_to
-        parents += child.send(has_many) if child.respond_to? has_many
-        parents.compact
-      }
-
-      child_update_parent = Proc.new do
-        if changed? || destroyed?
-          parents = load_parents.call(self)
-          Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.each &:update_checksum_without_callbacks!
+      Chouette::ChecksumManager.current.log "Define callback in #{klass} to update checksums #{self.model_name}"
+      unless klass.respond_to?(:checksum_parent_relations)
+        klass.define_singleton_method :checksum_parent_relations do
+          @checksum_parent_relations ||= {}
         end
       end
+      klass.checksum_parent_relations[self] = opts
 
-      child_load_parents = Proc.new do
-        parents = load_parents.call(self)
-
-        Rails.logger.debug "Prepare request for #{klass.name} deletion checksum updates for #{parents.count} #{parent_class} parent(s)"
-
-        @_parents_for_checksum_update ||= []
-        @_parents_for_checksum_update.concat parents
-      end
-
-      child_update_loaded_parents = Proc.new do
-        if @_parents_for_checksum_update.present?
-          parents = @_parents_for_checksum_update
-          Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.each &:update_checksum_without_callbacks!
-        end
-      end
-
-      klass.after_save &child_update_parent
-
-      klass.before_destroy &child_load_parents
-      klass.after_destroy &child_update_loaded_parents
+      klass.after_save     { Chouette::ChecksumManager.child_after_save(self) }
+      klass.before_destroy { Chouette::ChecksumManager.child_before_destroy(self) }
+      klass.after_destroy  { Chouette::ChecksumManager.child_after_destroy(self) }
     end
   end
 
@@ -95,24 +75,26 @@ module ChecksumSupport
   def update_checksum
     if self.checksum_source_changed?
       self.checksum = Digest::SHA256.new.hexdigest(self.checksum_source)
-      Rails.logger.debug("Changed #{self.class.name}:#{id} checksum: #{self.checksum}")
+      Chouette::ChecksumManager.current.log("Changed #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
     end
   end
 
   def update_checksum!
     _checksum_source = current_checksum_source
     update checksum_source: _checksum_source, checksum: Digest::SHA256.new.hexdigest(_checksum_source)
-    Rails.logger.debug("Updated #{self.class.name}:#{id} checksum: #{self.checksum}")
+    Chouette::ChecksumManager.current.log("Updated #{self.class.name}:#{id} checksum: #{self.checksum}")
   end
 
   def update_checksum_without_callbacks!
     set_current_checksum_source
     _checksum = Digest::SHA256.new.hexdigest(checksum_source)
-    Rails.logger.debug("Compute checksum for #{self.class.name}:#{id} checksum_source:'#{checksum_source}' checksum: #{_checksum}")
+    Chouette::ChecksumManager.current.log("Compute checksum for #{self.class.name}:#{id} checksum_source:'#{checksum_source}' checksum: #{_checksum}")
     if _checksum != self.checksum
       self.checksum = _checksum
       self.class.where(id: self.id).update_all(checksum: _checksum, checksum_source: checksum_source) unless self.new_record?
-      Rails.logger.debug("Updated #{self.class.name}:#{id} checksum: #{self.checksum}")
+      Chouette::ChecksumManager.current.log("Updated without callback #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
+    else
+      Chouette::ChecksumManager.current.log("Checksum remained unchanged: #{_checksum}")
     end
   end
 end

@@ -320,6 +320,11 @@ class CustomField < ApplicationModel
           val
         end
 
+        owner.send :define_singleton_method, :reload do |*args|
+          instance_variable_set "@#{_digest_name}", nil
+          super *args
+        end
+
         _extension_whitelist = options["extension_whitelist"]
 
         owner.send :define_singleton_method, "#{_uploader_name}_extension_whitelist" do
