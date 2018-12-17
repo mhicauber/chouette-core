@@ -2,8 +2,9 @@ module Chouette
   module ObjectidFormatter
     class StifReflex < Base
 
-      def short_id_sql_expr
-        "lower(split_part(objectid, ':', 4))"
+      def short_id_sql_expr(table_name = nil)
+        objectid_ref = table_name ? "#{table_name}.objectid" : 'objectid'
+        "lower(split_part(#{objectid_ref}, ':', 4))"
       end
 
       def before_validation(model)

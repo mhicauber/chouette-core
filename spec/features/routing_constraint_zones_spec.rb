@@ -18,6 +18,14 @@ describe 'RoutingConstraintZones', type: :feature do
       expect(page).to have_content(routing_constraint_zones.last.name)
     end
 
+    it 'can search referential routing constraint zones by name' do
+      fill_in 'q_name_or_short_id_cont', with: routing_constraint_zones.first.name
+      click_button 'Filtrer'
+
+      expect(page).to have_content(routing_constraint_zones.first.name)
+      expect(page).not_to have_content(routing_constraint_zones.last.name)
+    end
+
     context 'user has permission to create routing_constraint_zones' do
       it 'shows a create link for routing_constraint_zones' do
         expect(page).to have_content(I18n.t('actions.add'))
