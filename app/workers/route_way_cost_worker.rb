@@ -1,5 +1,6 @@
 class RouteWayCostWorker
   include Sidekiq::Worker
+  extend Concerns::FailingSupport
 
   def perform(referential_id, route_id, retry_if_empty=true)
     Referential.find(referential_id).switch

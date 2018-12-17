@@ -35,7 +35,7 @@ module IevInterfaces::Task
 
     status.values.each do |s|
       define_method "#{s}!" do
-        update status: s
+        update_column :status, s
       end
 
       define_method "#{s}?" do

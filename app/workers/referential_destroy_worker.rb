@@ -1,5 +1,6 @@
 class ReferentialDestroyWorker
   include Sidekiq::Worker
+  extend Concerns::FailingSupport
 
   def perform(id)
     ref = Referential.find id

@@ -43,7 +43,7 @@ class Merge < ApplicationModel
     if before_merge_compliance_control_sets.present?
       create_before_merge_compliance_check_sets
     else
-      MergeWorker.perform_async(id)
+      MergeWorker.perform_async_or_fail(self)
     end
   end
 

@@ -16,7 +16,7 @@ class Export::SimpleExporter::Base < Export::Base
   end
 
   def call_exporter_async
-    SimpleExportWorker.perform_async(id)
+    SimpleExportWorker.perform_async_or_fail(self)
   end
 
   def simple_exporter_configuration_name

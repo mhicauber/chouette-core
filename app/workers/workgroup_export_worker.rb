@@ -1,5 +1,6 @@
 class WorkgroupExportWorker
   include Sidekiq::Worker
+  extend Concerns::FailingSupport
 
   attr_reader :workbench_export
 
