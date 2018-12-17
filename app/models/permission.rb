@@ -51,6 +51,7 @@ class Permission
 
       permissions << "calendars.share"
       permissions << "merges.rollback"
+      permissions << "aggregates.rollback"
       permissions << "api_keys.index"
     end
 
