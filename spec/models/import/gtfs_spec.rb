@@ -122,6 +122,26 @@ RSpec.describe Import::Gtfs do
       expect(workbench.stop_area_referential.stop_areas.pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
+    context 'with an inexistant parent stop' do
+      let(:child) do
+        GTFS::Stop.new(
+          id: 'child_id',
+          name: 'child',
+          parent_station: 'parent_id',
+          location_type: '2'
+        )
+      end
+
+      before(:each) do
+        allow(import.source).to receive(:stops) { [child] }
+      end
+
+      it 'should create an error message if the parent is inexistant' do
+        expect { import.import_stops }.to change { Import::Message.count }.by(1)
+          .and(change { Chouette::StopArea.count })
+      end
+    end
+
     context 'with a parent stop' do
       let(:parent) do
         GTFS::Stop.new(
@@ -160,8 +180,9 @@ RSpec.describe Import::Gtfs do
           )
         end
 
-        it "should not create the child either" do
-          expect { import.import_stops }.to_not(change { Chouette::StopArea.count })
+        it "should create the child and raise an error message" do
+          expect { import.import_stops }.to change { Import::Message.count }.by(2)
+            .and(change { Chouette::StopArea.count })
         end
       end
     end

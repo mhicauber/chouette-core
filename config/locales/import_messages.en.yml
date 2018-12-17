@@ -5,6 +5,7 @@ en:
     inconsistent_zip_file: "The zip file %{source_filename} contains unexpected directories: %{spurious_dirs}, which are ignored"
     missing_calendar_in_zip_file: "The folder %{source_filename} lacks a calendar file"
     invalid_parent: Invalid Parent
+    parent_not_found: Can't find parent %{parent_name} of stop area %{stop_area_name}
     referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} has not been created because the file contains no offer data"
     referential_creation_missing_lines: "The referential %{referential_name} has not been created because no line has been found in the organization"
     referential_creation_overlapping_existing_referential: "The referential %{referential_name} has not been created because another referential already exists for the same periods and lines: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
