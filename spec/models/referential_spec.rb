@@ -73,6 +73,19 @@ describe Referential, :type => :model do
       expect(referential).to be_valid
       expect(referential.state).to eq :active
     end
+
+    context 'with create_from_current_offer' do
+      subject(:referential) { Referential.create name: "test", objectid_format: :netex, organisation: create(:organisation), line_referential: create(:line_referential), stop_area_referential: create(:stop_area_referential), prefix: "foo", from_current_offer: true }
+
+      it 'should call the dedicated method' do
+        called = false
+        allow_any_instance_of(Referential).to receive(:create_from_current_offer) { called = true }
+
+        referential
+
+        expect(called).to be_truthy
+      end
+    end
   end
 
   context ".last_operation" do
