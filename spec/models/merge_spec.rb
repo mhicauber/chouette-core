@@ -188,6 +188,18 @@ RSpec.describe Merge do
     expect { m.reload }.to_not raise_error
   end
 
+  it "should not remove referentials used in previous aggregations" do
+    workbench = referential.workbench
+    aggregate = Aggregate.create(workgroup: workbench.workgroup, referentials: [referential, referential])
+    m = nil
+    3.times do
+      m = Merge.create!(workbench: workbench, referentials: [referential, referential])
+      m.update status: :successful
+    end
+    Merge.keep_operations = 1
+    expect { Merge.last.clean_previous_operations }.not_to change { Merge.count }
+  end
+
   context "#prepare_new" do
     context "with no current output" do
       let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
