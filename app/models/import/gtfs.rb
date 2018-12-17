@@ -47,11 +47,7 @@ class Import::Gtfs < Import::Base
     import_without_status
     @status ||= 'successful'
     update status: @status, ended_at: Time.now
-    if @status.to_s == 'failed'
-      referential&.failed!
-    else
-      referential&.active!
-    end
+    referential&.active!
   rescue => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"

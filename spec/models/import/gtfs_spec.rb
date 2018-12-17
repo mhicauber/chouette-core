@@ -499,7 +499,6 @@ RSpec.describe Import::Gtfs do
       it 'should set the importer as failed' do
         import.import
         expect(import.status).to eq 'failed'
-        expect(import.referential.state).to eq :failed
       end
 
       it 'should create an error message' do
