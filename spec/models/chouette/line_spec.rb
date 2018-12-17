@@ -8,6 +8,38 @@ describe Chouette::Line, :type => :model do
   # it { is_expected.to validate_presence_of :company }
   it { should validate_presence_of :name }
 
+  it "validates that transport mode and submode are matching" do
+    subject.transport_mode = "bus"
+    subject.transport_submode = nil
+
+    # BUS -> no submode = OK
+    expect(subject).to be_valid
+
+    # BUS -> bus specific submode = OK
+    subject.transport_submode = "nightBus"
+    expect(subject).to be_valid
+
+    # BUS -> rail specific submode = KO
+    subject.transport_submode = "regionalRail"
+    expect(subject).not_to be_valid
+
+    # RAIL -> rail specific submode = OK
+    subject.transport_mode = "rail"
+    expect(subject).to be_valid
+
+    # RAILS -> no submode = KO
+    subject.transport_submode = nil
+    expect(subject).not_to be_valid
+  end
+
+  describe '#url' do
+    it { should allow_value("http://foo.bar").for(:url) }
+    it { should allow_value("https://foo.bar").for(:url) }
+    it { should allow_value("http://www.foo.bar").for(:url) }
+    it { should allow_value("https://www.foo.bar").for(:url) }
+    it { should allow_value("www.foo.bar").for(:url) }
+  end
+
   describe '#display_name' do
     it 'should display local_id, number, name and company name' do
       display_name = "#{subject.get_objectid.local_id} - #{subject.number} - #{subject.name} - #{subject.company.try(:name)}"

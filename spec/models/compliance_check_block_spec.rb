@@ -1,17 +1,31 @@
 RSpec.describe ComplianceCheckBlock, type: :model do
 
+  subject { build(:compliance_check_block) }
+
   it { should belong_to :compliance_check_set }
   it { should have_many :compliance_checks }
 
-  it { should allow_values(*%w{bus metro rail tram funicular}).for(:transport_mode) }
-  it { should_not allow_values(*%w{bs mtro ril tramm Funicular}).for(:transport_mode) }
+  it "validates that transport mode and submode are matching" do
+    subject.transport_mode = "bus"
+    subject.transport_submode = nil
 
+    # BUS -> no submode = OK
+    expect(subject).to be_valid
 
-  it { should allow_values( *%w{ demandAndResponseBus nightBus airportLinkBus highFrequencyBus expressBus
-                                 railShuttle suburbanRailway regionalRail interregionalRail })
-        .for(:transport_submode) }
+    # BUS -> bus specific submode = OK
+    subject.transport_submode = "nightBus"
+    expect(subject).to be_valid
 
-  it { should_not allow_values( *%w{ demandResponseBus nightus irportLinkBus highrequencyBus expressBUs
-                                     Shuttle suburban regioalRail interregion4lRail })
-        .for(:transport_submode) }
+    # BUS -> rail specific submode = KO
+    subject.transport_submode = "regionalRail"
+    expect(subject).not_to be_valid
+
+    # RAIL -> rail specific submode = OK
+    subject.transport_mode = "rail"
+    expect(subject).to be_valid
+
+    # RAILS -> no submode = KO
+    subject.transport_submode = nil
+    expect(subject).not_to be_valid
+  end
 end

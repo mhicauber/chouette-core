@@ -13,6 +13,8 @@ en:
       models:
         compliance_control_block:
           attributes:
+            transport_mode:
+              submode_mismatch: "does not match the choosen transport submode"
             condition_attributes:
               taken: The same compliance control block already exists in this compliance control set
   compliance_control_blocks:

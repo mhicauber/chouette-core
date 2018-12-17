@@ -10,4 +10,5 @@ class ComplianceCheckBlock < ApplicationModel
     :transport_mode,
     :transport_submode
 
+  validate :transport_mode_and_submode_match
 end

@@ -8,8 +8,9 @@
               - @compliance_control_block.errors[:condition_attributes].each do |msg|
                 p.small = "- #{msg}"
       .form-group
-        = f.input :transport_mode, as: :select, collection: ComplianceControlBlock.sorted_transport_modes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe }
-        = f.input :transport_submode, as: :select, collection: ComplianceControlBlock.sorted_transport_submodes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_submode.#{t}") + "</span>").html_safe }
+        = f.input :transport_mode, as: :select, collection: ComplianceControlBlock.sorted_transport_modes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe }, include_blank: false, input_html: { class: 'js-transport-mode-select' }
+      .form-group
+        = f.input :transport_submode, as: :select, collection: [], input_html: { class: 'js-transport-submode-select', data: { transport_submodes: Chouette::Line.formatted_submodes_for_transports, selected: f.object.transport_submode } }
 
   .separator
 

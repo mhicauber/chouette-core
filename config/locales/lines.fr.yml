@@ -73,6 +73,12 @@ fr:
       no_group_of_line: "Aucun groupe de lignes"
       several_group_of_lines: "%{count} groupes of lignes"
   activerecord:
+    errors:
+      models:
+        compliance_check_block:
+          attributes:
+            transport_mode:
+              submode_mismatch: "ne correspond pas au sous-mode de transport séléctionné"
     models:
       line:
         zero:  "ligne"

@@ -7,7 +7,6 @@ module Chouette
     include NetexTransportModeEnumerations
     include NetexTransportSubmodeEnumerations
 
-
     include ColorSupport
     color_attribute
     color_attribute :text_color, %w(000000 9B9B9B FFFFFF)
@@ -42,6 +41,8 @@ module Chouette
     # validates_format_of :url, :with => %r{\A(https?:\/\/|www)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     validates_presence_of :name
+
+    validate :transport_mode_and_submode_match
 
     scope :by_text, ->(text) { where('lower(name) LIKE :t or lower(published_name) LIKE :t or lower(objectid) LIKE :t or lower(comment) LIKE :t or lower(number) LIKE :t',
       t: "%#{text.downcase}%") }
