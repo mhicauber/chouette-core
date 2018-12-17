@@ -23,7 +23,7 @@ module Stif
       begin
         JSON.parse @workbench.organisation.sso_attributes['functional_scope']
       rescue Exception => e
-        Chouette::ErrorsManager.handle_error e, 'WorkbenchScopes error'
+        Chouette::ErrorsManager.handle_error e, message: 'WorkbenchScopes error'
       end
     end
 
@@ -35,7 +35,7 @@ module Stif
           "STIF-REFLEX:Operator:#{local_id}"
         end
       rescue Exception => e
-        Chouette::ErrorsManager.handle_error e, 'WorkbenchScopes error'
+        Chouette::ErrorsManager.handle_error e, message: 'WorkbenchScopes error'
       end
     end
   end

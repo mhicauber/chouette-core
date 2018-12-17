@@ -11,7 +11,7 @@ class CleanUpWorker
       result = cleaner.clean
       # cleaner.successful(result)
     rescue Exception => e
-      Chouette::ErrorsManager.handle_error e, 'CleanUpWorker failed'
+      Chouette::ErrorsManager.handle_error e, message: 'CleanUpWorker failed'
     end
   end
 end

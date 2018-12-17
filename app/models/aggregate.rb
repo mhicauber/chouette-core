@@ -1,4 +1,4 @@
-class Aggregate < ActiveRecord::Base
+class Aggregate < ApplicationModel
   DEFAULT_KEEP_AGGREGATES = 10
 
   include OperationSupport
@@ -44,7 +44,7 @@ class Aggregate < ActiveRecord::Base
                                  end
     clean_previous_operations
   rescue => e
-    Chouette::ErrorsManager.handle_error e, 'Aggregate failed'
+    Chouette::ErrorsManager.handle_error e, message: 'Aggregate failed'
     failed!
     raise e if Rails.env.test?
   end
@@ -71,7 +71,7 @@ class Aggregate < ActiveRecord::Base
     new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at))
 
     unless new.valid?
-      Chouette::ErrorsManager.log_error "New referential isn't valid : #{new.errors.inspect}"
+      notify_invalid_model new, message: 'Invalid new referential during Aggregate', context: :aggregate, severity: :error
     end
 
     begin

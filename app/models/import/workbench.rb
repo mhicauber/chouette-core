@@ -25,7 +25,7 @@ class Import::Workbench < Import::Base
     # update_column :status, 'successful'
     # update_column :ended_at, Time.now
   rescue Exception => e
-    Chouette::ErrorsManager.handle_error e, 'Error while processing GTFS file'
+    Chouette::ErrorsManager.handle_error e, message: 'Error while processing GTFS file'
     
     update_column :status, 'failed'
     update_column :ended_at, Time.now
