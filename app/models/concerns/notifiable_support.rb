@@ -22,8 +22,7 @@ module NotifiableSupport
     begin
       MailerJob.perform_later(mailer, action, mailer_params)
     rescue => e
-      # TODO #8018
-      Rails.logger.error "Can't notify users: #{e.message} #{e.backtrace.join("\n")}"
+      Chouette::ErrorsManager.handle_error e, 'Can\'t notify users'
     end
 
     notified_recipients!

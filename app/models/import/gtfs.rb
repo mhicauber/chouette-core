@@ -34,8 +34,8 @@ class Import::Gtfs < Import::Base
     begin
       resource.save!
     rescue
-      Rails.logger.error "Invalid resource: #{resource.errors.inspect}"
-      Rails.logger.error "Last message: #{resource.messages.last.errors.inspect}"
+      Chouette::ErrorsManager.log_error "Invalid resource: #{resource.errors.inspect}"
+      Chouette::ErrorsManager.log_error "Last message: #{resource.messages.last.errors.inspect}"
       raise
     end
     resource.update_status_from_messages
@@ -50,7 +50,7 @@ class Import::Gtfs < Import::Base
     referential&.active!
   rescue => e
     update status: 'failed', ended_at: Time.now
-    Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
+    Chouette::ErrorsManager.handle_error e, 'Error in GTFS import'
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
@@ -91,7 +91,7 @@ class Import::Gtfs < Import::Base
     begin
       self.referential.save!
     rescue => e
-      Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
+      Chouette::ErrorsManager.log_error "Unable to create referential: #{self.referential.errors.messages}"
       raise
     end
     main_resource.update referential: referential if main_resource
@@ -496,7 +496,7 @@ class Import::Gtfs < Import::Base
     end
 
     unless model.save
-      Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
+      Chouette::ErrorsManager.log_error "Can't save #{model.class.name} : #{model.errors.inspect}"
 
       model.errors.details.each do |key, messages|
         messages.each do |message|

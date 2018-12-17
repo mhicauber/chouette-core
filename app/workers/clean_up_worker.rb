@@ -11,8 +11,7 @@ class CleanUpWorker
       result = cleaner.clean
       # cleaner.successful(result)
     rescue Exception => e
-      Rails.logger.error "CleanUpWorker : #{e}"
-      # cleaner.failed({error: e.message})
+      Chouette::ErrorsManager.handle_error e, 'CleanUpWorker failed'
     end
   end
 end

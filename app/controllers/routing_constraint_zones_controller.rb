@@ -110,7 +110,7 @@ class RoutingConstraintZonesController < ChouetteController
       end
       params.require(:routing_constraint_zone)[:stop_point_ids] = spArr
     else
-      Rails.logger.error("Error: An ITL must have at least two stop points")
+      Chouette::ErrorsManager.log_error 'Error: An ITL must have at least two stop points'
     end
   end
 

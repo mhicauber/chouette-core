@@ -203,7 +203,6 @@ class Chouette::Hub::Exporter
 
           ::Zip::File.open(zip_file_path, ::Zip::File::CREATE) do |zipfile|
             Dir[File.join(temp_dir, '*.TXT')].each do |f|
-              #Rails.logger.error("Adding File #{File.basename(f)}")
               zipfile.add(File.basename(f), f)
             end
           end

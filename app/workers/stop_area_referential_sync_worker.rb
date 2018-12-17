@@ -2,7 +2,7 @@ class StopAreaReferentialSyncWorker
   include Sidekiq::Worker
   include Concerns::LongRunningWorker
   extend Concerns::FailingSupport
-  
+
   sidekiq_options retry: true
 
   def process_time
@@ -17,7 +17,7 @@ class StopAreaReferentialSyncWorker
       info = Stif::ReflexSynchronization.synchronize
       stop_ref_sync.successful info.merge({processing_time: process_time - start_time})
     rescue Exception => e
-      Rails.logger.error "StopAreaReferentialSyncWorker failed: #{e.message} - #{e.backtrace.join("\n")}"
+      Chouette::ErrorsManager.handle_error e, 'StopAreaReferentialSyncWorker failed'
       stop_ref_sync.failed({
         error: e.message,
         processing_time: process_time - start_time
