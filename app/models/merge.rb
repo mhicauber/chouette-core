@@ -1,3 +1,5 @@
+require 'appsignal/integrations/object'
+
 class Merge < ApplicationModel
   include OperationSupport
   include NotifiableSupport
@@ -76,6 +78,8 @@ class Merge < ApplicationModel
   end
 
   def merge!
+    Appsignal.increment_counter("merges.start_merge", 1)
+
     prepare_new
 
     referentials.each do |referential|
@@ -89,11 +93,15 @@ class Merge < ApplicationModel
     else
       save_current
     end
+    Appsignal.increment_counter("merges.merge_succeeded", 1)
   rescue => e
     Chouette::ErrorsManager.handle_error e, message: 'Merge failed'
     failed!
+    Appsignal.increment_counter("merges.merge_failed", 1)
     raise e
   end
+
+  appsignal_instrument_method :merge!
 
   def prepare_new
     new =

@@ -5,6 +5,9 @@ module Chouette
         message ||= 'An error occured'
 
         to_rails_log "#{message}: #{e.message} #{e.backtrace.join("\n")}"
+
+        Appsignal.send_error e
+
         Bugsnag.notify e do |report|
           report.context = context
           report.severity = severity
@@ -13,6 +16,9 @@ module Chouette
 
       def log_error(message, context: nil, severity: :error, exception: nil)
         to_rails_log message
+
+        Appsignal.set_error exception
+
         Bugsnag.notify exception || message do |report|
           report.context = context
           report.severity = severity
@@ -22,6 +28,9 @@ module Chouette
       def invalid_model(model, message: nil, context: nil, exception: nil, severity: :warning)
         message ||= "#{model.class.name} is not valid"
         to_rails_log "#{message}: #{model.errors.inspect}"
+
+        Appsignal.send_error exception, { errors: model.errors.to_h }, context.to_s
+
         Bugsnag.notify exception || :invalid_model do |report|
           report.add_tab :errors, model.errors.to_h
           report.context = context

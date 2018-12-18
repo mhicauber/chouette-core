@@ -242,3 +242,5 @@ source 'https://rails-assets.org' do
 end
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
+
+gem "appsignal", "~> 2.7"
