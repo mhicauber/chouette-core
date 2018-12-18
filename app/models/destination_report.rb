@@ -12,8 +12,14 @@ class DestinationReport < ActiveRecord::Base
     update started_at: Time.now
   end
 
-  def failed!
-    update ended_at: Time.now, status: :failed
+  %w[successful failed].each do |s|
+    define_method "#{s}?" do
+      status.to_s == s
+    end
+  end
+
+  def failed! message: nil, backtrace: nil
+    update ended_at: Time.now, status: :failed, error_message: message, error_backtrace: backtrace.to_json
   end
 
   def success!

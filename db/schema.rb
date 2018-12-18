@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181218084433) do
+ActiveRecord::Schema.define(version: 20181218102125) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
@@ -328,13 +328,15 @@ ActiveRecord::Schema.define(version: 20181218084433) do
   add_index "custom_fields", ["resource_type"], name: "index_custom_fields_on_resource_type", using: :btree
 
   create_table "destination_reports", id: :bigserial, force: :cascade do |t|
-    t.integer  "destination_id", limit: 8
-    t.integer  "publication_id", limit: 8
+    t.integer  "destination_id",  limit: 8
+    t.integer  "publication_id",  limit: 8
     t.string   "status"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.string   "error_message"
+    t.text     "error_backtrace"
   end
 
   add_index "destination_reports", ["destination_id"], name: "index_destination_reports_on_destination_id", using: :btree
