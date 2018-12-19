@@ -11,6 +11,9 @@ fr:
     calendars:
       title: Modèles de calendrier
       none: Aucun calendrier défini
+    imports:
+      title: Imports
+      none: Aucun import
     purchase_windows:
       title: Calendriers commerciaux
       none: Aucun calendrier commercial défini

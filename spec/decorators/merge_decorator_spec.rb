@@ -1,3 +1,4 @@
+# coding: utf-8
 RSpec.describe MergeDecorator, type: [:helper, :decorator] do
   include Support::DecoratorHelpers
 
