@@ -146,7 +146,7 @@ describe Referential, :type => :model do
       m = ref.metadatas.last
       m.update_column :line_ids, ref.associated_lines.map(&:id)
       ref.switch do
-        create(:route, line: ref.lines.last)
+        create(:route, line: ref.lines.order(:id).last)
       end
     }
     context "when the lines did not change" do
@@ -159,7 +159,7 @@ describe Referential, :type => :model do
     context "when the lines changed" do
       before do
         m = ref.metadatas.last
-        m.update_column :line_ids, m.line_ids[0...-1]
+        m.update_column :line_ids, m.line_ids.sort[0...-1]
         ref.reload
       end
       it "should perform cleanup" do
