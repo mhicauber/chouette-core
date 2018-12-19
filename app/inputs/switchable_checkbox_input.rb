@@ -6,8 +6,15 @@ class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
     end
   end
 
+  def input_id
+    # There must be a cleaner way, I just cannot find it
+    key = @builder.object_name.gsub(/[\]\[]/, '_').squeeze('_')
+
+    "#{key}#{reflection_or_attribute_name}"
+  end
+
   def input_html_options
-    super.merge(class: 'onoffswitch-checkbox', id: attribute_name)
+    super.merge(class: 'onoffswitch-checkbox', id: input_id)
   end
 
   def span_inner
@@ -19,7 +26,7 @@ class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
   end
 
   def false_input
-    template.content_tag(:label, class: 'onoffswitch-label', for: attribute_name) do
+    template.content_tag(:label, class: 'onoffswitch-label', for: input_id) do
       template.concat span_inner
       template.concat span_switch
     end
