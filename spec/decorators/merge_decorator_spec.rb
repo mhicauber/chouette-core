@@ -24,6 +24,7 @@ RSpec.describe MergeDecorator, type: [:helper, :decorator] do
       context 'with a successful merge' do
         before(:each){
           object.status == :successful
+          object.new = create(:referential)
         }
 
         it 'has corresponding actions' do
@@ -37,16 +38,16 @@ RSpec.describe MergeDecorator, type: [:helper, :decorator] do
           }
 
           it 'has corresponding actions' do
-            expect_action_link_elements(action).to eq []
-            expect_action_link_hrefs(action).to eq([])
+            expect_action_link_elements(action).to eq [t('merges.actions.see_associated_offer')]
+            expect_action_link_hrefs(action).to eq([referential_path(object.new)])
           end
 
           context 'with a non-current merge' do
             let( :current_merge) { false }
 
             it 'has corresponding actions' do
-              expect_action_link_elements(action).to eq []
-              expect_action_link_hrefs(action).to eq([])
+              expect_action_link_elements(action).to eq [t('merges.actions.see_associated_offer')]
+              expect_action_link_hrefs(action).to eq([referential_path(object.new)])
             end
 
             context "in the right organisation" do
@@ -55,8 +56,8 @@ RSpec.describe MergeDecorator, type: [:helper, :decorator] do
               end
 
               it 'has corresponding actions' do
-                expect_action_link_elements(action).to eq []
-                expect_action_link_hrefs(action).to eq([])
+                expect_action_link_elements(action).to eq [t('merges.actions.see_associated_offer')]
+                expect_action_link_hrefs(action).to eq([referential_path(object.new)])
               end
 
               context 'with the rollback permission' do
@@ -65,8 +66,8 @@ RSpec.describe MergeDecorator, type: [:helper, :decorator] do
                 end
 
                 it 'has corresponding actions' do
-                  expect_action_link_elements(action).to eq ['Revenir à cette offre']
-                  expect_action_link_hrefs(action).to eq([rollback_workbench_merge_path(workbench, object)])
+                  expect_action_link_elements(action).to eq ['Revenir à cette offre', t('merges.actions.see_associated_offer')]
+                  expect_action_link_hrefs(action).to eq([rollback_workbench_merge_path(workbench, object), referential_path(object.new)])
                 end
               end
             end
