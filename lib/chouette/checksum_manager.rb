@@ -91,7 +91,8 @@ module Chouette::ChecksumManager
         if reflection
           if object.association(belongs_to.intern).loaded?
             log "parent is already loaded"
-            parents << SerializedObject.new(object.send(belongs_to), need_save: true, load_object: true)
+            parent = object.send(belongs_to)
+            parents << SerializedObject.new(parent, need_save: true, load_object: true) if parent
           else
             log "parent is not loaded but can be inferred from reflection"
             parent_id = object.send(reflection.foreign_key)

@@ -25,6 +25,27 @@ describe Chouette::VehicleJourney, :type => :model do
     expect(vehicle_journey).to be_valid
   end
 
+  it 'must validate before being persisted' do
+    vehicle_journey = build(:vehicle_journey)
+    vehicle_journey.vehicle_journey_at_stops.build(
+      arrival_time: '01:30:00',
+      departure_time: '01:30:00',
+      arrival_day_offset: 0,
+      departure_day_offset: 0,
+      stop_point: vehicle_journey.route.stop_points.first,
+      vehicle_journey: nil # this is silly, but we use it to test a bug on the ChecksumManager
+    )
+    vehicle_journey.vehicle_journey_at_stops.build(
+      arrival_time: '00:30:00',
+      departure_time: '00:30:00',
+      arrival_day_offset: 0,
+      departure_day_offset: 0,
+      stop_point: vehicle_journey.route.stop_points.last,
+      vehicle_journey: nil # this is silly, but we use it to test a bug on the ChecksumManager
+    )
+    expect{ vehicle_journey.validate }.to_not raise_error
+  end
+
   describe "search by short_id" do
     let(:referential){ create :referential }
     let(:route){ create :route, referential: referential }
