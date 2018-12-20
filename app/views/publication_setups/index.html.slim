@@ -1,0 +1,32 @@
+- breadcrumb :publication_setups, @workgroup
+- content_for :page_header_content do
+  .row.mb-sm
+    .col-lg-12.text-right
+      - if policy(PublicationSetup).create? && policy(@workgroup).edit?
+        = link_to t('publication_setups.actions.create'), new_workgroup_publication_setup_path(@workgroup), class: 'btn btn-primary'
+
+.page_content
+  .container-fluid
+    - if @publication_setups.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @publication_setups,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                link_to: lambda do |publication_setup| \
+                  [@workgroup, publication_setup] \
+                end \
+              ), \
+            ],
+            cls: 'table has-filter'
+
+          = new_pagination @publication_setups, 'pull-right'
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('publication_setups.search_no_results')
+
+= javascript_pack_tag 'date_filters'

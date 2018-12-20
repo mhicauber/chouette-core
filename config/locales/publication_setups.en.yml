@@ -1,0 +1,15 @@
+en:
+  publication_setups:
+    search_no_results: 'No publication'
+    actions:
+      index: Publications
+      create: Add a Publication
+  activerecord:
+    models:
+      publication_setup:
+        zero:  "Publication"
+        one:   "Publications"
+        other: "Publications"
+    attributes:
+      publication_setup:
+        name: "Nom"

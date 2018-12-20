@@ -52,6 +52,20 @@ SimpleForm.setup do |config|
     # b.use :full_error, wrap_with: { tag: :span, class: :error }
   end
 
+  config.wrappers :inline_file_input, :tag => 'div', :class => 'form-group', :error_class => 'error' do |b|
+    b.use :html5
+    b.use :label, class: 'col-sm-4 col-xs-5 control-label file'
+
+    b.wrapper :tag => 'div', :class => 'col-sm-8 col-xs-7' do |ba|
+      ba.use :input
+      ba.use :error, wrap_with: { tag: :span, class: :error }
+      ba.use :hint,  wrap_with: { tag: :span, class: :hint }
+    end
+    #   ba.use :error, :wrap_with => { :tag => 'span', :class => 'help-inline' }
+    #   ba.use :hint,  :wrap_with => { :tag => 'p', :class => 'help-block' }
+    # end
+  end
+
   # The default wrapper to be used by the FormBuilder.
   config.default_wrapper = :default
 

@@ -83,7 +83,6 @@ module ApplicationHelper
     "#{relative_url_root}/assets/#{source}"
   end
 
-
   def help_page?
     controller_name == "help"
   end

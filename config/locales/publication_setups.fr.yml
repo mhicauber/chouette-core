@@ -1,0 +1,26 @@
+fr:
+  publication_setups:
+    search_no_results: 'Aucune publication'
+    actions:
+      index: Publications
+      create: Ajouter une Publication
+      new: Nouvelle Publication
+      edit: Modifier une Publication
+    show:
+      title: "Publication %{name}"
+    form:
+      add_destination: Ajouter une destination
+      sections:
+        export: Paramètres de l'export
+  activerecord:
+    models:
+      publication_setup:
+        zero:  "Publication"
+        one:   "Publications"
+        other: "Publications"
+    attributes:
+      publication_setup:
+        name: "Nom"
+        export_type: "Type d'export"
+        export_options: "Options de l'export"
+        enabled: "Activée"

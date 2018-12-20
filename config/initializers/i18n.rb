@@ -134,6 +134,10 @@ module EnhancedModelI18n
     I18n.tmf "#{i18n_key}.#{attribute}", params
   end
 
+  def tmfc(attribute, params={})
+    I18n.tmfc "#{i18n_key}.#{attribute}", params
+  end
+
   # Translate the given action on the model, with default
   def t_action(action, params={})
     key = case action.to_sym

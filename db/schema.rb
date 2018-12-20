@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181218102125) do
+ActiveRecord::Schema.define(version: 20181219080604) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
@@ -721,6 +721,7 @@ ActiveRecord::Schema.define(version: 20181218102125) do
     t.boolean  "enabled"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+    t.string   "name"
   end
 
   add_index "publication_setups", ["workgroup_id"], name: "index_publication_setups_on_workgroup_id", using: :btree

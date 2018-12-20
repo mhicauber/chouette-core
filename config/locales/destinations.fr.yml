@@ -1,0 +1,29 @@
+fr:
+  destinations:
+    search_no_results: 'Aucune destination'
+    actions:
+      index: Destinations
+      create: Ajouter une Destination
+      new: Nouvelle Destination
+      edit: Modifier une Destination
+    show:
+      title: "Destination %{name}"
+  activerecord:
+    models:
+      destination:
+        zero:  "Destination"
+        one:   "Destinations"
+        other: "Destinations"
+    attributes:
+      destination:
+        name: "Nom"
+        type: "Type"
+        options: "Options"
+        secret_file: "Clé secrète"
+        _destroy: "Supprimer"
+        dummy:
+          result: Résultat attendu
+          result_collection:
+            successful: Succès
+            unexpected_failure: Erreur non-controlée
+            expected_failure: Erreur controlée

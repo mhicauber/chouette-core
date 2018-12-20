@@ -1,0 +1,51 @@
+- breadcrumb @workgroup, @publication_setup
+
+- page_header_content_for @publication_setup
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = { PublicationSetup.tmf(:name) => @publication_setup.name }
+        - metadatas.update( PublicationSetup.tmf(:enabled) => boolean_icon(@publication_setup.enabled) )
+        - metadatas.update( PublicationSetup.tmf(:export_type) => @publication_setup.export_type )
+        - metadatas.update( PublicationSetup.tmfc(:export_options) => '' )
+        - @publication_setup.export_options.each do |k, v|
+          - metadatas.update( "- #{translate_option_key(@publication_setup.export_class, k)}" => v )
+
+        = definition_list t('metadatas'), metadatas
+
+    .row
+      .col-lg-12
+        - if @publication_setup.destinations.empty?
+          = replacement_msg t('destinations.filters.search_no_results')
+        - else
+          .h3 = Destination.t
+          = table_builder_2 @publication_setup.destinations,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :type, \
+                attribute: :type, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :options, \
+                attribute: Proc.new do |destination| \
+                  pretty_print_options(destination.class, destination.options)\
+                end, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :secret_file, \
+                attribute: Proc.new do |destination| \
+                  destination.secret_file.present? ? link_to('actions.download'.t, destination.secret_file.url, target: :blank) : '-' \
+                end, \
+                sortable: false \
+              ), \
+            ],
+            sortable: true,
+            cls: 'table',
+            action: :index

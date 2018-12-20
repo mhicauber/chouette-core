@@ -46,6 +46,7 @@ ChouetteIhm::Application.routes.draw do
     end
     resource :output, controller: :workgroup_outputs
     resources :aggregates
+    resources :publication_setups
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do
