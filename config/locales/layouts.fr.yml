@@ -40,7 +40,7 @@ fr:
         subtitle: Espace de travail
         edit_control_sets: Jeux de Contrôle
       workgroup:
-        subtitle: Application
+        subtitle: Groupe de Travail
         edit_control_sets: Jeux de Contrôle
         edit_aggregate: Agrégation
         edit_hole_sentinel: Détection de trous d'offre

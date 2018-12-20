@@ -40,7 +40,7 @@ en:
         subtitle: Workbench
         edit_control_sets: Controls settings
       workgroup:
-        subtitle: Application
+        subtitle: Workgroup
         edit_control_sets: Controls settings
         edit_aggregate: Aggregation settings
         edit_hole_sentinel: Missing offer detection
