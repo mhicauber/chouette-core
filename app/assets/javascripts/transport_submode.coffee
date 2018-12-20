@@ -11,9 +11,9 @@ $ ->
       else
         $submodeSelect.parents('.form-group').hide()
 
-    $transportModeSelect = $('.js-transport-mode-select')
+#     $transportModeSelect = $('.js-transport-mode-select')
 
-    updateSubmodeOptions($transportModeSelect.val())
+#     updateSubmodeOptions($transportModeSelect.val())
 
-    $transportModeSelect.change ->
-      updateSubmodeOptions($(this).val())
+#     $transportModeSelect.change ->
+#       updateSubmodeOptions($(this).val())
