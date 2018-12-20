@@ -44,21 +44,22 @@
           .panel-body
             em.small.text-muted = t('workbenches.index.offers.no_content')
 
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title.with_actions
-            = link_to I18n.t("activerecord.models.import", count: workbench.imports.size), workbench_imports_path(workbench)
-            span.badge.ml-xs = workbench.imports.count if workbench.imports.present?
-            div
-              = link_to '', workbench_imports_path(workbench), class: ' fa fa-chevron-right pull-right'
-        - if workbench.imports.present?
-          .list-group
-            - workbench.imports.order("updated_at desc").limit(5).each do |import|
-              = link_to import.name, workbench_import_path(workbench, import), class: 'list-group-item'
-        - else
-          .panel-body
-            em.small.text-muted
-              = t('dasboard.imports.none')
+      - if (imports = workbench.imports.workbench).present?
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              = link_to I18n.t("activerecord.models.import", count: imports.size), workbench_imports_path(workbench)
+              span.badge.ml-xs = imports.count if imports.present?
+              div
+                = link_to '', workbench_imports_path(workbench), class: ' fa fa-chevron-right pull-right'
+          - if imports.present?
+            .list-group
+              - imports.order("updated_at desc").limit(5).each do |import|
+                = link_to import.name, workbench_import_path(workbench, import), class: 'list-group-item'
+          - else
+            .panel-body
+              em.small.text-muted
+                = t('dasboard.imports.none')
 
     .col-lg-6.col-md-6.col-sm-6.col-xs-12
       .panel.panel-default
