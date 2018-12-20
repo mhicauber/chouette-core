@@ -43,25 +43,33 @@ class Aggregate < ActiveRecord::Base
   end
 
   def aggregate!
-    prepare_new
-
-    referentials.each do |source|
-      ReferentialCopy.new(source: source, target: new).copy!
+    on_failure = Proc.new do
+      failed!
+      raise e if Rails.env.test?
     end
 
-    if after_aggregate_compliance_control_set.present?
-      create_after_aggregate_compliance_check_set
-    else
-      save_current
-    end
+    Chouette::ErrorsManager.watch('Aggregate failed', on_failure: on_failure) do
+      prepare_new
 
-    clean_previous_operations
-    publish
-    workgroup.aggregated!
-  rescue => e
-    Chouette::ErrorsManager.handle_error e, message: 'Aggregate failed'
-    failed!
-    raise e if Rails.env.test?
+      referentials.each do |source|
+        ReferentialCopy.new(source: source, target: new).copy!
+      end
+
+      if after_aggregate_compliance_control_set.present?
+        create_after_aggregate_compliance_check_set
+      else
+        save_current
+      end
+
+      self.class.keep_operations = if Rails.configuration.respond_to?(:keep_aggregates)
+                                     Rails.configuration.keep_aggregates
+                                   else
+                                     DEFAULT_KEEP_AGGREGATES
+                                   end
+       clean_previous_operations
+       publish
+       workgroup.aggregated!
+    end
   end
 
   def workbench_for_notifications
@@ -95,15 +103,8 @@ class Aggregate < ActiveRecord::Base
     new.slug = "output_#{workgroup.id}_#{created_at.to_i}"
     new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
-    unless new.valid?
-      Chouette::ErrorsManager.invalid_model new, message: 'Invalid new referential during Aggregate'
-    end
-
-    begin
+    Chouette::ErrorsManager.watch(raise_error: true) do
       new.save!
-    rescue
-      Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
-      raise
     end
 
     new.pending!

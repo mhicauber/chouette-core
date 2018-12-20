@@ -13,15 +13,17 @@ class LineReferentialSyncWorker
     start_time = process_time
     lref_sync  = LineReferentialSync.find lref_sync_id
     lref_sync.run if lref_sync.may_run?
-    begin
-      info = Stif::CodifLineSynchronization.synchronize
-      lref_sync.successful info.merge({processing_time: process_time - start_time})
-    rescue Exception => e
-      Chouette::ErrorsManager.handle_error e, message: 'LineReferentialSyncWorker failed'
+
+    on_failure = -> {
       lref_sync.failed({
         error: e.message,
         processing_time: process_time - start_time
       })
+    }
+
+    Chouette::ErrorsManager.watch('LineReferentialSyncWorker failed', on_failure: on_failure) do
+      info = Stif::CodifLineSynchronization.synchronize
+      lref_sync.successful info.merge({processing_time: process_time - start_time})
     end
   end
 end

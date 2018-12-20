@@ -39,7 +39,7 @@ class VehicleJourneyImport
         end
       end
     rescue Exception => exception
-      Chouette::ErrorsManager.handle_error e
+      Chouette::ErrorsManager.log 'An error occured during VehicleJourneyImport', error: exception
       errors.add :base, I18n.t("vehicle_journey_imports.errors.exception")
       false
     end

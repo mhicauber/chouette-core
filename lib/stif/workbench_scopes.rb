@@ -20,22 +20,18 @@ module Stif
 
     def parse_functional_scope
       return false unless @workbench.organisation.sso_attributes
-      begin
+      Chouette::ErrorsManager.watch('WorkbenchScopes error') do
         JSON.parse @workbench.organisation.sso_attributes['functional_scope']
-      rescue Exception => e
-        Chouette::ErrorsManager.handle_error e, 'WorkbenchScopes error'
       end
     end
 
     def parse_stop_areas_providers
       return false unless @workbench.organisation.sso_attributes
-      begin
+      Chouette::ErrorsManager.watch('WorkbenchScopes error') do
         # Sesame returns '77', when objectid is 'STIF-REFLEX:Operator:77'
         JSON.parse(@workbench.organisation.sso_attributes['stop_area_providers']).map do |local_id|
           "STIF-REFLEX:Operator:#{local_id}"
         end
-      rescue Exception => e
-        Chouette::ErrorsManager.handle_error e, 'WorkbenchScopes error'
       end
     end
   end

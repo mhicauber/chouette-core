@@ -19,13 +19,10 @@ module ImportResourcesSupport
     message = resource.messages.build args
     return message unless opts[:commit]
 
-    begin
-      resource.save!
-    rescue
-      Chouette::ErrorsManager.invalid_model resource
-      Chouette::ErrorsManager.log_error "Last message: #{resource.messages.last.errors.inspect}"
-      raise
-    end
+    Chouette::ErrorsManager.watch(
+      raise_error: true,
+      on_failure: -> { Chouette::ErrorsManager.log "Last message: #{resource.messages.last.errors.inspect}" }
+    ) { resource.save! }
     resource.update_status_from_messages
   end
 

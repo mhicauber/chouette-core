@@ -19,10 +19,8 @@ module NotifiableSupport
 
     mailer_params = yield(recipients)
 
-    begin
+    Chouette::ErrorsManager.watch('Can\'t notify users') do
       MailerJob.perform_later(mailer, action, mailer_params)
-    rescue => e
-      Chouette::ErrorsManager.handle_error e, message: 'Can\'t notify users'
     end
 
     notify_recipients!

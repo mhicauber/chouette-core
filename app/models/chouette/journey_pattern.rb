@@ -40,15 +40,13 @@ module Chouette
           item.delete('errors')
           jp = find_by(objectid: item['object_id']) || state_create_instance(route, item)
           next if item['deletable'] && jp.persisted? && jp.destroy
-          begin
+          Chouette::ErrorsManager.watch do
             ::ActiveRecord::Base.transaction do
               # Update attributes and stop_points associations
               jp.assign_attributes(state_permited_attributes(item)) unless item['new_record']
               jp.state_stop_points_update(item) if jp.persisted?
               jp.save!
             end
-          rescue => e
-            Chouette::ErrorsManager.handle_error e
           end
           item['errors']   = jp.errors if jp.errors.any?
           item['checksum'] = jp.checksum
