@@ -22,6 +22,15 @@ class Destination < ApplicationModel
   def do_transmit(publication, report)
     raise NotImplementedError
   end
+
+  def human_type
+    self.class.ts
+  end
+
+  private
+  def self.custom_i18n_key
+    model_name.to_s.underscore.gsub('/', '.')
+  end
 end
 
 require_dependency './destination/dummy'

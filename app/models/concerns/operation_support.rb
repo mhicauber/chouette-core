@@ -9,6 +9,7 @@ module OperationSupport
 
     has_array_of :referentials, class_name: 'Referential'
     belongs_to :new, class_name: 'Referential'
+    has_many :publications, as: :parent
 
     validate :has_at_least_one_referential, :on => :create
     validate :check_other_operations, :on => :create

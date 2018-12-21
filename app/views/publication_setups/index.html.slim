@@ -13,11 +13,25 @@
           = table_builder_2 @publication_setups,
             [ \
               TableBuilderHelper::Column.new( \
+                key: :enabled, \
+                attribute: ->(p){ boolean_icon(p.enabled) }, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |publication_setup| \
                   [@workgroup, publication_setup] \
                 end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :export_type, \
+                attribute: 'export_type', \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :destinations, \
+                attribute: ->(p){ p.destinations.map(&:name).to_sentence }, \
+                sortable: false, \
               ), \
             ],
             cls: 'table has-filter'

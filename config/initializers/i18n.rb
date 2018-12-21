@@ -162,9 +162,8 @@ module EnhancedModelI18n
 
   private
   def i18n_key
-    model_name.to_s.underscore.gsub('/', '_')
+    try(:custom_i18n_key) || model_name.to_s.underscore.gsub('/', '_')
   end
-
 end
 
 class ActiveRecord::Base
