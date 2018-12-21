@@ -42,7 +42,7 @@ fr:
       workgroup:
         subtitle: Application
         edit_control_sets: Jeux de Contrôle
-        edit_aggregation: Agrégation
+        edit_aggregate: Agrégation
         edit_hole_sentinel: Détection de trous d'offre
     history_tag:
       title: "Métadonnées"

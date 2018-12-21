@@ -39,7 +39,7 @@ ChouetteIhm::Application.routes.draw do
 
   resources :workgroups do
     member do
-      get :edit_aggregation
+      get :edit_aggregate
       get :edit_hole_sentinel
     end
     resource :output, controller: :workgroup_outputs

@@ -152,6 +152,8 @@ GEM
     choice (0.2.0)
     chronic (0.10.2)
     cliver (0.3.2)
+    clockpicker-rails (0.0.2)
+      railties (>= 3.1)
     cocoon (1.2.9)
     coderay (1.1.1)
     coffee-rails (4.0.1)
@@ -659,6 +661,7 @@ DEPENDENCIES
   capistrano-ext
   capybara (~> 2.4.0)
   carrierwave (~> 1.0)
+  clockpicker-rails
   cocoon
   codifligne!
   coffee-rails (~> 4.0.0)

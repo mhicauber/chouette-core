@@ -42,7 +42,7 @@ en:
       workgroup:
         subtitle: Application
         edit_control_sets: Controls settings
-        edit_aggregation: Aggregation settings
+        edit_aggregate: Aggregation settings
         edit_hole_sentinel: Missing offer detection
     history_tag:
       title: "Metadatas"

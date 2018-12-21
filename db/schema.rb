@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181114165059) do
+ActiveRecord::Schema.define(version: 20181211145616) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1130,15 +1130,18 @@ ActiveRecord::Schema.define(version: 20181114165059) do
     t.string   "name"
     t.integer  "line_referential_id",        limit: 8
     t.integer  "stop_area_referential_id",   limit: 8
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.string   "import_types",                         default: [],              array: true
-    t.string   "export_types",                         default: [],              array: true
+    t.datetime "created_at",                                                           null: false
+    t.datetime "updated_at",                                                           null: false
+    t.string   "import_types",                         default: [],                                 array: true
+    t.string   "export_types",                         default: [],                                 array: true
     t.integer  "owner_id",                   limit: 8
     t.integer  "output_id",                  limit: 8
     t.hstore   "compliance_control_set_ids"
     t.integer  "sentinel_min_hole_size",               default: 3
     t.integer  "sentinel_delay",                       default: 7
+    t.time     "nightly_aggregate_time",               default: '2000-01-01 00:00:00'
+    t.boolean  "nightly_aggregate_enabled",            default: false
+    t.datetime "nightly_aggregated_at"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

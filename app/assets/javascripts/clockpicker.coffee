@@ -1,0 +1,2 @@
+$ ->
+  $(".clockpicker").clockpicker({ autoclose: true })

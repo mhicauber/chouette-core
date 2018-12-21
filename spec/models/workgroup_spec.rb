@@ -29,4 +29,75 @@ RSpec.describe Workgroup, type: :model do
 
     it{ expect( Set.new(workgroup.organisations) ).to eq(Set.new([ workbench1.organisation, workbench2.organisation ])) }
   end
+
+  describe "#nightly_aggregate_timeframe?" do
+    let(:workgroup) { create(:workgroup) }
+
+    context "when nightly_aggregate_enabled is true" do
+      before do
+        workgroup.nightly_aggregate_enabled = true
+      end
+
+      it "returns true when inside timeframe" do
+        Timecop.freeze(Time.current.beginning_of_day) do
+          expect(workgroup.nightly_aggregate_timeframe?).to be_truthy
+        end
+      end
+
+      it "returns false when outside timeframe" do
+        Timecop.freeze(Time.current.beginning_of_day + 2.hours) do
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
+
+      it "returns false when inside timeframe but already done" do
+        workgroup.nightly_aggregated_at = Time.current.beginning_of_day
+        Timecop.freeze(Time.current.beginning_of_day + 3.minutes) do
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
+    end
+
+    context "when nightly_aggregate_enabled is false" do
+      it "is false even within timeframe" do
+        Timecop.freeze(Time.current.beginning_of_day) do
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
+    end
+  end
+
+  describe "#nightly_aggregate!" do
+    let(:workgroup) { create(:workgroup, nightly_aggregate_enabled: true) }
+
+    context "when no aggregatable referential is found" do
+      it "returns with a log message" do
+        Timecop.freeze(Time.current.beginning_of_day) do
+          expect(Rails.logger).to receive(:info).with(/\ANo aggregatable referential found/)
+
+          expect { workgroup.nightly_aggregate! }.not_to change {
+            workgroup.aggregates.count
+          }
+        end
+      end
+    end
+
+    context "when aggregatable referentials are found" do
+      let(:workbench) { create(:workbench, workgroup: workgroup) }
+      let(:referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
+      let(:referential_suite) { create(:referential_suite, current: referential) }
+
+      before do
+        workbench.update(output: referential_suite)
+      end
+
+      it "creates a new aggregate" do
+        Timecop.freeze(Time.current.beginning_of_day) do
+          expect { referential.workgroup.nightly_aggregate! }.to change {
+            referential.workgroup.aggregates.count
+          }.by(1)
+        end
+      end
+    end
+  end
 end

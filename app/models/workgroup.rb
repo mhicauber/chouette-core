@@ -1,4 +1,6 @@
 class Workgroup < ApplicationModel
+  NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
+
   belongs_to :line_referential
   belongs_to :stop_area_referential
   belongs_to :owner, class_name: "Organisation"
@@ -79,6 +81,37 @@ class Workgroup < ApplicationModel
 
   def self.after_merge_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
+  end
+
+  def nightly_aggregate!
+    return unless nightly_aggregate_timeframe?
+
+    last_aggregation_time = aggregates.last&.created_at
+
+    target_referentials = aggregatable_referentials.select do |r|
+      last_aggregation_time.blank? || (r.created_at > last_aggregation_time)
+    end
+
+    if target_referentials.empty?
+      Rails.logger.info "No aggregatable referential found for nighlty aggregate on Workgroup #{name} (Id: #{id})"
+      return
+    end
+
+    aggregates.create!(referentials: target_referentials)
+    update(nightly_aggregated_at: Time.current)
+  end
+
+  def nightly_aggregate_timeframe?
+    return false unless nightly_aggregate_enabled?
+
+    time = nightly_aggregate_time.seconds_since_midnight
+    current = Time.current.seconds_since_midnight
+
+    cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
+    within_timeframe = (current - time).abs <= cron_delay
+
+    # "5.minutes * 2" returns a FixNum (in our Rails version)
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)
   end
 
   def import_compliance_control_sets

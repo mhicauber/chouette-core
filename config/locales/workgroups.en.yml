@@ -2,8 +2,9 @@ en:
   workgroups:
     edit:
       title: "Application Settings"
-      edit_aggregation:
+      edit_aggregate:
         title: Aggregation settings
+        nightly_aggregate: Daily Aggregation
         disclaimer: |
           <h3>Merged offers selection</h3>
           <p>By default, the workspace offer aggregation uses the latest merged offer from each workspace</p>
@@ -25,6 +26,10 @@ en:
   activerecord:
     models:
       workgroup: Workgroup
+    attributes:
+      workgroup:
+        nightly_aggregate_enabled: Daily aggregation enabled
+        nightly_aggregate_time: Aggregation time
 
   formtastic:
     hints:
