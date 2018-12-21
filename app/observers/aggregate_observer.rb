@@ -1,0 +1,2 @@
+class AggregateObserver < NotifiableOperationObserver
+end
