@@ -56,13 +56,13 @@ module IevInterfaces
   def workbench
     return unless params[:workbench_id]
 
-    @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
+    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
   end
 
   def workgroup
     return unless params[:workgroup_id]
 
-    @workgroup ||= current_organisation.workgroups.find(params[:workgroup_id])
+    @workgroup ||= current_organisation&.workgroups&.find(params[:workgroup_id])
   end
 
   def collection
