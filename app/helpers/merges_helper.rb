@@ -16,7 +16,7 @@ module MergesHelper
   def render_current_icon
     content_tag :span, '',
       class: 'sb sb-compliance_control_set',
-      style: 'margin-left:15px; font-size:30px;',
+      style: 'margin-left:5px; font-weight: 600',
       title: I18n.t('merges.show.table.state.title')
   end
 end
