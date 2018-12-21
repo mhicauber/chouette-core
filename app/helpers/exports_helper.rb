@@ -62,7 +62,7 @@ module ExportsHelper
   def translate_option_value(parent_class, attr, key)
     root = parent_class
     root = Destination if root < Destination
-    root.tmf("#{parent_class.name.demodulize.underscore}.#{attr}_collection.#{key}")
+    root.tmf("#{parent_class.name.demodulize.underscore}.#{attr}_collection.#{key}", default: key)
   end
 
   def pretty_print_options(parent_class, options)

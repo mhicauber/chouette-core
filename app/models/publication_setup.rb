@@ -15,11 +15,36 @@ class PublicationSetup < ApplicationModel
     export_type.presence&.safe_constantize || Export::Base
   end
 
-  def new_export
-    export_class.new(options: export_options).tap do |export|
-      export.name = "#{self.class.ts} #{name}"
-      export.creator = "#{self.class.ts} #{name}"
-      export.synchronous = true
+  def export_creator_name
+    "#{self.class.ts} #{name}"
+  end
+
+  def new_export(extra_options={})
+    options = export_options.dup.update(extra_options)
+    export = export_class.new(options: options) do |export|
+      export.creator = export_creator_name
+    end
+    if block_given?
+      yield export
+    end
+    export
+  end
+
+  def new_exports(referential)
+    if export_type == "Export::Netex" && export_options["export_type"] == "line"
+      referential.metadatas_lines.map do |line|
+        new_export(line_code: line.id) do |export|
+         export.name = "#{self.class.ts} #{name} for line #{line.name}"
+         export.referential = referential
+       end
+      end
+    else
+      export = new_export do |export|
+        export.name = "#{self.class.ts} #{name}"
+        export.referential = referential
+        export.synchronous = true
+      end
+      [export]
     end
   end
 

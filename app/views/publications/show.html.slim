@@ -16,6 +16,35 @@
 
     .row
       .col-lg-12
+        - if @publication.exports.empty?
+          = replacement_msg t('exports.search_no_results')
+        - else
+          .h3 = Export::Base.t.capitalize
+          = table_builder_2 @publication.exports,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: ->(e){ export_status(e, verbose: true) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :options, \
+                attribute: ->(e){ pretty_print_options(e.class, e.options) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :file, \
+                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank): "-" } \
+              ), \
+            ],
+            sortable: false,
+            cls: 'table',
+            action: :index
+
+    .row
+      .col-lg-12
         - if @publication.reports.empty?
           = replacement_msg t('destination_reports.search_no_results')
         - else

@@ -9,6 +9,7 @@ class Export::Base < ActiveRecord::Base
   self.table_name = "exports"
 
   belongs_to :referential
+  belongs_to :publication
 
   validates :type, :referential_id, presence: true
 

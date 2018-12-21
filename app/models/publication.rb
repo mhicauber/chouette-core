@@ -4,13 +4,13 @@ class Publication < ActiveRecord::Base
   enumerize :status, in: %w[new pending successful failed running successful_with_warnings], default: :new
 
   belongs_to :publication_setup
-  belongs_to :export, class_name: 'Export::Base'
+  has_many :exports, class_name: 'Export::Base'
   belongs_to :parent, polymorphic: true
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
 
   validates :publication_setup, :parent, presence: true
 
-  after_create :publish
+  after_commit :publish, on: :create
 
   status.values.each do |s|
     define_method "#{s}!" do
@@ -33,6 +33,8 @@ class Publication < ActiveRecord::Base
   end
 
   def publish
+    return unless new?
+
     pending!
     if parent.successful?
       PublicationWorker.perform_async_or_fail(self)
@@ -57,20 +59,23 @@ class Publication < ActiveRecord::Base
   end
 
   def run_export
-    begin
-      export = publication_setup.new_export
-      export.referential = parent.new
-      export.save!
-    rescue
-      failed!
-      return
-    ensure
-      update export: export
-    end
+    publication_setup.new_exports(parent.new).each do |export|
+      begin
+        export.publication = self
+        Rails.logger.info "Launching export #{export.name}"
+        export.save!
+      rescue => e
+        Rails.logger.error "Error during Publication export: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        failed!
+        return
+      end
 
-    unless export.successful?
-      failed!
-      return
+      unless export.successful?
+        Rails.logger.error "Publication Export '#{export.name}' failed"
+        failed!
+        return
+      end
     end
 
     send_to_destinations

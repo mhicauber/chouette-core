@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181220094653) do
+ActiveRecord::Schema.define(version: 20181221094635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20181220094653) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -406,8 +406,10 @@ ActiveRecord::Schema.define(version: 20181220094653) do
     t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                limit: 8
+    t.integer  "publication_id",         limit: 8
   end
 
+  add_index "exports", ["publication_id"], name: "index_exports_on_publication_id", using: :btree
   add_index "exports", ["referential_id"], name: "index_exports_on_referential_id", using: :btree
   add_index "exports", ["workbench_id"], name: "index_exports_on_workbench_id", using: :btree
 
@@ -676,14 +678,6 @@ ActiveRecord::Schema.define(version: 20181220094653) do
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
 
-  create_table "notifications", id: :bigserial, force: :cascade do |t|
-    t.string   "objectid"
-    t.json     "payload"
-    t.string   "channel"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -731,19 +725,15 @@ ActiveRecord::Schema.define(version: 20181220094653) do
     t.integer  "publication_setup_id", limit: 8
     t.string   "parent_type"
     t.integer  "parent_id",            limit: 8
-    t.integer  "export_id",            limit: 8
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.integer  "referential_id",       limit: 8
     t.string   "status"
     t.datetime "started_at"
     t.datetime "ended_at"
   end
 
-  add_index "publications", ["export_id"], name: "index_publications_on_export_id", using: :btree
   add_index "publications", ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id", using: :btree
   add_index "publications", ["publication_setup_id"], name: "index_publications_on_publication_setup_id", using: :btree
-  add_index "publications", ["referential_id"], name: "index_publications_on_referential_id", using: :btree
 
   create_table "purchase_windows", id: :bigserial, force: :cascade do |t|
     t.string    "name"
@@ -1228,7 +1218,6 @@ ActiveRecord::Schema.define(version: 20181220094653) do
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns_stop_points", "journey_patterns", name: "jpsp_jp_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
-  add_foreign_key "publications", "exports"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify

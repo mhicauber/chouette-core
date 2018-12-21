@@ -70,12 +70,6 @@
                   "#{publication.parent.class.ts} #{publication.parent.name}" \
                 end, \
               ), \
-              TableBuilderHelper::Column.new( \
-                key: :export, \
-                attribute: Proc.new do |publication| \
-                  publication.export.present? ? link_to(export_status(publication.export, verbose: true), publication.export_output&.url || '#') : "-" \
-                end, \
-              ), \
             ],
             sortable: false,
             cls: 'table',

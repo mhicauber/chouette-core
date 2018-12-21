@@ -4,7 +4,7 @@ class Destination < ApplicationModel
   belongs_to :publication_setup
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
 
-  validates :name, :type, :publication_setup, presence: true
+  validates :name, :type, presence: true
 
   mount_uploader :secret_file, SecretFileUploader
 
