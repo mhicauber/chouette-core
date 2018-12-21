@@ -3,7 +3,7 @@
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     - metadata = { t('imports.show.filename') => @import.try(:file_identifier) }
-    - metadata = metadata.update({Import::Base.tmf(:status) => import_status(@import.status, verbose: true) })
+    - metadata = metadata.update({Import::Base.tmf(:status) => operation_status(@import.status, verbose: true) })
     - metadata = metadata.update Hash[*@import.visible_options.map{|k, v| [t("activerecord.attributes.import.#{@import.object.class.name.demodulize.underscore}.#{k}"), @import.display_option_value(k, self)]}.flatten]
     = definition_list t('metadatas'), metadata
 
@@ -26,7 +26,7 @@
         ), \
         TableBuilderHelper::Column.new( \
           key: :status, \
-          attribute: Proc.new { |n| import_status(n.netex_import&.status || n.status, verbose: true, default_status: :pending) }, \
+          attribute: Proc.new { |n| operation_status(n.netex_import&.status || n.status, verbose: true, default_status: :pending) }, \
           sortable: false, \
           link_to: lambda do |item| \
             item.netex_import.present? ? [@import.workbench, item.netex_import] : [@import.workbench, @import, item] \

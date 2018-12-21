@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 module ExportsHelper
-  def export_status status
-    import_status status
-  end
 
   def export_option_input form, export, attr, option_def, type, referentials
     if !!option_def[:depends_on_referential]
