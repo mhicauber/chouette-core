@@ -1,7 +1,7 @@
 class ImportDecorator < AF83::Decorator
   decorates Import::Base
 
-  set_scope { context[:workbench] }
+  set_scope { context[:workbench] || object.workbench }
 
   define_instance_method :import_status_css_class do
     cls =''
@@ -11,7 +11,7 @@ class ImportDecorator < AF83::Decorator
     cls
   end
 
-  create_action_link do |l|
+  create_action_link if: -> { context[:workbench].present? } do |l|
     l.content t('imports.actions.new')
   end
 

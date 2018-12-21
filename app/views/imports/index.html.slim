@@ -1,6 +1,6 @@
 - breadcrumb :imports, parent
 
-- if parent?is_a? Workgroup
+- if parent.is_a? Workgroup
   - content_for(:page_header_title) { 'imports.workgroup_index.title'.t }
 
 .page_content
