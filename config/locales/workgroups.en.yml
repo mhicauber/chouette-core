@@ -1,17 +1,19 @@
 en:
   workgroups:
-    edit_controls:
+    edit_controls: &edit_controls
       title: "Application Settings"
-      edit_aggregate:
-        title: Aggregation settings
-        nightly_aggregate: Daily Aggregation
-        disclaimer: |
-          <h3>Merged offers selection</h3>
-          <p>By default, the workspace offer aggregation uses the latest merged offer from each workspace</p>
-          <p>If a workspace has troubles providing a coherent offer, you can here select a specific offer to be used
-          during aggregation. This selection will remain in place upon further action from your part.</p>
-      edit_hole_sentinel:
-        title: "Holes detection settings"
+    edit:
+      <<: *edit_controls
+    edit_aggregate:
+      title: Aggregation settings
+      nightly_aggregate: Daily Aggregation
+      disclaimer: |
+        <h3>Merged offers selection</h3>
+        <p>By default, the workspace offer aggregation uses the latest merged offer from each workspace</p>
+        <p>If a workspace has troubles providing a coherent offer, you can here select a specific offer to be used
+        during aggregation. This selection will remain in place upon further action from your part.</p>
+    edit_hole_sentinel:
+      title: "Holes detection settings"
 
     compliance_control_sets:
       after_import: After Import

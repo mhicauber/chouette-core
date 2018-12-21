@@ -1,7 +1,9 @@
 fr:
   workgroups:
-    edit_controls:
+    edit_controls: &edit_controls
       title: "Paramétrages de l'application"
+    edit:
+      <<: *edit_controls
     edit_aggregate:
       title: Paramétrage de l'agrégation
       nightly_aggregate: "Lancement quotidien de l'agrégation"
