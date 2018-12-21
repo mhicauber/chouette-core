@@ -15,6 +15,9 @@ en:
       new_control: Creating a Control
       select_types: Control Type Selection
       edit: Edit compliance control set
+    workgroup_index:
+      title: "Workgroup's compliance control sets"
+
     search_no_results: No control reports match your search
     executed:
       title: Executed control report %{name}

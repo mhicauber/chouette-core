@@ -10,7 +10,9 @@ fr:
           name_compliance_control_set: Indiquez le nom d'un jeu de contrôle
           error_period_filter: La date de fin doit être supérieure ou égale à la date de début0
     index:
-      title: "Liste des rapports de contrôles"
+      title: "Rapports de contrôles"
+    workgroup_index:
+      title: "Rapports de contrôles du Groupe de Travail"
     search_no_results: Aucun rapport de contrôle ne correspond à votre recherche
     executed:
       title: Jeu de contrôles exécuté %{name}
