@@ -1,5 +1,8 @@
 - current_organisation.workbenches.each do |workbench|
   #menu-items.panel-group
+    - if current_organisation.workbenches.many?
+      .menu-title
+        = workbench.workgroup.name
     .menu-item.panel
       = main_nav_menu_item 'layouts.navbar.current_offer.other'.t do
         = link_to root_path, class: "list-group-item" do

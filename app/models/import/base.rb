@@ -28,6 +28,8 @@ class Import::Base < ApplicationModel
     I18n.t("import.#{self.name.demodulize.underscore}")
   end
 
+  scope :workbench, -> { where type: "Import::Workbench" }
+
   include IevInterfaces::Task
   # we skip validation once the import has been persisted,
   # in order to allow Sidekiq workers (which don't have acces to the file) to
