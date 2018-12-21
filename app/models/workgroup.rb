@@ -107,9 +107,11 @@ class Workgroup < ApplicationModel
     time = nightly_aggregate_time.seconds_since_midnight
     current = Time.current.seconds_since_midnight
 
-    within_timeframe = (current - time).abs <= NIGHTLY_AGGREGATE_CRON_TIME
+    cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
+    within_timeframe = (current - time).abs <= cron_delay
 
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.ago)
+    # "5.minutes * 2" returns a FixNum (in our Rails version)
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)
   end
 
   def import_compliance_control_sets
