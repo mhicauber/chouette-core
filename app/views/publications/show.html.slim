@@ -1,0 +1,44 @@
+- breadcrumb @publication, @publication_setup, @workgroup
+
+- page_header_content_for @publication
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = { Publication.tmf(:status) => export_status(@publication, verbose: true) }
+        - metadatas.update( PublicationSetup.ts => link_to(@publication_setup.name, [@workgroup, @publication_setup]) )
+        - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", [@publication.parent.new]))
+        - metadatas.update( Publication.tmf(:started_at) => @publication.started_at ? l(@publication.started_at, format: :short_with_time) : '-')
+        - metadatas.update( Publication.tmf(:ended_at) => @publication.ended_at ? l(@publication.ended_at, format: :short_with_time) : '-')
+        - metadatas.update( Publication.tmf(:export) => @publication.export.present? ? link_to(operation_status(@publication.export, verbose: true), @publication.export_output&.url || '#') : "-")
+        = definition_list t('metadatas'), metadatas
+
+    .row
+      .col-lg-12
+        - if @publication.reports.empty?
+          = replacement_msg t('destination_reports.search_no_results')
+        - else
+          .h3 = DestinationReport.t
+          = table_builder_2 @publication.reports,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :type, \
+                attribute: ->(r){ r.destination.class.name } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: ->(r){ r.destination.name } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: Proc.new { |n| export_status(n.status) }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :error_message, \
+                attribute: :error_message, \
+              ), \
+            ],
+            sortable: false,
+            cls: 'table',
+            action: :index

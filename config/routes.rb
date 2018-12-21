@@ -2,6 +2,10 @@ ChouetteIhm::Application.routes.draw do
   resource :dashboard
   resource :subscriptions, only: :create
 
+  resources :exports, only: :upload do
+    post :upload, on: :member, controller: :export_uploads
+  end
+
   resources :workbenches, except: [:destroy, :edit] do
     member do
       get :edit_controls
@@ -46,7 +50,9 @@ ChouetteIhm::Application.routes.draw do
     end
     resource :output, controller: :workgroup_outputs
     resources :aggregates
-    resources :publication_setups
+    resources :publication_setups do
+      resources :publications, only: :show
+    end
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do

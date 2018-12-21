@@ -43,8 +43,13 @@ crumb :publication_setups do |workgroup|
   parent workgroup
 end
 
+crumb :publication do |publication, publication_setup, workgroup|
+  link publication.pretty_date
+  parent publication_setup, workgroup
+end
+
 crumb :publication_setup do |publication_setup, workgroup|
-  link publication_setup.name
+  link publication_setup.name, [workgroup, publication_setup]
   parent :publication_setups, workgroup
 end
 

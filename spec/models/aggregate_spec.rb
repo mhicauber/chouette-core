@@ -21,4 +21,20 @@ RSpec.describe Aggregate, type: :model do
     Aggregate.last.aggregate!
     expect(Aggregate.count).to eq 10
   end
+
+  context 'with publications' do
+    let(:aggregate) { create :aggregate }
+    let!(:enabled_publication_setup) { create :publication_setup, workgroup: aggregate.workgroup, enabled: true }
+    let!(:disabled_publication_setup) { create :publication_setup, workgroup: aggregate.workgroup, enabled: false }
+
+    it 'should be published' do
+      ids = []
+      allow_any_instance_of(PublicationSetup).to receive(:publish) do |obj|
+        ids << obj.id
+      end
+
+      aggregate.publish
+      expect(ids).to eq [enabled_publication_setup.id]
+    end
+  end
 end

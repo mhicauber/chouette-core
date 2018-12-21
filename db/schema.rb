@@ -11,7 +11,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181219080604) do
+ActiveRecord::Schema.define(version: 20181220094653) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
@@ -733,11 +734,16 @@ ActiveRecord::Schema.define(version: 20181219080604) do
     t.integer  "export_id",            limit: 8
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.integer  "referential_id",       limit: 8
+    t.string   "status"
+    t.datetime "started_at"
+    t.datetime "ended_at"
   end
 
   add_index "publications", ["export_id"], name: "index_publications_on_export_id", using: :btree
   add_index "publications", ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id", using: :btree
   add_index "publications", ["publication_setup_id"], name: "index_publications_on_publication_setup_id", using: :btree
+  add_index "publications", ["referential_id"], name: "index_publications_on_referential_id", using: :btree
 
   create_table "purchase_windows", id: :bigserial, force: :cascade do |t|
     t.string    "name"

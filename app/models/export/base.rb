@@ -13,6 +13,7 @@ class Export::Base < ActiveRecord::Base
   validates :type, :referential_id, presence: true
 
   after_create :purge_exports
+  attr_accessor :synchronous
 
   def self.messages_class_name
     "Export::Message"
@@ -30,7 +31,20 @@ class Export::Base < ActiveRecord::Base
     %w(zip csv json)
   end
 
+  def run
+    update status: 'running', started_at: Time.now
+    export
+  rescue Exception => e
+    Rails.logger.error e.message
+
+    messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
+    update status: 'failed'
+    raise
+  end
+
   def purge_exports
+    return unless workbench.present?
+
     workbench.exports.file_purgeable.each do |exp|
       exp.update(remove_file: true)
     end
@@ -38,7 +52,12 @@ class Export::Base < ActiveRecord::Base
   end
 
   def upload_file file
-    url = URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
+
+    url = if workbench.present?
+      URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
+    else
+      URI.parse upload_export_url(self.id, host: Rails.application.config.rails_host)
+    end
     res = nil
     filename = File.basename(file.path)
     content_type = MIME::Types.type_for(filename).first&.content_type

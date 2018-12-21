@@ -1,5 +1,6 @@
 module OperationsHelper
   def operation_status(status, verbose: false, default_status: nil, i18n_prefix: nil)
+    status = status.status if status.respond_to?(:status)
     status ||= default_status
     return unless status
     i18n_prefix ||= "operation_support.statuses"
@@ -11,6 +12,7 @@ module OperationsHelper
       cls = 'success' if status == 'successful'
       cls = 'success' if status == 'ok'
       cls = 'warning' if status == 'warning'
+      cls = 'warning' if status == 'successful_with_warnings'
       cls = 'info' if status == 'canceled'
       cls = 'danger' if %w[failed aborted  error].include? status
 

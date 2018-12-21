@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 module ExportsHelper
-
   def export_option_input form, export, attr, option_def, type, referentials, parent_form: nil
     parent_form ||= form
     if !!option_def[:depends_on_referential]

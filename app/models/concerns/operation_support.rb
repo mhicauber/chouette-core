@@ -40,6 +40,12 @@ module OperationSupport
     referentials.map(&:name).to_sentence
   end
 
+  def publish
+    workgroup.publication_setups.enabled.each do |publication_setup|
+      publication_setup.publish self
+    end
+  end
+
   def clean_previous_operations
     while clean_scope.successful.count > [self.class.keep_operations, 0].max do
       clean_scope.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }

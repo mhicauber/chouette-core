@@ -32,8 +32,13 @@ class PublicationSetupsController < ChouetteController
     super.decorate(context: { workgroup: parent })
   end
 
+  def collection
+    scope = end_of_association_chain
+    @publication_setups = scope.paginate(:page => params[:page])
+  end
+
   def decorate_publication_setups publication_setups
-    CompanyDecorator.decorate(
+    PublicationSetupDecorator.decorate(
       publication_setups,
       context: {
         workgroup: parent
