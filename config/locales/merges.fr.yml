@@ -7,6 +7,9 @@ fr:
       title: "Nouvelle finalisation de l'offre"
     show:
       title: "Finalisation de l'offre %{name}"
+      table:
+        state:
+          title: Dernière offre finalisée
     actions:
       create: Finaliser des Jeux de Données
       rollback: 'Revenir à cette offre'
