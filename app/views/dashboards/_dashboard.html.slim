@@ -52,15 +52,10 @@
               span.badge.ml-xs = imports.count if imports.present?
               div
                 = link_to '', workbench_imports_path(workbench), class: ' fa fa-chevron-right pull-right'
-          - if imports.present?
-            .list-group
-              - imports.order("updated_at desc").limit(5).each do |import|
-                = link_to import.name, workbench_import_path(workbench, import), class: 'list-group-item'
-          - else
-            .panel-body
-              em.small.text-muted
-                = t('dasboard.imports.none')
-
+          .list-group
+            - imports.order("updated_at desc").limit(5).each do |import|
+              = link_to import.name, workbench_import_path(workbench, import), class: 'list-group-item'
+        
     .col-lg-6.col-md-6.col-sm-6.col-xs-12
       .panel.panel-default
         .panel-heading
