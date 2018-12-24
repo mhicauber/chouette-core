@@ -97,7 +97,7 @@ class Workgroup < ApplicationModel
       return
     end
 
-    aggregates.create!(referentials: target_referentials)
+    aggregates.create!(referentials: target_referentials, creator: 'CRON')
     update(nightly_aggregated_at: Time.current)
   end
 

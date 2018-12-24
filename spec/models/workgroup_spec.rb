@@ -96,6 +96,7 @@ RSpec.describe Workgroup, type: :model do
           expect { referential.workgroup.nightly_aggregate! }.to change {
             referential.workgroup.aggregates.count
           }.by(1)
+          expect(referential.workgroup.aggregates.where(creator: 'CRON')).to exist
         end
       end
     end
