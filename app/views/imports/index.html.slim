@@ -30,11 +30,7 @@
                   [parent, import] \
                 end \
               ), \
-              *@contextual_cols, \
-              TableBuilderHelper::Column.new( \
-                key: :notification_target, \
-                attribute: Proc.new {|n| I18n.t("operation_support.notification_targets.#{n.notification_target || 'none'}")} \
-              ) \
+              *@contextual_cols \
             ],
             cls: 'table has-search'
 

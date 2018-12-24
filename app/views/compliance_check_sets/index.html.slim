@@ -53,10 +53,6 @@
                   link_to: lambda do |compliance_check_set| \
                     executed_workbench_compliance_check_set_path(compliance_check_set.workbench_id, compliance_check_set.id) \
                   end \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :notification_target, \
-                  attribute: Proc.new {|n| I18n.t("operation_support.notification_targets.#{n.notification_target || 'none'}")} \
                 ) \
               ],
               sortable: true,
