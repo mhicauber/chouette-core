@@ -6,6 +6,7 @@ fr:
     edit_controls:
       title: "Paramétrage de la validation"
       link:  "Paramétrages"
+      none: "Aucun contrôle"
     update_controls:
       title: "Paramétrage de la validation"
     referential_count:

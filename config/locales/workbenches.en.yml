@@ -6,6 +6,7 @@ en:
     edit_controls:
       title: "Configure the workbench"
       link:  "Settings"
+      none: "None"
     update_controls:
       title: "Configure the workbench"
     referential_count:
