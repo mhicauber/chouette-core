@@ -18,7 +18,7 @@ class PublicationSetupsController < ChouetteController
     show! do |format|
       format.html {
         @publications = PublicationDecorator.decorate(
-          @publication_setup.publications.order('created_at DESC').page(1),
+          @publication_setup.publications.order('created_at DESC').paginate(page: params[:page]),
           context: {
             workgroup: @workgroup,
             publication_setup: @publication_setup
@@ -50,7 +50,7 @@ class PublicationSetupsController < ChouetteController
     @q = end_of_association_chain.search(params[:q])
     scope = @q.result(distinct: true)
     scope = scope.order(sort_column + ' ' + sort_direction)
-    @publication_setups = scope.paginate(:page => params[:page])
+    @publication_setups = scope.paginate(page: params[:page])
   end
 
   def sort_column
