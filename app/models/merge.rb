@@ -645,7 +645,7 @@ class Merge < ApplicationModel
       scope = scope.where("new_id IS NULL OR new_id != #{parent.locked_referential_to_aggregate_id}")
     end
 
-    aggregated_referentials = parent.workgroup.aggregates.flat_map(&:referentials).map(&:id).compact.uniq
+    aggregated_referentials = parent.workgroup.aggregates.flat_map(&:referential_ids).compact.uniq
     if aggregated_referentials.present?
       scope = scope.where.not(new_id: aggregated_referentials)
     end

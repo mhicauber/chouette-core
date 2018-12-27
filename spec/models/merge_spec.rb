@@ -191,13 +191,19 @@ RSpec.describe Merge do
   it "should not remove referentials used in previous aggregations" do
     workbench = referential.workbench
     aggregate = Aggregate.create(workgroup: workbench.workgroup, referentials: [referential, referential])
-    m = nil
+    other_referential = create(:referential, workbench: referential.workbench, organisation: referential.organisation)
+    should_disappear = Merge.create!(workbench: workbench, referentials: [referential], new: other_referential)
+    should_disappear.update status: :successful
+    m = Merge.create!(workbench: workbench, referentials: [referential], new: other_referential)
+    m.update status: :successful
     3.times do
-      m = Merge.create!(workbench: workbench, referentials: [referential, referential])
+      m = Merge.create!(workbench: workbench, referentials: [referential, referential], new: referential)
       m.update status: :successful
     end
     Merge.keep_operations = 1
-    expect { Merge.last.clean_previous_operations }.not_to change { Merge.count }
+    expect(Merge.count).to eq 5
+    expect { Merge.last.clean_previous_operations }.to change { Merge.count }.by -1
+    expect(Merge.where(id: should_disappear.id).count).to be_zero
   end
 
   context "#prepare_new" do
