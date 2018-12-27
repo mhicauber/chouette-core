@@ -8,7 +8,7 @@
         [ \
           TableBuilderHelper::Column.new( \
             key: :status, \
-            attribute: Proc.new { |n| export_status(n.status) }, \
+            attribute: Proc.new { |n| operation_status(n.status) }, \
           ), \
           TableBuilderHelper::Column.new( \
             key: :created_at, \
@@ -23,7 +23,7 @@
           TableBuilderHelper::Column.new( \
             key: :export, \
             attribute: Proc.new do |publication| \
-              publication.export.present? ? link_to(export_status(publication.export, verbose: true), publication.export_output&.url || '#') : "-" \
+              publication.export.present? ? link_to(operation_status(publication.export, verbose: true), publication.export_output&.url || '#') : "-" \
             end, \
           ), \
         ],
