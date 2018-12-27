@@ -45,6 +45,7 @@ class Import::Gtfs < Import::Base
     update status: 'running', started_at: Time.now
 
     import_without_status
+
     @status ||= 'successful'
     update status: @status, ended_at: Time.now
     referential&.active!
@@ -188,9 +189,11 @@ class Import::Gtfs < Import::Base
   delegate :line_referential, :stop_area_referential, to: :workbench
 
   def prepare_referential
-    Import::Gtfs.benchmark(self, :import_agencies)
-    Import::Gtfs.benchmark(self, :import_stops)
-    Import::Gtfs.benchmark(self, :import_routes)
+    Chouette::ChecksumManager.transaction do
+      Import::Gtfs.benchmark(self, :import_agencies)
+      Import::Gtfs.benchmark(self, :import_stops)
+      Import::Gtfs.benchmark(self, :import_routes)
+    end
 
     create_referential
     referential.switch
@@ -199,11 +202,12 @@ class Import::Gtfs < Import::Base
   def import_without_status
     prepare_referential
     referential.pending!
-
-    Import::Gtfs.benchmark(self, :import_calendars)
-    Import::Gtfs.benchmark(self, :import_calendar_dates)
-    Import::Gtfs.benchmark(self, :import_trips)
-    Import::Gtfs.benchmark(self, :import_stop_times)
+    Chouette::ChecksumManager.transaction do
+      Import::Gtfs.benchmark(self, :import_calendars)
+      Import::Gtfs.benchmark(self, :import_calendar_dates)
+      Import::Gtfs.benchmark(self, :import_trips)
+      Import::Gtfs.benchmark(self, :import_stop_times)
+    end
   end
 
   def import_agencies
