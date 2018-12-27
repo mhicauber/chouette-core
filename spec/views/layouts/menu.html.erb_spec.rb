@@ -11,6 +11,7 @@ describe "/layouts/application", :type => :view do
     allow(Rails.application.config).to receive_messages :portal_url => "portal_url"
     allow(Rails.application.config).to receive_messages :codifligne_url => "codifligne_url"
     allow(Rails.application.config).to receive_messages :reflex_url => "reflex_url"
+    allow_any_instance_of(Workgroup).to receive(:export_types) { ["Export::Gtfs"] }
   end
 
   it "should have menu items" do
