@@ -13,3 +13,5 @@ fr:
         name: "Nom"
         status: "Statut"
         error_message: "Message d'erreur"
+        duration_in_seconds: "%{time}s"
+        duration: Durée

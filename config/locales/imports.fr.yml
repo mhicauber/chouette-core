@@ -61,7 +61,6 @@ fr:
       running:    En cours
       aborted:    Annulé
       canceled:   Annulé
-      successful_with_warnings: Succès (avec avertissements)
   import:
     workgroup: Groupe de travail
     netex:     Netex

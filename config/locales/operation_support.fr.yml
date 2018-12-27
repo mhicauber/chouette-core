@@ -11,6 +11,7 @@ fr:
       running:    En cours
       successful: Succès
       warning:    Avertissement
+      successful_with_warnings: Succès (avec avertissements)
     notification_targets:
       user:       Moi uniquement
       workbench:  Tous les utilisateurs de l'espace de travail

@@ -16,7 +16,7 @@ fr:
     models:
       publication_setup:
         zero:  "Publication"
-        one:   "Publications"
+        one:   "Publication"
         other: "Publications"
     attributes:
       publication_setup:

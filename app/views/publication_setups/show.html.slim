@@ -25,7 +25,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :type, \
-                attribute: :type, \
+                attribute: :human_type, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
@@ -62,7 +62,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :created_at, \
-                attribute: ->(publication){ link_to(l(publication.created_at), [@workgroup, @publication_setup, publication])} \
+                attribute: ->(publication){ link_to(l(publication.created_at, format: :short_with_time), [@workgroup, @publication_setup, publication])} \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :parent, \

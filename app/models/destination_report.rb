@@ -25,4 +25,11 @@ class DestinationReport < ActiveRecord::Base
   def success!
     update ended_at: Time.now, status: :successful
   end
+
+  def duration
+    return unless started_at.present?
+    return unless ended_at.present?
+
+    ended_at - started_at
+  end
 end

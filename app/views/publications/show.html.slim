@@ -11,7 +11,6 @@
         - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", [@publication.parent.new]))
         - metadatas.update( Publication.tmf(:started_at) => @publication.started_at ? l(@publication.started_at, format: :short_with_time) : '-')
         - metadatas.update( Publication.tmf(:ended_at) => @publication.ended_at ? l(@publication.ended_at, format: :short_with_time) : '-')
-        - metadatas.update( Publication.tmf(:export) => @publication.export.present? ? link_to(operation_status(@publication.export, verbose: true), @publication.export_output&.url || '#') : "-")
         = definition_list t('metadatas'), metadatas
 
     .row
@@ -53,7 +52,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :type, \
-                attribute: ->(r){ r.destination.class.name } \
+                attribute: ->(r){ r.destination.human_type } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
@@ -66,6 +65,10 @@
               TableBuilderHelper::Column.new( \
                 key: :error_message, \
                 attribute: :error_message, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :duration, \
+                attribute: Proc.new { |n| n.duration ? DestinationReport.tmf('duration_in_seconds', time: ("%.2f" % n.duration)) : "-" }, \
               ), \
             ],
             sortable: false,

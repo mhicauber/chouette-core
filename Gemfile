@@ -240,3 +240,4 @@ source 'https://rails-assets.org' do
 end
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
+gem 'google-cloud-storage', '> 1.4.0'
