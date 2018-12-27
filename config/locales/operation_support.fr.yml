@@ -14,3 +14,4 @@ fr:
     notification_targets:
       user:       Utilisateur
       workbench:  Espace de travail
+      none:       Aucune notification

@@ -3,7 +3,7 @@ module NotifiableSupport
 
   included do
     extend Enumerize
-    enumerize :notification_target, in: %w[user workbench], default: :user
+    enumerize :notification_target, in: %w[none user workbench], default: :none
     belongs_to :user
   end
 
@@ -26,14 +26,14 @@ module NotifiableSupport
       Rails.logger.error "Can't notify users: #{e.message} #{e.backtrace.join("\n")}"
     end
 
-    notified_recipients!
+    notify_recipients!
   end
 
   def notified_recipients?
     notified_recipients_at.present?
   end
 
-  def notified_recipients!
+  def notify_recipients!
     update_column :notified_recipients_at, Time.now
   end
 
@@ -42,7 +42,7 @@ module NotifiableSupport
   end
 
   def notification_recipients
-    return [] unless notification_target.present?
+    return [] unless has_notification_recipients?
 
     users = if notification_target.to_s == 'user'
       [user]
@@ -51,5 +51,9 @@ module NotifiableSupport
     end
 
     users.compact.map(&:email_recipient)
+  end
+
+  def has_notification_recipients?
+    notification_target.present? && notification_target.to_s != 'none'
   end
 end
