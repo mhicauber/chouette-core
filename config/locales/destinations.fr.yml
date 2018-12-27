@@ -12,7 +12,7 @@ fr:
     models:
       destination:
         zero:  "Destination"
-        one:   "Destinations"
+        one:   "Destination"
         other: "Destinations"
         dummy:
           zero:  "Dummy"

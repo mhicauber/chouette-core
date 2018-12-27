@@ -14,6 +14,20 @@ class PublicationSetupsController < ChouetteController
     end
   end
 
+  def show
+    show! do |format|
+      format.html {
+        @publications = PublicationDecorator.decorate(
+          @publication_setup.publications.order('created_at DESC').page(1),
+          context: {
+            workgroup: @workgroup,
+            publication_setup: @publication_setup
+          }
+        )
+      }
+    end
+  end
+
   def publication_setup_params
     publication_setup_params = params.require(:publication_setup)
     permitted_keys = [:name, :export_type, :export_options, :enabled, :workgroup_id]

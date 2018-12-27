@@ -22,6 +22,6 @@ fr:
       publication_setup:
         name: "Nom"
         export_type: "Type d'export"
-        export_options: "Options de l'export"
+        export_options: "Paramètres de l'export"
         enabled: "Activée"
         destinations: "Destinations"
