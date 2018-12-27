@@ -98,7 +98,7 @@ class ReferentialsController < ChouetteController
       flash[:alert] = t('notice.referential.unarchived_failed')
     end
 
-    redirect_to workbench_path(referential.workbench_id)
+    redirect_to :back
   end
 
   protected
