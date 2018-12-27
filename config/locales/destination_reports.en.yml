@@ -13,5 +13,6 @@ fr:
         name: "Name"
         status: "Status"
         error_message: "Error message"
-        duration_in_seconds: "%{time}s"
         duration: Duration
+        started_at: Transmission start
+        ended_at: Transmission end

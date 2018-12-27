@@ -26,6 +26,10 @@
                 attribute: ->(e){ operation_status(e, verbose: true) } \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :type, \
+                attribute: :human_type \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: :name \
               ), \
@@ -67,8 +71,16 @@
                 attribute: :error_message, \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :started_at, \
+                attribute: ->(n){ n.started_at ? l(n.started_at, format: :time) : '-' } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :ended_at, \
+                attribute: ->(n){ n.ended_at ? l(n.ended_at, format: :time) : '-' } \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :duration, \
-                attribute: Proc.new { |n| n.duration ? DestinationReport.tmf('duration_in_seconds', time: ("%.2f" % n.duration)) : "-" }, \
+                attribute: Proc.new { |n| n.duration ? distance_of_time_in_words(n.duration) : "-" }, \
               ), \
             ],
             sortable: false,

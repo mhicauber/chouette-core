@@ -16,21 +16,30 @@ class Export::Base < ActiveRecord::Base
   after_create :purge_exports
   attr_accessor :synchronous
 
-  def self.messages_class_name
-    "Export::Message"
+  class << self
+    def messages_class_name
+      "Export::Message"
+    end
+
+    def resources_class_name
+      "Export::Resource"
+    end
+
+    def human_name
+      I18n.t("export.#{self.name.demodulize.underscore}")
+    end
+
+    alias_method :human_type, :human_name
+
+    def file_extension_whitelist
+      %w(zip csv json)
+    end
   end
 
-  def self.resources_class_name
-    "Export::Resource"
+  def human_name
+    self.class.human_name
   end
-
-  def self.human_name
-    I18n.t("export.#{self.name.demodulize.underscore}")
-  end
-
-  def self.file_extension_whitelist
-    %w(zip csv json)
-  end
+  alias_method :human_type, :human_name
 
   def run
     update status: 'running', started_at: Time.now
@@ -125,5 +134,4 @@ class Export::Base < ActiveRecord::Base
     super
     self.token_upload = SecureRandom.urlsafe_base64
   end
-
 end
