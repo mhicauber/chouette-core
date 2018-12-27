@@ -10,6 +10,7 @@ RSpec.describe Merge do
     create(:referential_metadata, lines: line_referential.lines.limit(3), referential: ref)
     ref.reload
   }
+  let(:referential_metadata){ referential.metadatas.last }
 
   before(:each) do
     4.times { create :line, line_referential: line_referential, company: company, network: nil }

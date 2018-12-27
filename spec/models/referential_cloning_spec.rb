@@ -56,6 +56,7 @@ RSpec.describe ReferentialCloning, :type => :model do
 
     context 'when clone_schema is performed without error' do
       it "should have successful status" do
+        expect(referential_cloning).to receive(:clone!)
         referential_cloning.clone_with_status!
         expect(referential_cloning.status).to eq("successful")
       end
