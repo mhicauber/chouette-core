@@ -2,7 +2,7 @@ fr:
   publication_setups:
     search_no_results: 'Aucune publication'
     actions:
-      index: Publications de l'offre
+      index: Publications de l'offre agrégée
       create: Ajouter une Publication
       new: Nouvelle Publication
       edit: Modifier une Publication

@@ -2,7 +2,7 @@ en:
   publication_setups:
     search_no_results: 'No publication'
     actions:
-      index: Publications
+      index: Aggregated offer publications
       create: Add a Publication
   activerecord:
     models:
