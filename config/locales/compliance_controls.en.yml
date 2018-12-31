@@ -233,6 +233,11 @@ en:
       prerequisite: "None"
       messages:
         3_company_1: "The company #%{source_objectid} lacks a name"
+    custom_field_control/presence:
+      description: "Custom Field is set"
+      prerequisite: "None"
+      messages:
+        3_generic_4: "The field %{field_name} is not set"
 
   activerecord:
     models:
@@ -311,6 +316,9 @@ en:
         one: "Company name is present"
       stop_area_control/time_zone:
         one: "StopAreas are geolocated"
+      custom_field_control/presence:
+        one: "Custom Field is set"
+
 
     attributes:
       compliance_control:
@@ -326,3 +334,4 @@ en:
         predicate: "Predicate"
         pattern: Regular expression
         subclass: Object
+        custom_field_code: "Custom field"

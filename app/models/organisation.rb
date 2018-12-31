@@ -14,6 +14,7 @@ class Organisation < ApplicationModel
 
   has_many :workbenches, dependent: :destroy
   has_many :workgroups, through: :workbenches
+  has_many :custom_fields, through: :workgroups
   has_many :imports, through: :workbenches, class_name: "Import::Base"
   has_many :exports, through: :workbenches, class_name: "Export::Base"
   has_many :api_keys, through: :workbenches

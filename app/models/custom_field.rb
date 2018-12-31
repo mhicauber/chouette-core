@@ -9,10 +9,14 @@ class CustomField < ApplicationModel
   validates :workgroup, :resource_type, :field_type, presence: true
 
   after_save do
+    resource_class&.reset_custom_fields
+  end
+
+  def resource_class
     if resource_type
       resource_class = resource_type.safe_constantize
       resource_class ||= "Chouette::#{resource_type}".constantize
-      resource_class.reset_custom_fields
+      resource_class
     end
   end
 

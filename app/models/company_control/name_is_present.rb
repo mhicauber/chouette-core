@@ -10,7 +10,7 @@ module CompanyControl
       line_referential_company_path(company.line_referential, company)
     end
 
-    def self.collection referential
+    def self.collection referential, _
       Chouette::Company.where id: referential.lines.pluck(:company_id)
     end
 

@@ -1,6 +1,7 @@
 module InternalControl
   class Base < ComplianceControl
     extend Rails.application.routes.url_helpers
+    extend ActionDispatch::Routing::PolymorphicRoutes
 
     enumerize :criticity, in: %i(warning error), scope: true, default: :error
 
@@ -23,7 +24,7 @@ module InternalControl
     def self.check compliance_check
       referential = compliance_check.referential
       referential.switch do
-        collection(referential).each do |obj|
+        collection(referential, compliance_check).each do |obj|
           begin
             compliant = compliance_test(compliance_check, obj)
             status = status_ok_if(compliant, compliance_check)
@@ -56,9 +57,9 @@ module InternalControl
 
     def self.resource_attributes compliance_check, model
       {
-        label: model.send(label_attr),
+        label: model.send(label_attr(compliance_check)),
         objectid: model.objectid,
-        attribute: label_attr,
+        attribute: label_attr(compliance_check),
         object_path: object_path(compliance_check, model)
       }
     end
@@ -88,7 +89,7 @@ module InternalControl
       end
     end
 
-    def self.label_attr
+    def self.label_attr(compliance_check)
       :name
     end
 

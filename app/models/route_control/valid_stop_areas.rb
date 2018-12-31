@@ -8,7 +8,7 @@ module RouteControl
       referential_line_route_path(route.referential, route.line, route)
     end
 
-    def self.collection referential
+    def self.collection referential, _
       referential.routes
     end
 

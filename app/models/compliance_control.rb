@@ -94,6 +94,7 @@ class ComplianceControl < ApplicationModel
   extend Enumerize
   belongs_to :compliance_control_set
   belongs_to :compliance_control_block
+  has_one :organisation, through: :compliance_control_set
 
   enumerize :criticity, in: criticities, scope: true, default: :warning
 
@@ -169,3 +170,4 @@ require_dependency 'vehicle_journey_control/published_journey_name'
 require_dependency 'vehicle_journey_control/waiting_time'
 require_dependency 'company_control/name_is_present'
 require_dependency 'vehicle_journey_control/empty_time_table'
+require_dependency 'custom_field_control/presence'

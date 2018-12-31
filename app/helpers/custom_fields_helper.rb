@@ -7,4 +7,13 @@ module CustomFieldsHelper
     end
     fields.join.html_safe
   end
+
+  def custom_fields_by_resource_type(parent)
+    Hash.new {|h,k| h[k] = []}.tap do |out|
+      parent.custom_fields.order(:name).each do |cf|
+        next unless cf.resource_class
+        out[cf.resource_class.ts] << [cf.name, cf.code]
+      end
+    end
+  end
 end

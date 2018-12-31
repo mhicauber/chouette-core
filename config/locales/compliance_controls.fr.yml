@@ -231,6 +231,11 @@ fr:
       prerequisite: "Aucun"
       messages:
         3_company_1: "Le transporteur #%{source_objectid} doit avoir un nom commercial"
+    custom_field_control/presence:
+      description: "Présence d'un champ personnalisé"
+      prerequisite: "Aucun"
+      messages:
+        3_generic_4: "Le champ %{field_name} n’est pas renseigné"
 
   activerecord:
     models:
@@ -311,6 +316,8 @@ fr:
         one: "Présence du nom des transporteurs"
       stop_area_control/time_zone:
         one: "Les arrêts sont géolocalisés"
+      custom_field_control/presence:
+        one: "Présence d'un champ personnalisé"
 
     attributes:
       compliance_control:
@@ -326,3 +333,4 @@ fr:
         predicate: "Prédicat"
         pattern: Expression régulière
         subclass: Objet
+        custom_field_code: "Champs personnalisé"
