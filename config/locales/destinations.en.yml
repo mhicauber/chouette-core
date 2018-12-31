@@ -22,6 +22,10 @@ fr:
           zero:  "Google Cloud Storage"
           one:   "Google Cloud Storage"
           other: "Google Cloud Storage"
+        sftp:
+          zero:  "SFTP"
+          one:   "SFTP"
+          other: "SFTP"
     attributes:
       destination:
         name: "Name"
@@ -38,3 +42,8 @@ fr:
         google_cloud_storage:
           project: Projet
           bucket:  Bucket
+        sftp:
+          host: Host
+          port: Port
+          directory: Directory
+          username: Username

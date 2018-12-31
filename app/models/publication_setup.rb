@@ -20,7 +20,7 @@ class PublicationSetup < ApplicationModel
   end
 
   def new_export(extra_options={})
-    options = export_options.dup.update(extra_options)
+    options = (export_options || {}).dup.update(extra_options)
     export = export_class.new(options: options) do |export|
       export.creator = export_creator_name
     end

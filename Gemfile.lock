@@ -754,6 +754,7 @@ DEPENDENCIES
   license_finder
   map_layers (= 0.0.4)
   mimemagic
+  net-sftp (~> 2.1)
   newrelic_rpm
   nokogiri (>= 1.8.5)
   parallel_tests
