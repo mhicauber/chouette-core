@@ -1,7 +1,7 @@
 en:
   workgroups:
     edit_controls: &edit_controls
-      title: "Application Settings"
+      title: "Workgroups Settings"
     edit:
       <<: *edit_controls
     edit_aggregate:

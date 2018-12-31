@@ -1,7 +1,7 @@
 fr:
   workgroups:
     edit_controls: &edit_controls
-      title: "Paramétrages de l'application"
+      title: 'Paramétrages du groupe de travail'
     edit:
       <<: *edit_controls
     edit_aggregate:
