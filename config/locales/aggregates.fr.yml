@@ -9,6 +9,7 @@ fr:
       title: "Agrégation de l'offre %{name}"
       finalized_offer: "Offre finalisée"
     actions:
+      show: Consulter
       create: Agréger des Jeux de Données
       rollback: 'Revenir à cette offre agrégée'
     statuses:
