@@ -1,6 +1,6 @@
 module CustomFieldControl
   class Presence < InternalControl::Base
-    required_features :core_controls
+    only_if ->(organisation) { !organisation.custom_fields.empty? }
 
     store_accessor :control_attributes, :custom_field_code
 
