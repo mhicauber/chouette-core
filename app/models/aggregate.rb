@@ -68,7 +68,7 @@ class Aggregate < ActiveRecord::Base
     new = workgroup.output.referentials.new attributes
     new.referential_suite = output
     new.slug = "output_#{workgroup.id}_#{created_at.to_i}"
-    new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: '%d/%m/%Y %H:%M'))
+    new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
     unless new.valid?
       Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
