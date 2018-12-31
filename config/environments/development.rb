@@ -96,6 +96,8 @@ Rails.application.configure do
       eval File.read("config/development_toolbar.rb")
     end
   end
+
+  config.additional_compliance_controls << "dummy"
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

@@ -129,7 +129,7 @@ end
 # Ensure STI subclasses are loaded
 # http://guides.rubyonrails.org/autoloading_and_reloading_constants.html#autoloading-and-sti
 require_dependency 'company_control/name_is_present'
-require_dependency 'dummy_control/dummy' unless Rails.env.production?
+require_dependency 'dummy_control/dummy' if InternalControl::Base.enabled?("dummy")
 require_dependency 'stop_area_control/time_zone'
 require_dependency 'generic_attribute_control/min_max'
 require_dependency 'generic_attribute_control/pattern'

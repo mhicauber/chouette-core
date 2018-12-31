@@ -44,6 +44,7 @@ module ChouetteIhm
     SmartEnv.add :SIDEKIQ_REDIS_URL, default: 'redis://localhost:6379/12'
     SmartEnv.add :TEST_ENV_NUMBER
     SmartEnv.add :WORKBENCH_IMPORT_DIR
+    SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
     SmartEnv.add_boolean :AUTOMATED_AUDITS_ENABLED
     SmartEnv.add_boolean :BYPASS_AUTH_FOR_SIDEKIQ
     SmartEnv.add_boolean :CHOUETTE_ROUTE_POSITION_CHECK
@@ -77,6 +78,9 @@ module ChouetteIhm
     config.vehicle_journeys_extra_headers = []
     config.osm_backgrounds_source = :osm
     config.osm_backgrounds_esri_token = "your_token_here"
+
+    config.additional_compliance_controls = []
+    config.additional_compliance_controls.push *SmartEnv["CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS"].split(',')
 
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:
