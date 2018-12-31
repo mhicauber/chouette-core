@@ -12,6 +12,6 @@ en:
       successful: Successful
       warning:    Warning
     notification_targets:
-      user:       User
-      workbench:  Workbench
+      user:       Only Me
+      workbench:  All workbench's users
       none:       None

@@ -12,6 +12,6 @@ fr:
       successful: Succès
       warning:    Avertissement
     notification_targets:
-      user:       Utilisateur
-      workbench:  Espace de travail
+      user:       Moi uniquement
+      workbench:  Tous les utilisateurs de l'espace de travail
       none:       Aucune notification
