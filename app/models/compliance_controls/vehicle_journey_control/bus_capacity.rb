@@ -1,3 +1,5 @@
+require_dependency 'compliance_controls/vehicle_journey_control/internal_base'
+
 module VehicleJourneyControl
   class BusCapacity < InternalBase
     required_features :core_controls

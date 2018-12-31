@@ -1,3 +1,5 @@
+require_dependency 'compliance_controls/vehicle_journey_control/internal_base'
+
 module VehicleJourneyControl
   class EmptyTimeTable < InternalBase
     enumerize :criticity, in: %i(error), scope: true, default: :error
