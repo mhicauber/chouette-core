@@ -9,14 +9,61 @@ RSpec.describe DummyControl::Dummy, :type => :model do
       "status" => status
     }
   }
+  let(:condition_attributes){{}}
   let(:status){ "OK" }
   let(:compliance_check_set){ create :compliance_check_set, referential: referential}
-  let(:compliance_check){ create :compliance_check, iev_enabled_check: false, compliance_control_name: "DummyControl::Dummy", control_attributes: control_attributes, compliance_check_set: compliance_check_set}
+  let(:compliance_check_block){ nil }
+  let(:compliance_check){ create :compliance_check, iev_enabled_check: false, compliance_control_name: "DummyControl::Dummy", control_attributes: control_attributes, compliance_check_set: compliance_check_set, compliance_check_block: compliance_check_block}
 
   it "should set the status according to its params" do
     expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
     resource = ComplianceCheckResource.last
     expect(resource.status).to eq "OK"
+  end
+
+  context 'out of a control block' do
+    it 'should use all the lines from the referential' do
+      expect(compliance_check.control_class.lines_scope(compliance_check)).to eq referential.lines
+    end
+  end
+
+  context 'within a compliance_check_block' do
+    let(:compliance_check_block){ create :compliance_check_block, compliance_check_set: compliance_check_set, condition_attributes: condition_attributes}
+
+    it 'should use the lines from the compliance_check_block' do
+      expect(compliance_check_block).to receive(:lines_scope)
+      compliance_check.control_class.lines_scope(compliance_check)
+    end
+
+    context 'with a block filtering on transport_mode' do
+      let(:condition_attributes){
+        {
+          transport_mode: :bus
+        }
+      }
+      it 'should use the lines from the compliance_check_block' do
+        expect(compliance_check_block).to receive(:lines_scope).and_call_original
+        compliance_check.control_class.lines_scope(compliance_check).each do |line|
+          expect(line.transport_mode).to eq "bus"
+        end
+      end
+    end
+
+    context 'with a block filtering on transport_submode' do
+      let(:condition_attributes){
+        {
+          transport_mode: :bus,
+          transport_submode: :demandAndResponseBus
+        }
+      }
+      it 'should use the lines from the compliance_check_block' do
+        expect(compliance_check_block).to receive(:lines_scope).and_call_original
+        compliance_check.control_class.lines_scope(compliance_check).each do |line|
+          expect(line.transport_mode).to eq "bus"
+          expect(line.transport_submode).to eq "demandAndResponseBus"
+        end
+      end
+    end
   end
 
   context "when the status has already been set" do

@@ -10,13 +10,13 @@ if InternalControl::Base.enabled?("dummy")
       enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK
 
       def self.default_code; "00-Dummy-00" end
-
+      
       def self.object_path compliance_check, line
         line_referential_line_path(line.line_referential, line)
       end
-      
-      def self.collection referential, _
-        referential.lines
+
+      def self.collection lines_scope, _
+        lines_scope
       end
 
       def self.compliance_test compliance_check, _

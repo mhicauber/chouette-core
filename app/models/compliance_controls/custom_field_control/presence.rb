@@ -21,9 +21,10 @@ module CustomFieldControl
       end
     end
 
-    def self.collection referential, compliance_check
+    def self.collection lines_scope, compliance_check
       custom_field = custom_field(compliance_check)
-      referential.send(custom_field.resource_type.tableize)
+
+      compliance_check.referential.send("#{custom_field.resource_type.tableize}_in_lines", lines_scope)
     end
 
     def self.lines_for compliance_check, model

@@ -4,8 +4,8 @@ module RouteControl
       referential_line_route_path(route.referential, route.line, route)
     end
 
-    def self.collection referential, _
-      referential.routes
+    def self.collection(lines_scope, compliance_check)
+      compliance_check.referential.routes_in_lines(lines_scope)
     end
 
     def self.compliance_test compliance_check, route

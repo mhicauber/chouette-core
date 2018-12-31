@@ -7,7 +7,7 @@ module VehicleJourneyControl
     def self.default_code; "3-VehicleJourney-7" end
 
     def self.collection referential, _
-      referential.vehicle_journeys.joins(:time_tables, :purchase_windows)
+      super.joins(:time_tables, :purchase_windows)
     end
 
     def self.compliance_test compliance_check, vehicle_journey

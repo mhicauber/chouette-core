@@ -1,7 +1,7 @@
 require_dependency 'compliance_controls/journey_pattern_control/internal_base'
 
 module JourneyPatternControl
-  class MinMaxCost < InternalBase
+  class MinimumLength < InternalBase
     required_features :core_controls
 
     MINIMUM_LENGTH = 2

@@ -10,8 +10,8 @@ module CompanyControl
       line_referential_company_path(company.line_referential, company)
     end
 
-    def self.collection referential, _
-      Chouette::Company.where id: referential.lines.pluck(:company_id)
+    def self.collection(lines_scope, compliance_check)
+      compliance_check.referential.companies_in_lines(lines_scope)
     end
 
     def self.lines_for compliance_check, model

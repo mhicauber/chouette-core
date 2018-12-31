@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe VehicleJourneyControl::EmptyTimeTable, :type => :model do
   let(:referential){ create :workbench_referential }
   let(:workgroup){ referential.workgroup }
-  let(:line){ create :line, line_referential: workgroup.line_referential }
+  let(:line){ create :line, line_referential: referential.line_referential }
   let(:route){ create :route, line: line }
   let(:journey_pattern){ create :journey_pattern, route: route }
   let(:succeeding){ create :vehicle_journey, journey_pattern: journey_pattern, published_journey_name: '001' }

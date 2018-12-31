@@ -9,8 +9,8 @@ module JourneyPatternControl
       )
     end
 
-    def self.collection(referential, _)
-      referential.journey_patterns
+    def self.collection(lines_scope, compliance_check)
+      compliance_check.referential.journey_patterns_in_lines(lines_scope)
     end
   end
 end
