@@ -15,6 +15,8 @@ fr:
     3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"
     3_journeypattern_2: "La mission %{source_objectid} n'a pas de course"
     3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"
+    3_journeypattern_4: "La mission %{source_objectid} comporte des distances incorrectes"
+    3_journeypattern_5: "La mission %{source_objectid} comporte des durées incorrectes"
     3_vehiclejourney_1: "Sur la course %{source_objectid}, le temps d'attente %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) est supérieur au seuil toléré (%{reference_value})"
     3_vehiclejourney_2_1: "Sur la course %{source_objectid}, la vitesse calculée %{error_value} entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid}) est supérieure au seuil toléré (%{reference_value})"
     3_vehiclejourney_2_2: "Sur la course %{source_objectid}, la vitesse calculée %{error_value} entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid}) est inférieure au seuil toléré (%{reference_value})"

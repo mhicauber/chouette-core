@@ -126,6 +126,16 @@ fr:
         3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"
       description: "Une mission doit contenir au moins 2 arrêts"
       prerequisite: "Aucun"
+    journey_pattern_control/min_max_distance_cost:
+      messages:
+        3_journeypattern_4: "La mission %{source_objectid} comporte des distances incorrectes"
+      description: "Les distances entre les arrêts de chaque mission doivent respecter les contraintes "
+      prerequisite: "Aucun"
+    journey_pattern_control/min_max_time_cost:
+      messages:
+        3_journeypattern_5: "La mission %{source_objectid} comporte des durées incorrectes"
+      description: "Les durées entre les arrêts de chaque mission doivent respecter les contraintes "
+      prerequisite: "Aucun"
     vehicle_journey_control/waiting_time:
       messages:
         3_vehiclejourney_1: "Sur la course %{source_objectid}, le temps d'attente %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) est supérieur au seuil toléré (%{reference_value})"
@@ -272,6 +282,10 @@ fr:
         one: "Présence de courses"
       journey_pattern_control/minimum_length:
         one: "Définition minimale d'une mission"
+      journey_pattern_control/min_max_distance_cost:
+        one: "Contrôle des distances entre les arrêts d'une mission"
+      journey_pattern_control/min_max_time_cost:
+        one: "Contrôle des durées entre les arrêts d'une mission"
       vehicle_journey_control/waiting_time:
         one: "La durée d’attente à un arrêt ne doit pas être trop grande"
       vehicle_journey_control/speed:
