@@ -124,7 +124,8 @@ class Merge < ApplicationModel
     new.workbench = workbench
     new.organisation = workbench.organisation
     new.slug = "output_#{workbench.id}_#{created_at.to_i}"
-    new.name = I18n.t("merges.referential_name", date: I18n.l(created_at))
+    new.name = I18n.t("merges.referential_name", date: I18n.l(created_at, format: :short_with_time))
+
 
     unless new.valid?
       Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
