@@ -10,8 +10,8 @@ module CompanyControl
       line_referential_company_path(company.line_referential, company)
     end
 
-    def self.collection(lines_scope, compliance_check)
-      compliance_check.referential.companies_in_lines(lines_scope)
+    def self.collection_type(compliance_check)
+      :companies
     end
 
     def self.lines_for compliance_check, model

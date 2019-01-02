@@ -21,14 +21,24 @@ module CustomFieldControl
       end
     end
 
-    def self.collection lines_scope, compliance_check
+    def self.collection_type(compliance_check)
       custom_field = custom_field(compliance_check)
-
-      compliance_check.referential.send("#{custom_field.resource_type.tableize}_in_lines", lines_scope)
+      custom_field.resource_type.tableize
     end
 
-    def self.lines_for compliance_check, model
-      compliance_check.referential.lines
+    def self.lines_for(compliance_check, object)
+      referential_lines = compliance_check.referential.lines
+
+      case custom_field(compliance_check).resource_type
+      when "Company"
+        referential_lines.where(company_id: object.id)
+      when "VehicleJourney", "JourneyPattern"
+        [object.route.line]
+      when "StopArea"
+        compliance_check.referential.stop_points.where(stop_area_id: object.id).map(&:line).uniq
+      else
+        [object.line]
+      end
     end
 
     def self.compliance_test compliance_check, object

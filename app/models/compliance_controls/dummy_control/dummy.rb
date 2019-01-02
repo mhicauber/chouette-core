@@ -15,10 +15,6 @@ if InternalControl::Base.enabled?("dummy")
         line_referential_line_path(line.line_referential, line)
       end
 
-      def self.collection lines_scope, _
-        lines_scope
-      end
-
       def self.compliance_test compliance_check, _
         %w(ignored ok).include? compliance_check.control_attributes["status"].downcase
       end

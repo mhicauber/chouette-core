@@ -24,4 +24,18 @@ module ComplianceBlockSupport
   def transport_mode?
     block_kind.to_s == "transport_mode"
   end
+
+  def block_name
+    if transport_mode?
+      transport_mode_t = "enumerize.transport_mode.#{transport_mode}".t
+      if transport_submode
+        transport_submode_t = "enumerize.transport_submode.#{transport_submode}".t
+        'compliance_control_blocks.with_transport_submode'.t(transport_mode: transport_mode_t, transport_submode: transport_submode_t)
+      else
+        'compliance_control_blocks.with_transport_mode'.t(transport_mode: transport_mode_t)
+      end
+    else
+      'compliance_control_blocks.stop_areas_in_countries'.t(country_name: ISO3166::Country[country].translation(I18n.locale), min_count: min_stop_areas_in_country)
+    end
+  end
 end

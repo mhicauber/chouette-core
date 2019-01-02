@@ -21,17 +21,21 @@ module InternalControl
       Rails.application.config.additional_compliance_controls.try :include?, control_type
     end
 
-    def self.lines_scope(compliance_check)
+    def self.collection_type(_)
+      :lines
+    end
+
+    def self.collection(compliance_check)
       if compliance_check.compliance_check_block
-        compliance_check.compliance_check_block.lines_scope(compliance_check)
+        compliance_check.compliance_check_block.collection(compliance_check)
       else
-        compliance_check.referential.lines
+        compliance_check.referential.send(compliance_check.control_class.collection_type(compliance_check))
       end
     end
-    
+
     def self.check compliance_check
       compliance_check.referential.switch do
-        collection(lines_scope(compliance_check), compliance_check).each do |obj|
+        collection(compliance_check).find_each do |obj|
           begin
             compliant = compliance_test(compliance_check, obj)
             status = status_ok_if(compliant, compliance_check)

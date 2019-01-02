@@ -35,6 +35,8 @@ fr:
       title: "Editer le groupe de contrôle : %{name}"
     all_lines: Toutes les lignes
     stop_areas_in_countries: Au moins %{min_count} arrêts en %{country_name}
+    with_transport_submode: "Mode de transport: %{transport_mode} > %{transport_submode}"
+    with_transport_mode: "Mode de transport: %{transport_mode}"
     block_kinds:
       stop_areas_in_countries: Au moins N arrêts dans un pays donné
       transport_mode: Mode de transport

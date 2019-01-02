@@ -37,7 +37,7 @@ module ComplianceControlSetsHelper
     content_tag :div, class: 'row' do
       content_tag :div, class: 'col-lg-12' do
         content_tag :h2 do
-          concat "[ #{block&.name || 'compliance_control_blocks.all_lines'.t} ]"
+          concat block&.name || 'compliance_control_blocks.all_lines'.t
           concat dropdown(block) if block
         end
       end

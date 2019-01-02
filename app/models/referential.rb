@@ -264,52 +264,6 @@ class Referential < ApplicationModel
     Chouette::Footnote.all
   end
 
-  # We want to easily be able to fetch objects in a referentials linked to a bunch of lines
-  # This is specifically used by the Compliance Controls
-  def routes_in_lines(lines_scope)
-    ids = routes.where('routes.line_id' => lines_scope.pluck('lines.id')).uniq.pluck(:id)
-    # we need this "trick" because DISTINCT does not play well with JSON cols
-    routes.where(id: ids)
-  end
-
-  def vehicle_journeys_in_lines(lines_scope)
-    vehicle_journeys.joins(:route).merge routes_in_lines(lines_scope)
-  end
-
-  def time_tables_in_lines(lines_scope)
-    time_tables.joins(:vehicle_journeys).merge vehicle_journeys_in_lines(lines_scope)
-  end
-
-  def vehicle_journey_at_stops_in_lines(lines_scope)
-    vehicle_journey_at_stops.joins(:vehicle_journey).merge(vehicle_journeys_in_lines(lines_scope))
-  end
-
-  def routing_constraint_zones_in_lines(lines_scope)
-    routing_constraint_zones.joins(:route).merge routes_in_lines(lines_scope)
-  end
-
-  def purchase_windows_in_lines(lines_scope)
-    purchase_windows.joins(:vehicle_journeys).merge vehicle_journeys_in_lines(lines_scope)
-  end
-
-  def journey_patterns_in_lines(lines_scope)
-    ids = journey_patterns.joins(:route).merge(routes_in_lines(lines_scope)).pluck(:id)
-    # we need this "trick" because DISTINCT does not play well with JSON cols
-    journey_patterns.where(id: ids)
-  end
-
-  def stop_points_in_lines(lines_scope)
-    stop_points.joins(:route).merge routes_in_lines(lines_scope)
-  end
-
-  def stop_areas_in_lines(lines_scope)
-    stop_areas.joins(:stop_points).merge stop_points_in_lines(lines_scope)
-  end
-
-  def companies_in_lines(lines_scope)
-    companies.joins(:lines).where('lines.id' => lines_scope.pluck('lines.id')).uniq
-  end
-
   def workgroup
     @workgroup = begin
       workgroup = workbench&.workgroup

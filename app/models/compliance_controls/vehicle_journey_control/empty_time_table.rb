@@ -6,7 +6,7 @@ module VehicleJourneyControl
 
     def self.default_code; "3-VehicleJourney-10" end
 
-    def self.collection(lines_scope, compliance_check)
+    def self.collection(compliance_check)
       super.includes(:time_tables)
     end
 
