@@ -19,13 +19,21 @@ class ComplianceControlsController < ChouetteController
       flash[:notice] = I18n.t("compliance_controls.errors.mandatory_control_type")
       redirect_to(action: :select_type)
     end
-    new!
+    new! do
+      load_blocks
+    end
   end
 
   def create
     create! do |success, failure|
       success.html { redirect_to compliance_control_set_path(parent) }
       failure.html { render( :action => 'new' ) }
+    end
+  end
+
+  def edit
+    edit! do
+      load_blocks
     end
   end
 
@@ -67,5 +75,12 @@ class ComplianceControlsController < ChouetteController
     base = [:name, :code, :origin_code, :criticity, :comment, :control_attributes, :type, :compliance_control_block_id, :compliance_control_set_id]
     permitted = base + dynamic_attributes_params
     params.require(:compliance_control).permit(permitted)
+  end
+
+  def load_blocks
+    @available_blocks = parent.compliance_control_blocks
+    if resource.iev_enabled_check?
+      @available_blocks = @available_blocks.select { |b| b.accept_iev_controls? }
+    end
   end
 end

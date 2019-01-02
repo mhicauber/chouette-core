@@ -25,6 +25,10 @@ module ComplianceBlockSupport
     block_kind.to_s == "transport_mode"
   end
 
+  def accept_iev_controls?
+    !stop_areas_in_countries?
+  end
+
   def block_name
     if transport_mode?
       transport_mode_t = "enumerize.transport_mode.#{transport_mode}".t
