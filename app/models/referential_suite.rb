@@ -16,4 +16,9 @@ class ReferentialSuite < ApplicationModel
   end
 
   has_many :referentials, -> { order "created_at desc" }, dependent: :destroy
+
+  def referentials_created_before_current
+    return referentials unless current
+    referentials.created_before(current.created_at)
+  end
 end
