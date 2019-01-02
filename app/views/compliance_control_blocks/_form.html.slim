@@ -7,8 +7,12 @@
             .alert.alert-danger
               - @compliance_control_block.errors[:condition_attributes].each do |msg|
                 p.small = "- #{msg}"
-      .form-group
-        = f.input :block_kind, collection: %w[transport_mode stop_areas_in_countries].map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}
+
+      - if @block_kinds.size > 1
+        .form-group
+          = f.input :block_kind, collection: @block_kinds.map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}
+      - else
+        = f.hidden_field :block_kind, value: @block_kinds.first
 
       .slave data-master="[name='compliance_control_block[block_kind]']" data-value="stop_areas_in_countries"
         .form-group
