@@ -7,6 +7,14 @@ class WorkgroupsController < ChouetteController
     redirect_to "/"
   end
 
+  def edit_controls
+    edit!
+  end
+
+  def update_controls
+    update!
+  end
+
   def workgroup_params
     params[:workgroup].permit(
       :sentinel_min_hole_size,

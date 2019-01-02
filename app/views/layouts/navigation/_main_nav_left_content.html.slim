@@ -54,7 +54,7 @@
             span = 'layouts.navbar.workbench.edit_control_sets'.t
         - if policy(workbench.workgroup).edit?
           .workgroup_configuration= 'layouts.navbar.workgroup.subtitle'.t
-          = link_to [:edit, workbench.workgroup], class: 'list-group-item level-2' do
+          = link_to [:edit_controls, workbench.workgroup], class: 'list-group-item level-2' do
             span = 'layouts.navbar.workgroup.edit_control_sets'.t
           = link_to [:edit_aggregate, workbench.workgroup], class: 'list-group-item level-2' do
             span = 'layouts.navbar.workgroup.edit_aggregate'.t
