@@ -8,11 +8,23 @@
               - @compliance_control_block.errors[:condition_attributes].each do |msg|
                 p.small = "- #{msg}"
       .form-group
-        = f.input :transport_mode, as: :select, collection: ComplianceControlBlock.sorted_transport_modes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe }, include_blank: false, input_html: { class: 'js-transport-mode-select' }
-      .form-group
-        = f.input :transport_submode, as: :select, collection: [], input_html: { class: 'js-transport-submode-select', data: { transport_submodes: Chouette::Line.formatted_submodes_for_transports, selected: f.object.transport_submode } }
+        = f.input :block_kind, collection: %w[transport_mode stop_areas_in_countries].map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}
+
+      .slave data-master="[name='compliance_control_block[block_kind]']" data-value="stop_areas_in_countries"
+        .form-group
+          = f.input :country, as: :select, collection: @compliance_control_set.organisation.stop_area_referentials.flat_map(&:available_countries).compact.uniq.sort_by{|c| c.translation || c.name }, required: true, label_method: lambda {|c| c.translation || c.name }, value_method: :alpha2
+        .form-group
+          = f.input :min_stop_areas_in_country, as: :integer, required: true, input_html: { value: f.object.min_stop_areas_in_country || 2 }
+
+      .slave data-master="[name='compliance_control_block[block_kind]']" data-value="transport_mode"
+        .form-group
+          = f.input :transport_mode, as: :select, collection: ComplianceControlBlock.sorted_transport_modes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe }, include_blank: false, input_html: { class: 'js-transport-mode-select' }
+        .form-group
+          = f.input :transport_submode, as: :select, collection: [], input_html: { class: 'js-transport-submode-select', data: { transport_submodes: Chouette::Line.formatted_submodes_for_transports, selected: f.object.transport_submode } }
 
   .separator
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'compliance_control_block_form'
+
+= javascript_pack_tag "compliance_control_blocks/new"

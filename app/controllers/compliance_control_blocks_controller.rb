@@ -7,7 +7,7 @@ class ComplianceControlBlocksController < ChouetteController
   private
 
   def compliance_control_block_params
-    params.require(:compliance_control_block).permit(:transport_mode, :transport_submode)
+    params.require(:compliance_control_block).permit(:block_kind, :transport_mode, :transport_submode, :country, :min_stop_areas_in_country)
   end
 
   protected
