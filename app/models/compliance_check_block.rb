@@ -17,7 +17,7 @@ class ComplianceCheckBlock < ApplicationModel
     end
 
     if stop_areas_in_countries?
-      matching_routes = compliance_check.referential.routes_in_lines(scope)
+      matching_routes = compliance_check.referential.routes
       matching_routes = matching_routes.joins(:stop_areas)
       matching_routes = matching_routes.where('lower(country_code) = ?', country.downcase)
       matching_routes = matching_routes.group('routes.id')

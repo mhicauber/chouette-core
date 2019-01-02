@@ -11,7 +11,7 @@ class ComplianceControlBlock < ApplicationModel
     if transport_mode?
       ApplicationController.helpers.transport_mode_text(self)
     else
-      'compliance_control_blocks.stop_areas_in_countries'.t(country_name: ISO3166::Country[country].translation, min_count: min_stop_areas_in_country)
+      'compliance_control_blocks.stop_areas_in_countries'.t(country_name: ISO3166::Country[country].translation(I18n.locale), min_count: min_stop_areas_in_country)
     end
   end
 end
