@@ -1,5 +1,4 @@
 crumb :root do
-  link I18n.t('layouts.home'), root_path
 end
 
 crumb :workbench do |workbench|
