@@ -35,7 +35,9 @@ module InternalControl
 
     def self.check compliance_check
       compliance_check.referential.switch do
-        collection(compliance_check).find_each do |obj|
+        coll = collection(compliance_check)
+        method = coll.respond_to?(:find_each) ? :find_each : :each
+        coll.send(method) do |obj|
           begin
             compliant = compliance_test(compliance_check, obj)
             status = status_ok_if(compliant, compliance_check)

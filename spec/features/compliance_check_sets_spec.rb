@@ -106,6 +106,6 @@ RSpec.describe "ComplianceCheckSets", type: :feature do
   end
 
   def xpath_for_div_of_block(block = nil)
-    %{.//div[@class="col-lg-12"]/h2[contains(text(),"#{transport_mode_text(block)}")]/../../..}
+    %{.//div[@class="col-lg-12"]/h2[contains(text(),"#{block&.block_name || 'compliance_control_blocks.all_lines'.t}")]/../../..}
   end
 end
