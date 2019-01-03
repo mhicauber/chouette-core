@@ -1,4 +1,4 @@
-RSpec.describe Export::Base, type: :model do
+RSpec.describe Import::Base, type: :model do
   it { should belong_to(:referential) }
   it { should belong_to(:workbench) }
   it { should belong_to(:parent) }

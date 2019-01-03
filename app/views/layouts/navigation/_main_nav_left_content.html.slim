@@ -18,7 +18,7 @@
           span = 'activerecord.models.referential.other'.t.capitalize
         = link_to workbench_imports_path(workbench), class: "list-group-item" do
           span = 'activerecord.models.import.other'.t.capitalize
-        - if workbench.workgroup.export_types.present? 
+        - if workbench.workgroup.export_types.present?
           = link_to workbench_exports_path(workbench), class: "list-group-item" do
             span = 'activerecord.models.export.other'.t.capitalize
         = link_to workgroup_calendars_path(workbench.workgroup), class: 'list-group-item' do

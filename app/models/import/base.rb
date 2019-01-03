@@ -36,6 +36,8 @@ class Import::Base < ApplicationModel
   # save the import
   validates_presence_of :file, unless: Proc.new {|import| @local_file.present? || import.persisted? || import.errors[:file].present? }
 
+  validates_presence_of :workbench
+
   def self.model_name
     ActiveModel::Name.new Import::Base, Import::Base, "Import"
   end
