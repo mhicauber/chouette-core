@@ -2,6 +2,7 @@ class Aggregate < ActiveRecord::Base
   DEFAULT_KEEP_AGGREGATES = 10
 
   include OperationSupport
+
   include NotifiableSupport
 
   belongs_to :workgroup
@@ -38,6 +39,7 @@ class Aggregate < ActiveRecord::Base
     end
 
     clean_previous_operations
+    publish
   rescue => e
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
     failed!
