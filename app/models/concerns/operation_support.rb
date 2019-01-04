@@ -15,9 +15,9 @@ module OperationSupport
     validate :check_other_operations, :on => :create
 
     into.extend ClassMethods
-
-    @keep_operations = 20
   end
+
+  DEFAULT_KEEP_OPERATIONS = 20
 
   module ClassMethods
     def keep_operations=(value)
@@ -25,7 +25,7 @@ module OperationSupport
     end
 
     def keep_operations
-      @keep_operations
+      @keep_operations ||= DEFAULT_KEEP_OPERATIONS
     end
 
     def finished_statuses
