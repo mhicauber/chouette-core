@@ -5,6 +5,7 @@ class PublicationSetupsController < ChouetteController
   belongs_to :workgroup
 
   respond_to :html
+  requires_feature :manage_publications
 
   def index
     index! do |format|
