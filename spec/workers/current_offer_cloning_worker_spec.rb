@@ -52,14 +52,16 @@ RSpec.describe CurrentOfferCloningWorker do
       CurrentOfferCloningWorker.new.perform(referential.id)
     end
 
-    it 'should filter the metadatas' do
+    it 'should keep the metadatas' do
+      current_offer = referential.workbench.output.current
+      current_offer.metadatas.destroy_all
       CurrentOfferCloningWorker.new.perform(referential.id)
 
       referential.reload
       expect(referential.metadatas.size).to eq 1
       metadata = referential.metadatas.last
       expect(metadata.line_ids).to eq [line_1.id]
-      expect(metadata.periodes).to eq [(new_period_start..new_period_end)]
+      expect(metadata.periodes).to eq [(new_period_start..(new_period_end-2.month)), ((new_period_end-1.month)..new_period_end)]
     end
 
     it 'should clean the data' do
