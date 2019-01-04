@@ -1,0 +1,20 @@
+fr:
+  publications:
+    search_no_results: 'No publication'
+    show:
+      title: "Publication %{name}"
+  activerecord:
+    models:
+      publication:
+        zero:  "Publication"
+        one:   "Publications"
+        other: "Publications"
+    attributes:
+      publication:
+        status: "Status"
+        created_at: "Creation date"
+        parent: "Source"
+        export: "Export"
+        name: "%{setup_name} on %{date}"
+        started_at: Publication start
+        ended_at: Publication end

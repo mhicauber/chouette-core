@@ -6,7 +6,6 @@ RSpec.describe Export::Base, type: :model do
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 
-  it { should validate_presence_of(:workbench) }
   it { should validate_presence_of(:creator) }
 
   include ActionDispatch::TestProcess

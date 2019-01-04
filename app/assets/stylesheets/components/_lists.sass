@@ -21,6 +21,15 @@ $dlWidth: 40%
     font-weight: 700
     border-bottom: 2px solid $darkgrey
     padding: 5px 15px 6px 15px
+    &.togglable
+      cursor: pointer
+      padding-left: 25px
+      &:before
+        margin-right: 10px
+        content: "\f067"
+        font: normal normal normal 14px/1 FontAwesome
+      &.toggled:before
+        content: "\f068"
 
   .dl-term, .dl-def
     display: inline-block
@@ -32,6 +41,10 @@ $dlWidth: 40%
     padding: 5px 15px 6px 15px
     img
       max-width: 100%
+    &.togglable
+      display: none
+      &.visible
+        display: inline-block
 
   // Definition term
   .dl-term

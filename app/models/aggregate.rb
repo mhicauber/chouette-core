@@ -2,6 +2,7 @@ class Aggregate < ActiveRecord::Base
   DEFAULT_KEEP_AGGREGATES = 10
 
   include OperationSupport
+
   include NotifiableSupport
 
   belongs_to :workgroup
@@ -37,12 +38,8 @@ class Aggregate < ActiveRecord::Base
       save_current
     end
 
-    self.class.keep_operations = if Rails.configuration.respond_to?(:keep_aggregates)
-                                   Rails.configuration.keep_aggregates
-                                 else
-                                   DEFAULT_KEEP_AGGREGATES
-                                 end
     clean_previous_operations
+    publish
   rescue => e
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
     failed!
@@ -51,6 +48,16 @@ class Aggregate < ActiveRecord::Base
 
   def workbench_for_notifications
     workgroup.owner_workbench
+  end
+
+  def self.keep_operations
+    @keep_operations ||= begin
+      if Rails.configuration.respond_to?(:keep_aggregates)
+        Rails.configuration.keep_aggregates
+      else
+        DEFAULT_KEEP_AGGREGATES
+      end
+    end
   end
 
   private

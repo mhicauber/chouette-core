@@ -15,7 +15,7 @@ module IevInterfaces::Task
     enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
 
     validates :name, presence: true
-    validates_presence_of :workbench, :creator
+    validates_presence_of :creator
 
     has_many :messages, class_name: messages_class_name, dependent: :destroy, foreign_key: "#{messages_class_name.split('::').first.downcase}_id"
     has_many :resources, class_name: resources_class_name, dependent: :destroy, foreign_key: "#{resources_class_name.split('::').first.downcase}_id"

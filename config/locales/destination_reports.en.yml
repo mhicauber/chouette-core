@@ -1,0 +1,18 @@
+fr:
+  destination_reports:
+    search_no_results: "No transmission report"
+  activerecord:
+    models:
+      destination_report:
+        zero:  "Transmission report"
+        one:   "Transmission report"
+        other: "Transmission reports"
+    attributes:
+      destination_report:
+        type: "Transmission type"
+        name: "Name"
+        status: "Status"
+        error_message: "Error message"
+        duration: Duration
+        started_at: Transmission start
+        ended_at: Transmission end

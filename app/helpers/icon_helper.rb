@@ -24,6 +24,12 @@ module IconHelper
     Private.icon_join(stacked_icon, text, right_icon)
   end
 
+  def boolean_icon val
+    icon = val ? 'check' : 'times'
+    txt = fa_icon(icon) + (val ? 'true'.t : 'false'.t)
+    "<span class='boolean-icon #{val}'>#{txt}</span>".html_safe
+  end
+
   module Private
     extend ActionView::Helpers::OutputSafetyHelper
 

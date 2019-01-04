@@ -9,28 +9,52 @@ class Export::Base < ActiveRecord::Base
   self.table_name = "exports"
 
   belongs_to :referential
+  belongs_to :publication
 
   validates :type, :referential_id, presence: true
 
   after_create :purge_exports
+  attr_accessor :synchronous
 
-  def self.messages_class_name
-    "Export::Message"
+  class << self
+    def messages_class_name
+      "Export::Message"
+    end
+
+    def resources_class_name
+      "Export::Resource"
+    end
+
+    def human_name
+      I18n.t("export.#{self.name.demodulize.underscore}")
+    end
+
+    alias_method :human_type, :human_name
+
+    def file_extension_whitelist
+      %w(zip csv json)
+    end
   end
 
-  def self.resources_class_name
-    "Export::Resource"
+  def human_name
+    self.class.human_name
   end
+  alias_method :human_type, :human_name
 
-  def self.human_name
-    I18n.t("export.#{self.name.demodulize.underscore}")
-  end
+  def run
+    update status: 'running', started_at: Time.now
+    export
+  rescue Exception => e
+    Rails.logger.error e.message
 
-  def self.file_extension_whitelist
-    %w(zip csv json)
+    messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
+    update status: 'failed'
+    raise
   end
 
   def purge_exports
+    return unless workbench.present?
+
     workbench.exports.file_purgeable.each do |exp|
       exp.update(remove_file: true)
     end
@@ -38,7 +62,12 @@ class Export::Base < ActiveRecord::Base
   end
 
   def upload_file file
-    url = URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
+
+    url = if workbench.present?
+      URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
+    else
+      URI.parse upload_export_url(self.id, host: Rails.application.config.rails_host)
+    end
     res = nil
     filename = File.basename(file.path)
     content_type = MIME::Types.type_for(filename).first&.content_type
@@ -105,5 +134,4 @@ class Export::Base < ActiveRecord::Base
     super
     self.token_upload = SecureRandom.urlsafe_base64
   end
-
 end

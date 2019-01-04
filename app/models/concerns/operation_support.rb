@@ -9,14 +9,15 @@ module OperationSupport
 
     has_array_of :referentials, class_name: 'Referential'
     belongs_to :new, class_name: 'Referential'
+    has_many :publications, as: :parent
 
     validate :has_at_least_one_referential, :on => :create
     validate :check_other_operations, :on => :create
 
     into.extend ClassMethods
-
-    @keep_operations = 20
   end
+
+  DEFAULT_KEEP_OPERATIONS = 20
 
   module ClassMethods
     def keep_operations=(value)
@@ -24,7 +25,7 @@ module OperationSupport
     end
 
     def keep_operations
-      @keep_operations
+      @keep_operations ||= DEFAULT_KEEP_OPERATIONS
     end
 
     def finished_statuses
@@ -38,6 +39,12 @@ module OperationSupport
 
   def full_names
     referentials.map(&:name).to_sentence
+  end
+
+  def publish
+    workgroup.publication_setups.enabled.each do |publication_setup|
+      publication_setup.publish self
+    end
   end
 
   def clean_previous_operations

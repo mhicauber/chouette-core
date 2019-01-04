@@ -1,0 +1,88 @@
+- breadcrumb @publication, @publication_setup, @workgroup
+
+- page_header_content_for @publication
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = { Publication.tmf(:status) => operation_status(@publication, verbose: true) }
+        - metadatas.update( PublicationSetup.ts => link_to(@publication_setup.name, [@workgroup, @publication_setup]) )
+        - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", [@publication.parent.new]))
+        - metadatas.update( Publication.tmf(:started_at) => @publication.started_at ? l(@publication.started_at, format: :short_with_time) : '-')
+        - metadatas.update( Publication.tmf(:ended_at) => @publication.ended_at ? l(@publication.ended_at, format: :short_with_time) : '-')
+        = definition_list t('metadatas'), metadatas
+
+    .row
+      .col-lg-12
+        - if @publication.exports.empty?
+          = replacement_msg t('exports.search_no_results')
+        - else
+          .h3 = Export::Base.t.capitalize
+          = table_builder_2 @publication.exports,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: ->(e){ operation_status(e, verbose: true) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :type, \
+                attribute: :human_type \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :options, \
+                attribute: ->(e){ pretty_print_options(e.class, e.options) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :file, \
+                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank): "-" } \
+              ), \
+            ],
+            sortable: false,
+            cls: 'table',
+            action: :index
+
+    .row
+      .col-lg-12
+        - if @publication.reports.empty?
+          = replacement_msg t('destination_reports.search_no_results')
+        - else
+          .h3 = DestinationReport.t
+          = table_builder_2 @publication.reports,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :type, \
+                attribute: ->(r){ r.destination.human_type } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: ->(r){ r.destination.name } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: Proc.new { |n| operation_status(n.status) }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :error_message, \
+                attribute: :error_message, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :started_at, \
+                attribute: ->(n){ n.started_at ? l(n.started_at, format: :time) : '-' } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :ended_at, \
+                attribute: ->(n){ n.ended_at ? l(n.ended_at, format: :time) : '-' } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :duration, \
+                attribute: Proc.new { |n| n.duration ? distance_of_time_in_words(n.duration) : "-" }, \
+              ), \
+            ],
+            sortable: false,
+            cls: 'table',
+            action: :index

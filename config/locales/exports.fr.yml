@@ -91,6 +91,7 @@ fr:
         referential_id: Jeu de données
         referential: Jeu de données
         notification_target: Destinataire(s) des notifications
+        options: Options
       export:
         <<: *attrs
         base:

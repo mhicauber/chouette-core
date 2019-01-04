@@ -134,6 +134,10 @@ module EnhancedModelI18n
     I18n.tmf "#{i18n_key}.#{attribute}", params
   end
 
+  def tmfc(attribute, params={})
+    I18n.tmfc "#{i18n_key}.#{attribute}", params
+  end
+
   # Translate the given action on the model, with default
   def t_action(action, params={})
     key = case action.to_sym
@@ -158,9 +162,8 @@ module EnhancedModelI18n
 
   private
   def i18n_key
-    model_name.to_s.underscore.gsub('/', '_')
+    try(:custom_i18n_key) || model_name.to_s.underscore.gsub('/', '_')
   end
-
 end
 
 class ActiveRecord::Base

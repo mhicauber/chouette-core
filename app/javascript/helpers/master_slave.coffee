@@ -1,6 +1,13 @@
 class MasterSlave
-  constructor: (selector)->
-    $(selector).find('[data-master]').each (i, slave)->
+  constructor: (@selector)->
+    $(@selector).on 'cocoon:after-insert', =>
+      @initBehaviours()
+
+    @initBehaviours()
+
+
+  initBehaviours: ->
+    $(@selector).find('[data-master]').each (i, slave)->
       $slave = $(slave)
       master = $($slave.data().master)
       if $slave.find('[data-master]').length == 0

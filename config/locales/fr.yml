@@ -11,11 +11,13 @@ fr:
       minute: "%M min"
       default: "%d/%m/%Y"
       short_with_time: "%d/%m/%Y à %Hh%M"
+      time: "%H:%M:%S"
 
   date:
     formats:
       default: "%d/%m/%Y"
       short_with_time: "%d/%m/%Y à %Hh%M"
+      time: "%Hh%M"
     abbr_day_names:
     - dim
     - lun

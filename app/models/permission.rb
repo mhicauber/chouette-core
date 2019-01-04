@@ -23,6 +23,7 @@ class Permission
         compliance_check_sets
         workbenches
         workgroups
+        publication_setups
       ]
     end
 

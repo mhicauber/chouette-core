@@ -1,0 +1,18 @@
+fr:
+  destination_reports:
+    search_no_results: "Aucun rapport d'envoi"
+  activerecord:
+    models:
+      destination_report:
+        zero:  "Rapport d'envoi"
+        one:   "Rapport d'envoi"
+        other: "Rapports d'envoi"
+    attributes:
+      destination_report:
+        type: "Type d'envoi"
+        name: "Nom"
+        status: "Statut"
+        error_message: "Message d'erreur"
+        duration: Durée
+        started_at: Début de la transmission
+        ended_at: Fin de la transmission

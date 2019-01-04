@@ -1,6 +1,6 @@
 $ ->
   $submodeSelect = $('.js-transport-submode-select')
-  if $submodeSelect
+  if $submodeSelect.length > 0
     updateSubmodeOptions = (mode) ->
       submodeOptions = $submodeSelect.data("transport-submodes")[mode]
       $submodeSelect.find('option').remove()

@@ -1,0 +1,49 @@
+fr:
+  destinations:
+    search_no_results: 'No destination'
+    actions:
+      index: Destinations
+      create: Add a Destination
+      new: New Destination
+      edit: Edit a Destination
+    show:
+      title: "Destination %{name}"
+  activerecord:
+    models:
+      destination:
+        zero:  "Destination"
+        one:   "Destination"
+        other: "Destinations"
+        dummy:
+          zero:  "Dummy"
+          one:   "Dummy"
+          other: "Dummy"
+        google_cloud_storage:
+          zero:  "Google Cloud Storage"
+          one:   "Google Cloud Storage"
+          other: "Google Cloud Storage"
+        sftp:
+          zero:  "SFTP"
+          one:   "SFTP"
+          other: "SFTP"
+    attributes:
+      destination:
+        name: "Name"
+        type: "Type"
+        options: "Options"
+        secret_file: "Secret file"
+        _destroy: "Remove"
+        dummy:
+          result: Expected outcome
+          result_collection:
+            successful: Success
+            unexpected_failure: Unexpected failure
+            expected_failure: Expected failure
+        google_cloud_storage:
+          project: Projet
+          bucket:  Bucket
+        sftp:
+          host: Host
+          port: Port
+          directory: Directory
+          username: Username

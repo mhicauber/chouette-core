@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181211145616) do
+ActiveRecord::Schema.define(version: 20181221094635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -328,6 +328,33 @@ ActiveRecord::Schema.define(version: 20181211145616) do
 
   add_index "custom_fields", ["resource_type"], name: "index_custom_fields_on_resource_type", using: :btree
 
+  create_table "destination_reports", id: :bigserial, force: :cascade do |t|
+    t.integer  "destination_id",  limit: 8
+    t.integer  "publication_id",  limit: 8
+    t.string   "status"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.string   "error_message"
+    t.text     "error_backtrace"
+  end
+
+  add_index "destination_reports", ["destination_id"], name: "index_destination_reports_on_destination_id", using: :btree
+  add_index "destination_reports", ["publication_id"], name: "index_destination_reports_on_publication_id", using: :btree
+
+  create_table "destinations", id: :bigserial, force: :cascade do |t|
+    t.integer  "publication_setup_id", limit: 8
+    t.string   "name"
+    t.string   "type"
+    t.hstore   "options"
+    t.string   "secret_file"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "destinations", ["publication_setup_id"], name: "index_destinations_on_publication_setup_id", using: :btree
+
   create_table "export_messages", id: :bigserial, force: :cascade do |t|
     t.string   "criticity"
     t.string   "message_key"
@@ -379,8 +406,10 @@ ActiveRecord::Schema.define(version: 20181211145616) do
     t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                limit: 8
+    t.integer  "publication_id",         limit: 8
   end
 
+  add_index "exports", ["publication_id"], name: "index_exports_on_publication_id", using: :btree
   add_index "exports", ["referential_id"], name: "index_exports_on_referential_id", using: :btree
   add_index "exports", ["workbench_id"], name: "index_exports_on_workbench_id", using: :btree
 
@@ -679,6 +708,32 @@ ActiveRecord::Schema.define(version: 20181211145616) do
   end
 
   add_index "pt_links", ["objectid"], name: "pt_links_objectid_key", unique: true, using: :btree
+
+  create_table "publication_setups", id: :bigserial, force: :cascade do |t|
+    t.integer  "workgroup_id",   limit: 8
+    t.string   "export_type"
+    t.hstore   "export_options"
+    t.boolean  "enabled"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.string   "name"
+  end
+
+  add_index "publication_setups", ["workgroup_id"], name: "index_publication_setups_on_workgroup_id", using: :btree
+
+  create_table "publications", id: :bigserial, force: :cascade do |t|
+    t.integer  "publication_setup_id", limit: 8
+    t.string   "parent_type"
+    t.integer  "parent_id",            limit: 8
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.string   "status"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+  end
+
+  add_index "publications", ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id", using: :btree
+  add_index "publications", ["publication_setup_id"], name: "index_publications_on_publication_setup_id", using: :btree
 
   create_table "purchase_windows", id: :bigserial, force: :cascade do |t|
     t.string    "name"

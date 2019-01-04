@@ -38,6 +38,26 @@ crumb :merge do |merge|
   parent :merges, merge.workbench
 end
 
+crumb :publication_setups do |workgroup|
+  link PublicationSetup.t, workgroup_publication_setups_path(workgroup)
+  parent workgroup
+end
+
+crumb :publication do |publication, publication_setup, workgroup|
+  link publication.pretty_date
+  parent publication_setup, workgroup
+end
+
+crumb :publication_setup do |publication_setup, workgroup|
+  link publication_setup.name, [workgroup, publication_setup]
+  parent :publication_setups, workgroup
+end
+
+crumb :new_publication_setup do |workgroup|
+  link 'publication_setups.actions.new'.t
+  parent :publication_setups, workgroup
+end
+
 crumb :aggregates do |workgroup|
   link 'layouts.navbar.workbench_outputs.workgroup'.t, workgroup_output_path(workgroup)
 end

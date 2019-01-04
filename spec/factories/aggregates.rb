@@ -1,9 +1,9 @@
 FactoryGirl.define do
   factory :aggregate do
-    workgroup nil
-    status "MyString"
+    association :workgroup
+    status { :successful }
     name "MyString"
-    referential_ids ""
+    referentials { [ create(:referential) ] }
     new nil
   end
 end
