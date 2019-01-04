@@ -17,7 +17,7 @@ class DeviseMailer < Devise::Mailer
 
     @user  = User.find(user.id)
     @token = token
-    mail to: @user.email, subject: t('mailers.invitation_mailer.created.subject')
+    mail to: @user.email, subject: t('mailers.invitation_mailer.subject')
   end
 
   def reset_password_instructions(user, token, opts={})
