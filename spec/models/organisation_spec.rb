@@ -53,4 +53,45 @@ describe Organisation, :type => :model do
 
   end
 
+  describe "#find_referential" do
+    let(:organisation) { create :organisation }
+    let(:workbench) { create :workbench, organisation: organisation }
+    let(:workgroup) { workbench.workgroup }
+    
+    context "when referential belongs to organisation" do
+      let(:organisation_ref) { create(:referential, organisation: organisation, workbench: workbench) }
+
+      it "should return referential" do
+        expect(organisation.find_referential(organisation_ref.id)).to eq(organisation_ref)
+      end
+    end
+
+    context "when referential belongs to other workbench that belongs to the organisation" do
+      let(:other_workbench) { create :workbench, organisation: organisation }
+      let(:other_ref) { create :referential, workbench: other_workbench, organisation: organisation }
+
+      it "should return referential" do
+        expect(organisation.reload.find_referential(other_ref.id)).to eq(other_ref)
+      end
+    end
+
+    context "when referential is workgroup's current output" do
+
+      before do
+        workgroup.output.current = create(:referential, organisation: organisation, workbench: nil)
+        workgroup.output.save
+      end
+
+      it "should return referential" do
+        expect(organisation.find_referential(workgroup.output.current.id)).to eq(workgroup.output.current)
+      end
+    end
+
+    context "when none of the above" do
+      it "should raise an error" do
+        expect {organisation.find_referential(9999) }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
 end
