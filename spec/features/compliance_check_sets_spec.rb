@@ -30,7 +30,7 @@ RSpec.describe "ComplianceCheckSets", type: :feature do
 
     it 'we can see the expected content' do
       # Breadcrumbs
-      expect_breadcrumb_links "Accueil", "Gestion de l'offre", "Liste des rapports de contrôles"
+      expect_breadcrumb_links "Gestion de l'offre", "Liste des rapports de contrôles"
 
       # Headline
       expect( page ).to have_content(I18n.t("compliance_check_sets.executed.title", name: compliance_check_set.name))

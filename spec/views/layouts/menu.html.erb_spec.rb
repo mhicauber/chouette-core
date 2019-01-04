@@ -56,12 +56,12 @@ describe "/layouts/application", :type => :view do
     end
     it "should not have a link to update the workgroup" do
       render
-      expect(rendered).to_not have_menu_link_to edit_workgroup_path(workbench.workgroup)
+      expect(rendered).to_not have_menu_link_to edit_controls_workgroup_path(workbench.workgroup)
     end
     with_permission "workgroups.update" do
       it "should have a link to update the workgroup" do
         render
-        expect(rendered).to have_menu_link_to edit_workgroup_path(workbench.workgroup)
+        expect(rendered).to have_menu_link_to edit_controls_workgroup_path(workbench.workgroup)
       end
     end
   end

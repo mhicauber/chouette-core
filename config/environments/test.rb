@@ -71,6 +71,8 @@ Rails.application.configure do
     config.logger.level = Logger::ERROR
     config.active_record.logger = nil
   end
+
+  config.additional_compliance_controls << "dummy"
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

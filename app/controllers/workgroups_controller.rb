@@ -2,8 +2,10 @@ class WorkgroupsController < ChouetteController
   defaults resource_class: Workgroup
 
   include PolicyChecker
+  before_action :authorize_resource, only: %i[edit_controls update_controls]
 
   def show
+    resource
     redirect_to "/"
   end
 

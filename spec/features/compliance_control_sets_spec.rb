@@ -38,7 +38,7 @@ RSpec.describe "ComplianceControlSets", type: :feature do
 
     it 'we can see the expected content' do
       # Breadcrumb
-      expect_breadcrumb_links "Accueil", "Liste des jeux de contrôles"
+      expect_breadcrumb_links "Liste des jeux de contrôles"
 
       # Headline
       expect( page ).to have_content("Consulter le jeu de contrôles #{control_set.name}")
@@ -57,7 +57,7 @@ RSpec.describe "ComplianceControlSets", type: :feature do
         expect( page ).to have_link("Contrôle", href: control_button_href)
         expect( page ).to have_link("Groupe de contrôles", href: new_group_button_href)
       end
-      
+
     end
 
     it 'we can apply a severity filter' do
@@ -107,7 +107,7 @@ RSpec.describe "ComplianceControlSets", type: :feature do
     before do
       visit compliance_control_sets_path
     end
-    
+
     it "only showw compliance control sets from user organisation" do
       expect(page).not_to have_content (other_orga.name)
       expect(page).to have_content (organisation.name)

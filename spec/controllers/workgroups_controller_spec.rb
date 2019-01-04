@@ -13,8 +13,8 @@ RSpec.describe WorkgroupsController, :type => :controller do
     it_behaves_like 'checks current_organisation', success_code: 302
   end
 
-  describe "GET edit" do
-    let(:request){ get :edit, id: workgroup.id }
+  describe "GET edit_controls" do
+    let(:request){ get :edit_controls, id: workgroup.id }
     it 'should respond with 403' do
       expect(request).to have_http_status 403
     end
@@ -26,7 +26,7 @@ RSpec.describe WorkgroupsController, :type => :controller do
     end
   end
 
-  describe 'PATCH update' do
+  describe 'PATCH update_controls' do
     let(:params){
       {
         id: workgroup.id,
@@ -43,7 +43,7 @@ RSpec.describe WorkgroupsController, :type => :controller do
         }
       }
     }
-    let(:request){ patch :update, params }
+    let(:request){ patch :update_controls, params }
 
     it 'should respond with 403' do
       expect(request).to have_http_status 403
