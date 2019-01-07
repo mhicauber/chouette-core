@@ -10,6 +10,8 @@ class Merge < ApplicationModel
 
   delegate :output, to: :workbench
 
+  delegate :workgroup, to: :workbench
+
   after_commit :merge, :on => :create
 
   def parent

@@ -24,4 +24,9 @@ class MergeDecorator < AF83::Decorator
       l.href { h.referential_path(object.new) }
     end
   end
+  
+  define_instance_method :aggregated_at do
+    aggregate = Aggregate.where('workgroup_id = ? AND referential_ids @> ARRAY[?]::bigint[]', object.workgroup.id, [object.id]).first
+    aggregate&.ended_at
+  end
 end

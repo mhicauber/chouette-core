@@ -1,5 +1,4 @@
 / PageHeader
-
 - breadcrumb :workbench_output, @workbench
 - content_for :page_header_title, t('.title')
 - content_for :page_header_content do
@@ -33,6 +32,10 @@
               TableBuilderHelper::Column.new( \
                 key: :creator, \
                 attribute: 'creator' \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t(".table_headers.aggregated_at"), \
+                attribute:  Proc.new { |n| n.aggregated_at ? l(n.aggregated_at, format: :short_with_time) : '-' }\
               ) \
             ],
             cls: 'table has-search',

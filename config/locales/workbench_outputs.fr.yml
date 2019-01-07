@@ -5,3 +5,4 @@ fr:
       see_current_output: "Voir l'Offre actuelle"
       table_headers:
         ended_at: "Date et heure de création"
+        aggregated_at: Agrégé le
