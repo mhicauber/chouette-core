@@ -5,17 +5,23 @@ class ReferentialCopy
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
-  def initialize(source:, target:)
-    @source = source
-    @target = target
+  def initialize(opts={})
+    @source = opts[:source]
+    @target = opts[:target]
+    @opts = opts
+    @lines = opts[:lines]
   end
 
   def logger
     @logger ||= Rails.logger
   end
 
+  def skip_metadatas?
+    @opts[:skip_metadatas]
+  end
+
   def copy(raise_error: false)
-    copy_metadatas
+    copy_metadatas unless skip_metadatas?
     copy_time_tables
     copy_purchase_windows
     source.switch do
@@ -57,7 +63,7 @@ class ReferentialCopy
 
   def copy_time_tables
     source.switch do
-      Chouette::TimeTable.find_each do |tt|
+      Chouette::TimeTable.linked_to_lines(lines).uniq.find_each do |tt|
         attributes = clean_attributes_for_copy tt
         target.switch do
           new_tt = Chouette::TimeTable.new attributes
@@ -73,7 +79,7 @@ class ReferentialCopy
 
   def copy_purchase_windows
     purchase_window_attributes = source.switch do
-      Chouette::PurchaseWindow.find_each.map do |purchase_window|
+      Chouette::PurchaseWindow.linked_to_lines(lines).uniq.find_each.map do |purchase_window|
         clean_attributes_for_copy purchase_window
       end
     end

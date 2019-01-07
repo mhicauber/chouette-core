@@ -7,9 +7,12 @@ RSpec.describe CurrentOfferCloningWorker do
   let(:line_1) { create :line, line_referential: referential.line_referential }
   let(:line_2) { create :line, line_referential: referential.line_referential }
   let(:line_3) { create :line, line_referential: referential.line_referential }
+  let(:timetable_1) { create :time_table }
+  let(:timetable_2) { create :time_table }
+  let(:purchase_window_1) { create :purchase_window }
+  let(:purchase_window_2) { create :purchase_window }
 
   before(:each) do
-    Apartment::Tenant.drop(referential.slug)
     current_offer.update referential_suite: referential.workbench.output
     referential.workbench.output.update current: current_offer
   end
@@ -25,7 +28,7 @@ RSpec.describe CurrentOfferCloningWorker do
     end
   end
 
-  describe '#perform', truncation: true do
+  describe '#perform' do
     let(:new_period_start){ "2020/01/01".to_date }
     let(:new_period_end){ "2020/12/31".to_date }
 
@@ -33,21 +36,22 @@ RSpec.describe CurrentOfferCloningWorker do
       current_offer.metadatas.create line_ids: [line_1.id], periodes: [((new_period_start-2.months) .. (new_period_start-1.month))]
       current_offer.metadatas.create line_ids: [line_1.id, line_2.id], periodes: [((new_period_start-2.months) .. (new_period_start-1.month)), ((new_period_start-1.week) .. (new_period_end+1.month))]
       current_offer.metadatas.create line_ids: [line_2.id], periodes: [((new_period_start+1.month) .. (new_period_end-1.month))]
+      current_offer.switch do
+        3.times { create :route, line: line_1 }
+        3.times { create :route, line: line_2 }
+        create :vehicle_journey, journey_pattern: line_1.routes.last.full_journey_pattern, time_tables: [timetable_1], purchase_windows: [purchase_window_1]
+        create :vehicle_journey, journey_pattern: line_2.routes.last.full_journey_pattern, time_tables: [timetable_2], purchase_windows: [purchase_window_2]
+      end
 
       referential.metadatas.create line_ids: [line_1.id], periodes: [(new_period_start..(new_period_end-2.month)), ((new_period_end-1.month)..new_period_end)]
     end
 
-    after(:each) do
-      Apartment::Tenant.drop(referential.slug)
-      Apartment::Tenant.drop(current_offer.slug)
-    end
-
     it 'should clone the current offer' do
-      expect(ReferentialCloning).to receive(:new).with(
-        source_referential: current_offer, target_referential: referential
+      expect(ReferentialCopy).to receive(:new).with(
+        source: current_offer, target: referential, skip_metadatas: true, lines: [line_1]
       ).and_call_original
 
-      expect_any_instance_of(ReferentialCloning).to receive(:clone!)
+      expect_any_instance_of(ReferentialCopy).to receive(:copy!)
 
       CurrentOfferCloningWorker.new.perform(referential.id)
     end
@@ -64,13 +68,13 @@ RSpec.describe CurrentOfferCloningWorker do
       expect(metadata.periodes).to eq [(new_period_start..(new_period_end-2.month)), ((new_period_end-1.month)..new_period_end)]
     end
 
-    it 'should clean the data' do
-      expect(CleanUp).to receive(:new).with(referential: referential).and_call_original
-      expect(CleanUp).to receive(:new).with(referential: referential, begin_date: new_period_start, date_type: :before).and_call_original
-      expect(CleanUp).to receive(:new).with(referential: referential, end_date: new_period_end, date_type: :after).and_call_original
-      expect(CleanUp).to receive(:new).with(referential: referential, methods: [:destroy_empty, :destroy_unassociated_calendars]).and_call_original
-
+    it 'should copy the datas' do
       CurrentOfferCloningWorker.new.perform(referential.id)
+
+      referential.switch
+      expect(Chouette::PurchaseWindow.count).to eq 1
+      expect(Chouette::TimeTable.count).to eq 1
+      expect(Chouette::Route.count).to eq 3
     end
   end
 end

@@ -478,7 +478,7 @@ class Referential < ApplicationModel
   end
 
   def create_schema
-    return if created_from || from_current_offer
+    return if created_from
 
     report = Benchmark.measure do
       Apartment::Tenant.create slug
