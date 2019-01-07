@@ -8,13 +8,9 @@ module StopAreaControl
       stop_area_referential_stop_area_path(stop_area.stop_area_referential, stop_area)
     end
 
-    def self.collection referential
-      Chouette::StopArea.where id: referential.stop_points.pluck(:stop_area_id)
+    def self.collection_type(_)
+      :stop_areas
     end
-
-    # def self.lines_for compliance_check, model
-    #   compliance_check.referential.lines
-    # end
 
     def self.compliance_test compliance_check, stop_area
       false

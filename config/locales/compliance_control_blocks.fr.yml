@@ -1,7 +1,7 @@
 fr:
   activerecord:
     models:
-      compliance_control_block: 
+      compliance_control_block:
         zero:  "Groupe de contrôle"
         one:   "Groupe de contrôle"
         other: "Groupes de contrôles"
@@ -9,6 +9,9 @@ fr:
       compliance_control_block:
         transport_mode: Mode de transport
         transport_submode: Sous-mode de transport
+        block_kind: Type de groupe
+        country: Pays
+        min_stop_areas_in_country: Nombre minimium d'arrêts dans le pays
     errors:
       models:
         compliance_control_block:
@@ -30,6 +33,13 @@ fr:
       title: "Editer le groupe de contrôle : %{name}"
     update:
       title: "Editer le groupe de contrôle : %{name}"
+    all_lines: Toutes les lignes
+    stop_areas_in_countries: Au moins %{min_count} arrêts en %{country_name}
+    with_transport_submode: "Mode de transport: %{transport_mode} > %{transport_submode}"
+    with_transport_mode: "Mode de transport: %{transport_mode}"
+    block_kinds:
+      stop_areas_in_countries: Au moins N arrêts dans un pays donné
+      transport_mode: Mode de transport
     metas:
       control:
         zero: "Aucun contrôle"

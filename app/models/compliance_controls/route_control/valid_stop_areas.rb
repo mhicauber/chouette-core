@@ -1,16 +1,10 @@
+require_dependency 'compliance_controls/route_control/internal_base'
+
 module RouteControl
-  class ValidStopAreas < InternalControl::Base
+  class ValidStopAreas < InternalBase
     enumerize :criticity, in: %i(error), scope: true, default: :error
 
     def self.default_code; "3-Route-13" end
-
-    def self.object_path compliance_check, route
-      referential_line_route_path(route.referential, route.line, route)
-    end
-
-    def self.collection referential
-      referential.routes
-    end
 
     def self.compliance_test compliance_check, route
       valid_stop_areas = compliance_check.referential.workbench.stop_areas

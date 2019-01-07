@@ -4,11 +4,11 @@ module VehicleJourneyControl
       referential_line_route_vehicle_journeys_path(compliance_check.referential, vehicle_journey.route.line, vehicle_journey.route)
     end
 
-    def self.collection referential
-      referential.vehicle_journeys
+    def self.collection_type(_)
+      :vehicle_journeys
     end
 
-    def self.label_attr
+    def self.label_attr(compliance_check)
       :published_journey_name
     end
   end

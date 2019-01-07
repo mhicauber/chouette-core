@@ -224,7 +224,6 @@ class Referential < ApplicationModel
     Chouette::TimeTableDate.all
   end
 
-
   def connection_links
     Chouette::ConnectionLink.all
   end

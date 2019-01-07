@@ -1,42 +1,35 @@
 require 'rails_helper'
 
-RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
-  let(:workgroup){ referential.workgroup }
-  let(:line){ create :line, line_referential: workgroup.line_referential }
-  let(:route){ create :route, line: line }
-  let(:journey_pattern){ create :journey_pattern, route: route }
+RSpec.describe CustomFieldControl::Presence, :type => :model do
+  let!(:workgroup) { create :workgroup }
+  let!(:line_referential){ workgroup.line_referential }
+  let!(:referential){ create :referential, line_referential: line_referential }
+  let!(:company) do
+    create :company, line_referential: line_referential, custom_field_values: { public_name: company_name }
+  end
 
-  let(:time_table) {create :time_table, dates: [], periods: [ create(:time_table_period, period_start: Date.today, period_end: Date.today + 10) ]}
-  let(:empty_time_table) {create :time_table, dates_count: 0, periods_count: 0}
-  let(:purchase_window) { create :purchase_window, date_ranges: [(time_table.start_date+1)...(time_table.end_date-1)]}
+  let!(:custom_field_public_name) { create :custom_field, field_type: :string, code: :public_name, name: "Name", workgroup: workgroup, resource_type: "Company" }
 
-  let(:vj) { create :vehicle_journey_empty, journey_pattern: journey_pattern, route: route, time_tables: [time_table], purchase_windows: [purchase_window]}
-  let(:vj2) { create :vehicle_journey_empty, journey_pattern: journey_pattern, route: route, time_tables: [empty_time_table], purchase_windows: [purchase_window]}
+  let!(:line) { create :line, company: company, line_referential: line_referential }
 
-  let(:criticity){ "warning" }
-  let(:control_attributes) {
-    {}
+  let(:control_attributes){
+    {
+      custom_field_code: :public_name
+    }
   }
+  let(:company_name){ "A NAME" }
+  let(:criticity){ "error" }
   let(:compliance_check_set){ create :compliance_check_set, referential: referential}
   let(:compliance_check){
     create :compliance_check,
       iev_enabled_check: false,
-      compliance_control_name: "VehicleJourneyControl::PurchaseWindowDates",
+      compliance_control_name: "CustomFieldControl::Presence",
       control_attributes: control_attributes,
       compliance_check_set: compliance_check_set,
       criticity: criticity
   }
 
-  before(:each) do
-    referential.switch do
-      time_table
-      empty_time_table
-      purchase_window
-      vj && vj2
-    end
-  end
-
-  context "when all the vehicle journeys with company_id have a published journey name between the range" do
+  context "when the company has a name" do
     it "should pass" do
       expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
       resource = ComplianceCheckResource.last
@@ -44,23 +37,23 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
     end
   end
 
-  context "when an error is raised" do
-    it "should set the status to ERROR" do
-      expect(VehicleJourneyControl::PurchaseWindowDates).to receive(:compliance_test).and_raise
-      expect{compliance_check.process}.to raise_error RuntimeError
+  context "when the company has lines outside of the referential" do
+    before do
+      create :line, company_id: company.id
+    end
+    it "should pass" do
+      expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
       resource = ComplianceCheckResource.last
-      expect(resource.status).to eq "ERROR"
+      expect(resource.status).to eq "OK"
     end
   end
 
-  context "when at least one vehicle jorneys with company_id have a published journey name outside of the the range" do
-    before(:each) do
-      referential.switch do
-        Chouette::PurchaseWindow.update_all(date_ranges: [(time_table.start_date)..(time_table.end_date+1)])
-      end
-    end
+  context "when the company has no name" do
+    let(:company_name){ "" }
 
-     context "when the criticity is warning" do
+    context "when the criticity is warning" do
+      let(:criticity){ "warning" }
+
       it "should set the status according to its params" do
         expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
         resource = ComplianceCheckResource.last
@@ -78,7 +71,6 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
     end
 
     context "when the criticity is error" do
-      let(:criticity){ "error" }
       it "should set the status according to its params" do
         expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
         resource = ComplianceCheckResource.last

@@ -38,9 +38,8 @@ RSpec.describe ComplianceControlBlock, type: :model do
     let(:cc_set2) { create :compliance_control_set }
 
     it "sould be unique in a compliance control set" do
-      expect( ComplianceControlBlock.new(transport_mode: 'bus', transport_submode: 'nightBus', compliance_control_set: cc_set1) ).not_to be_valid
-      expect( ComplianceControlBlock.new(transport_mode: 'bus', transport_submode: 'nightBus', compliance_control_set: cc_set2) ).to be_valid
+      expect( ComplianceControlBlock.new(block_kind: :transport_mode, transport_mode: 'bus', transport_submode: 'nightBus', compliance_control_set: cc_set1) ).not_to be_valid
+      expect( ComplianceControlBlock.new(block_kind: :transport_mode, transport_mode: 'bus', transport_submode: 'nightBus', compliance_control_set: cc_set2) ).to be_valid
     end
-
   end
 end

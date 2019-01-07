@@ -1,3 +1,5 @@
+require_dependency 'compliance_controls/vehicle_journey_control/internal_base'
+
 module VehicleJourneyControl
   class PurchaseWindow < InternalBase
     required_features :purchase_windows

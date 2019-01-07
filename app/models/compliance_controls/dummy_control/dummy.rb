@@ -5,16 +5,14 @@ if InternalControl::Base.enabled?("dummy")
 
       store_accessor :control_attributes, :status
 
+      store_accessor :control_attributes, :status
+
       enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK
 
       def self.default_code; "00-Dummy-00" end
-
+      
       def self.object_path compliance_check, line
         line_referential_line_path(line.line_referential, line)
-      end
-
-      def self.collection referential
-        referential.lines
       end
 
       def self.compliance_test compliance_check, _

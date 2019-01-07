@@ -1,11 +1,13 @@
+require_dependency 'compliance_controls/vehicle_journey_control/internal_base'
+
 module VehicleJourneyControl
   class EmptyTimeTable < InternalBase
     enumerize :criticity, in: %i(error), scope: true, default: :error
 
     def self.default_code; "3-VehicleJourney-10" end
 
-    def self.collection referential
-      referential.vehicle_journeys.includes(:time_tables)
+    def self.collection(compliance_check)
+      super.includes(:time_tables)
     end
 
     def self.compliance_test compliance_check, vehicle_journey

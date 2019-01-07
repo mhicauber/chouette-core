@@ -20,6 +20,10 @@ class StopAreaReferential < ApplicationModel
     stop_area_referential_syncs.last
   end
 
+  def available_countries
+    stop_areas.select(:country_code).uniq.compact.map &:country
+  end
+
   def generate_registration_number
     return "" unless registration_number_format.present?
     last = self.stop_areas.order("registration_number DESC NULLS LAST").limit(1).first&.registration_number

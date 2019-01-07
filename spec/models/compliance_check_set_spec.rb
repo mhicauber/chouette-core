@@ -85,7 +85,7 @@ RSpec.describe ComplianceCheckSet, type: :model do
           check_set.compliance_checks.internals.create name: "foo", code: "foo", origin_code: "foo", compliance_control_name: "DummyControl::Dummy"
           allow(DummyControl::Dummy).to receive(:collection).and_return([create(:line)])
           allow(DummyControl::Dummy).to receive(:compliance_test).and_raise
-          expect{check_set.perform}.to raise_error
+          expect{check_set.perform}.to raise_error RuntimeError
           expect(check_set.status).to eq "failed"
         end
       end

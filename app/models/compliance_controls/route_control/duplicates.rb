@@ -1,3 +1,5 @@
+require_dependency 'compliance_controls/route_control/internal_base'
+
 module RouteControl
   class Duplicates < ComplianceControl
 

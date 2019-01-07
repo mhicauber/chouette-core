@@ -3,13 +3,16 @@ require 'rails_helper'
 RSpec.describe VehicleJourneyControl::PurchaseWindow, :type => :model do
   let(:referential){ create :workbench_referential }
   let(:workgroup){ referential.workgroup }
-  let(:line){ create :line, line_referential: workgroup.line_referential }
+  let(:line){ create :line, line_referential: referential.line_referential }
+  let(:line_2){ create :line, line_referential: referential.line_referential }
   let(:route){ create :route, line: line }
+  let(:route_2){ create :route, line: line_2 }
   let(:journey_pattern){ create :journey_pattern, route: route }
+  let(:journey_pattern_2){ create :journey_pattern, route: route_2 }
   let(:succeeding){ create :vehicle_journey, journey_pattern: journey_pattern }
   let(:failing){ create :vehicle_journey, journey_pattern: journey_pattern }
   let(:failing_too){ create :vehicle_journey, journey_pattern: journey_pattern }
-  let(:failing_too_too){ create :vehicle_journey }
+  let(:failing_too_too){ create :vehicle_journey, journey_pattern: journey_pattern_2 }
   let(:purchase_window){ create :purchase_window }
   let(:control_attributes){
     {}
