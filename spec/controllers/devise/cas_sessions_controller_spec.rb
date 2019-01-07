@@ -49,10 +49,10 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
 
     context 'with a custom cas_service_url config' do
       before(:each) do
-        allow(Rails.application.config).to receive(:chouette_authentication_settings) { { cas_service_url: 'http://foo.com' } }
+        allow(Rails.application.config).to receive(:chouette_authentication_settings) { { cas_service_url: 'http://foo.com/users/foo' } }
       end
       it 'should use the setup url' do
-        expect(controller.send(:cas_service_url)).to eq "http://foo.com/users/service"
+        expect(controller.send(:cas_service_url)).to eq "http://foo.com/users/foo"
       end
     end
   end
