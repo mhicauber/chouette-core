@@ -8,7 +8,7 @@ class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
 
   def input_id
     # There must be a cleaner way, I just cannot find it
-    key = @builder.object_name.gsub(/[\]\[]/, '_').squeeze('_')
+    key = @builder.object_name.to_s.gsub(/[\]\[]/, '_').squeeze('_')
 
     "#{key}#{reflection_or_attribute_name}"
   end
