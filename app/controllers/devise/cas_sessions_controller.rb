@@ -119,8 +119,8 @@ class Devise::CasSessionsController < Devise::SessionsController
 
   def cas_service_url
     base_url = request.url.dup
-    if Rails.application.config.chouette_authentication_settings.try(:[], :cas_server)
-      base_url = Rails.application.config.chouette_authentication_settings[:cas_server]
+    if Rails.application.config.chouette_authentication_settings.try(:[], :cas_service_url)
+      base_url = Rails.application.config.chouette_authentication_settings[:cas_service_url]
     end
     ::Devise.cas_service_url(base_url, devise_mapping)
   end
