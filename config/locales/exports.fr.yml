@@ -75,6 +75,7 @@ fr:
         resources: "Fichier à exporter"
         created_at: "Créé le"
         started_at: Démarrage
+        ended_at: Fin
         name: "Nom de l'export"
         status: "Etat"
         creator: "Opérateur"

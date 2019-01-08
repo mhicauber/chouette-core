@@ -60,7 +60,7 @@ class Export::Gtfs < Export::Base
     referential.switch
 
     if journeys.count == 0
-      self.update status: :successful
+      self.update status: :successful, ended_at: Time.now
       vals = {}
       vals[:criticity] = :info
       vals[:message_key] = :no_matching_journey
@@ -73,6 +73,7 @@ class Export::Gtfs < Export::Base
     file = File.open File.join(tmp_dir, "#{zip_file_name}.zip")
     upload_file file
     self.status = :successful
+    self.ended_at = Time.now
     self.save!
   rescue => e
     Rails.logger.info "Failed: #{e.message}"

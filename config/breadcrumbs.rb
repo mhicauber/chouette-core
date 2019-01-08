@@ -43,14 +43,14 @@ crumb :publication_setups do |workgroup|
   parent workgroup
 end
 
-crumb :publication do |publication, publication_setup, workgroup|
-  link publication.pretty_date
-  parent publication_setup, workgroup
+crumb :publication do |publication|
+  link publication.pretty_date, [publication.publication_setup.workgroup, publication.publication_setup, publication]
+  parent publication.publication_setup
 end
 
-crumb :publication_setup do |publication_setup, workgroup|
-  link publication_setup.name, [workgroup, publication_setup]
-  parent :publication_setups, workgroup
+crumb :publication_setup do |publication_setup|
+  link publication_setup.name, [publication_setup.workgroup, publication_setup]
+  parent :publication_setups, publication_setup.workgroup
 end
 
 crumb :new_publication_setup do |workgroup|
@@ -183,9 +183,14 @@ crumb :gtfs_import do |imports_parent, gtfs_import|
   parent :import, imports_parent, gtfs_import.parent
 end
 
-crumb :export do |workbench, export|
-  link breadcrumb_name(export), workbench_export_path(workbench, export)
-  parent :exports, workbench
+crumb :export do |export_parent, export|
+  if export_parent.is_a?(Workbench)
+    link breadcrumb_name(export), workbench_export_path(workbench, export)
+    parent :exports, export_parent
+  else
+    link breadcrumb_name(export), [export_parent.publication_setup.workgroup, export_parent.publication_setup, export_parent, export]
+    parent export_parent
+  end
 end
 
 crumb :import_resources do |import, import_resources|

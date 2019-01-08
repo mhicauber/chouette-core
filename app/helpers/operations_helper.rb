@@ -5,8 +5,12 @@ module OperationsHelper
     return unless status
     i18n_prefix ||= "operation_support.statuses"
     status = status.to_s.downcase
+
+    txt = "#{i18n_prefix}.#{status}".t(fallback: "")
+    title = verbose ? nil : txt
+
     out = if %w[new running pending].include? status
-      content_tag :span, '', class: "fa fa-clock-o"
+      content_tag :span, '', class: "fa fa-clock-o", title: title
     else
       cls = ''
       cls = 'success' if status == 'successful'
@@ -16,12 +20,10 @@ module OperationsHelper
       cls = 'disabled' if status == 'canceled'
       cls = 'danger' if %w[failed aborted error].include? status
 
-      content_tag :span, '', class: "fa fa-circle text-#{cls}"
+      content_tag :span, '', class: "fa fa-circle text-#{cls}", title: title
     end
     if verbose
-      out += content_tag :span do
-        txt = "#{i18n_prefix}.#{status}".t(fallback: "")
-      end
+      out += content_tag :span , txt
     end
     out
   end
