@@ -50,7 +50,7 @@ class Referential < ApplicationModel
   has_many :companies, through: :line_referential
   has_many :group_of_lines, through: :line_referential
   has_many :networks, through: :line_referential
-  has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :destroy
+  has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :delete_all
   accepts_nested_attributes_for :metadatas
 
   belongs_to :stop_area_referential
@@ -283,20 +283,20 @@ class Referential < ApplicationModel
     self.objectid_format ||= workbench.objectid_format if workbench
   end
 
-  def switch(&block)
+  def switch(verbose: true, &block)
     raise "Referential not created" if new_record?
 
     unless block_given?
-      Rails.logger.debug "Referential switch to #{slug}"
+      Rails.logger.debug "Referential switch to #{slug}" if verbose
       Apartment::Tenant.switch! slug
       self
     else
       result = nil
       Apartment::Tenant.switch slug do
-        Rails.logger.debug "Referential switch to #{slug}"
+        Rails.logger.debug "Referential switch to #{slug}" if verbose
         result = yield
       end
-      Rails.logger.debug "Referential back"
+      Rails.logger.debug "Referential back" if verbose
       result
     end
   end
