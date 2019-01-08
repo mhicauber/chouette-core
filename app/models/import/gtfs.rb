@@ -1,6 +1,4 @@
 class Import::Gtfs < Import::Base
-  include BenchmarkSupport
-
   after_commit :launch_worker, on: :create
 
   after_commit :update_main_resource_status, on:  [:create, :update]
@@ -187,10 +185,16 @@ class Import::Gtfs < Import::Base
 
   delegate :line_referential, :stop_area_referential, to: :workbench
 
+  def import_resources(*resources)
+    resources.each do |resource|
+      Chouette::Benchmark.log "ImportGTFS import #{resource}" do
+        send "import_#{resource}"
+      end
+    end
+  end
+
   def prepare_referential
-    Import::Gtfs.benchmark(self, :import_agencies)
-    Import::Gtfs.benchmark(self, :import_stops)
-    Import::Gtfs.benchmark(self, :import_routes)
+    import_resources :agencies, :stops, :routes
 
     create_referential
     referential.switch
@@ -200,10 +204,8 @@ class Import::Gtfs < Import::Base
     prepare_referential
     referential.pending!
 
-    Import::Gtfs.benchmark(self, :import_calendars)
-    Import::Gtfs.benchmark(self, :import_calendar_dates)
-    Import::Gtfs.benchmark(self, :import_trips)
-    Import::Gtfs.benchmark(self, :import_stop_times)
+    import_resources :cleandars, :calendar_dates
+    import_resources :trips, :stop_times
   end
 
   def import_agencies

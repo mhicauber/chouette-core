@@ -33,7 +33,7 @@ module IevInterfaces::Resource
       if opts[:memory_profile]
         label = opts[:memory_profile]
         label = instance_exec(&label) if label.is_a?(Proc)
-        Memory.log label do
+        Chouette::Benchmark.log label do
           transaction_block.call item
         end
       else

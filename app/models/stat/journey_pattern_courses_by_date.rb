@@ -1,7 +1,5 @@
 module Stat
   class JourneyPatternCoursesByDate < ActiveRecord::Base
-    include BenchmarkSupport
-
     belongs_to :journey_pattern, class_name: "Chouette::JourneyPattern"
     belongs_to :route, class_name: "Chouette::Route"
     belongs_to :line, class_name: "Chouette::Line"
@@ -11,13 +9,15 @@ module Stat
     scope :for_route, ->(route) { where(route_id: route.id) }
 
     def self.compute_for_referential(referential)
-      referential.switch do
-        JourneyPatternCoursesByDate.delete_all
-        ActiveRecord::Base.cache do
-          ActiveRecord::Base.transaction do
-            referential.journey_patterns.select(:id, :route_id).find_each do |journey_pattern|
-              JourneyPatternCoursesByDate.benchmark self, :populate_for, journey_pattern, referential: referential
-              JourneyPatternCoursesByDate.benchmark self, :fill_blanks_for, journey_pattern
+      Chouette::Benchmark.log "JourneyPatternCoursesByDate computation" do
+        referential.switch do
+          JourneyPatternCoursesByDate.delete_all
+          ActiveRecord::Base.cache do
+            ActiveRecord::Base.transaction do
+              referential.journey_patterns.select(:id, :route_id).find_each do |journey_pattern|
+                populate_for journey_pattern, referential: referential
+                fill_blanks_for journey_pattern
+              end
             end
           end
         end
