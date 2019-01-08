@@ -6,6 +6,7 @@ fr:
       create: Ajouter une Publication
       new: Nouvelle Publication
       edit: Modifier une Publication
+      destroy_confirm: "Etes vous sûr de supprimer cette Publication ?"
     show:
       title: "Publication %{name}"
     form:
