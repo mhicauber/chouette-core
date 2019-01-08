@@ -1,5 +1,7 @@
 require "rails_helper"
 
+using Chouette::DebugTools
+
 RSpec.describe Merge do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
@@ -151,6 +153,8 @@ RSpec.describe Merge do
   end
 
   it "should clean previous merges" do
+    m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+    m.update status: :failed
     3.times do
       other_workbench = create(:workbench)
       other_referential = create(:referential, workbench: other_workbench, organisation: other_workbench.organisation)
@@ -161,10 +165,22 @@ RSpec.describe Merge do
       m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
       m.update status: :failed
     end
-    expect(Merge.count).to eq 9
+    expect(Merge.status_sequence).to eq 'xvvxvvxvvx'
+    expect(Merge.status_sequence(referential.workbench.merges)).to eq 'xvxvxvx'
+    expect(Merge.count).to eq 10
     Merge.keep_operations = 2
     Merge.last.clean_previous_operations
-    expect(Merge.count).to eq 8
+    expect(Merge.status_sequence(referential.workbench.merges)).to eq 'vxvx'
+  end
+
+  it "should clean previous failed merges" do
+    m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+    m.update status: :failed
+    m = Merge.create!(workbench: referential.workbench, referentials: [referential])
+    m.update status: :successful
+    expect(Merge.status_sequence).to eq 'xv'
+    Merge.last.clean_previous_operations
+    expect(Merge.status_sequence).to eq 'v'
   end
 
   it "should not remove referentials locked for aggregation" do

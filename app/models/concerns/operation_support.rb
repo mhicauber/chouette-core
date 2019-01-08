@@ -47,10 +47,23 @@ module OperationSupport
     end
   end
 
+  def clean_operation(operation)
+    operation.new&.destroy
+    operation.destroy
+  end
+
+  def clean_trailing_failed_operations
+    while clean_scope.count > 0 && !clean_scope.order("created_at asc").first.successful?
+      clean_operation clean_scope.order("created_at asc").first
+    end
+  end
+
   def clean_previous_operations
     while clean_scope.successful.count > [self.class.keep_operations, 0].max do
-      clean_scope.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }
+      clean_operation clean_scope.order("created_at asc").first
     end
+
+    clean_trailing_failed_operations
   end
 
   def has_at_least_one_referential
@@ -79,8 +92,8 @@ module OperationSupport
 
     after_save_current
 
-    clean_previous_operations
     update status: :successful, ended_at: Time.now
+    clean_previous_operations
   end
 
   def create_compliance_check_set(context, control_set, referential)

@@ -38,7 +38,6 @@ class Aggregate < ActiveRecord::Base
       save_current
     end
 
-    clean_previous_operations
     publish
   rescue => e
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
