@@ -18,7 +18,7 @@ class MergeDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link(
-      if: -> () { object.status === 'successful' }
+      if: -> () { object.status === 'successful' && object.new.present? }
     ) do |l|
       l.content t('merges.actions.see_associated_offer')
       l.href { h.referential_path(object.new) }
