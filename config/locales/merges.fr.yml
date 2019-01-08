@@ -35,7 +35,7 @@ fr:
         name: Nom
         ended_at: Achevé à
         status: "Etat"
-        creator: "Demandeur"
+        creator: "Opérateur"
         referentials: "Jeux de données"
         new: Jeu de données finalisé
         operator: Utilisateur
