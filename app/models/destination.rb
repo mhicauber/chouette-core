@@ -45,16 +45,17 @@ class Destination < ApplicationModel
   end
 
   def secret_file_content
-    return unless secret_file.present?
+    return unless self[:secret_file].present?
 
     open("#{SmartEnv['RAILS_HOST']}#{secret_file.url}").read
   end
 
   def local_secret_file
-    return unless secret_file.present?
+    content = secret_file_content
+    return if content.nil?
 
     tmp = Tempfile.new ["secret_#{name}", "#{File.extname secret_file.path}"]
-    tmp.write secret_file_content
+    tmp.write content
     tmp.rewind
     tmp
   end
