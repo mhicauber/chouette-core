@@ -44,20 +44,20 @@ class Destination < ApplicationModel
     self.ts
   end
 
-  def secret_file_content
-    return unless self[:secret_file].present?
+  def local_temp_file(uploader)
+    url = "#{SmartEnv['RAILS_HOST']}#{uploader.url}"
+    content = open(url).read.force_encoding('utf-8')
 
-    open("#{SmartEnv['RAILS_HOST']}#{secret_file.url}").read
-  end
-
-  def local_secret_file
-    content = secret_file_content
-    return if content.nil?
-
-    tmp = Tempfile.new ["secret_#{name}", "#{File.extname secret_file.path}"]
+    tmp = Tempfile.new [name, "#{File.extname uploader.path}"]
     tmp.write content
     tmp.rewind
     tmp
+  end
+
+  def local_secret_file
+    return unless self[:secret_file].present?
+
+    local_temp_file secret_file
   end
 
   private
