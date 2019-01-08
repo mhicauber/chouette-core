@@ -5,5 +5,6 @@ class WorkgroupOutputsController < ChouetteController
   def show
     @workgroup = current_organisation.workgroups.find params[:workgroup_id]
     @aggregates = @workgroup.aggregates.order("created_at desc").paginate(page: params[:page], per_page: 10)
+    @aggregates = AggregateDecorator.decorate(@aggregates)
   end
 end

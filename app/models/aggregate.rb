@@ -18,6 +18,22 @@ class Aggregate < ActiveRecord::Base
     workgroup
   end
 
+  def rollback!
+    raise "You cannot rollback to the current version" if current?
+    workgroup.output.update current: self.new
+    following_aggregates.each(&:cancel!)
+  end
+
+  def cancel!
+    update status: :canceled
+    new.rollbacked!
+  end
+
+  def following_aggregates
+    following_referentials = workgroup.output.referentials.where('created_at > ?', new.created_at)
+    workgroup.aggregates.where(new_id: following_referentials.pluck(:id))
+  end
+
   def aggregate
     update_column :started_at, Time.now
     update_column :status, :running
