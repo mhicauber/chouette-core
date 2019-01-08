@@ -53,6 +53,7 @@ module ChouetteIhm
     SmartEnv.add_boolean :SUBSCRIPTION_NOTIFIER_ENABLED
     SmartEnv.add_boolean :CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT
     SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
+    SmartEnv.add_boolean :CHOUETTE_TRANSACTIONAL_CHECKSUMS
 
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 
@@ -81,6 +82,8 @@ module ChouetteIhm
 
     config.additional_compliance_controls = []
     config.additional_compliance_controls.push *SmartEnv["CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS"].split(',')
+
+    config.enable_transactional_checksums = SmartEnv.boolean('CHOUETTE_TRANSACTIONAL_CHECKSUMS') 
 
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:

@@ -37,6 +37,8 @@ module Chouette::ChecksumManager
   end
 
   def self.start_transaction
+    return unless transaction_enabled?
+
     raise AlreadyInTransactionError if in_transaction?
     self.current = Chouette::ChecksumManager::Transactional.new
     log "=== NEW TRANSACTION ==="
@@ -47,6 +49,8 @@ module Chouette::ChecksumManager
   end
 
   def self.commit
+    return unless transaction_enabled?
+
     current.log "=== COMMITTING TRANSACTION ==="
     raise NotInTransactionError unless in_transaction?
     current.commit
@@ -62,10 +66,15 @@ module Chouette::ChecksumManager
     current.after_destroy object
   end
 
+  def self.transaction_enabled?
+    Rails.application.config.enable_transactional_checksums
+  end
+
   def self.transaction
     start_transaction
-    yield
+    out = yield
     commit
+    out
   end
 
   def self.watch object, from: nil
