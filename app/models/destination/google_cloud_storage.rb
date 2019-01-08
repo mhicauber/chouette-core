@@ -13,6 +13,8 @@ class Destination::GoogleCloudStorage < ::Destination
   end
 
   def upload_to_google_cloud file
+    return unless file
+    
     storage = Google::Cloud::Storage.new(
       project_id: self.project,
       credentials: local_secret_file.path
