@@ -45,4 +45,8 @@ class ReferentialPolicy < ApplicationPolicy
   def referential_read_only?
     record.referential_read_only?
   end
+
+  def show?
+    user.organisation.find_referential(record.id) rescue false
+  end
 end

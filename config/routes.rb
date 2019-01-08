@@ -6,22 +6,27 @@ ChouetteIhm::Application.routes.draw do
     post :upload, on: :member, controller: :export_uploads
   end
 
-  resources :workbenches, except: [:destroy, :edit] do
-    member do
-      get :edit_controls
-      put :update_controls
-    end
-    delete :referentials, on: :member, action: :delete_referentials
-    resources :api_keys
+  concern :iev_interfaces do
     resources :imports do
       get :download, on: :member
       resources :import_resources, only: [:index, :show] do
         resources :import_messages, only: [:index]
       end
     end
+  end
+
+  resources :workbenches, except: [:destroy, :edit], concerns: :iev_interfaces do
+    member do
+      get :edit_controls
+      put :update_controls
+    end
+    delete :referentials, on: :member, action: :delete_referentials
+    resources :api_keys
+
     resources :exports do
       post :upload, on: :member
     end
+
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
       resources :compliance_checks, only: [:show]
@@ -41,13 +46,14 @@ ChouetteIhm::Application.routes.draw do
     resources :referentials, only: %w(new create)
   end
 
-  resources :workgroups do
+  resources :workgroups, concerns: :iev_interfaces do
     member do
       get :edit_aggregate
       get :edit_controls
       put :update_controls
       get :edit_hole_sentinel
     end
+    resources :compliance_check_sets, only: [:index, :show]
     resource :output, controller: :workgroup_outputs
     resources :aggregates
     resources :publication_setups do
@@ -58,12 +64,6 @@ ChouetteIhm::Application.routes.draw do
       member do
         get 'month', defaults: { format: :json }
       end
-    end
-
-    resources :compliance_check_sets, only: [:index, :show] do
-      get :executed, on: :member
-      resources :compliance_checks, only: [:show]
-      resources :compliance_check_messages, only: [:index]
     end
   end
 

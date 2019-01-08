@@ -7,12 +7,13 @@ class Workgroup < ApplicationModel
   belongs_to :output, class_name: 'ReferentialSuite'
 
   has_many :workbenches, dependent: :destroy
+  has_many :imports, through: :workbenches
   has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
   has_many :aggregates
-  has_many :compliance_check_sets, through: :aggregates
   has_many :publication_setups
+  has_many :compliance_check_sets, through: :workbenches
 
   validates_uniqueness_of :name
 

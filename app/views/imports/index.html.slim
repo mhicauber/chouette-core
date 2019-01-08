@@ -1,4 +1,7 @@
-- breadcrumb :imports, @workbench
+- breadcrumb :imports, parent
+
+- if parent.is_a? Workgroup
+  - content_for(:page_header_title) { 'imports.workgroup_index.title'.t }
 
 .page_content
   .container-fluid
@@ -24,13 +27,10 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |import| \
-                  workbench_import_path(@workbench, import) \
+                  [parent, import] \
                 end \
               ), \
-              TableBuilderHelper::Column.new( \
-                key: :creator, \
-                attribute: 'creator' \
-              ) \
+              *@contextual_cols \
             ],
             cls: 'table has-search'
 

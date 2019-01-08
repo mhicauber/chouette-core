@@ -16,6 +16,10 @@ describe TableBuilderHelper::CustomLinks do
   end
 
   describe "#authorized_actions" do
+    before do
+      allow_any_instance_of(ReferentialPolicy).to receive(:show?){ true }
+    end
+
     it "includes :show" do
       referential = build_stubbed(:referential)
       user_context = UserContext.new(
@@ -26,7 +30,6 @@ describe TableBuilderHelper::CustomLinks do
         referential: referential
       )
 
-      stub_policy_scope(referential)
       expect(
         TableBuilderHelper::CustomLinks.new(
           referential,

@@ -13,6 +13,7 @@ module ApplicationHelper
 
   def page_header_title(object)
     # Unwrap from decorator, we want to know the object model name
+    return content_for(:page_header_title) if content_for?(:page_header_title)
     object = object.object if object.try(:object)
 
     if Referential === object

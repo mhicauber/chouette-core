@@ -19,6 +19,11 @@
         = f.simple_fields_for :created_at do |p|
           = p.input :start_date, as: :date, label: false, wrapper_html: {class: 'date smart_date filter_menu-item'}, default: @begin_range, include_blank: @begin_range ? false : true
           = p.input :end_date, as: :date, label: false, wrapper_html: {class: 'date smart_date filter_menu-item'}, default: @end_range, include_blank: @end_range ? false : true
+    - if parent.is_a?(Workgroup)
+      .form-group.togglable class=filter_item_class(params[:q], :workbench_id_eq_any)
+        = f.label Workbench.ts.capitalize, required: false, class: 'control-label'
+        = f.input :workbench_id_eq_any, collection: parent.workbenches.joins(:organisation).order('organisations.name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+
     .form-group.search
       .input-group.search_bar class=filter_item_class(params[:q], :compliance_control_set_name_cont)
         = f.search_field :compliance_control_set_name_cont, class: 'form-control', placeholder: t('compliance_check_sets.filters.name_compliance_control_set')

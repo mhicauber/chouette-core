@@ -12,6 +12,13 @@
         = link_to workgroup_output_path(workbench.workgroup), class: 'list-group-item' do
           span = 'layouts.navbar.workbench_outputs.workgroup'.t
 
+    - if policy(workbench.workgroup).edit?
+      = main_nav_menu_item 'activerecord.models.workgroup.one'.t.capitalize do
+        = link_to workgroup_imports_path(workbench.workgroup), class: "list-group-item" do
+          span = 'activerecord.models.import.other'.t.capitalize
+        = link_to workgroup_compliance_check_sets_path(workbench.workgroup), class: "list-group-item" do
+          span = 'activerecord.models.compliance_check_set.other'.t.capitalize
+
     .menu-item.panel
       = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
         = link_to workbench_path(workbench), class: "list-group-item" do

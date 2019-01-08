@@ -10,6 +10,7 @@ RSpec.describe '/imports/show', type: :view do
   before do
     assign :import, workbench_import.decorate( context: {workbench: workbench} )
     assign :workbench, workbench
+    allow(view).to receive(:parent).and_return(workbench)
     render
   end
 

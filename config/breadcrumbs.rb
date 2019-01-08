@@ -128,7 +128,11 @@ end
 
 crumb :compliance_check_sets do |ccset_parent|
   link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
-  parent ccset_parent.class.name.downcase.intern, ccset_parent
+  if ccset_parent.is_a?(Workbench)
+    parent :workbench, ccset_parent
+  else
+    parent :imports_parent, ccset_parent
+  end
 end
 
 crumb :compliance_check_set do |ccset_parent, compliance_check_set|
@@ -146,9 +150,17 @@ crumb :compliance_check_set_executed do |cc_set_parent, compliance_check_set|
   parent :compliance_check_sets, cc_set_parent
 end
 
-crumb :imports do |workbench|
-  link I18n.t('imports.index.title'), workbench_imports_path(workbench)
-  parent :workbench, workbench
+crumb :imports_parent do |imports_parent|
+  if imports_parent.is_a? Workgroup
+    link Workgroup.ts, [imports_parent]
+  else
+    link imports_parent.name, [imports_parent]
+  end
+end
+
+crumb :imports do |imports_parent|
+  link I18n.t('imports.index.title'), [imports_parent, :imports]
+  parent :imports_parent, imports_parent
 end
 
 crumb :exports do |workbench|
@@ -156,19 +168,19 @@ crumb :exports do |workbench|
   parent :workbench, workbench
 end
 
-crumb :import do |workbench, import|
-  link breadcrumb_name(import), workbench_import_path(workbench, import)
-  parent :imports, workbench
+crumb :import do |imports_parent, import|
+  link breadcrumb_name(import), [imports_parent, import]
+  parent :imports, imports_parent
 end
 
-crumb :netex_import do |workbench, netex_import|
-  link breadcrumb_name(netex_import), workbench_import_path(workbench, netex_import)
-  parent :import, workbench, netex_import.parent
+crumb :netex_import do |imports_parent, netex_import|
+  link breadcrumb_name(netex_import), [imports_parent, netex_import]
+  parent :import, imports_parent, netex_import.parent
 end
 
-crumb :gtfs_import do |workbench, gtfs_import|
-  link breadcrumb_name(gtfs_import), workbench_import_path(workbench, gtfs_import)
-  parent :import, workbench, gtfs_import.parent
+crumb :gtfs_import do |imports_parent, gtfs_import|
+  link breadcrumb_name(gtfs_import), [imports_parent, gtfs_import]
+  parent :import, imports_parent, gtfs_import.parent
 end
 
 crumb :export do |workbench, export|
