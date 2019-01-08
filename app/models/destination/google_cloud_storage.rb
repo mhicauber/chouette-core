@@ -21,6 +21,6 @@ class Destination::GoogleCloudStorage < ::Destination
     )
 
     bucket = storage.bucket self.bucket, skip_lookup: true
-    bucket.create_file file.path, File.basename(file.path)
+    bucket.create_file local_temp_file(file), File.basename(file.path)
   end
 end
