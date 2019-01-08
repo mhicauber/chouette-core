@@ -1,4 +1,4 @@
-- breadcrumb @publication, @publication_setup, @workgroup
+- breadcrumb @publication
 
 - page_header_content_for @publication
 
@@ -23,7 +23,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: ->(e){ operation_status(e, verbose: true) } \
+                attribute: ->(e){ operation_status(e) } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :type, \
@@ -31,15 +31,26 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
-                attribute: :name \
+                attribute: :name, \
+                link_to: lambda do |export| \
+                  workgroup_publication_setup_publication_export_path(@workgroup, @publication_setup, @publication, export) \
+                end \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :options, \
                 attribute: ->(e){ pretty_print_options(e.class, e.options) } \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :started_at, \
+                attribute: ->(n){ n.started_at ? l(n.started_at, format: :time) : '-' } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :ended_at, \
+                attribute: ->(n){ n.ended_at ? l(n.ended_at, format: :time) : '-' } \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :file, \
-                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank): "-" } \
+                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank) : "-" } \
               ), \
             ],
             sortable: false,

@@ -75,6 +75,7 @@ en:
         resources: "File to export"
         created_at: "Created on"
         started_at: "Started at"
+        ended_at: "Ended at"
         name: "Name"
         status: "Status"
         creator: "Creator"

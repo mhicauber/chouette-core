@@ -4,6 +4,7 @@ en:
     actions:
       index: Aggregated offer publications
       create: Add a Publication
+      destroy_confirm: "Are you sure you want destroy this publication setup ?"
   activerecord:
     models:
       publication_setup:

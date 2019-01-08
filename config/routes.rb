@@ -61,7 +61,9 @@ ChouetteIhm::Application.routes.draw do
       end
     end
     resources :publication_setups do
-      resources :publications, only: :show
+      resources :publications, only: :show do
+        resources :exports, only: :show
+      end
     end
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'

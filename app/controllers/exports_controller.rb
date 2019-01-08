@@ -49,6 +49,22 @@ class ExportsController < ChouetteController
     export_params
   end
 
+  def publication_setup
+    return unless params[:publication_setup_id]
+
+    workgroup.publication_setups.find params[:publication_setup_id]
+  end
+
+  def publication
+    return unless params[:publication_id]
+
+    @publication = publication_setup.publications.find params[:publication_id]
+  end
+
+  def begin_of_association_chain
+    publication || current_organisation
+  end
+
   def decorate_collection(exports)
     ExportDecorator.decorate(
       exports,
