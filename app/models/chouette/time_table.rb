@@ -164,7 +164,7 @@ module Chouette
     end
 
     def find_period_by_id id
-      self.periods.find id
+      self.periods.where(id: id).last
     end
 
     def build_period

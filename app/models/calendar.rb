@@ -106,7 +106,7 @@ class Calendar < ApplicationModel
   end
 
   def find_period_by_id id
-    self.periods.find{|p| p.id == id}
+    self.periods.find { |p| p.id == id }
   end
 
   def build_period
