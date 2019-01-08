@@ -21,16 +21,18 @@ class ReferentialCopy
   end
 
   def copy(raise_error: false)
-    copy_metadatas unless skip_metadatas?
-    copy_time_tables
-    copy_purchase_windows
-    source.switch do
-      lines.includes(:footnotes, :routes).each do |line|
-        copy_footnotes line
-        copy_routes line
+    ActiveRecord::Base.cache do
+      copy_metadatas unless skip_metadatas?
+      copy_time_tables
+      copy_purchase_windows
+      source.switch do
+        lines.includes(:footnotes, :routes).find_each do |line|
+          copy_footnotes line
+          copy_routes line
+        end
       end
+      @status = :successful
     end
-    @status = :successful
   rescue SaveError => e
     logger.error e.message
     failed! e.message
@@ -52,8 +54,8 @@ class ReferentialCopy
   # METADATAS
 
   def copy_metadatas
-    source.metadatas.each do |metadata|
-      ReferentialMetadata.bulk_insert do |worker|
+    ReferentialMetadata.bulk_insert do |worker|
+      source.metadatas.find_each do |metadata|
         candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
         candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes)
         controlled_save! candidate, worker
@@ -64,14 +66,27 @@ class ReferentialCopy
   # TIMETABLES
 
   def copy_time_tables
-    source.switch do
-      Chouette::TimeTable.linked_to_lines(lines).uniq.find_each do |tt|
-        attributes = clean_attributes_for_copy tt
+    Chouette::TimeTable.transaction do
+      source.switch do
+        Chouette::TimeTable.linked_to_lines(lines).uniq.find_each do |tt|
+          attributes = clean_attributes_for_copy tt
+          target.switch do
+            new_tt = Chouette::TimeTable.new attributes
+            controlled_save! new_tt
+            copy_bulk_collection tt.dates do |new_date_attributes|
+              new_date_attributes[:time_table_id] = new_tt.id
+            end
+            copy_bulk_collection tt.periods do |new_period_attributes|
+              new_period_attributes[:time_table_id] = new_tt.id
+            end
+          end
+        end
         target.switch do
-          new_tt = Chouette::TimeTable.new attributes
-          copy_collection tt, new_tt, :dates
-          copy_collection tt, new_tt, :periods
-          controlled_save! new_tt
+          Chouette::TimeTable.select(:id, :checksum, :checksum_source, :int_day_types).includes(:dates, :periods).find_each do |new_tt|
+            # We could store the checksum and update the col manually,
+            # but this way we ensure we copied all the relevant data correctly
+            new_tt.update_checksum_without_callbacks!
+          end
         end
       end
     end
@@ -80,22 +95,13 @@ class ReferentialCopy
   # PURCHASE WINDOWS
 
   def copy_purchase_windows
-    purchase_window_attributes = source.switch do
-      Chouette::PurchaseWindow.linked_to_lines(lines).uniq.find_each.map do |purchase_window|
-        clean_attributes_for_copy purchase_window
-      end
-    end
-    target.switch do
-      purchase_window_attributes.each do |attributes|
-        controlled_save! Chouette::PurchaseWindow.new attributes
-      end
-    end
+    copy_bulk_collection Chouette::PurchaseWindow.linked_to_lines(lines).uniq
   end
 
   # FOOTNOTES
 
   def copy_footnotes line
-    line.footnotes.each do |footnote|
+    line.footnotes.find_each do |footnote|
       copy_item_to_target_collection footnote, line.footnotes
     end
   end
@@ -103,7 +109,7 @@ class ReferentialCopy
   # ROUTES
 
   def copy_routes line
-    line.routes.each &method(:copy_route)
+    line.routes.find_each &method(:copy_route)
   end
 
   def copy_route route
@@ -121,19 +127,34 @@ class ReferentialCopy
       # we copy the journey_patterns
       copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
         retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid], [:objectid]
+
+        stop_points_mapping = Hash[
+          *new_route.stop_points.pluck(:objectid, :id).flatten
+        ]
+
         copy_bulk_collection journey_pattern.courses_stats do |new_stat_attributes|
           new_stat_attributes[:journey_pattern_id] = new_journey_pattern.id
           new_stat_attributes[:route_id] = new_route.id
         end
+
         copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
           new_vj.route = new_route
           retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables, [:checksum], [:checksum]
           retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows, [:checksum], [:checksum, :date_ranges]
-          copy_collection vj, new_vj, :vehicle_journey_at_stops do |vjas, new_vjas|
-            query = source.switch { vjas.stop_point.slice(:objectid) }
-            new_vjas.stop_point = new_journey_pattern.stop_points.find_by(query)
+        end
+
+        vjs_mapping = Hash[
+          *new_journey_pattern.vehicle_journeys.pluck(:objectid, :id).flatten
+        ]
+        source.switch do
+          journey_pattern.vehicle_journeys.find_each do |vj|
+            copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
+              new_vjas_attributes[:vehicle_journey_id] = vjs_mapping[vj.objectid]
+              new_vjas_attributes[:stop_point_id] = stop_points_mapping[vjas.stop_point.objectid]
+            end
           end
         end
+        new_journey_pattern.vehicle_journeys.reload.each &:update_checksum!
       end
 
       # we copy the routing_constraint_zones
@@ -150,10 +171,15 @@ class ReferentialCopy
   # |_||_|___|____|_| |___|_|_\|___/
   #
   def copy_bulk_collection collection, &block
-    collection.klass.bulk_insert do |worker|
-      each_item_in_source_collection(collection) do |item|
-        block.call(item) if block_given?
-        worker.add clean_attributes_for_copy item
+    target.switch do
+      collection.klass.bulk_insert do |worker|
+        each_item_in_source_collection(collection) do |item|
+          attributes = clean_attributes_for_copy item, strict: false
+          block.call(attributes, item) if block_given?
+          target.switch(verbose: false) do
+            worker.add attributes
+          end
+        end
       end
     end
   end
@@ -173,21 +199,25 @@ class ReferentialCopy
 
   def retrieve_collection_with_mapping from, to, find_collection, collection_name, keys, select=nil
     queries = []
-    from_collection = from.send(collection_name)
-    from_collection = from_collection.select(*select) if select.present?
-    each_item_in_source_collection(from_collection) do |item|
-      queries << item.slice(*keys)
+    if from.is_a? Chouette::RoutingConstraintZone
+      # we need the dirty switch because of the has_many_in_array stuff
+      from_collection = source.switch(verbose: false) { from.send(collection_name).to_a }
+    else
+      from_collection = from.send(collection_name)
     end
-
+    from_collection = from_collection.select(:id, *select) if select.present?
     to_collection = to.send(collection_name)
-    queries.each do |q|
-      to_collection << find_collection.find_by(q)
+    each_item_in_source_collection(from_collection) do |item|
+      target.switch(verbose: false) do
+        to_collection << find_collection.find_by(item.slice(*keys))
+      end
     end
   end
 
   def each_item_in_source_collection collection
     source.switch do
-      collection.each do |item|
+      meth = collection.respond_to?(:find_each) ? :find_each : :each
+      collection.send(meth) do |item|
         yield item
       end
     end
@@ -203,13 +233,16 @@ class ReferentialCopy
     end
   end
 
-  def clean_attributes_for_copy model
-    model.attributes.dup.except(*%w(id created_at updated_at opposite_route_id position))
+  def clean_attributes_for_copy model, strict: true
+    removed_attrs = %w(id created_at updated_at opposite_route_id)
+    removed_attrs += %w(position) if strict
+
+    model.attributes.dup.except(*removed_attrs)
   end
 
   def controlled_save! model, worker=nil
     begin
-      if worker
+      if worker && model.new_record?
         model.validate!
         worker.add clean_attributes_for_copy model
       else

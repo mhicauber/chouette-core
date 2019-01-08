@@ -56,10 +56,10 @@ module Chouette
       [].tap do |attrs|
         attrs << self.int_day_types
         dates = self.dates
-        dates += TimeTableDate.where(time_table_id: self.id) if db_lookup
+        dates += TimeTableDate.where(time_table_id: self.id) if db_lookup && !new_record?
         attrs << dates.map(&:checksum).map(&:to_s).uniq.sort
         periods = self.periods
-        periods += TimeTablePeriod.where(time_table_id: self.id) if db_lookup
+        periods += TimeTablePeriod.where(time_table_id: self.id) if db_lookup && !new_record?
         attrs << periods.map(&:checksum).map(&:to_s).uniq.sort
       end
     end
@@ -202,9 +202,10 @@ module Chouette
     end
 
     def save_shortcuts
-        shortcuts_update
-        self.update_column(:start_date, start_date)
-        self.update_column(:end_date, end_date)
+      shortcuts_update
+      return unless changes.key?(:start_date) || changes.key?(:end_date)
+
+      self.update_columns start_date: start_date, end_date: end_date
     end
 
     def shortcuts_update(date=nil)
