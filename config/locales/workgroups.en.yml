@@ -1,7 +1,7 @@
 en:
   workgroups:
     edit_controls: &edit_controls
-      title: "Workgroups Settings"
+      title: "Workgroups Compliance Compliance Check Set Settings"
     edit:
       <<: *edit_controls
     edit_aggregate:
