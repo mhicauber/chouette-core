@@ -73,6 +73,8 @@ Rails.application.configure do
   end
 
   config.additional_compliance_controls << "dummy"
+
+  config.enable_transactional_checksums = true
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|
