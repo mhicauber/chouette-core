@@ -24,6 +24,8 @@ class Referential < ApplicationModel
   attr_accessor :upper_corner
   attr_accessor :lower_corner
 
+  attr_accessor :from_current_offer
+
   has_one :user
   has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
   has_many :compliance_check_sets, dependent: :nullify
@@ -364,6 +366,7 @@ class Referential < ApplicationModel
   # Don't use after_commit because of inline_clone (cf created_from)
   after_create :clone_schema, if: :created_from
   after_create :active!, unless: :created_from
+  after_create :create_from_current_offer, if: :from_current_offer
 
   before_destroy :destroy_schema
   before_destroy :destroy_jobs
@@ -458,6 +461,9 @@ class Referential < ApplicationModel
     end
   end
 
+  def create_from_current_offer
+    CurrentOfferCloningWorker.fill_from_current_offer self
+  end
 
   attr_accessor :inline_clone
   def clone_schema
@@ -471,14 +477,14 @@ class Referential < ApplicationModel
   end
 
   def create_schema
-    unless created_from
-      report = Benchmark.measure do
-        Apartment::Tenant.create slug
-      end
+    return if created_from
 
-      check_migration_count(report)
-      # raise "Wrong migration count: #{migration_count}" if migration_count < 300
+    report = Benchmark.measure do
+      Apartment::Tenant.create slug
     end
+
+    check_migration_count(report)
+    # raise "Wrong migration count: #{migration_count}" if migration_count < 300
   end
 
   def check_migration_count(report)

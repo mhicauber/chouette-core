@@ -70,11 +70,13 @@ class Workbench < ApplicationModel
     if line_ids.empty?
       Referential.none
     else
-      workgroup
-        .referentials
-        .joins(:metadatas)
-        .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
-        .not_in_referential_suite
+      Referential.where(id: workgroup
+                            .referentials
+                            .joins(:metadatas)
+                            .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
+                            .not_in_referential_suite.pluck(:id).uniq
+                       )
+
     end
   end
 

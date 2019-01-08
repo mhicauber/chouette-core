@@ -25,6 +25,8 @@ module Chouette
       .where("purchase_windows_vehicle_journeys.vehicle_journey_id is null")
     }
 
+    scope :linked_to_lines, ->(lines) { joins(vehicle_journeys: :route).where('routes.line_id' => lines.map(&:id)) }
+
     # VehicleJourneys include PurchaseWindow checksums in their checksums
     # OPTIMIZEME
     def update_vehicle_journey_checksums
