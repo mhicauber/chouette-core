@@ -85,7 +85,7 @@ class Devise::CasSessionsController < Devise::SessionsController
 
   def cas_login_url
     flash.clear # Fix 2742
-    ::Devise.cas_client.add_service_to_login_url(::Devise.cas_service_url(request.url, devise_mapping))
+    ::Devise.cas_client.add_service_to_login_url(cas_service_url)
   end
   helper_method :cas_login_url
 
@@ -118,7 +118,11 @@ class Devise::CasSessionsController < Devise::SessionsController
   end
 
   def cas_service_url
-    ::Devise.cas_service_url(request_url.dup, devise_mapping)
+    if Rails.application.config.chouette_authentication_settings.try(:[], :cas_service_url)
+      return Rails.application.config.chouette_authentication_settings[:cas_service_url]
+    end
+    
+    ::Devise.cas_service_url(request.url.dup, devise_mapping)
   end
 
   def cas_logout_url

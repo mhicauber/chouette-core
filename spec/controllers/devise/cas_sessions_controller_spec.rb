@@ -7,7 +7,6 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
     @request.env["devise.mapping"] = Devise.mappings[:user]
   end
 
-
   context 'login is correctly redirected' do
     let( :signed_in_user ){ build_stubbed :user }
     it 'to #service' do
@@ -34,6 +33,27 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
       @user.permissions << 'sessions.create'
       get :service
       expect(response).to redirect_to(authenticated_root_path)
+    end
+  end
+
+  describe 'cas_service_url' do
+    let( :signed_in_user ){ build_stubbed :allmighty_user }
+    context 'without custom values' do
+      before(:each) do
+        allow(Rails.application.config).to receive(:chouette_authentication_settings) { nil }
+      end
+      it 'should use the request url' do
+        expect(controller.send(:cas_service_url)).to eq "http://test.host/users/service"
+      end
+    end
+
+    context 'with a custom cas_service_url config' do
+      before(:each) do
+        allow(Rails.application.config).to receive(:chouette_authentication_settings) { { cas_service_url: 'http://foo.com/users/foo' } }
+      end
+      it 'should use the setup url' do
+        expect(controller.send(:cas_service_url)).to eq "http://foo.com/users/foo"
+      end
     end
   end
 end
