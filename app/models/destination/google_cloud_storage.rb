@@ -8,13 +8,11 @@ class Destination::GoogleCloudStorage < ::Destination
 
   def do_transmit(publication, report)
     publication.exports.each do |export|
-      upload_to_google_cloud export.file
+      upload_to_google_cloud export.file if export[:file]
     end
   end
 
   def upload_to_google_cloud file
-    return unless file
-    
     storage = Google::Cloud::Storage.new(
       project_id: self.project,
       credentials: local_secret_file.path
