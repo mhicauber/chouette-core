@@ -4,7 +4,7 @@ module OptionsSupport
     def self.option name, opts={}
       store_accessor :options, name
 
-      opts[:default_value] = opts.delete :default
+      opts[:default_value] ||= opts.delete :default
 
       if opts[:serialize]
         define_method name do
