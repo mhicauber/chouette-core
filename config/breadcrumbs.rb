@@ -185,7 +185,7 @@ end
 
 crumb :export do |export_parent, export|
   if export_parent.is_a?(Workbench)
-    link breadcrumb_name(export), workbench_export_path(workbench, export)
+    link breadcrumb_name(export), workbench_export_path(export_parent, export)
     parent :exports, export_parent
   else
     link breadcrumb_name(export), [export_parent.publication_setup.workgroup, export_parent.publication_setup, export_parent, export]
