@@ -1,5 +1,4 @@
 / PageHeader
-
 - breadcrumb :workbench_output, @workbench
 - content_for :page_header_title, t('.title')
 - content_for :page_header_content do
@@ -29,6 +28,10 @@
               TableBuilderHelper::Column.new( \
                 name: t(".table_headers.ended_at"), \
                 attribute: Proc.new { |n| l(n.ended_at, format: :short_with_time) if n.ended_at }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t(".table_headers.aggregated_at"), \
+                attribute:  Proc.new { |n| n.aggregated_at ? l(n.aggregated_at, format: :short_with_time) : '-' }\
               ), \
               TableBuilderHelper::Column.new( \
                 key: :creator, \
