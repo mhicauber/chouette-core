@@ -22,7 +22,7 @@ module ComplianceBlockSupport
   end
 
   def transport_mode?
-    block_kind.to_s == "transport_mode"
+    block_kind.blank? || block_kind.to_s == "transport_mode"
   end
 
   def accept_iev_controls?
