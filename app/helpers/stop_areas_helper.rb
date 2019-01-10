@@ -103,4 +103,57 @@ module StopAreasHelper
     Chouette::AreaType.options(kind)
   end
 
+  def stop_area_identification_metadatas(stop_area, stop_area_referential)
+    attributes = { t('id_reflex') => stop_area.get_objectid.short_id,
+      Chouette::StopArea.tmf('name') => stop_area.name,
+      Chouette::StopArea.tmf('kind') => stop_area.kind,
+    }
+
+    if has_feature?(:stop_area_localized_names)
+      stop_area.localized_names.each do |k, v|
+        attributes.merge!(label_for_country(k, Chouette::StopArea.tmf('name')) => v ) if v.present?
+      end
+    end
+
+    attributes.merge!(Chouette::StopArea.tmf('parent') => stop_area.parent ? link_to(stop_area.parent.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area.parent)) : "-") if stop_area.commercial?
+    attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(stop_area.area_type).try(:label),
+      Chouette::StopArea.tmf('registration_number') => stop_area.registration_number,
+      Chouette::StopArea.tmf('status') => stop_area_status(stop_area.status),
+    )
+    providers = stop_area.stop_area_providers.map do |provider|
+      link_to provider.name, [provider.stop_area_referential, provider]
+    end
+    
+    attributes.merge!(StopAreaProvider.t.capitalize => providers.to_sentence.html_safe)
+  end
+
+  def stop_area_location_metadatas(stop_area, stop_area_referential)
+    {
+      "Coordonnées" => geo_data(stop_area, stop_area_referential),
+      Chouette::StopArea.tmf('street_name') => stop_area.street_name,
+      Chouette::StopArea.tmf('zip_code') => stop_area.zip_code,
+      Chouette::StopArea.tmf('city_name') => stop_area.city_name,
+      Chouette::StopArea.tmf('country_code') => stop_area.country_code.presence || '-',
+      Chouette::StopArea.tmf('time_zone') => stop_area.time_zone.presence || '-',
+    }            
+  end
+
+  def stop_area_general_metadatas(stop_area)
+    attributes = {}
+    attributes.merge!(Chouette::StopArea.tmf('waiting_time') => stop_area.waiting_time_text) if has_feature?(:stop_area_waiting_time)
+    attributes.merge!(Chouette::StopArea.tmf('fare_code') => stop_area.fare_code,
+      Chouette::StopArea.tmf('url') => stop_area.url,
+    )
+    unless manage_itl
+      attributes.merge!(Chouette::StopArea.tmf('mobility_restricted_suitability') => stop_area.mobility_restricted_suitability? ? "yes".t : "no".t,
+        Chouette::StopArea.tmf('stairs_availability') => stop_area.stairs_availability? ? "yes".t : "no".t,
+        Chouette::StopArea.tmf('lift_availability') => stop_area.lift_availability? ? "yes".t : "no".t,
+      )
+    end
+    stop_area.custom_fields.each do |code, field|
+      attributes.merge!(field.name => field.display_value)
+    end
+    attributes.merge!(Chouette::StopArea.tmf('comment') => stop_area.try(:comment))
+  end
+
 end
