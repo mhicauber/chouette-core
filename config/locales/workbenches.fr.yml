@@ -3,11 +3,11 @@ fr:
     current_offer: Offre courante
     show:
       title: "Offre de transport %{name}"
-    edit_controls:
+    edit:
       title: "Paramétrage de la validation"
       link:  "Paramétrages"
       none: "Aucun contrôle"
-    update_controls:
+    update:
       title: "Paramétrage de la validation"
     referential_count:
       zero: "Aucun jeu de données dans cet espace de travail"
