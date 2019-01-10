@@ -24,11 +24,12 @@ class MergeDecorator < AF83::Decorator
       l.href { h.referential_path(object.new) }
     end
   end
-  
+
   define_instance_method :aggregated_at do
     return nil unless object.successful?
 
-    aggregate = Aggregate.where("workgroup_id = ? AND status = 'successful' AND referential_ids @> ARRAY[?]::bigint[]", object.workgroup.id, [object.new_id]).first
-    aggregate&.ended_at
+    scope = Aggregate.successful.where(workgroup_id: object.workgroup.id)
+    scope = scope.where("referential_ids @> ARRAY[?]::bigint[]", [object.new_id])
+    scope.order('created_at ASC').last&.ended_at
   end
 end
