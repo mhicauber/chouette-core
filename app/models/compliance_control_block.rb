@@ -8,7 +8,4 @@ class ComplianceControlBlock < ApplicationModel
   validates :compliance_control_set, presence: true
 
   alias_method :name, :block_name
-
-  def self.block_kinds
-  end
 end
