@@ -6,7 +6,7 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def show?
-    user.workgroups.pluck(:id).include?(record.workbench.workgroup_id)
+    super || record.workbench.workgroup.owner == user.organisation
   end
 
   def create?
