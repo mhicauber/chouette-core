@@ -5,6 +5,10 @@ class ImportPolicy < ApplicationPolicy
     end
   end
 
+  def show?
+    super || record.workbench.workgroup.owner == user.organisation
+  end
+
   def create?
     user.has_permission?('imports.create')
   end

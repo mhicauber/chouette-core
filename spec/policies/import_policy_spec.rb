@@ -3,7 +3,7 @@ RSpec.describe ImportPolicy, type: :policy do
   let(:record) { create :import }
   before(:each) { user.organisation = create(:organisation) }
 
-  context "when the workbench belongs to another organisation" do
+  context "when the workbench belongs to another organisation (other workgroup)" do
     permissions :index? do
       it "allows user" do
         expect_it.to permit(user_context, record)
@@ -12,6 +12,91 @@ RSpec.describe ImportPolicy, type: :policy do
     permissions :show? do
       it "denies user" do
         expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :create? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :destroy? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :edit? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :new? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :update? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+  end
+
+  context "when the workbench belongs to another organisation (same workgroup)" do
+    before do
+      allow(user.workgroups).to receive(:pluck).with(:id).and_return [record.workbench.workgroup_id]
+    end
+
+    permissions :index? do
+      it "allows user" do
+        expect_it.to permit(user_context, record)
+      end
+    end
+    permissions :show? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :create? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :destroy? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :edit? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :new? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+    permissions :update? do
+      it "denies user" do
+        expect_it.not_to permit(user_context, record)
+      end
+    end
+  end
+
+  context "when the workbench belongs to another organisation (same workgroup) but i am the owner of the workgroup" do
+    before do
+      record.workbench.workgroup.update owner_id: user.organisation_id
+      allow(user.workgroups).to receive(:pluck).with(:id).and_return [record.workbench.workgroup_id]
+    end
+
+    permissions :index? do
+      it "allows user" do
+        expect_it.to permit(user_context, record)
+      end
+    end
+    permissions :show? do
+      it "allow user" do
+        expect_it.to permit(user_context, record)
       end
     end
     permissions :create? do

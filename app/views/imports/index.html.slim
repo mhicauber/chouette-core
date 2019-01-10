@@ -27,7 +27,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |import| \
-                  [parent, import] \
+                  policy(import).show? ? [parent, import] : nil \
                 end \
               ), \
               *@contextual_cols \
