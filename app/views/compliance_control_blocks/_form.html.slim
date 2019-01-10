@@ -10,7 +10,7 @@
 
       - if block_kinds.size > 1
         .form-group
-          = f.input :block_kind, as: :select, collection: block_kinds.map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}, include_blank: false, required: true
+          = f.input :block_kind, as: :select, collection: block_kinds.map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}, include_blank: false
       - else
         = f.hidden_field :block_kind, value: block_kinds.first
 
