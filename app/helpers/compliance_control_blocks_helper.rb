@@ -9,7 +9,8 @@ module ComplianceControlBlocksHelper
   end
 
   def block_kinds
-    block_kinds = %w[transport_mode]
-    block_kinds << :stop_areas_in_countries if has_feature?(:core_control_blocks)
+    %w[transport_mode].tap do |block_kinds|
+      block_kinds << :stop_areas_in_countries if has_feature?(:core_control_blocks)
+    end
   end
 end
