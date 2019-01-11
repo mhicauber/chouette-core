@@ -140,7 +140,7 @@ module ApplicationHelper
   res
   end
 
-  def cancel_button
-    link_to t('cancel'), :back, method: :get, class: 'btn btn-primary formSubmitr', data: {:confirm =>  t('cancel_confirm')}
+  def cancel_button(cancel_path = :back)
+    link_to t('cancel'), cancel_path, method: :get, class: 'btn btn-primary formSubmitr', data: {:confirm =>  t('cancel_confirm')}
   end
 end
