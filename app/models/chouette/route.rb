@@ -94,8 +94,7 @@ module Chouette
         !referential.in_referential_suite? &&
         !prevent_costs_calculation &&
         # Check the presence of features in organisation
-        referential.organisation.has_feature?(:route_calculate_costs) &&
-        referential.organisation.has_feature?(:costs_in_journey_patterns)
+        has_tomtom_features?
       }
 
     scope :with_at_least_three_stop_points, -> { joins(:stop_points).group('routes.id').having("COUNT(stop_points.id) >= 3") }
@@ -277,5 +276,9 @@ module Chouette
       all( :conditions => ['vehicle_journeys.id NOT IN (?)', Chouette::VehicleJourneyAtStop.where(stop_point_id: stop_point_id).pluck(:vehicle_journey_id)] )
     end
 
+    def has_tomtom_features?
+      referential.organisation.has_feature?(:route_calculate_costs) &&
+      referential.organisation.has_feature?(:costs_in_journey_patterns)
+    end
   end
 end

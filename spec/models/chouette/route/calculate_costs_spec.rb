@@ -29,7 +29,5 @@ RSpec.describe Chouette::Route do
 
       expect(route.costs).to eq({ "test" => { distance: 42, time: 123 } })
     end
-
   end
-
 end
