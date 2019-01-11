@@ -22,9 +22,11 @@
 
       .slave data-master="[name='compliance_control_block[block_kind]']" data-value="transport_mode"
         .form-group
-          = f.input :transport_mode, as: :select, collection: ComplianceControlBlock.sorted_transport_modes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe }, include_blank: false, input_html: { class: 'js-transport-mode-select' }
+          = f.input :transport_mode, as: :select, collection: ComplianceControlBlock.sorted_transport_modes, label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe }, include_blank: false
         .form-group
-          = f.input :transport_submode, as: :select, collection: [], input_html: { class: 'js-transport-submode-select', data: { transport_submodes: Chouette::Line.formatted_submodes_for_transports, selected: f.object.transport_submode } }
+          - Chouette::Line.formatted_submodes_for_transports.each do |mode, submodes|
+            .slave data-master="[name='compliance_control_block[transport_mode]']" data-value=mode
+              = f.input :transport_submode, as: :select, collection: submodes, include_blank: false
 
   .separator
 

@@ -61,8 +61,8 @@ module NetexTransportSubmodeEnumerations
       submodes_for_transports.map do |t,s|
         {
           t => s.map do |k|
-            { value: k, label: I18n.t("enumerize.transport_submode.#{ k.presence || 'undefined' }") }
-          end.sort_by { |k| k[:value] ? k[:label] : "" }
+            [I18n.t("enumerize.transport_submode.#{ k.presence || 'undefined' }"), k]
+          end.sort_by { |k| k.last ? k.first : "" }
         }
       end.reduce({}, :merge)
     end
