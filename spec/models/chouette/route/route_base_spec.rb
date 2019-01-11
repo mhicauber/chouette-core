@@ -15,7 +15,7 @@ RSpec.describe Chouette::Route, :type => :model do
   #it { is_expected.to validate_presence_of :direction_code }
   it { is_expected.to validate_inclusion_of(:direction).in_array(%i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)) }
   it { is_expected.to validate_inclusion_of(:wayback).in_array(%i(outbound inbound)) }
-  
+
   context "reordering methods" do
     let(:bad_stop_point_ids){subject.stop_points.map { |sp| sp.id + 1}}
     let(:ident){subject.stop_points.map(&:id)}
@@ -62,20 +62,43 @@ RSpec.describe Chouette::Route, :type => :model do
   end
 
   context "callbacks" do
-    it "calls #calculate_costs! after_commit when TomTom is enabled", truncation: true do
-      allow(TomTom).to receive(:enabled?).and_return(true)
-      route = build(:route)
+    context 'when TomTom is enabled' do
+      before(:each) do
+        allow(TomTom).to receive(:enabled?).and_return(true)
+      end
 
-      expect(route).to receive(:calculate_costs!)
-      route.save
+      it "doesn't call #calculate_costs! after_commit", truncation: true do
+        route = build(:route)
+
+        expect(route).not_to receive(:calculate_costs!)
+        route.save
+      end
+
+      context 'when the organisation has the corresponding features' do
+        before(:each) do
+          allow_any_instance_of(Chouette::Route).to receive(:has_tomtom_features?){ true }
+        end
+
+        it "calls #calculate_costs! after_commit when TomTom is enabled", truncation: true do
+          route = build(:route)
+
+          expect(route).to receive(:calculate_costs!)
+          route.save
+        end
+      end
     end
 
-    it "doesn't call #calculate_costs! after_commit if TomTom is disabled", truncation: true do
-      allow(TomTom).to receive(:enabled?).and_return(false)
-      route = build(:route)
+    context 'when TomTom is disabled' do
+      before(:each) do
+        allow(TomTom).to receive(:enabled?).and_return(false)
+      end
 
-      expect(route).not_to receive(:calculate_costs!)
-      route.save
+      it "doesn't call #calculate_costs! after_commit", truncation: true do
+        route = build(:route)
+
+        expect(route).not_to receive(:calculate_costs!)
+        route.save
+      end
     end
 
     it "doesn't call #calculate_costs! after_commit if in a ReferentialSuite",
