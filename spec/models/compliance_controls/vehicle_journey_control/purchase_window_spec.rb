@@ -29,6 +29,8 @@ RSpec.describe VehicleJourneyControl::PurchaseWindow, :type => :model do
   }
 
   before(:each) do
+    create(:referential_metadata, lines: [line, line_2], referential: referential)
+    referential.reload
     referential.switch do
       failing
       failing_too

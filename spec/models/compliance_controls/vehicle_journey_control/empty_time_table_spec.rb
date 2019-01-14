@@ -25,6 +25,8 @@ RSpec.describe VehicleJourneyControl::EmptyTimeTable, :type => :model do
   }
 
   before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
     referential.switch do
       succeeding.time_tables << tt
       failing.time_tables << empty_tt

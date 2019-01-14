@@ -28,6 +28,8 @@ RSpec.describe VehicleJourneyControl::PublishedJourneyName, :type => :model do
   }
 
   before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
     referential.switch do
       vj
     end
@@ -47,7 +49,7 @@ RSpec.describe VehicleJourneyControl::PublishedJourneyName, :type => :model do
         Chouette::VehicleJourney.update_all(published_journey_name: "15")
       end
     end
-    
+
      context "when the criticity is warning" do
       it "should set the status according to its params" do
         expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1

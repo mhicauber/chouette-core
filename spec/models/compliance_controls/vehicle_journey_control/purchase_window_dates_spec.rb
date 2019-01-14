@@ -28,6 +28,8 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
   }
 
   before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
     referential.switch do
       time_table
       empty_time_table
