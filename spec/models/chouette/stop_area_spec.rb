@@ -162,6 +162,16 @@ describe Chouette::StopArea, :type => :model do
       expect(stop_area.errors).to_not have_key(:parent_id)
     end
 
+    it "is valid when parent has the same kind" do
+      stop_area.area_type = 'zdep' # Ensure right parent_area_type
+      stop_area.parent.area_type = 'zdlp' # Ensure right parent_area_type
+      stop_area.kind = 'commercial'
+      stop_area.parent.kind = 'commercial'
+      
+      stop_area.valid?
+      expect(stop_area.errors).to_not have_key(:parent_id)
+    end
+
     it "is valid when parent is undefined" do
       stop_area.parent = nil
 
@@ -179,6 +189,16 @@ describe Chouette::StopArea, :type => :model do
     it "isn't valid when parent has a lower type" do
       stop_area.area_type = 'lda'
       stop_area.parent.area_type = 'zdep'
+
+      stop_area.valid?
+      expect(stop_area.errors).to have_key(:parent_id)
+    end
+
+    it "isn't valid when parent has a different kind" do
+      stop_area.area_type = 'zdep' # Ensure right parent_area_type
+      stop_area.parent.area_type = 'zdlp' # Ensure right parent_area_type
+      stop_area.kind = 'commercial'
+      stop_area.parent.kind = 'non_commercial'
 
       stop_area.valid?
       expect(stop_area.errors).to have_key(:parent_id)
