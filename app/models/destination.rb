@@ -3,11 +3,13 @@ class Destination < ApplicationModel
 
   belongs_to :publication_setup
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
+  belongs_to :publication_api, class_name: '::PublicationApi'
 
   validates :name, :type, presence: true
 
   mount_uploader :secret_file, SecretFileUploader
   validates :secret_file, presence: true, if: :secret_file_required?
+  validate :api_is_not_already_used
 
   @secret_file_required = false
 
@@ -63,6 +65,17 @@ class Destination < ApplicationModel
   private
   def self.custom_i18n_key
     model_name.to_s.underscore.gsub('/', '.')
+  end
+
+  def api_is_not_already_used
+    return unless publication_api.present?
+
+    scope = publication_api.publication_setups.where(export_type: publication_setup.export_type)
+    if publication_setup.export_type == "Export::Netex"
+      scope = scope.where("export_options->export_type = ?", publication_setup.options["export_type"])
+    end
+    return if scope.empty?
+    errors.add(:publication_api_id, I18n.t('destinations.errors.publication_api.already_used'))
   end
 end
 

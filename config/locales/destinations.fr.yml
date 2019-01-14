@@ -8,6 +8,9 @@ fr:
       edit: Modifier une Destination
     show:
       title: "Destination %{name}"
+    errors:
+      publication_api:
+        already_used: Cette API de publication est déjà utilisée par une Publication similaire
   activerecord:
     models:
       destination:
@@ -26,6 +29,10 @@ fr:
           zero:  "SFTP"
           one:   "SFTP"
           other: "SFTP"
+        publication_api:
+          zero:  "API de publication"
+          one:   "API de publication"
+          other: "APIs de publication"
     attributes:
       destination:
         name: "Nom"

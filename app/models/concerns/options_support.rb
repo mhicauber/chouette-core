@@ -48,6 +48,10 @@ module OptionsSupport
     end
   end
 
+  def options
+    read_attribute(:options) || {}
+  end
+
   def visible_options
     (options || {}).select{|k, v| ! k.match  /^_/}
   end
