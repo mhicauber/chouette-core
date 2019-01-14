@@ -62,6 +62,7 @@ Apartment.configure do |config|
     'Organisation',
     'Publication',
     'PublicationApi',
+    'PublicationApiKey',
     'PublicationSetup',
     'Referential',
     'ReferentialCloning',

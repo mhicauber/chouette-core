@@ -12,8 +12,22 @@ class PublicationApisController < ChouetteController
     end
   end
 
+  def show
+    show! do |format|
+      format.html {
+        @api_keys = PublicationApiKeyDecorator.decorate(
+          @publication_api.api_keys.order('created_at DESC').paginate(page: params[:page]),
+          context: {
+            workgroup: @workgroup,
+            publication_api: @publication_api
+          }
+        )
+      }
+    end
+  end
+
   private
-  
+
   def resource
     super.decorate(context: { workgroup: parent })
   end

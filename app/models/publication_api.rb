@@ -1,5 +1,6 @@
 class PublicationApi < ActiveRecord::Base
   belongs_to :workgroup
+  has_many :api_keys, class_name: 'PublicationApiKey'
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true

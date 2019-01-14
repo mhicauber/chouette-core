@@ -53,6 +53,16 @@ crumb :publication_api do |publication_api|
   parent :publication_apis, publication_api.workgroup
 end
 
+crumb :new_publication_api_key do |publication_api|
+  link 'publication_api_keys.actions.new'.t
+  parent publication_api
+end
+
+crumb :publication_api_key do |publication_api_key|
+  link publication_api_key.name
+  parent publication_api_key.publication_api
+end
+
 crumb :new_publication_api do |workgroup|
   link 'publication_apis.actions.new'.t
   parent :publication_apis, workgroup
