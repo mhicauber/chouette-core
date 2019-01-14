@@ -49,6 +49,7 @@ module Chouette
     validates_numericality_of :waiting_time, greater_than_or_equal_to: 0, only_integer: true, if: :waiting_time
     validates :time_zone, inclusion: { in: TZInfo::Timezone.all_country_zone_identifiers }, allow_nil: true, allow_blank: true
     validate :parent_area_type_must_be_greater
+    validate :parent_kind_must_be_the_same
     validate :area_type_of_right_kind
     validate :registration_number_is_set
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
@@ -73,6 +74,14 @@ module Chouette
       parent_area_type = Chouette::AreaType.find(self.parent.area_type)
       if Chouette::AreaType.find(self.area_type) >= parent_area_type
         errors.add(:parent_id, I18n.t('stop_areas.errors.parent_area_type', area_type: parent_area_type.label))
+      end
+    end
+
+    def parent_kind_must_be_the_same
+      return unless self.parent
+
+      unless kind == self.parent.kind
+        errors.add(:parent_id, I18n.t('stop_areas.errors.parent_kind', kind: kind))
       end
     end
 
