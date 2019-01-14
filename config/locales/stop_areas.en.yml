@@ -5,6 +5,7 @@ en:
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
+      parent_kind: "must have the same kind as the child stop area : %{kind}"
       registration_number:
         already_taken: Already taken
         cannot_be_empty: This field is mandatory
