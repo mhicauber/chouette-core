@@ -10,6 +10,8 @@ fr:
         already_taken: Déjà utilisé
         cannot_be_empty: Ce champ est requis
         invalid: "Valeur invalide (valeur attendue: \"%{mask}\")"
+      parent_id:
+        must_be_absent: Un parent ne peut être sélectionné pour un arrêt non commercial
     default_geometry_success: "%{count} arrêts édités"
     stop_area:
       no_position: "Pas de position"
