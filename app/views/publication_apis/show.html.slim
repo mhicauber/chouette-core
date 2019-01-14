@@ -1,0 +1,15 @@
+- breadcrumb @publication_api, @workgroup
+
+- page_header_content_for @publication_api
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = { PublicationApi.tmf(:name) => @publication_api.name }
+        - metadatas.update( PublicationApi.tmf(:slug) => @publication_api.slug )
+        - metadatas.update( PublicationApi.tmf(:public_url) => @publication_api.public_url )
+        = definition_list t('metadatas'), metadatas
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list PublicationApi.tmf(:publications), { TODO: "TODO" }

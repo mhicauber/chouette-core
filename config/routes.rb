@@ -56,11 +56,15 @@ ChouetteIhm::Application.routes.draw do
         put :rollback
       end
     end
+    
     resources :publication_setups do
       resources :publications, only: :show do
         resources :exports, only: :show
       end
     end
+
+    resources :publication_apis
+
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do

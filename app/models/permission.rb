@@ -24,6 +24,7 @@ class Permission
         workbenches
         workgroups
         publication_setups
+        publication_apis
       ]
     end
 

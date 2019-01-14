@@ -13,6 +13,7 @@ class Workgroup < ApplicationModel
   has_many :referentials, through: :workbenches
   has_many :aggregates
   has_many :publication_setups
+  has_many :publication_apis
   has_many :compliance_check_sets, through: :workbenches
 
   validates_uniqueness_of :name

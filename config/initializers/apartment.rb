@@ -61,6 +61,7 @@ Apartment.configure do |config|
     'Merge',
     'Organisation',
     'Publication',
+    'PublicationApi',
     'PublicationSetup',
     'Referential',
     'ReferentialCloning',
