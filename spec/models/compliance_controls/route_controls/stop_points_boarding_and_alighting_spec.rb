@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe RouteControl::StopPointsBoardingAndAlighting, :type => :model do
-  let!(:line){ create :line }
-  let!(:ref){ create :workbench_referential, metadatas: [create(:referential_metadata, lines: [line])] }
+  let(:line_referential){ referential.line_referential }
+  let!(:line){ create :line, line_referential: line_referential }
   let!(:route) {create :route, line: line}
   let(:control_attributes){
     {}
@@ -20,15 +20,17 @@ RSpec.describe RouteControl::StopPointsBoardingAndAlighting, :type => :model do
   }
 
   before {
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
     stop_area = create :stop_area, kind: :non_commercial, area_type: :border
     route.stop_points.create stop_area: stop_area
-    expect(ref.stop_points.non_commercial.count).to be > 0
-    expect(ref.stop_points.commercial.count).to be > 0
+    expect(referential.stop_points.non_commercial.count).to be > 0
+    expect(referential.stop_points.commercial.count).to be > 0
   }
 
   context "when the stop points have all boarding & alighting set to forbidden" do
     before do
-      ref.stop_points.non_commercial.update_all(for_boarding: "forbidden", for_alighting: "forbidden")
+      referential.stop_points.non_commercial.update_all(for_boarding: "forbidden", for_alighting: "forbidden")
     end
     it "should pass" do
       expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
@@ -39,7 +41,7 @@ RSpec.describe RouteControl::StopPointsBoardingAndAlighting, :type => :model do
 
   context "when at least one stop point have boarding or alighting set to normal" do
     before do
-      ref.stop_points.non_commercial.last.update(for_boarding: "normal", for_alighting: "normal")
+      referential.stop_points.non_commercial.last.update(for_boarding: "normal", for_alighting: "normal")
     end
 
     context "when the criticity is warning" do

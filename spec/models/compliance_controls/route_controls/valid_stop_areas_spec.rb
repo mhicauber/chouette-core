@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe RouteControl::ValidStopAreas, :type => :model do
-  let!(:line){ create :line }
-  let!(:ref){ create :workbench_referential, metadatas: [create(:referential_metadata, lines: [line])] }
+  let(:line_referential){ referential.line_referential }
+  let!(:line){ create :line, line_referential: line_referential }
   let!(:route) {create :route, line: line}
   let!(:route2) {create :route, line: line}
   let(:criticity){ "error" }
@@ -15,6 +15,11 @@ RSpec.describe RouteControl::ValidStopAreas, :type => :model do
       compliance_check_set: compliance_check_set,
       criticity: criticity
   }
+
+  before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
+  end
 
   context "when the routes only uses valid StopAreas" do
     before(:each) do
