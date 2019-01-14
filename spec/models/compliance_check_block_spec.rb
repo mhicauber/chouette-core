@@ -107,7 +107,8 @@ RSpec.describe ComplianceCheckBlock, type: :model do
     let(:collection_type) { :lines }
 
     before(:each) do
-      referential.switch
+      create :referential_metadata, referential: referential, lines: [generic_line, bus_line, nightBus_line, fr_line, be_line]
+      referential.reload.switch
       Chouette::StopArea.update_all stop_area_referential_id: referential.stop_area_referential_id
       allow(compliance_check.control_class).to receive(:collection_type){ collection_type }
     end
