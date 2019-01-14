@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe JourneyPatternControl::MinMaxDistanceCost, :type => :model do
-  let!(:line){ create :line }
-  let!(:ref){ create :workbench_referential, metadatas: [create(:referential_metadata, lines: [line])] }
+  let(:line_referential){ referential.line_referential }
+  let!(:line){ create :line, line_referential: line_referential }
   let!(:route) {create :route, line: line}
   let!(:jp) { create :journey_pattern, route: route}
   let(:criticity){ "error" }
@@ -24,6 +24,8 @@ RSpec.describe JourneyPatternControl::MinMaxDistanceCost, :type => :model do
   }
 
   before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
     jp.update costs: costs
   end
 

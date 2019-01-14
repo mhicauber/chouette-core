@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe JourneyPatternControl::MinimumLength, :type => :model do
-  let!(:line){ create :line }
-  let!(:ref){ create :workbench_referential, metadatas: [create(:referential_metadata, lines: [line])] }
+  let(:line_referential){ referential.line_referential }
+  let!(:line){ create :line, line_referential: line_referential }
   let!(:route) {create :route, line: line}
   let!(:jp) { create :journey_pattern, route: route}
   let(:criticity){ "error" }
@@ -15,6 +15,11 @@ RSpec.describe JourneyPatternControl::MinimumLength, :type => :model do
       compliance_check_set: compliance_check_set,
       criticity: criticity
   }
+
+  before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
+  end
 
   context "when the journey pattern have all 2 or more stop points" do
     it "should pass" do

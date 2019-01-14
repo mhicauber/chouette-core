@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe RouteControl::BorderCount, :type => :model do
-  let!(:line){ create :line }
-  let!(:ref){ create :workbench_referential, metadatas: [create(:referential_metadata, lines: [line])] }
+  let(:line_referential){ referential.line_referential }
+  let!(:line){ create :line, line_referential: line_referential }
 
   let(:control_attributes){
     {}
@@ -19,6 +19,11 @@ RSpec.describe RouteControl::BorderCount, :type => :model do
       criticity: criticity
   }
 
+  before(:each) do
+    create(:referential_metadata, lines: [line], referential: referential)
+    referential.reload
+  end
+  
   context "when route stays in the same country" do
     before do
       route = create :route, line: line
