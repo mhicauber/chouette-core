@@ -33,9 +33,9 @@ module NetexTransportSubmodeEnumerations
     end
 
     def sorted_transport_submodes
-      transport_submodes.map do |m|
-        I18n.t("enumerize.transport_submode.#{m}")
-      end.sort
+      transport_submodes.sort_by do |m|
+        I18n.t("enumerize.transport_submode.#{m}").parameterize
+      end
     end
 
     def submodes_for_transports
