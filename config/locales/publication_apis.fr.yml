@@ -8,7 +8,7 @@ fr:
       edit: Modifier une API de Publication
       destroy_confirm: "Etes vous sûr de supprimer cette API de Publication ?"
     show:
-      title: "API de Publication %{name}"
+      title: "API de Publication “%{name}”"
     form:
       sections:
         params: "Paramètres techniques de l'API"

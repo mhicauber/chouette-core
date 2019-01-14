@@ -2,7 +2,7 @@ fr:
   publication_api_keys:
     search_no_results: "Aucune clé d'api"
     show:
-      title: "Clé d'API de Publication %{name}"
+      title: "Clé d'API de Publication “%{name}”"
     actions:
       create: Ajouter une Clé d'API de Publication
       new: Nouvelle Clé d'API de Publication
