@@ -1,8 +1,20 @@
 class Api::V1::DatasController < ActionController::Base
   before_action :load_publication_api
+  before_action :check_auth_token, except: :infos
+
+  rescue_from PublicationApi::InvalidAuthenticationError, with: :invalid_authentication_error
+  rescue_from PublicationApi::MissingAuthenticationError, with: :missing_authentication_error
 
   def infos
     render layout: 'api'
+  end
+
+  def invalid_authentication_error
+    render :invalid_authentication_error, layout: 'api', status: 401
+  end
+
+  def missing_authentication_error
+    render :missing_authentication_error, layout: 'api', status: 401
   end
 
   def download_full
@@ -14,5 +26,15 @@ class Api::V1::DatasController < ActionController::Base
 
   def load_publication_api
     @publication_api = PublicationApi.find_by! slug: params[:slug]
+  end
+
+  def check_auth_token
+    key = nil
+    authenticate_with_http_basic do |code, token|
+      key = @publication_api.api_keys.find_by token: token
+      raise PublicationApi::InvalidAuthenticationError unless key
+      return true
+    end
+    raise PublicationApi::MissingAuthenticationError unless key
   end
 end

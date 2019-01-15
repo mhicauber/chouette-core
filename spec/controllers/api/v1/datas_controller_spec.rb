@@ -16,69 +16,54 @@ RSpec.describe Api::V1::DatasController, type: :controller do
     end
   end
 
-  describe 'get #download_full' do
-    let(:slug) { :foo }
-    let(:key) { :foo }
-    let(:request) { get :download_full, slug: slug, key: key }
+  context 'when needing authentication' do
+    let(:auth_token) { 'token' }
 
-    it 'should not be successful' do
-      expect{ request }.to raise_error ActiveRecord::RecordNotFound
+    before do
+      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('_', auth_token)
     end
 
-    context 'with a publication_api' do
-      let(:publication_api) { create(:publication_api) }
-      let(:slug) { publication_api.slug }
+    describe 'get #download_full' do
+      let(:slug) { :foo }
+      let(:key) { :foo }
+      let(:get_request) { get :download_full, slug: slug, key: key }
 
       it 'should not be successful' do
-        expect{ request }.to raise_error ActiveRecord::RecordNotFound
+        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
       end
 
-      context 'with a publication_api_source' do
-        before(:each) do
-          create :publication_api_source, publication_api: publication_api, key: key, file: file
+      context 'with a publication_api' do
+        let(:publication_api) { create(:publication_api) }
+        let(:publication_api_key) { create :publication_api_key }
+        let(:auth_token) { publication_api_key.token }
+
+        let(:slug) { publication_api.slug }
+
+        it 'should not be successful' do
+          get_request
+          expect(response).to_not be_success
         end
 
-        it 'should be successful' do
-          request
-          expect(response).to be_success
+        context 'with a publication_api_source' do
+          before(:each) do
+            create :publication_api_source, publication_api: publication_api, key: key, file: file
+          end
+
+          it 'should not be successful' do
+            get_request
+            expect(response).to_not be_success
+          end
+
+          context 'authenticated' do
+            let(:publication_api_key) { create :publication_api_key, publication_api: publication_api }
+
+            it 'should be successful' do
+              get_request
+              expect(response).to be_success
+            end
+          end
         end
       end
     end
   end
-
-
-
-  # context 'authenticated' do
-  #   include_context 'iboo authenticated api user'
-  #
-  #   describe 'GET #index' do
-  #     it 'should be successful' do
-  #       get :index, workbench_id: workbench.id, format: :json
-  #       expect(response).to be_success
-  #     end
-  #   end
-  #
-  #   describe 'POST #create' do
-  #     let(:file) { fixture_file_upload('multiple_references_import.zip') }
-  #
-  #     it 'should be successful' do
-  #       expect {
-  #         post :create, {
-  #           workbench_id: workbench.id,
-  #           workbench_import: {
-  #             name: "test",
-  #             file: file,
-  #             creator: 'test',
-  #             options: {
-  #               "automatic_merge": true
-  #             }
-  #           },
-  #           format: :json
-  #         }
-  #       }.to change{Import::Workbench.count}.by(1)
-  #       expect(response).to be_success
-  #       expect(Import::Workbench.last.automatic_merge).to be_truthy
-  #     end
-  #   end
-  # end
 end

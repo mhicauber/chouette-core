@@ -25,4 +25,7 @@ class PublicationApi < ActiveRecord::Base
     end
     scope.order(:created_at).last
   end
+
+  class InvalidAuthenticationError < RuntimeError; end
+  class MissingAuthenticationError < RuntimeError; end
 end
