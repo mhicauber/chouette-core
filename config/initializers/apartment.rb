@@ -64,6 +64,7 @@ Apartment.configure do |config|
     'PublicationApi',
     'PublicationApiKey',
     'PublicationSetup',
+    'PublicationApiSource',
     'Referential',
     'ReferentialCloning',
     'ReferentialMetadata',

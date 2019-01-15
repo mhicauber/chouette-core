@@ -3,6 +3,7 @@ class PublicationApi < ActiveRecord::Base
   has_many :api_keys, class_name: 'PublicationApiKey'
   has_many :destinations
   has_many :publication_setups, through: :destinations
+  has_many :publication_api_sources
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
@@ -13,5 +14,15 @@ class PublicationApi < ActiveRecord::Base
 
   def public_url
     "#{SmartEnv['RAILS_HOST']}/api/v1/datas/#{slug}"
+  end
+
+  def publication_for_export_type(export_type, export_options={})
+    return nil if publications.empty?
+
+    scope = publications.joins(:publication_setup).where('publication_setups.export_type = ?', export_type)
+    export_options.each do |k, v|
+      scope = scope.where("publication_setups.export_options->'#{k}' = ?", v)
+    end
+    scope.order(:created_at).last
   end
 end

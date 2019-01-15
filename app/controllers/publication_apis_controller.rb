@@ -15,6 +15,7 @@ class PublicationApisController < ChouetteController
   def show
     show! do |format|
       format.html {
+        @publication_api_sources = @publication_api.publication_api_sources
         @api_keys = PublicationApiKeyDecorator.decorate(
           @publication_api.api_keys.order('created_at DESC').paginate(page: params[:page]),
           context: {

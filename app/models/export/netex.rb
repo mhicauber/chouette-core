@@ -9,6 +9,10 @@ class Export::Netex < Export::Base
     end
   end
 
+  def self.human_name(options={})
+    I18n.t("export.#{self.name.demodulize.underscore}.#{options['export_type']}")
+  end
+
   private
 
   def iev_callback_url

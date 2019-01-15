@@ -15,6 +15,10 @@ class PublicationSetup < ApplicationModel
     export_type.presence&.safe_constantize || Export::Base
   end
 
+  def human_export_name
+    new_export.human_name
+  end
+
   def export_creator_name
     "#{self.class.ts} #{name}"
   end

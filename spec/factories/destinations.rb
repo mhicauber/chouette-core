@@ -6,4 +6,6 @@ FactoryGirl.define do
     options nil
     secret_file nil
   end
+
+  factory :publication_api_destination, parent: :destination, class: 'Destination::PublicationApi'
 end

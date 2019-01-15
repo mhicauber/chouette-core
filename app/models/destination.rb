@@ -1,5 +1,6 @@
 class Destination < ApplicationModel
   include OptionsSupport
+  include RemoteFilesHandler
 
   belongs_to :publication_setup
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
@@ -46,16 +47,6 @@ class Destination < ApplicationModel
     self.ts
   end
 
-  def local_temp_file(uploader)
-    url = "#{SmartEnv['RAILS_HOST']}#{uploader.url}"
-    content = open(url).read.force_encoding('utf-8')
-
-    tmp = Tempfile.new [name, "#{File.extname uploader.path}"]
-    tmp.write content
-    tmp.rewind
-    tmp
-  end
-
   def local_secret_file
     return unless self[:secret_file].present?
 
@@ -71,10 +62,13 @@ class Destination < ApplicationModel
     return unless publication_api.present?
 
     scope = publication_api.publication_setups.where(export_type: publication_setup.export_type)
+    scope = scope.where('publication_setups.id != ?', publication_setup.id) if publication_setup.persisted?
+
     if publication_setup.export_type == "Export::Netex"
-      scope = scope.where("export_options->export_type = ?", publication_setup.options["export_type"])
+      scope = scope.where("export_options->export_type = ?", publication_setup.export_options["export_type"])
     end
     return if scope.empty?
+
     errors.add(:publication_api_id, I18n.t('destinations.errors.publication_api.already_used'))
   end
 end

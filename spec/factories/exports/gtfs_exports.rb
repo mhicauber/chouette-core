@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :gtfs_export, class: Export::Gtfs, parent: :export do
     association :parent, factory: :workgroup_export
-    duration 90
+    options({duration: 90})
+    type 'Export::Gtfs'
   end
 end

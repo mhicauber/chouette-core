@@ -25,7 +25,7 @@ class Export::Base < ActiveRecord::Base
       "Export::Resource"
     end
 
-    def human_name
+    def human_name(options={})
       I18n.t("export.#{self.name.demodulize.underscore}")
     end
 
@@ -37,7 +37,7 @@ class Export::Base < ActiveRecord::Base
   end
 
   def human_name
-    self.class.human_name
+    self.class.human_name(options)
   end
   alias_method :human_type, :human_name
 
