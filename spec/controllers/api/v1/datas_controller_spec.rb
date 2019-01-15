@@ -65,5 +65,49 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         end
       end
     end
+
+    describe 'get #download_line' do
+      let(:slug) { :foo }
+      let(:key) { :foo }
+      let(:line_id) { :foo }
+      let(:get_request) { get :download_line, slug: slug, key: key, line_id: line_id }
+
+      it 'should not be successful' do
+        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
+      end
+
+      context 'with a publication_api' do
+        let(:publication_api) { create(:publication_api) }
+        let(:publication_api_key) { create :publication_api_key }
+        let(:auth_token) { publication_api_key.token }
+
+        let(:slug) { publication_api.slug }
+
+        it 'should not be successful' do
+          get_request
+          expect(response).to_not be_success
+        end
+
+        context 'with a publication_api_source' do
+          before(:each) do
+            create :publication_api_source, publication_api: publication_api, key: "#{key}-#{line_id}", file: file
+          end
+
+          it 'should not be successful' do
+            get_request
+            expect(response).to_not be_success
+          end
+
+          context 'authenticated' do
+            let(:publication_api_key) { create :publication_api_key, publication_api: publication_api }
+
+            it 'should be successful' do
+              get_request
+              expect(response).to be_success
+            end
+          end
+        end
+      end
+    end
   end
 end

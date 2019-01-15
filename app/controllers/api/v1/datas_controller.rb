@@ -22,6 +22,11 @@ class Api::V1::DatasController < ActionController::Base
     send_file source.file.path
   end
 
+  def download_line
+    source = @publication_api.publication_api_sources.find_by! key: "#{params[:key]}-#{params[:line_id]}"
+    send_file source.file.path
+  end
+
   protected
 
   def load_publication_api
