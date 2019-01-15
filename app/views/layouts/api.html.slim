@@ -1,0 +1,18 @@
+doctype html
+html lang=I18n.locale
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+
+    = csrf_meta_tag
+
+    title = t('brandname')
+    = stylesheet_link_tag 'base'
+    = stylesheet_link_tag 'api'
+
+  body
+    .container-fluid
+      .page_header
+        .brandname= link_to t('brandname'), root_path
+
+      = yield
