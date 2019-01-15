@@ -1,12 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::DatasController, type: :controller do
-  context 'unauthenticated' do
+  let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
 
-    describe 'GET #info' do
-      it 'should not be successful' do
-        expect{ get :infos, slug: :foo }.to raise_error ActiveRecord::RecordNotFound
-      end
+  describe 'GET #info' do
+    it 'should not be successful' do
+      expect{ get :infos, slug: :foo }.to raise_error ActiveRecord::RecordNotFound
     end
 
     context 'with a publication_api' do
@@ -16,6 +15,38 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       end
     end
   end
+
+  describe 'get #download_full' do
+    let(:slug) { :foo }
+    let(:key) { :foo }
+    let(:request) { get :download_full, slug: slug, key: key }
+
+    it 'should not be successful' do
+      expect{ request }.to raise_error ActiveRecord::RecordNotFound
+    end
+
+    context 'with a publication_api' do
+      let(:publication_api) { create(:publication_api) }
+      let(:slug) { publication_api.slug }
+
+      it 'should not be successful' do
+        expect{ request }.to raise_error ActiveRecord::RecordNotFound
+      end
+
+      context 'with a publication_api_source' do
+        before(:each) do
+          create :publication_api_source, publication_api: publication_api, key: key, file: file
+        end
+
+        it 'should be successful' do
+          request
+          expect(response).to be_success
+        end
+      end
+    end
+  end
+
+
 
   # context 'authenticated' do
   #   include_context 'iboo authenticated api user'

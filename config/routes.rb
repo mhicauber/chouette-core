@@ -187,6 +187,7 @@ ChouetteIhm::Application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'datas/:slug', to: 'datas#infos', as: :infos
+      get 'datas/:slug.:key.zip', to: 'datas#download_full', as: :download_full
 
       resources :workbenches, except: %i(destroy) do
         resources :imports, only: [:index, :show, :create]

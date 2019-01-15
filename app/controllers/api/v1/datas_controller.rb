@@ -5,6 +5,11 @@ class Api::V1::DatasController < ActionController::Base
     render layout: 'api'
   end
 
+  def download_full
+    source = @publication_api.publication_api_sources.find_by! key: params[:key]
+    send_file source.file.path
+  end
+
   protected
 
   def load_publication_api
