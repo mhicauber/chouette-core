@@ -64,6 +64,14 @@ class User < ApplicationModel
     "#{name} <#{email}>"
   end
 
+  def profile=(profile_name)
+    self.permissions = Permission::Profile.permissions_for(profile_name)
+  end
+
+  def profile
+    Permission::Profile.profile_for(permissions)
+  end
+
   private
 
   # remove organisation and referentials if last user of it

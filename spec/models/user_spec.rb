@@ -18,4 +18,22 @@ RSpec.describe User, :type => :model do
       end
     end
   end
+
+  let(:user) { build :user, permissions: [] }
+  describe '#profile' do
+    it 'should be :custom by default' do
+      expect(user.profile).to eq :custom
+    end
+
+    it 'should match the given profiles' do
+      Permission::Profile.each do |profile|
+        p "profile: #{profile}"
+        user.profile = profile
+        expect(user.profile).to eq profile
+        expect(user.permissions).to eq Permission::Profile.permissions_for(profile)
+        user.permissions.pop
+        expect(user.profile).to eq :custom
+      end
+    end
+  end
 end
