@@ -122,6 +122,33 @@ RSpec.describe Import::Gtfs do
       expect(workbench.stop_area_referential.stop_areas.pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
+    it "should use the agency timezone by default" do
+      import.import_agencies
+      import.import_stops
+
+      expect(workbench.stop_area_referential.stop_areas.first.time_zone).to eq("America/Los_Angeles")
+    end
+
+    context 'with an invalid timezone' do
+      let(:stop) do
+        GTFS::Stop.new(
+          id: 'stop_id',
+          name: 'stop',
+          location_type: '2',
+          timezone: "incorrect timezone"
+        )
+      end
+
+      before(:each) do
+        allow(import.source).to receive(:stops) { [stop] }
+      end
+
+      it 'should create an error message' do
+        expect { import.import_stops }.to change { Import::Message.count }.by(1)
+          .and(change { Chouette::StopArea.count })
+      end
+    end
+
     context 'with an inexistant parent stop' do
       let(:child) do
         GTFS::Stop.new(
@@ -147,7 +174,8 @@ RSpec.describe Import::Gtfs do
         GTFS::Stop.new(
           id: 'parent_id',
           name: 'parent',
-          location_type: '1'
+          location_type: '1',
+          timezone: 'America/Los_Angeles'
         )
       end
 
@@ -156,7 +184,8 @@ RSpec.describe Import::Gtfs do
           id: 'child_id',
           name: 'child',
           parent_station: 'parent_id',
-          location_type: '2'
+          location_type: '2',
+          timezone: 'Europe/Paris'
         )
       end
 
@@ -169,6 +198,12 @@ RSpec.describe Import::Gtfs do
         parent = Chouette::StopArea.find_by(registration_number: 'parent_id')
         child = Chouette::StopArea.find_by(registration_number: 'child_id')
         expect(child.parent).to eq parent
+      end
+
+      it 'should use the parent timezone' do
+        import.import_stops
+        child = Chouette::StopArea.find_by(registration_number: 'child_id')
+        expect(child.time_zone).to eq 'America/Los_Angeles'
       end
 
       context 'when the parent is not valid' do
