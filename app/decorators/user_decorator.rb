@@ -31,7 +31,7 @@ class UserDecorator < AF83::Decorator
       l.content t('users.actions.unblock')
       l.confirm t('users.actions.unblock_confirm')
       l.href do
-        h.block_organisation_user_path(
+        h.unblock_organisation_user_path(
           object
         )
       end

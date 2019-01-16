@@ -6,9 +6,9 @@ fr:
       destroy: "Supprimer cet utilisateur"
       destroy_confirm: "Etes vous sûr de supprimer cet utilisateur ?"
       block: "Bloquer l'utilisateur"
-      block_confirm: "Etes vous sûr de bloquer cet utilisateur ?"
-      unblock: "Déloquer l'utilisateur"
-      unblock_confirm: "Etes vous sûr de débloquer cet utilisateur ?"
+      block_confirm: "Voulez-vous bloquer cet utilisateur ? Ce dernier ne pourra plus se connecter à la plateforme"
+      unblock: "Débloquer l'utilisateur"
+      unblock_confirm: "Voulez-vous débloquer cet utilisateur ?"
     new:
       title: "Ajouter un utilisateur"
     edit:

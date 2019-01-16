@@ -55,6 +55,10 @@ en:
       body: |
         Hello %{email} !<br/><br/>
         You can now confirm your subscription by clicking on the following link<br/>
+    unlock_mailer:
+      subject: Your account has been deactivated
+      title: Hello %{email} !
+      body: "Your account has been dactivated.<br />Please reach your organisation's admin for further info."
     password_mailer:
       updated:
         subject: Set up new password

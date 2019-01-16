@@ -5,6 +5,10 @@ en:
       edit: "Edit this user"
       destroy: "Remove this user"
       destroy_confirm: "Are you sure you want destroy this user?"
+      block: "Lock user"
+      block_confirm: "Do you want to lock this user ? They won't be able to access the service anymore"
+      unblock: "Unlock user"
+      unblock_confirm: "Do you want to unlock this user ?"
     new:
       title: "Add a new user"
     edit:

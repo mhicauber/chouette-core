@@ -49,6 +49,10 @@ fr:
       subject: Instructions de confirmation
       title: Bonjour %{email} !
       body: "Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:"
+    unlock_mailer:
+      subject: Votre compte a été désactivé
+      title: Bonjour %{email} !
+      body: "Votre compte a été désactivé.<br />Merci de contacter les administrateurs de votre organisation pour plus d’informations."
     password_mailer:
       updated:
         subject: Réinitialiser votre mot de passe

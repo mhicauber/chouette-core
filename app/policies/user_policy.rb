@@ -22,11 +22,11 @@ class UserPolicy < ApplicationPolicy
   end
 
   def block?
-    update? && !record.blocked?
+    update? && !record.blocked? && record != user
   end
 
   def unblock?
-    update? && record.blocked?
+    update? && record.blocked? && record != user
   end
 
   def organisation_match?

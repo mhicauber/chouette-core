@@ -26,12 +26,12 @@ class UsersController < ChouetteController
   end
 
   def block
-    #XXX
+    resource.lock_access!
     redirect_to :back
   end
 
   def unblock
-    #XXX
+    resource.unlock_access!
     redirect_to :back
   end
 
