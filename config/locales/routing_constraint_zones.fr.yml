@@ -46,3 +46,4 @@ fr:
     index:
       title: "Interdictions de trafic local"
       search_no_results: "Aucune ITL ne correspond à votre recherche"
+      cannot_create: "Il n'est pas possible de créer des ITL sur cette ligne, l'ensemble des itinéraires associés ont moins de 3 arrêts"
