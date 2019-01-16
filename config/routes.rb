@@ -201,7 +201,12 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resource :organisation, :only => [:show, :edit, :update] do
-    resources :users
+    resources :users do
+      member do
+        put :block
+        put :unblock
+      end
+    end
   end
 
   resources :compliance_control_sets do

@@ -25,6 +25,16 @@ class UsersController < ChouetteController
     end
   end
 
+  def block
+    #XXX
+    redirect_to :back
+  end
+
+  def unblock
+    #XXX
+    redirect_to :back
+  end
+
   private
   def user_params
     params.require(:user).permit( :id, :name, :email )

@@ -40,12 +40,42 @@ class User < ApplicationModel
     self.password ||= Devise.friendly_token.first(6)
     self.password_confirmation ||= self.password
   end
+
+  before_validation do
+    # we sort permissions to make it easier to match them against profiles
+    self.permissions&.sort!
+  end
+
   after_destroy :check_destroy_organisation
 
   scope :with_organisation, -> { where.not(organisation_id: nil) }
 
   scope :from_workgroup, ->(workgroup_id) { joins(:workbenches).where(workbenches: {workgroup_id: workgroup_id}) }
 
+  scope :with_profiles, ->(*profile_names) do
+    profile_names = profile_names.map(&:to_s).uniq
+    actual_profiles = profile_names.dup - [Permission::Profile::DEFAULT_PROFILE.to_s]
+    q = (['permissions::text[] = ARRAY[?]'] * actual_profiles.size)
+    permissions = actual_profiles.map {|p| Permission::Profile.permissions_for(p) }
+
+    if profile_names.include?(Permission::Profile::DEFAULT_PROFILE.to_s)
+      remaining_profiles = Permission::Profile.all - actual_profiles
+      sub_q = (['permissions::text[] <> ARRAY[?]'] * remaining_profiles.size).join(' AND ')
+      q << "(#{sub_q})"
+      permissions += remaining_profiles.map {|p| Permission::Profile.permissions_for(p) }
+    end
+
+    where(q.join(' OR '), *permissions)
+  end
+
+  scope :with_states, ->(*states) do
+    subqueries = states.select(&:present?).map{|state| "(#{subquery_for_state(state)})" }
+    where(subqueries.join(' OR '))
+  end
+
+  def self.ransackable_scopes(auth_object = nil)
+    super + %w[with_profiles with_states]
+  end
 
   # Callback invoked by DeviseCasAuthenticable::Model#authernticate_with_cas_ticket
   def cas_extra_attributes=(extra_attributes)
@@ -69,7 +99,49 @@ class User < ApplicationModel
   end
 
   def profile
-    Permission::Profile.profile_for(permissions)
+    Permission::Profile.profile_for(permissions).to_sym
+  end
+
+  def blocked?
+    locked_at.present?
+  end
+
+  def invited?
+    invitation_sent_at.present?
+  end
+
+  def confirmed?
+    confirmed_at.present?
+  end
+
+  def state
+    %i[blocked confirmed invited].each do |s|
+      return s if send("#{s}?")
+    end
+
+    :pending
+  end
+
+  def self.all_states
+    %i[blocked confirmed invited pending]
+  end
+
+  def self.all_states_i18n
+    all_states.map {|p| [p.to_s, "users.states.#{p}".t]}
+  end
+
+  def self.subquery_for_state(state)
+    case state.to_s
+
+    when 'blocked'
+      'locked_at IS NOT NULL'
+    when 'confirmed'
+      'confirmed_at IS NOT NULL AND locked_at IS NULL'
+    when 'invited'
+      'invitation_sent_at IS NOT NULL AND confirmed_at IS NULL AND locked_at IS NULL'
+    when 'pending'
+      'invitation_sent_at IS NULL AND confirmed_at IS NULL AND locked_at IS NULL'
+    end
   end
 
   private

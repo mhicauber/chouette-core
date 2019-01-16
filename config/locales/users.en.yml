@@ -13,6 +13,11 @@ en:
       title: "User %{user}"
     index:
       title: "Users"
+    states:
+      pending: Pending
+      confirmed: Confirmed
+      invited: Invited
+      blocked: Locked
   activerecord:
     models:
       user: "user"
@@ -21,6 +26,8 @@ en:
         name: "Full name"
         username: "Username"
         permissions: Permissions
+        profile: Profile
+        state: State
     errors:
       models:
         calendar:

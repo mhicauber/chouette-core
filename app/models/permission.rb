@@ -87,7 +87,7 @@ class Permission
   end
 
   class Profile
-    @profiles = {}
+    @profiles = HashWithIndifferentAccess.new
 
     DEFAULT_PROFILE = :custom
 
@@ -97,11 +97,15 @@ class Permission
       end
 
       def each &block
-        @profiles.keys.each &block
+        all.each &block
+      end
+
+      def all
+        @profiles.keys.map(&:to_sym)
       end
 
       def all_i18n
-        (@profiles.keys + [DEFAULT_PROFILE]).map {|p| [p, "permissions.profiles.#{p}.name".t]}
+        (@profiles.keys + [DEFAULT_PROFILE]).map {|p| [p.to_s, "permissions.profiles.#{p}.name".t]}
       end
 
       def permissions_for(profile_name)

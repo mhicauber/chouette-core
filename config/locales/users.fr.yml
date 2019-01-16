@@ -5,6 +5,10 @@ fr:
       edit: "Editer cet utilisateur"
       destroy: "Supprimer cet utilisateur"
       destroy_confirm: "Etes vous sûr de supprimer cet utilisateur ?"
+      block: "Bloquer l'utilisateur"
+      block_confirm: "Etes vous sûr de bloquer cet utilisateur ?"
+      unblock: "Déloquer l'utilisateur"
+      unblock_confirm: "Etes vous sûr de débloquer cet utilisateur ?"
     new:
       title: "Ajouter un utilisateur"
     edit:
@@ -13,14 +17,25 @@ fr:
       title: "Utilisateur %{user}"
     index:
       title: "Utilisateurs"
+      name_or_email_cont: "Nom ou email"
+    states:
+      pending: En Attente
+      confirmed: Confirmé
+      invited: Invité
+      blocked: Bloqué
   activerecord:
     models:
-      user: "utilisateur"
+      user:
+        zero: "Utilisateur"
+        one: "Utilisateur"
+        other: "Utilisateurs"
     attributes:
       user:
         name: "Nom complet"
         username: "Nom d'utilisateur"
         permissions: Permissions
+        profile: Profil
+        state: État
     errors:
       models:
         calendar:

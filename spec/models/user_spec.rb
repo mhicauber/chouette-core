@@ -27,13 +27,55 @@ RSpec.describe User, :type => :model do
 
     it 'should match the given profiles' do
       Permission::Profile.each do |profile|
-        p "profile: #{profile}"
         user.profile = profile
         expect(user.profile).to eq profile
         expect(user.permissions).to eq Permission::Profile.permissions_for(profile)
         user.permissions.pop
         expect(user.profile).to eq :custom
       end
+    end
+  end
+
+  describe '#with_states' do
+    let(:pending)   { create :user, confirmed_at: nil, invitation_sent_at: nil, locked_at: nil }
+    let(:invited)   { create :user, confirmed_at: nil, invitation_sent_at: Time.now, locked_at: nil }
+    let(:confirmed) { create :user, confirmed_at: Time.now, invitation_sent_at: Time.now, locked_at: nil }
+    let(:blocked)   { create :user, confirmed_at: nil, invitation_sent_at: nil, locked_at: Time.now }
+
+    it 'should find correct states' do
+      expect(pending.state).to eq :pending
+      expect(invited.state).to eq :invited
+      expect(confirmed.state).to eq :confirmed
+      expect(blocked.state).to eq :blocked
+    end
+
+    it 'should match correct users' do
+      expect(User.with_states(:pending)).to match_array [pending]
+      expect(User.with_states(:invited)).to match_array [invited]
+      expect(User.with_states(:confirmed)).to match_array [confirmed]
+      expect(User.with_states(:blocked)).to match_array [blocked]
+      expect(User.with_states(:pending, :invited)).to match_array [pending, invited]
+      expect(User.with_states(:invited, :invited)).to match_array [invited]
+    end
+  end
+
+  describe '#with_profiles' do
+    let(:admin)   { create :user, profile: :admin, name: :admin }
+    let(:visitor) { create :user, profile: :visitor, name: :visitor }
+    let(:editor)  { create :user, profile: :editor, name: :editor }
+    let(:custom)  { create :user, profile: :admin, name: :admin }
+
+    before(:each) do
+      custom.permissions.pop
+      custom.save!
+    end
+
+    it 'should match correct users' do
+      expect(User.with_profiles(:admin)).to match_array [admin]
+      expect(User.with_profiles(:visitor)).to match_array [visitor]
+      expect(User.with_profiles(:admin, :visitor)).to match_array [admin, visitor]
+      expect(User.with_profiles(:admin, :custom)).to match_array [admin, custom]
+      expect(User.with_profiles(:custom)).to match_array [custom]
     end
   end
 end
