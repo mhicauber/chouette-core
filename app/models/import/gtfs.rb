@@ -213,7 +213,8 @@ class Import::Gtfs < Import::Base
       company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
       company.attributes = { name: agency.name }
       company.url = agency.url
-      company.time_zone = agency.timezone
+      @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
+      company.time_zone = @default_time_zone
 
       save_model company, resource: resource
     end
@@ -233,11 +234,15 @@ class Import::Gtfs < Import::Base
 
       if stop.parent_station.present?
         if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
-          stop_area.parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
+          parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
+          stop_area.parent = parent
+          stop_area.time_zone = parent.try(:time_zone)
         end
+      elsif stop.timezone.present?
+        stop_area.time_zone = check_time_zone_or_create_message(stop.timezone, resource)
+      else
+        stop_area.time_zone = @default_time_zone
       end
-
-      # TODO correct default timezone
 
       save_model stop_area, resource: resource
     end
@@ -581,6 +586,29 @@ class Import::Gtfs < Import::Base
       )
     end
     return parent
+  end
+
+  def check_time_zone_or_create_message(imported_time_zone, resource)
+    return unless imported_time_zone
+    time_zone = TZInfo::Timezone.all_country_zone_identifiers.select{|t| t==imported_time_zone}[0]
+    unless time_zone
+      create_message(
+        {
+          criticity: :error,
+          message_key: :invalid_time_zone,
+          message_attributes: {
+            time_zone: imported_time_zone,
+          },
+          resource_attributes: {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count,
+            column_number: 0
+          }
+        },
+        resource: resource, commit: true
+      )
+    end
+    return time_zone
   end
 
   def unless_parent_model_in_error(klass, key, resource)
