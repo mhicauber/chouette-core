@@ -1,7 +1,0 @@
-= simple_form_for [:organisation, @user], html: {class: 'form-horizontal' } do |form|
-  = form.input :name
-  = form.input :email
-
-  .form-actions
-    = form.button :submit, as: :button
-    = link_to t("cancel"), organisation_path

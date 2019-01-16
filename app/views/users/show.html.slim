@@ -9,8 +9,12 @@
         - metadatas = { User.tmf(:name) => @user.name }
         - metadatas.update( User.tmf(:email) => @user.email )
         - metadatas.update( User.tmf(:state) => @user.state_i18n )
-        - metadatas.update( User.tmf(:last_sign_in_at) => @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short_with_time) : '-' )
-        - metadatas.update( User.tmf(:locked_at) => @user.locked_at ? l(@user.locked_at, format: :short_with_time) : '-' )
+        - metadatas.update( User.tmf(:profile) => @user.profile_i18n )
+        - if @user.state == :invited
+          - metadatas.update( User.tmf(:invitation_sent_at) => @user.invitation_sent_at ? l(@user.invitation_sent_at, format: :short_with_time) : '-' )
+        - else
+          - metadatas.update( User.tmf(:last_sign_in_at) => @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short_with_time) : '-' )
+          - metadatas.update( User.tmf(:locked_at) => @user.locked_at ? l(@user.locked_at, format: :short_with_time) : '-' )
         - metadatas.update( User.tmf(:created_at) => l(@user.created_at, format: :short_with_time))
         - metadatas.update( User.tmf(:updated_at) => l(@user.updated_at, format: :short_with_time))
         = definition_list t('metadatas'), metadatas

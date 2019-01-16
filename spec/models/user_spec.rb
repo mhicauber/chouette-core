@@ -19,6 +19,27 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe '#invite' do
+    let(:organisation) { create :organisation }
+
+    it 'should send an email' do
+      expect(DeviseMailer).to receive(:invitation_instructions).and_call_original
+      expect(DeviseMailer).to_not receive(:confirmation_instructions)
+      expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation).first).to be_falsy
+    end
+
+    context 'when the user alredy exists' do
+      before(:each) do
+        create :user, email: 'foo@example.com', organisation: organisation
+      end
+
+      it 'should not send an email' do
+        expect(DeviseMailer).to_not receive(:invitation_instructions)
+        expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation).first).to be_truthy
+      end
+    end
+  end
+
   let(:user) { build :user, permissions: [] }
   describe '#profile' do
     it 'should be :custom by default' do
@@ -38,21 +59,23 @@ RSpec.describe User, :type => :model do
 
   describe '#with_states' do
     let(:pending)   { create :user, confirmed_at: nil, invitation_sent_at: nil, locked_at: nil }
-    let(:invited)   { create :user, confirmed_at: nil, invitation_sent_at: Time.now, locked_at: nil }
-    let(:confirmed) { create :user, confirmed_at: Time.now, invitation_sent_at: Time.now, locked_at: nil }
+    let(:invited)   { create :user, confirmed_at: Time.now, invitation_sent_at: Time.now, invitation_accepted_at: nil, locked_at: nil }
+    let(:confirmed) { create :user, confirmed_at: Time.now, invitation_sent_at: Time.now, invitation_accepted_at: Time.now, locked_at: nil }
+    let(:other_confirmed) { create :user, confirmed_at: Time.now, invitation_sent_at: nil, invitation_accepted_at: nil, locked_at: nil }
     let(:blocked)   { create :user, confirmed_at: nil, invitation_sent_at: nil, locked_at: Time.now }
 
     it 'should find correct states' do
       expect(pending.state).to eq :pending
       expect(invited.state).to eq :invited
       expect(confirmed.state).to eq :confirmed
+      expect(other_confirmed.state).to eq :confirmed
       expect(blocked.state).to eq :blocked
     end
 
     it 'should match correct users' do
       expect(User.with_states(:pending)).to match_array [pending]
       expect(User.with_states(:invited)).to match_array [invited]
-      expect(User.with_states(:confirmed)).to match_array [confirmed]
+      expect(User.with_states(:confirmed)).to match_array [confirmed, other_confirmed]
       expect(User.with_states(:blocked)).to match_array [blocked]
       expect(User.with_states(:pending, :invited)).to match_array [pending, invited]
       expect(User.with_states(:invited, :invited)).to match_array [invited]

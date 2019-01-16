@@ -9,6 +9,10 @@ en:
       block_confirm: "Do you want to lock this user ? They won't be able to access the service anymore"
       unblock: "Unlock user"
       unblock_confirm: "Do you want to unlock this user ?"
+      new_invitation: "Invite a new user"
+      invite: "Invite a new user"
+      reinvite: "Resend invitation"
+      reinvite_confirm: "Do you want to send invitation again ?"
     new:
       title: "Add a new user"
     edit:
@@ -17,6 +21,12 @@ en:
       title: "User %{name}"
     index:
       title: "Users"
+    new_invitation:
+      already_invited:
+        text: |
+          <strong>A user with this email already exists</strong><br />
+          You can see the details, and resend invitation by clicking here:
+        button: See user's details
     states:
       pending: Pending
       confirmed: Confirmed
@@ -32,6 +42,10 @@ en:
         permissions: Permissions
         profile: Profile
         state: State
+        locked_at: Locked at
+        created_at: Created at
+        updated_at: Updated at
+        invitation_sent_at: Invitation sent at
     errors:
       models:
         calendar:

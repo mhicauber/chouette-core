@@ -205,6 +205,12 @@ ChouetteIhm::Application.routes.draw do
       member do
         put :block
         put :unblock
+        put :reinvite
+      end
+
+      collection do
+        get :new_invitation
+        post :invite
       end
     end
   end

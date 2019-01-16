@@ -37,5 +37,16 @@ class UserDecorator < AF83::Decorator
       end
       l.method :put
     end
+
+    instance_decorator.action_link policy: :reinvite, secondary: true, on: :show do |l|
+      l.content t('users.actions.reinvite')
+      l.confirm t('users.actions.reinvite_confirm')
+      l.href do
+        h.reinvite_organisation_user_path(
+          object
+        )
+      end
+      l.method :put
+    end
   end
 end

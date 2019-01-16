@@ -9,6 +9,10 @@ fr:
       block_confirm: "Voulez-vous bloquer cet utilisateur ? Ce dernier ne pourra plus se connecter à la plateforme"
       unblock: "Débloquer l'utilisateur"
       unblock_confirm: "Voulez-vous débloquer cet utilisateur ?"
+      new_invitation: "Inviter un nouvel utilisateur"
+      invite: "Inviter un nouvel utilisateur"
+      reinvite: "Renvoyer l'invitation"
+      reinvite_confirm: "Voulez-vous renvoyer une invitation à cet utilisateur ?"
     new:
       title: "Ajouter un utilisateur"
     edit:
@@ -18,6 +22,12 @@ fr:
     index:
       title: "Utilisateurs"
       name_or_email_cont: "Nom ou email"
+    new_invitation:
+      already_invited:
+        text: |
+          <strong>Un utilisateur existe déjà avec cette adresse email.</strong><br />
+          Vous pouvez voir sa fiche détaillée, et éventuellemnt le ré-inviter, en suivant ce lien:
+        button: Voir la fiche de l'utilisateur
     states:
       pending: En Attente
       confirmed: Confirmé
@@ -40,6 +50,7 @@ fr:
         locked_at: Bloqué le
         created_at: Créé le
         updated_at: Modifié le
+        invitation_sent_at: Invitation envoyée le
     errors:
       models:
         calendar:

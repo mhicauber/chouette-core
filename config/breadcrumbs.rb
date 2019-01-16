@@ -208,6 +208,11 @@ crumb :user do |user|
   parent user.organisation
 end
 
+crumb :new_invitation do |organisation|
+  link 'actions.invite_user'.t
+  parent organisation
+end
+
 crumb :organisation do |organisation|
   link breadcrumb_name(organisation), organisation_path()
 end

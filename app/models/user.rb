@@ -95,10 +95,14 @@ class User < ApplicationModel
   end
 
   def profile=(profile_name)
+    return if profile_name.to_s == Permission::Profile::DEFAULT_PROFILE.to_s
+
     self.permissions = Permission::Profile.permissions_for(profile_name)
   end
 
   def profile
+    return nil if permissions.nil?
+
     Permission::Profile.profile_for(permissions).to_sym
   end
 
@@ -107,15 +111,19 @@ class User < ApplicationModel
   end
 
   def invited?
-    invitation_sent_at.present?
+    invitation_sent_at.present? && !invitation_accepted?
+  end
+
+  def invitation_accepted?
+    invitation_accepted_at.present?
   end
 
   def confirmed?
-    confirmed_at.present?
+    confirmed_at.present? && !invited? || invitation_accepted?
   end
 
   def state
-    %i[blocked confirmed invited].each do |s|
+    %i[blocked invited confirmed invited].each do |s|
       return s if send("#{s}?")
     end
 
@@ -127,7 +135,7 @@ class User < ApplicationModel
   end
 
   def self.all_states_i18n
-    all_states.map {|p| [p.to_s, "users.states.#{p}".t]}
+    all_states.map {|p| ["users.states.#{p}".t, p.to_s]}
   end
 
   def self.subquery_for_state(state)
@@ -136,12 +144,27 @@ class User < ApplicationModel
     when 'blocked'
       'locked_at IS NOT NULL'
     when 'confirmed'
-      'confirmed_at IS NOT NULL AND locked_at IS NULL'
+      'confirmed_at IS NOT NULL AND locked_at IS NULL AND (invitation_sent_at IS NULL OR invitation_accepted_at IS NOT NULL)'
     when 'invited'
-      'invitation_sent_at IS NOT NULL AND confirmed_at IS NULL AND locked_at IS NULL'
+      'invitation_sent_at IS NOT NULL AND invitation_accepted_at IS NULL AND locked_at IS NULL'
     when 'pending'
       'invitation_sent_at IS NULL AND confirmed_at IS NULL AND locked_at IS NULL'
     end
+  end
+
+  def self.invite(email:, name:, profile:, organisation:)
+    user = organisation.users.where(email: email).last
+    if user
+      user.name = name
+      user.profile = profile
+      return [true, user]
+    end
+
+    user = User.new email: email, name: name, profile: profile, organisation: organisation
+    user.try(:skip_confirmation!)
+    user.save!
+    user.invite!
+    [false, user]
   end
 
   private

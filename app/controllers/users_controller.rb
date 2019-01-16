@@ -2,14 +2,27 @@ class UsersController < ChouetteController
 
   defaults :resource_class => User
 
-  def create
-    @user = current_organisation.users.build(user_params)
+  # belongs_to :organisation
 
-    if @user.valid?
-      @user.invite!
-      respond_with @user, :location => organisation_user_path(@user)
+  # def create
+  #   @user = current_organisation.users.build(user_params)
+  #
+  #   if @user.valid?
+  #     @user.invite!
+  #     respond_with @user, :location => organisation_user_path(@user)
+  #   else
+  #     render :action => 'new'
+  #   end
+  # end
+
+  def invite
+    already_existing, user = User.invite(user_params.update(organisation: current_organisation).symbolize_keys)
+    if already_existing
+      @user = user
+      render "new_invitation"
     else
-      render :action => 'new'
+      flash[:notice] = I18n.t('users.new_invitation.success')
+      redirect_to [:organisation, user]
     end
   end
 
@@ -35,13 +48,17 @@ class UsersController < ChouetteController
     redirect_to :back
   end
 
+  def reinvite
+    resource.invite!
+    redirect_to :back
+  end
+
   private
   def user_params
-    params.require(:user).permit( :id, :name, :email )
+    params.require(:user).permit(:name, :email, :profile)
   end
 
   def resource
     @user = super.decorate
   end
-
 end

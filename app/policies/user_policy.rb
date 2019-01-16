@@ -29,6 +29,10 @@ class UserPolicy < ApplicationPolicy
     update? && record.blocked? && record != user
   end
 
+  def reinvite?
+    organisation_match? && create? && record.state == :invited
+  end
+
   def organisation_match?
     record.organisation_id == user.organisation_id
   end

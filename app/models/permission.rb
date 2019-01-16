@@ -105,7 +105,7 @@ class Permission
       end
 
       def all_i18n
-        (@profiles.keys + [DEFAULT_PROFILE]).map {|p| [p.to_s, "permissions.profiles.#{p}.name".t]}
+        (@profiles.keys + [DEFAULT_PROFILE]).map {|p| ["permissions.profiles.#{p}.name".t, p.to_s]}
       end
 
       def permissions_for(profile_name)
