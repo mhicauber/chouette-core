@@ -10,7 +10,7 @@ en:
     edit:
       title: "Update user %{user}"
     show:
-      title: "User %{user}"
+      title: "User %{name}"
     index:
       title: "Users"
     states:

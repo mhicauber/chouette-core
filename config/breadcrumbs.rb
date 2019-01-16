@@ -203,8 +203,13 @@ crumb :import_resource do |import_resource|
   parent :import, import_resource.root_import.workbench, import_resource.root_import
 end
 
+crumb :user do |user|
+  link user.name, organisation_user_path(user)
+  parent user.organisation
+end
+
 crumb :organisation do |organisation|
-  link breadcrumb_name(organisation), organisation_path(organisation)
+  link breadcrumb_name(organisation), organisation_path()
 end
 
 crumb :compliance_control_sets do

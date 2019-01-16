@@ -14,7 +14,7 @@ fr:
     edit:
       title: "Editer l'utilisateur %{user}"
     show:
-      title: "Utilisateur %{user}"
+      title: "Utilisateur %{name}"
     index:
       title: "Utilisateurs"
       name_or_email_cont: "Nom ou email"
@@ -36,6 +36,10 @@ fr:
         permissions: Permissions
         profile: Profil
         state: État
+        last_sign_in_at: Date de dernière connexion
+        locked_at: Bloqué le
+        created_at: Créé le
+        updated_at: Modifié le
     errors:
       models:
         calendar:

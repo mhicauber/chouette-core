@@ -40,4 +40,8 @@ class UsersController < ChouetteController
     params.require(:user).permit( :id, :name, :email )
   end
 
+  def resource
+    @user = super.decorate
+  end
+
 end

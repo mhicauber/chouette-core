@@ -23,12 +23,14 @@
             TableBuilderHelper::Column.new( \
               key: :name, \
               attribute: 'name', \
-              sortable: true \
+              sortable: true, \
+              link_to: -> (user){ [:organisation, user] } \
             ), \
             TableBuilderHelper::Column.new( \
               key: :email, \
               attribute: 'email', \
-              sortable: true \
+              sortable: true, \
+              link_to: -> (user){ [:organisation, user] } \
             ), \
             TableBuilderHelper::Column.new( \
               key: :profile, \
