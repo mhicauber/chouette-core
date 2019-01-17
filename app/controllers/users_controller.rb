@@ -5,7 +5,9 @@ class UsersController < ChouetteController
   def invite
     already_existing, user = User.invite(user_params.update(organisation: current_organisation, from_user: current_user).symbolize_keys)
     if already_existing
-      @user = user
+      @error = true
+      @existing_user = user
+      @user = User.new user_params
       render "new_invitation"
     else
       flash[:notice] = I18n.t('users.new_invitation.success')

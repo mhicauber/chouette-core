@@ -31,6 +31,8 @@ en:
           <strong>A user with this email already exists</strong><br />
           You can see the details, and resend invitation by clicking here:
         button: See user's details
+      already_existing:
+        text: <strong>A user with this email already exists</strong><br />
     states:
       pending: Pending
       confirmed: Confirmed

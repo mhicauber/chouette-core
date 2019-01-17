@@ -30,14 +30,29 @@ RSpec.describe User, :type => :model do
       expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user).first).to be_falsy
     end
 
-    context 'when the user alredy exists' do
+    context 'when the user alredy exists in the same organisation' do
       before(:each) do
         create :user, email: 'foo@example.com', organisation: organisation
       end
 
       it 'should not send an email' do
         expect(UserMailer).to_not receive(:invitation_from_user)
-        expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user).first).to be_truthy
+        res = User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user)
+        expect(res.first).to be_truthy
+        expect(res.last).to be_a User
+      end
+    end
+
+    context 'when the user alredy exists in a different organisation' do
+      before(:each) do
+        create :user, email: 'foo@example.com'
+      end
+
+      it 'should not send an email' do
+        expect(UserMailer).to_not receive(:invitation_from_user)
+        res = User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user)
+        expect(res.first).to be_truthy
+        expect(res.last).to be_nil
       end
     end
   end

@@ -29,9 +29,11 @@ fr:
     new_invitation:
       already_invited:
         text: |
-          <strong>Un utilisateur existe déjà avec cette adresse email.</strong><br />
+          <strong>Un utilisateur avec cette adresse email existe déjà.</strong><br />
           Vous pouvez voir sa fiche détaillée, et éventuellemnt le ré-inviter, en suivant ce lien:
         button: Voir la fiche de l'utilisateur
+      already_existing:
+        text: <strong>Un utilisateur avec cette adresse email existe déjà.</strong><br />
     states:
       pending: En Attente
       confirmed: Confirmé

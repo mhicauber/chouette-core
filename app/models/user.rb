@@ -145,8 +145,10 @@ class User < ApplicationModel
   end
 
   def self.invite(email:, name:, profile:, organisation:, from_user: )
-    user = organisation.users.where(email: email).last
+    user = User.where(email: email).last
     if user
+      return [true, nil] if user.organisation != organisation
+      
       user.name = name
       user.profile = profile
       return [true, user]
