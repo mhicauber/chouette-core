@@ -64,6 +64,11 @@ fr:
         subject: Un nouvel inscrit sur Chouette
         body: |
           Un nouvel utilisateur vient de s'inscrire.<br/>
+      invitation_from_user:
+        subject: Confirmation de compte sur %{app_name}
+        title: Bonjour,
+        body: Vous avez été invité(e) dans l’organisation %{organisation} de %{app_name} par %{user}.<br/>
+        button: Activer votre compte
     invitation_mailer:
       button: Accepter l'invitation
       subject: Invitation sur l'application Chouette

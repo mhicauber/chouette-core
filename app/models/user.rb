@@ -144,7 +144,7 @@ class User < ApplicationModel
     end
   end
 
-  def self.invite(email:, name:, profile:, organisation:)
+  def self.invite(email:, name:, profile:, organisation:, from_user: )
     user = organisation.users.where(email: email).last
     if user
       user.name = name
@@ -155,8 +155,13 @@ class User < ApplicationModel
     user = User.new email: email, name: name, profile: profile, organisation: organisation
     user.try(:skip_confirmation!)
     user.save!
-    user.invite!
+    user.invite_from_user! from_user
     [false, user]
+  end
+
+  def invite_from_user!(from_user)
+    generate_invitation_token!
+    UserMailer.invitation_from_user(self, from_user).deliver_now
   end
 
   private

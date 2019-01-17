@@ -3,7 +3,7 @@ class UsersController < ChouetteController
   defaults :resource_class => User
 
   def invite
-    already_existing, user = User.invite(user_params.update(organisation: current_organisation).symbolize_keys)
+    already_existing, user = User.invite(user_params.update(organisation: current_organisation, from_user: current_user).symbolize_keys)
     if already_existing
       @user = user
       render "new_invitation"
@@ -36,7 +36,7 @@ class UsersController < ChouetteController
   end
 
   def reinvite
-    resource.invite!
+    resource.invite_from_user! current_user
     flash[:notice] = t('users.actions.reinvite_flash')
     redirect_to :back
   end

@@ -21,11 +21,13 @@ RSpec.describe User, :type => :model do
 
   describe '#invite' do
     let(:organisation) { create :organisation }
+    let(:from_user) { create :user, organisation: organisation }
 
     it 'should send an email' do
-      expect(DeviseMailer).to receive(:invitation_instructions).and_call_original
+      expect(UserMailer).to receive(:invitation_from_user).and_call_original
+      expect(DeviseMailer).to_not receive(:invitation_instructions).and_call_original
       expect(DeviseMailer).to_not receive(:confirmation_instructions)
-      expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation).first).to be_falsy
+      expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user).first).to be_falsy
     end
 
     context 'when the user alredy exists' do
@@ -34,8 +36,8 @@ RSpec.describe User, :type => :model do
       end
 
       it 'should not send an email' do
-        expect(DeviseMailer).to_not receive(:invitation_instructions)
-        expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation).first).to be_truthy
+        expect(UserMailer).to_not receive(:invitation_from_user)
+        expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user).first).to be_truthy
       end
     end
   end

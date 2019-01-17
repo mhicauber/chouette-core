@@ -58,7 +58,7 @@ en:
     unlock_mailer:
       subject: Your account has been deactivated
       title: Hello %{email} !
-      body: "Your account has been dactivated.<br />Please reach your organisation's admin for further info."
+      body: "Your account has been deactivated.<br />Please reach your organisation's admin for further info."
     password_mailer:
       updated:
         subject: Set up new password
@@ -72,6 +72,11 @@ en:
         body: |
           Hello,<br/><br/>
           A new user just subscribed on the platform<br/>
+      invitation_from_user:
+        subject: "%{app_name} account confirmation"
+        title: Hello,
+        body: "%{user} invited you join their organisation %{organisation} in %{app_name}.<br/>"
+        button: Activate your account
     invitation_mailer:
       button: Accept the invitation
       subject: Invitation on the Chouette application
