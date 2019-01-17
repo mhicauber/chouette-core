@@ -192,6 +192,23 @@ describe Chouette::StopArea, :type => :model do
       expect(stop_area.errors[:parent_id].first).to include(Chouette::AreaType.find(stop_area.parent.area_type).label)
     end
 
+    context "when stop are is non_commercial" do
+      it "isn't valid when parent is defined" do
+        stop_area.kind = 'non_commercial'
+
+        stop_area.valid?
+        expect(stop_area.errors).to have_key(:parent_id)
+      end
+
+      it "is valid when parent is undefined" do
+        stop_area.kind = 'non_commercial'
+        stop_area.parent = nil
+
+        stop_area.valid?
+        expect(stop_area.errors).to_not have_key(:parent_id)
+      end
+    end
+
   end
 
   describe '#waiting_time' do

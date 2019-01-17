@@ -51,6 +51,7 @@ module Chouette
     validate :parent_area_type_must_be_greater
     validate :area_type_of_right_kind
     validate :registration_number_is_set
+    validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
 
     before_validation do
       self.registration_number = self.stop_area_referential.generate_registration_number unless self.registration_number.present?
