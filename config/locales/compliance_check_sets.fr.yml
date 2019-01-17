@@ -18,7 +18,7 @@ fr:
       title: Jeu de contrôles exécuté %{name}
     show:
       title: Rapport de contrôle
-      table_state: "%{lines_status} ligne(s) valide(s_ sur %{lines_in_compliance_check_set} présente(s) dans l'offre de transport"
+      table_state: "%{lines_status} ligne(s) valide(s) sur %{lines_in_compliance_check_set} présente(s) dans l'offre de transport"
       table_explanation: Ces contrôles s’appliquent pour toutes les données importées et conditionnent la construction de l’offre de votre organisation
       table_title: État des lignes analysées
       metrics: "%{error_count} errors, %{warning_count} warnings"
