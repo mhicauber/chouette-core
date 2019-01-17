@@ -28,7 +28,7 @@
               = form.input :email
               = form.input :profile, collection: Permission::Profile.all_i18n(false), include_blank: false
 
-            = cancel_button
+            = cancel_button [:organisation]
             = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'invite_form'
 
 = javascript_pack_tag "user_invitations/new"

@@ -57,7 +57,7 @@ fr:
       updated:
         subject: Réinitialiser votre mot de passe
         body: |
-          Vous avez demandé à réinitialiser votre mot de passe.
+          Vous pouvez choisir une nouveau mot de passe pour accéder à votre compte sur %{app_name} :
         button: Réinitialiser mon mot de passe
     user_mailer:
       created:

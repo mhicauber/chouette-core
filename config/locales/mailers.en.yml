@@ -63,9 +63,8 @@ en:
       updated:
         subject: Set up new password
         body: |
-          Hello,<br/><br/>
-          You forgot your password.<br/>
-          You asked to set up a new one.<br/><br/>
+          You can now set a new password for your account on %{app_name} :
+        button: Reset my password
     user_mailer:
       created:
         subject: New registered user on Chouette

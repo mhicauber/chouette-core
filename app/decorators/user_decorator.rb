@@ -49,7 +49,7 @@ class UserDecorator < AF83::Decorator
       l.method :put
     end
 
-    instance_decorator.action_link policy: :reinvite, secondary: true do |l|
+    instance_decorator.action_link policy: :reset_password, secondary: true do |l|
       l.content t('users.actions.reset_password')
       l.confirm t('users.actions.reset_password_confirm')
       l.href do
