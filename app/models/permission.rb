@@ -115,6 +115,8 @@ class Permission
       end
 
       def profile_for(permissions)
+        return DEFAULT_PROFILE unless permissions
+        
         sorted = permissions.sort
 
         each do |profile|
@@ -122,6 +124,16 @@ class Permission
         end
 
         DEFAULT_PROFILE
+      end
+
+      def update_users_permissions
+        User.where.not(profile: DEFAULT_PROFILE).find_each do |user|
+          user.update profile: user.profile
+        end
+      end
+
+      def set_users_profiles
+        User.where(profile: nil).find_each {|u| u.update profile: Permission::Profile.profile_for(u.permissions)}
       end
     end
 
