@@ -21,7 +21,7 @@ class Subscription
   end
 
   def user
-    @user ||= organisation.users.build name: user_name, email: email, password: password, password_confirmation: password_confirmation, permissions: Permission.full
+    @user ||= organisation.users.build name: user_name, email: email, password: password, password_confirmation: password_confirmation, profile: :admin
   end
 
   def organisation
