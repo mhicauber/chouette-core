@@ -206,6 +206,7 @@ ChouetteIhm::Application.routes.draw do
         put :block
         put :unblock
         put :reinvite
+        put :reset_password
       end
 
       collection do

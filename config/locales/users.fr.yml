@@ -13,6 +13,10 @@ fr:
       invite: "Inviter un nouvel utilisateur"
       reinvite: "Renvoyer l'invitation"
       reinvite_confirm: "Voulez-vous renvoyer une invitation à cet utilisateur ?"
+      reinvite_flash: "Un mail d'invitation a été envoyé"
+      reset_password: "Réinitialiser le mot de passe"
+      reset_password_confirm: "Voulez vous envoyer un lien de réinitialisation de mot de passe à cet utilisateur ?"
+      reset_password_flash: "Un lien de réinitialisation de mot de passe a été envoyé"
     new:
       title: "Ajouter un utilisateur"
     edit:

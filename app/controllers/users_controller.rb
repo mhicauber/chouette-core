@@ -2,19 +2,6 @@ class UsersController < ChouetteController
 
   defaults :resource_class => User
 
-  # belongs_to :organisation
-
-  # def create
-  #   @user = current_organisation.users.build(user_params)
-  #
-  #   if @user.valid?
-  #     @user.invite!
-  #     respond_with @user, :location => organisation_user_path(@user)
-  #   else
-  #     render :action => 'new'
-  #   end
-  # end
-
   def invite
     already_existing, user = User.invite(user_params.update(organisation: current_organisation).symbolize_keys)
     if already_existing
@@ -50,6 +37,13 @@ class UsersController < ChouetteController
 
   def reinvite
     resource.invite!
+    flash[:notice] = t('users.actions.reinvite_flash')
+    redirect_to :back
+  end
+
+  def reset_password
+    resource.send_reset_password_instructions
+    flash[:notice] = t('users.actions.reset_password_flash')
     redirect_to :back
   end
 

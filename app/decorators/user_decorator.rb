@@ -38,11 +38,22 @@ class UserDecorator < AF83::Decorator
       l.method :put
     end
 
-    instance_decorator.action_link policy: :reinvite, secondary: true, on: :show do |l|
+    instance_decorator.action_link policy: :reinvite, secondary: true do |l|
       l.content t('users.actions.reinvite')
       l.confirm t('users.actions.reinvite_confirm')
       l.href do
         h.reinvite_organisation_user_path(
+          object
+        )
+      end
+      l.method :put
+    end
+
+    instance_decorator.action_link policy: :reinvite, secondary: true do |l|
+      l.content t('users.actions.reset_password')
+      l.confirm t('users.actions.reset_password_confirm')
+      l.href do
+        h.reset_password_organisation_user_path(
           object
         )
       end

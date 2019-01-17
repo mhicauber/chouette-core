@@ -33,6 +33,10 @@ class UserPolicy < ApplicationPolicy
     organisation_match? && create? && record.state == :invited
   end
 
+  def reset_password?
+    organisation_match? && update?
+  end
+
   def organisation_match?
     record.organisation_id == user.organisation_id
   end
