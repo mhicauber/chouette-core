@@ -14,8 +14,8 @@ class UsersController < ChouetteController
   end
 
   def update
-    update! do |success, failure|
-      success.html { redirect_to organisation_user_path(@user) }
+    update! do
+      organisation_user_path(@user)
     end
   end
 
@@ -49,7 +49,9 @@ class UsersController < ChouetteController
 
   private
   def user_params
-    params.require(:user).permit(:name, :email, :profile)
+    keys = %i[name profile]
+    keys << :email unless params[:action] == 'update'
+    params.require(:user).permit(*keys)
   end
 
   def resource

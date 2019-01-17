@@ -208,6 +208,11 @@ crumb :user do |user|
   parent user.organisation
 end
 
+crumb :edit_user do |user|
+  link 'users.actions.edit'.t
+  parent user
+end
+
 crumb :new_invitation do |organisation|
   link 'actions.invite_user'.t
   parent organisation

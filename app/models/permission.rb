@@ -104,8 +104,10 @@ class Permission
         @profiles.keys.map(&:to_sym)
       end
 
-      def all_i18n
-        (@profiles.keys + [DEFAULT_PROFILE]).map {|p| ["permissions.profiles.#{p}.name".t, p.to_s]}
+      def all_i18n(include_default=true)
+        keys = @profiles.keys
+        keys << DEFAULT_PROFILE if include_default
+        keys.map {|p| ["permissions.profiles.#{p}.name".t, p.to_s]}
       end
 
       def permissions_for(profile_name)

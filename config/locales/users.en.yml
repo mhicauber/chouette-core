@@ -20,7 +20,7 @@ en:
     new:
       title: "Add a new user"
     edit:
-      title: "Update user %{user}"
+      title: "Update user %{name}"
     show:
       title: "User %{name}"
     index:

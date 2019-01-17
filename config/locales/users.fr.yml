@@ -20,7 +20,7 @@ fr:
     new:
       title: "Ajouter un utilisateur"
     edit:
-      title: "Editer l'utilisateur %{user}"
+      title: "Editer l'utilisateur %{name}"
     show:
       title: "Utilisateur %{name}"
     index:
