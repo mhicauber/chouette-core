@@ -43,16 +43,17 @@ RSpec.describe User, :type => :model do
   let(:user) { build :user, permissions: [] }
   describe '#profile' do
     it 'should be :custom by default' do
-      expect(user.profile).to eq :custom
+      expect(user.profile).to eq 'custom'
     end
 
     it 'should match the given profiles' do
       Permission::Profile.each do |profile|
         user.profile = profile
-        expect(user.profile).to eq profile
+        expect(user.profile).to eq profile.to_s
         expect(user.permissions).to eq Permission::Profile.permissions_for(profile)
         user.permissions.pop
-        expect(user.profile).to eq :custom
+        user.validate
+        expect(user.profile).to eq 'custom'
       end
     end
   end
@@ -86,12 +87,7 @@ RSpec.describe User, :type => :model do
     let(:admin)   { create :user, profile: :admin, name: :admin }
     let(:visitor) { create :user, profile: :visitor, name: :visitor }
     let(:editor)  { create :user, profile: :editor, name: :editor }
-    let(:custom)  { create :user, profile: :admin, name: :admin }
-
-    before(:each) do
-      custom.permissions.pop
-      custom.save!
-    end
+    let(:custom)  { create :user, profile: :custom, name: :custom }
 
     it 'should match correct users' do
       expect(User.with_profiles(:admin)).to match_array [admin]

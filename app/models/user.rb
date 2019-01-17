@@ -41,9 +41,18 @@ class User < ApplicationModel
     self.password_confirmation ||= self.password
   end
 
+  after_initialize do
+    self.profile ||= :custom
+  end
+
   before_validation do
     # we sort permissions to make it easier to match them against profiles
     self.permissions&.sort!
+    if permissions_changed?
+      matching_profile = Permission::Profile.profile_for(permissions)
+      write_attribute :profile, matching_profile
+      self[:profile] = matching_profile
+    end
   end
 
   after_destroy :check_destroy_organisation
@@ -52,21 +61,7 @@ class User < ApplicationModel
 
   scope :from_workgroup, ->(workgroup_id) { joins(:workbenches).where(workbenches: {workgroup_id: workgroup_id}) }
 
-  scope :with_profiles, ->(*profile_names) do
-    profile_names = profile_names.map(&:to_s).uniq
-    actual_profiles = profile_names.dup - [Permission::Profile::DEFAULT_PROFILE.to_s]
-    q = (['permissions::text[] = ARRAY[?]'] * actual_profiles.size)
-    permissions = actual_profiles.map {|p| Permission::Profile.permissions_for(p) }
-
-    if profile_names.include?(Permission::Profile::DEFAULT_PROFILE.to_s)
-      remaining_profiles = Permission::Profile.all - actual_profiles
-      sub_q = (['permissions::text[] <> ARRAY[?]'] * remaining_profiles.size).join(' AND ')
-      q << "(#{sub_q})"
-      permissions += remaining_profiles.map {|p| Permission::Profile.permissions_for(p) }
-    end
-
-    where(q.join(' OR '), *permissions)
-  end
+  scope :with_profiles, ->(*profile_names) { where(profile: profile_names) }
 
   scope :with_states, ->(*states) do
     subqueries = states.select(&:present?).map{|state| "(#{subquery_for_state(state)})" }
@@ -95,15 +90,12 @@ class User < ApplicationModel
   end
 
   def profile=(profile_name)
+    write_attribute :profile, profile_name
     return if profile_name.to_s == Permission::Profile::DEFAULT_PROFILE.to_s
 
-    self.permissions = Permission::Profile.permissions_for(profile_name)
-  end
-
-  def profile
-    return nil if permissions.nil?
-
-    Permission::Profile.profile_for(permissions).to_sym
+    new_permissions = Permission::Profile.permissions_for(profile_name)
+    write_attribute :permissions, new_permissions
+    self[:permissions] = new_permissions
   end
 
   def blocked?
