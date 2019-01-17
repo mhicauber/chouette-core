@@ -5,7 +5,7 @@ fr:
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
-      parent_kind: "doit être du même que l'arrêt enfant : %{kind}"
+      parent_kind: "doit être du même type que l'arrêt enfant : %{kind}"
       incorrect_kind_area_type: Ce type d'arrêt est invalide pour cette catégorie
       registration_number:
         already_taken: Déjà utilisé
