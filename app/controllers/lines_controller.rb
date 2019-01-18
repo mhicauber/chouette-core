@@ -84,7 +84,7 @@ class LinesController < ChouetteController
 
   def collection
     @lines ||= begin
-      %w(network_id company_id group_of_lines_id comment_id transport_mode).each do |filter|
+      %w(network_id company_id group_of_lines_id comment_id transport_mode transport_submode).each do |filter|
         if params[:q] && params[:q]["#{filter}_eq"] == '-1'
           params[:q]["#{filter}_eq"] = ''
           params[:q]["#{filter}_blank"] = '1'
