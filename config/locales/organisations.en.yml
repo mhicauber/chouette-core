@@ -8,6 +8,7 @@ en:
       key_not_registered: "No key registered"
     show:
       users: "Users"
+      title: "My organization"
   activerecord:
     models:
       organisation:
@@ -20,3 +21,5 @@ en:
         data_format_restrictions_by_default: "Data format constraint by default"
         data_format: "Data format"
         geoportail_key: "IGN Geoportail Key"
+        created_at: Created at
+        code: Code

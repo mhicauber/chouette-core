@@ -1,6 +1,8 @@
 en:
   "true": "Yes"
   "false": "No"
+  "yes": "Yes"
+  "no": "No"
   "none": "None"
   "unknown": "Unknown"
   label_with_colon: "%{label}: "
@@ -66,5 +68,3 @@ en:
   brandname: Chouette
   error: "Error"
   undefined: 'undefined'
-  "yes": Yes
-  "no": No

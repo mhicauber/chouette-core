@@ -1,6 +1,8 @@
 fr:
   "true": "Oui"
   "false": "Non"
+  "yes": Oui
+  "no": Non
   "none": "Aucun(e)"
   "unknown": "Non précisé"
   label_with_colon: "%{label} : "
@@ -65,5 +67,3 @@ fr:
   brandname: Chouette
   error: "Erreur"
   undefined: 'non renseigné'
-  "yes": Oui
-  "no": Non

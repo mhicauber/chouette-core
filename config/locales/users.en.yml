@@ -15,7 +15,7 @@ en:
       reinvite_confirm: "Do you want to send invitation again ?"
       reinvite_flash: "An invitation email has been sent"
       reset_password: "Reset password"
-      reset_password_confirm: "Do you waznt to send password reset intructions to this user ?"
+      reset_password_confirm: "Do you want to send password reset intructions to this user ?"
       reset_password_flash: "A password reset link has been sent"
     new:
       title: "Add a new user"
@@ -25,6 +25,7 @@ en:
       title: "User %{name}"
     index:
       title: "Users"
+      name_or_email_cont: "Name or email"
     new_invitation:
       already_invited:
         text: |
@@ -52,6 +53,7 @@ en:
         created_at: Created at
         updated_at: Updated at
         invitation_sent_at: Invitation sent at
+        last_sign_in_at: Last connection
     errors:
       models:
         calendar:

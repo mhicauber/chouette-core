@@ -16,7 +16,7 @@ class UserDecorator < AF83::Decorator
     instance_decorator.edit_action_link
     instance_decorator.destroy_action_link
 
-    instance_decorator.action_link policy: :block, secondary: true do |l|
+    instance_decorator.action_link policy: :block, secondary: true, on: %i[show index] do |l|
       l.content t('users.actions.block')
       l.confirm t('users.actions.block_confirm')
       l.href do
@@ -27,7 +27,7 @@ class UserDecorator < AF83::Decorator
       l.method :put
     end
 
-    instance_decorator.action_link policy: :unblock, secondary: true do |l|
+    instance_decorator.action_link policy: :unblock, secondary: true, on: %i[show index] do |l|
       l.content t('users.actions.unblock')
       l.confirm t('users.actions.unblock_confirm')
       l.href do
@@ -38,7 +38,7 @@ class UserDecorator < AF83::Decorator
       l.method :put
     end
 
-    instance_decorator.action_link policy: :reinvite, secondary: true do |l|
+    instance_decorator.action_link policy: :reinvite, secondary: true, on: %i[show index] do |l|
       l.content t('users.actions.reinvite')
       l.confirm t('users.actions.reinvite_confirm')
       l.href do
@@ -49,7 +49,7 @@ class UserDecorator < AF83::Decorator
       l.method :put
     end
 
-    instance_decorator.action_link policy: :reset_password, secondary: true do |l|
+    instance_decorator.action_link policy: :reset_password, secondary: true, on: %i[show index] do |l|
       l.content t('users.actions.reset_password')
       l.confirm t('users.actions.reset_password_confirm')
       l.href do
