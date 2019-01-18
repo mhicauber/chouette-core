@@ -15,6 +15,10 @@ class Destination < ApplicationModel
     def secret_file_required?
       !!@secret_file_required
     end
+
+    def enabled?(destination_type)
+      Rails.application.config.additional_destinations.try :include?, destination_type
+    end
   end
 
   def secret_file_required?
@@ -66,6 +70,6 @@ class Destination < ApplicationModel
   end
 end
 
-require_dependency './destination/dummy'
+require_dependency './destination/dummy' if ::Destination.enabled?("dummy")
 require_dependency './destination/google_cloud_storage'
 require_dependency './destination/sftp'
