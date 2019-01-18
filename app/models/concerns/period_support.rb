@@ -5,6 +5,7 @@ module PeriodSupport
     after_initialize :init_date_ranges
 
     def init_date_ranges
+      return self.attributes.has_key?('date_ranges')
       self.date_ranges ||= []
     end
 

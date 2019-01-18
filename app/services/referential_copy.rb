@@ -73,6 +73,7 @@ class ReferentialCopy
           target.switch do
             new_tt = Chouette::TimeTable.new attributes
             controlled_save! new_tt
+            record_match(tt, new_tt)
             copy_bulk_collection tt.dates do |new_date_attributes|
               new_date_attributes[:time_table_id] = new_tt.id
             end
@@ -95,7 +96,18 @@ class ReferentialCopy
   # PURCHASE WINDOWS
 
   def copy_purchase_windows
-    copy_bulk_collection Chouette::PurchaseWindow.linked_to_lines(lines).uniq
+    Chouette::PurchaseWindow.transaction do
+      source.switch do
+        Chouette::PurchaseWindow.linked_to_lines(lines).uniq.find_each do |pw|
+          attributes = clean_attributes_for_copy pw
+          target.switch do
+            new_pw = Chouette::PurchaseWindow.new attributes
+            controlled_save! new_pw
+            record_match(pw, new_pw)
+          end
+        end
+      end
+    end
   end
 
   # FOOTNOTES
@@ -115,22 +127,20 @@ class ReferentialCopy
   def copy_route route
     line = route.line
     attributes = clean_attributes_for_copy route
-    opposite_route_checksum = route.opposite_route&.checksum
+    opposite_route = route.opposite_route
+
     target.switch do
       new_route = line.routes.build attributes
       copy_collection route, new_route, :stop_points
 
-      new_route.opposite_route = line.routes.where(checksum: opposite_route_checksum).last if opposite_route_checksum
+      new_route.opposite_route_id = matching_id(opposite_route)
 
       controlled_save! new_route
+      record_match(route, new_route)
 
       # we copy the journey_patterns
       copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
-        retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points, [:objectid], [:objectid]
-
-        stop_points_mapping = Hash[
-          *new_route.stop_points.pluck(:objectid, :id).flatten
-        ]
+        retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points
 
         copy_bulk_collection journey_pattern.courses_stats do |new_stat_attributes|
           new_stat_attributes[:journey_pattern_id] = new_journey_pattern.id
@@ -139,18 +149,15 @@ class ReferentialCopy
 
         copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
           new_vj.route = new_route
-          retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables, [:checksum], [:checksum]
-          retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows, [:checksum], [:checksum, :date_ranges]
+          retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables
+          retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows
         end
 
-        vjs_mapping = Hash[
-          *new_journey_pattern.vehicle_journeys.pluck(:objectid, :id).flatten
-        ]
         source.switch do
           journey_pattern.vehicle_journeys.find_each do |vj|
             copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
-              new_vjas_attributes[:vehicle_journey_id] = vjs_mapping[vj.objectid]
-              new_vjas_attributes[:stop_point_id] = stop_points_mapping[vjas.stop_point.objectid]
+              new_vjas_attributes[:vehicle_journey_id] = matching_id(vj)
+              new_vjas_attributes[:stop_point_id] = matching_id(vjas.stop_point)
             end
           end
         end
@@ -160,9 +167,10 @@ class ReferentialCopy
       # we copy the routing_constraint_zones
       copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
         new_rcz.stop_point_ids = []
-        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points, [:objectid]
+        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points
       end
     end
+    clean_matches Chouette::StopPoint, Chouette::JourneyPattern, Chouette::VehicleJourney, Chouette::RoutingConstraintZone
   end
 
   #  _  _ ___ _    ___ ___ ___  ___
@@ -197,19 +205,19 @@ class ReferentialCopy
   # keys: the keys used to identify the objects across both referentials
   # select (optional): the fields to query on the source collection
 
-  def retrieve_collection_with_mapping from, to, find_collection, collection_name, keys, select=nil
+  def retrieve_collection_with_mapping from, to, find_collection, collection_name
     queries = []
     if from.is_a? Chouette::RoutingConstraintZone
       # we need the dirty switch because of the has_many_in_array stuff
       from_collection = source.switch(verbose: false) { from.send(collection_name).to_a }
     else
-      from_collection = from.send(collection_name)
+      from_collection = from.send(collection_name).select(:id)
     end
-    from_collection = from_collection.select(:id, *select) if select.present?
+
     to_collection = to.send(collection_name)
     each_item_in_source_collection(from_collection) do |item|
       target.switch(verbose: false) do
-        to_collection << find_collection.find_by(item.slice(*keys))
+        to_collection << find_collection.find(matching_id(item))
       end
     end
   end
@@ -229,7 +237,12 @@ class ReferentialCopy
     target.switch do
       new_item = target_collection.build attributes
       block.call(source_item, new_item) if block.present?
-      controlled_save! new_item if owner.persisted?
+      if owner.persisted?
+        controlled_save! new_item
+        record_match source_item, new_item
+      else
+        waiting_for_save_to_record_match(source_item, new_item)
+      end
     end
   end
 
@@ -258,6 +271,44 @@ class ReferentialCopy
 
       raise SaveError.new(error)
     end
+    process_wait_queue
+  end
+
+  def clean_matches *models
+    models.each do |model|
+      @matches[model.name] = {}
+    end
+  end
+
+  def matches
+    @matches ||= Hash.new { |hash, key| hash[key] = {} }
+  end
+
+  def record_match(source_item, copied_item)
+    matches[source_item.class.name][source_item.id] = copied_item.id
+  end
+
+  def matching_id(item)
+    return unless item
+    matches[item.class.name][item.id]
+  end
+
+  def waiting_for_save_to_record_match(source_item, copied_item)
+    @wait_queue ||= []
+    @wait_queue.push [source_item, copied_item]
+  end
+
+  def process_wait_queue
+    @wait_queue ||= []
+    new_queue = []
+    @wait_queue.each do |source_item, copied_item|
+      if copied_item.persisted?
+        record_match source_item, copied_item
+      else
+        new_queue.push [source_item, copied_item]
+      end
+    end
+    @wait_queue = new_queue
   end
 
   def failed! error
