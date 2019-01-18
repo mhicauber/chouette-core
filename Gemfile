@@ -143,7 +143,7 @@ gem 'sidekiq-limit_fetch'
 gem 'whenever', github: 'af83/whenever', require: false # '~> 0.9'
 gem 'rake'
 gem 'devise-async'
-gem 'apartment', '~> 1.0.0'
+gem 'apartment', '~> 2.2.0'
 gem 'aasm'
 gem 'puma', '~> 3.10.0'
 
