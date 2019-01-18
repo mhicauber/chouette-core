@@ -45,4 +45,7 @@
     - unless @routing_constraint_zones.any?
       .row.mt-xs
         .col-lg-12
-          = replacement_msg t('.search_no_results')
+          - if can_create_rcz?
+            = replacement_msg t('.search_no_results')
+          - else
+            = replacement_msg t('.cannot_create')

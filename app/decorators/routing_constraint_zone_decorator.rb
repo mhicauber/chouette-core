@@ -12,7 +12,8 @@ class RoutingConstraintZoneDecorator < AF83::Decorator
   create_action_link(
     if: ->() {
       h.policy(Chouette::RoutingConstraintZone).create? &&
-        context[:referential].organisation == h.current_organisation
+        context[:referential].organisation == h.current_organisation &&
+        context[:line].routes.with_at_least_three_stop_points.length > 0
     }
   )
 

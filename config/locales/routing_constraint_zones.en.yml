@@ -46,3 +46,4 @@ en:
     index:
       title: "Routing constraint zones"
       search_no_results: "No ITL matches your query"
+      cannot_create: "No RCZ can be created on this line, none of the associated routes have more than 3 stop points"
