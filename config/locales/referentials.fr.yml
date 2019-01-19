@@ -155,6 +155,7 @@ fr:
   notice:
     referentials:
       deleted: "Les jeux de données ont été supprimés"
+      create: La création du jeu de données est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement.
       duplicate: "La duplication est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement."
       validate: "La validation est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement."
     referential:
