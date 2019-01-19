@@ -20,6 +20,7 @@ class TimeTablesController < ChouetteController
       @time_table = @time_table.decorate(context: {
         referential: @referential
       })
+      @calendar = @time_table.calendar
     end
   end
 
