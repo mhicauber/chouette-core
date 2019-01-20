@@ -34,6 +34,7 @@ en:
   back: "Go Back"
   cancel_confirm: You're about to cancel your current work. Are you sure ?
   cancel: "Cancel"
+  discard: Discard
   no_result_text: "No Results"
   ok: Ok
   or: "or"

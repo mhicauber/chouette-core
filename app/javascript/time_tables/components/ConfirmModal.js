@@ -23,7 +23,7 @@ export default function ConfirmModal({dispatch, modal, onModalAccept, onModalCan
                 type='button'
                 onClick={() => { onModalCancel(modal.confirmModal.callback) }}
               >
-                {I18n.t('cancel')}
+                {I18n.t('discard')}
               </button>
               <button
                 className='btn btn-primary'
