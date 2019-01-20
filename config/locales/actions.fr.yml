@@ -34,6 +34,7 @@ fr:
   back: "Retour"
   cancel_confirm: Etes vous sûr de vouloir annuler l'action en cours ?
   cancel: "Annuler"
+  discard: Abandonner
   no_result_text: "Aucun résultat"
   ok: Ok
   or: "ou"
