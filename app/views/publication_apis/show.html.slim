@@ -77,6 +77,10 @@
                 key: :file, \
                 attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank) : "-" } \
               ), \
+              TableBuilderHelper::Column.new( \
+                key: :public_url, \
+                attribute: ->(p){ link_to(p.public_url, p.public_url, target: :blank) } \
+              ), \
             ],
             sortable: false,
             cls: 'table',

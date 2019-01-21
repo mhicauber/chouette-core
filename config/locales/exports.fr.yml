@@ -37,6 +37,7 @@ fr:
   export:
     workgroup: Groupe de travail
     netex:
+      default: Netex
       line: Netex par ligne
       full: Netex complet
     referential_companies: Transporteurs

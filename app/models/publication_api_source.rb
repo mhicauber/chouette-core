@@ -30,6 +30,24 @@ class PublicationApiSource < ActiveRecord::Base
     out.join('-')
   end
 
+  def public_url
+    base = publication_api.public_url
+    setup = publication.publication_setup
+    case setup.export_type.to_s
+    when "Export::Gtfs"
+      base += ".#{key}.zip"
+    when "Export::Netex"
+      if setup.export_options['export_type'] == 'full'
+        base += ".#{key}.zip"
+      else
+        *split_key, line = key.split('-')
+        base += "/lines/#{line}.#{split_key.join('-')}.zip"
+      end
+    end
+
+    base
+  end
+
   protected
 
   def cleanup_previous
@@ -41,7 +59,7 @@ class PublicationApiSource < ActiveRecord::Base
 
   def download_file
     return unless export
-    
+
     self.remote_file_url = build_remote_file_url(export.file)
     self.export = nil
     self.save
