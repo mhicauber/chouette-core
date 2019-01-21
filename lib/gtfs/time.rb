@@ -5,12 +5,12 @@ module GTFS
       @hours, @minutes, @seconds = hours, minutes, seconds
     end
 
-    def real_hours
-      hours.modulo(24)
+    def real_hours(time_zone)
+      (hours - (::Time.find_zone(time_zone).try(:utc_offset)||0) / 3600).modulo(24)
     end
 
-    def time
-      @time ||= ::Time.new(2000, 1, 1, real_hours, minutes, seconds, "+00:00")
+    def time(time_zone = 'UTC')
+      @time ||= ::Time.new(2000, 1, 1, real_hours(time_zone), minutes, seconds, "+00:00")
     end
 
     def day_offset
