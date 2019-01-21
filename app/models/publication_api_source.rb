@@ -22,7 +22,8 @@ class PublicationApiSource < ActiveRecord::Base
     if export.is_a?(Export::Netex)
       out << export.export_type
       if export.export_type == "line"
-        out << export.line_code
+        line = Chouette::Line.find export.line_code
+        out << line.code
       end
     end
 
