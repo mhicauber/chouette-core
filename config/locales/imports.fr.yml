@@ -34,7 +34,7 @@ fr:
       stif_control: Contrôle STIF
       organisation_control: Contrôle organisation
       results: "%{count} jeu(x) de données validé(s) sur %{total}"
-      summary: Bilan des jeux de contrôles d'import <span title="Lorem ipsum..." class="fa fa-lg fa-info-circle text-info"></span>
+      summary: Bilan des jeux de contrôles d'import
       parent: Parent
       netex:
         table_title: "Etat des fichiers analysés"

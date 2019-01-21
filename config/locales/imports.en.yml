@@ -34,7 +34,7 @@ en:
       stif_control: STIF Control
       organisation_control: Organization control
       results: "%{count} validated referential(s) out of %{total} in the file"
-      summary: Summay of import compliance check sets <span title="Lorem ipsum..." class="fa fa-lg fa-info-circle text-info"></span>
+      summary: Summay of import compliance check sets
       parent: Parent
       netex:
         table_title: "Satus of anlyzed files"
