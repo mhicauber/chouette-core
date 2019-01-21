@@ -24,7 +24,11 @@ class Api::V1::DatasController < ActionController::Base
 
   def download_line
     source = @publication_api.publication_api_sources.find_by! key: "#{params[:key]}-#{params[:line_id]}"
-    send_file source.file.path
+    if source.file.present?
+      send_file source.file.path
+    else
+      render :missing_file_error, layout: 'api', status: 404
+    end
   end
 
   protected
@@ -35,7 +39,7 @@ class Api::V1::DatasController < ActionController::Base
 
   def check_auth_token
     key = nil
-    authenticate_with_http_basic do |code, token|
+    authenticate_with_http_token do |token|
       key = @publication_api.api_keys.find_by token: token
       raise PublicationApi::InvalidAuthenticationError unless key
       return true
