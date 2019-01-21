@@ -3,6 +3,10 @@
 - breadcrumb :workgroup_output, @workgroup
 
 - content_for :page_header_title, t('.title')
+- content_for :page_header_meta do
+  - if @workgroup.aggregated_at
+    = "#{Workgroup.tmf(:aggregated_at)}: #{l(@workgroup.aggregated_at)}"
+
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right

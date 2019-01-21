@@ -82,6 +82,38 @@ RSpec.describe Workgroup, type: :model do
       end
     end
 
+    context "when we have rollbacked to a previous aggregate" do
+      let(:workbench) { create(:workbench, workgroup: workgroup) }
+      let(:referential) { create(:referential, organisation: workbench.organisation) }
+      let(:aggregatable) { create(:workbench_referential, workbench: workbench) }
+      let(:referential_2) { create(:referential, organisation: workbench.organisation) }
+      let(:aggregate) { create(:aggregate, workgroup: workgroup)}
+      let(:aggregate_2) { create(:aggregate, workgroup: workgroup)}
+      let(:referential_suite) { create(:referential_suite, current: aggregatable) }
+      let(:workgroup_referential_suite) { create(:referential_suite, current: referential_2, referentials: [referential, referential_2]) }
+
+      before do
+        aggregate.update new: referential
+        aggregatable
+        aggregate_2.update new: referential_2
+        
+        workbench.update(output: referential_suite)
+        workgroup.update(output: workgroup_referential_suite)
+        aggregate.rollback!
+        expect(workgroup.output.current).to eq referential
+      end
+
+      it "returns with a log message" do
+        Timecop.freeze(Time.current.beginning_of_day) do
+          expect(Rails.logger).to receive(:info).with(/\ANo aggregatable referential found/)
+
+          expect { workgroup.nightly_aggregate! }.not_to change {
+            workgroup.aggregates.count
+          }
+        end
+      end
+    end
+
     context "when aggregatable referentials are found" do
       let(:workbench) { create(:workbench, workgroup: workgroup) }
       let(:referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
