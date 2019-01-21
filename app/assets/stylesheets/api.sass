@@ -10,7 +10,7 @@ body
   overflow-x: hidden
 
 body > .container-fluid
-  width: 1000px
+  width: 1200px
   margin: auto
 
 .page_header
@@ -35,10 +35,37 @@ pre, li
   margin-top: 10px
 
 h2
-  margin-bottom: 20px
+  margin-bottom: 1em
+
+h4
+  margin-top: 2em
 
 .error
   font-size: 2em
   background-color: red
   padding: 10px
   color: white
+
+.right-col
+  border: 1px solid $brand-color-secondary
+  text-align: center
+  border-radius: 5px
+  h3
+    color: $brand-color-primary
+    margin-bottom: 30px
+    padding-bottom: 20px
+    border-bottom: 1px solid $brand-color-secondary
+  a
+    padding: 10px 20px
+    background: $brand-color-primary
+    border: 1px solid $brand-color-primary
+    text-decoration: none
+    transition: background-color 0.3s
+    display: block
+    color: white
+    border-radius: 5px
+    font-weight: bold
+    margin-top: 2em
+    &:hover
+      background: white
+      color: $brand-color-primary

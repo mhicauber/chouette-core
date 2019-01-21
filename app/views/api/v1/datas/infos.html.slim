@@ -1,15 +1,72 @@
-h2= "Bienvenue sur l'API de publication de #{t('brandname')}"
+- if I18n.locale == :fr
+  h2
+    = "Accès à l'API de données "
+    strong= @publication_api.name
 
-p Pour vous connecter à cette API, vous devez disposer d'une clé d'API.
-ul
-  li Pour en obtenir une, merci de contacter le propriétaire de l’API
-  li
-    # Pour l'utiliser, merci de l'inclure dans le header de chaque requête envoyée à l'API:
-    pre Authorization: Token token=<...>
-  - if params[:from]
-    li
-      # Pour tester l'accès à la ressource, vous pouvez utiliser le code suivant:
-      pre
-        = "curl -H'Authorization: Token token=\"YOUR_TOKEN_HERE\"' -o #{params[:from].split('/').last} \\"
-        br
-        = params[:from]
+  p.alert.alert-info
+    = "Pour accéder aux données de cette API, vous devez disposer d'une clé d'accès."
+    br
+    = "Contacter le propriétaire de l’API pour obtenir une clé d'accès."
+
+  h4 Ressources disponibles:
+  ul
+    - @publication_api.publication_api_sources.each do |source|
+      li= link_to source.public_url
+
+  h4 Authentification
+  p
+    # La clé doit être transmise dans une entête HTTP de la forme :
+    pre Authorization: Token token="&lt;YOUR TOKEN&gt;"
+  p
+    = "Par exemple, si le token de clé est"
+    em 5fa1f901a833aaec78
+    = ", la requête doit inclure une entête HTTP :"
+    pre Authorization: Token token="5fa1f901a833aaec78"
+
+  p
+    # Pour tester l'accès à une ressource, vous pouvez utiliser le code suivant:
+    pre
+      = "curl \\"
+      br
+      = "-H'Authorization: Token token=\"<VOTRE TOKEN>\"'  \\"
+      br
+      = "-o #{params[:from] && params[:from].split('/').last || 'output.zip'} \\"
+      br
+      = params[:from] || "<URL DE LA RESSOURCE>"
+
+- else
+  h2
+    = "Access to the "
+    strong= @publication_api.name
+    = " API"
+
+  p.alert.alert-info
+    = "To gain access to this API, you need an authorization token."
+    br
+    = "Please contact the owner of this API to get an access token."
+
+  h4 Available resources:
+  ul
+    - @publication_api.publication_api_sources.each do |source|
+      li= link_to source.public_url
+
+  h4 Authentication
+  p
+    # The token must be transmitted through an HTTP header :
+    pre Authorization: Token token="&lt;VOTRE TOKEN&gt;"
+  p
+    = "For example, if the token is "
+    em 5fa1f901a833aaec78
+    =", the request must contain the following HTTP header:"
+    pre Authorization: Token token="5fa1f901a833aaec78"
+
+  p
+    # To thest the access to a resource, you may use the following snippet:
+    pre
+      = "curl \\"
+      br
+      = "-H'Authorization: Token token=\"<YOUR TOKEN>\"'  \\"
+      br
+      = "-o #{params[:from] && params[:from].split('/').last || 'output.zip'} \\"
+      br
+      = params[:from] || "<RESOURCE URL>"
