@@ -305,7 +305,7 @@ fr:
       vehicle_journey_control/purchase_window_dates:
         one: Cohérence date de fin de vente - date de fin de circulation
       vehicle_journey_control/empty_time_table:
-        one: Une course ne doit pas être lié à un calendrier d'application vide
+        one: Une course ne doit pas être liée à un calendrier d'application vide
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:
