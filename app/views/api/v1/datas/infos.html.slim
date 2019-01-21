@@ -6,3 +6,10 @@ ul
   li
     # Pour l'utiliser, merci de l'inclure dans le header de chaque requête envoyée à l'API:
     pre Authorization: Token token=<...>
+  - if params[:from]
+    li
+      # Pour tester l'accès à la ressource, vous pouvez utiliser le code suivant:
+      pre
+        = "curl -H'Authorization: Token token=\"YOUR_TOKEN_HERE\"' -o #{params[:from].split('/').last} \\"
+        br
+        = params[:from]
