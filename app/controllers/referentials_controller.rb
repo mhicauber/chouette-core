@@ -21,8 +21,9 @@ class ReferentialsController < ChouetteController
       success.html do
         if @referential.created_from_id.present?
           flash[:notice] = t('notice.referentials.duplicate')
+        else
+          flash[:notice] = t('notice.referentials.create')
         end
-        flash[:notice] = t('notice.referentials.create')
         redirect_to workbench_path(@referential.workbench)
       end
       failure.html do
