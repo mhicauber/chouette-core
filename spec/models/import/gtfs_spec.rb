@@ -396,7 +396,7 @@ RSpec.describe Import::Gtfs do
         ['BEATTY_AIRPORT', 0, t('2000-01-01 21:00:00 UTC'), t('2000-01-01 21:00:00 UTC'), 0, 0],
         ['AMV', 1, t('2000-01-01 22:00:00 UTC'), t('2000-01-01 22:00:00 UTC'), 1, 1],
         ['AMV', 0, t('2000-01-01 23:00:00 UTC'), t('2000-01-01 23:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 00:00:00 UTC'), t('2000-01-01 00:00:00 UTC'), 0, 0]
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 00:00:00 UTC'), t('2000-01-01 00:00:00 UTC'), 1, 1]
       ]
 
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)

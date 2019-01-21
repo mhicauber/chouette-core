@@ -423,7 +423,7 @@ class Import::Gtfs < Import::Base
         raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
         arrival_time = GTFS::Time.parse(stop_time.arrival_time)
         raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-        raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
+        raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset(@default_time_zone).zero? && arrival_time.day_offset(@default_time_zone).zero?
       end
 
       stop_area = stop_area_referential.stop_areas.find_by(registration_number: stop_time.stop_id)
@@ -444,13 +444,13 @@ class Import::Gtfs < Import::Base
     raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
 
     if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence
-      @vehicle_journey_at_stop_first_offset = departure_time.day_offset
+      @vehicle_journey_at_stop_first_offset = departure_time.day_offset(@default_time_zone)
     end
 
     vehicle_journey_at_stop.departure_time = departure_time.time(@default_time_zone)
     vehicle_journey_at_stop.arrival_time = arrival_time.time(@default_time_zone)
-    vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset - @vehicle_journey_at_stop_first_offset
-    vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset - @vehicle_journey_at_stop_first_offset
+    vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset(@default_time_zone) - @vehicle_journey_at_stop_first_offset
+    vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset(@default_time_zone) - @vehicle_journey_at_stop_first_offset
 
     # TODO: offset
 

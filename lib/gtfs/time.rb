@@ -13,8 +13,8 @@ module GTFS
       @time ||= ::Time.new(2000, 1, 1, real_hours(time_zone), minutes, seconds, "+00:00")
     end
 
-    def day_offset
-      hours / 24
+    def day_offset(time_zone = 'UTC')
+      (hours - (::Time.find_zone(time_zone).try(:utc_offset)||0) / 3600) / 24
     end
 
     FORMAT = /(\d{1,2}):(\d{1,2}):(\d{1,2})/
