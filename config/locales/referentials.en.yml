@@ -156,6 +156,7 @@ en:
   notice:
     referentials:
       deleted: "Datasets has been successfully destroyed"
+      create: The creation is in progress. Please wait and refresh the page in a few moments..
       duplicate: "The duplication is in progress. Please wait and refresh the page in a few moments."
       validate: "The validation is in progress. Please wait and refresh the page in a few moments."
     referential:
