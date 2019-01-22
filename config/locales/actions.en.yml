@@ -23,6 +23,7 @@ en:
     new: "Add new"
     processing: "Processing…"
     remove: Remove
+    restore: Cancel deletion
     search: "Search"
     select: Select
     show: "See"
