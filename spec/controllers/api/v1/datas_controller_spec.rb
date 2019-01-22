@@ -20,7 +20,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
     let(:auth_token) { 'token' }
 
     before do
-      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('_', auth_token)
+      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(auth_token)
     end
 
     describe 'get #download_full' do
