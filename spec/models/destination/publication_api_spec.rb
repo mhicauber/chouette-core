@@ -5,10 +5,13 @@ RSpec.describe Destination::PublicationApi, type: :model do
   let(:publication_setup) { create :publication_setup }
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json')) }
 
-  let(:export_1) { create :netex_export, status: :successful, options: { duration: 90, line_code: 1, export_type: :line }, file: file }
-  let(:export_2) { create :netex_export, status: :successful, options: { duration: 90, line_code: 2, export_type: :line }, file: file }
-  let(:other_export_1) { create :netex_export, status: :successful, options: { duration: 90, line_code: 1, export_type: :line }, file: file }
-  let(:other_export_2) { create :netex_export, status: :successful, options: { duration: 90, line_code: 2, export_type: :line }, file: file }
+  let(:line_1) { create :line }
+  let(:line_2) { create :line }
+
+  let(:export_1) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_1.id, export_type: :line }, file: file }
+  let(:export_2) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_2.id, export_type: :line }, file: file }
+  let(:other_export_1) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_1.id, export_type: :line }, file: file }
+  let(:other_export_2) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_2.id, export_type: :line }, file: file }
   let(:other_publication_setup) { create :publication_setup, export_type: publication_setup.export_type, export_options: publication_setup.export_options }
   let(:destination) { build :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api }
 

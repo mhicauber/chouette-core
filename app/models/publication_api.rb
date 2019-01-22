@@ -16,16 +16,6 @@ class PublicationApi < ActiveRecord::Base
     "#{SmartEnv['RAILS_HOST']}/api/v1/datas/#{slug}"
   end
 
-  def publication_for_export_type(export_type, export_options={})
-    return nil if publications.empty?
-
-    scope = publications.joins(:publication_setup).where('publication_setups.export_type = ?', export_type)
-    export_options.each do |k, v|
-      scope = scope.where("publication_setups.export_options->'#{k}' = ?", v)
-    end
-    scope.order(:created_at).last
-  end
-
   class InvalidAuthenticationError < RuntimeError; end
   class MissingAuthenticationError < RuntimeError; end
 end
