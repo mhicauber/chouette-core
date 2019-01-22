@@ -76,3 +76,4 @@ end
 require_dependency './destination/dummy'
 require_dependency './destination/google_cloud_storage'
 require_dependency './destination/sftp'
+require_dependency './destination/publication_api'
