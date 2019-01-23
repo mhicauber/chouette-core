@@ -68,6 +68,7 @@ class Import::Gtfs < Import::Base
     main_resource&.save
     save
     notify_parent
+    notify_state
   end
 
   def self.accept_file?(file)
@@ -188,8 +189,10 @@ class Import::Gtfs < Import::Base
   def import_resources(*resources)
     resources.each do |resource|
       Chouette::Benchmark.log "ImportGTFS import #{resource}" do
-        @progress += 0.2
-        notify_progress @progress
+        if @progress
+          @progress += 1.0/7
+          notify_progress @progress
+        end
         send "import_#{resource}"
       end
     end
@@ -203,12 +206,12 @@ class Import::Gtfs < Import::Base
   end
 
   def import_without_status
+    @progress = 0
     prepare_referential
     referential.pending!
-
-    @progress = 0
     import_resources :calendars, :calendar_dates
     import_resources :trips, :stop_times
+    @progress = nil
   end
 
   def import_agencies
