@@ -391,6 +391,11 @@ class Referential < ApplicationModel
     end
   end
 
+  def associated_stop_areas
+    ids = routes.joins(:stop_points).select('stop_area_id').uniq.pluck(:stop_area_id)
+    stop_areas.where(id: ids)
+  end
+
   def metadatas_period
     query = "select min(lower), max(upper) from (select lower(unnest(periodes)) as lower, upper(unnest(periodes)) as upper from public.referential_metadata where public.referential_metadata.referential_id = #{id}) bounds;"
 

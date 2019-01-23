@@ -63,4 +63,6 @@ class ComplianceCheckBlock < ApplicationModel
     ids = routes_collection(compliance_check).joins(:stop_points).select('stop_area_id').uniq.pluck(:stop_area_id)
     compliance_check.referential.stop_areas.where(id: ids)
   end
+
+  alias_method :associated_stop_areas_collection, :stop_areas_collection
 end

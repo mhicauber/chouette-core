@@ -40,6 +40,7 @@ en:
     3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
     3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
     3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"
+    3_stoparea_1: "The StopArea %{source_objectid} is missing a timezone"
     compliance_check_set_errors: compliance_check_set_errors
   activerecord:
     attributes:
