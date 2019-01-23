@@ -14,6 +14,8 @@ en:
         routing_constraint_zone: 'Routing Constraint Zone'
         vehicle_journey: 'Vehicle Journey'
         dummy: 'Test'
+        company: 'Company'
+        stop_area: 'Stop Area'
     form:
       company_name: Search by company name
     search_no_results: 'No compliance controls matching your query'

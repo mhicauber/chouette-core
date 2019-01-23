@@ -14,7 +14,8 @@ fr:
         routing_constraint_zone: 'ITL'
         vehicle_journey: 'Course'
         dummy: 'Test'
-        company: Transporteur
+        company: 'Transporteur'
+        stop_area: 'Arrêt'
     form:
       company_name: Indiquez le nom d'un transporteur
     search_no_results: 'Aucun contrôle ne correspond à votre recherche'
