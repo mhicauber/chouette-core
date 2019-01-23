@@ -30,16 +30,16 @@ class User < ApplicationModel
   belongs_to :organisation
   has_many :workbenches, through: :organisation
   has_many :workgroups, through: :workbenches
-  has_many :imports, dependent: :nullify, :class_name => 'Import::Base'
-  has_many :exports, dependent: :nullify, :class_name => 'Export::Base'
+  has_many :imports, dependent: :nullify, class_name: 'Import::Base'
+  has_many :exports, dependent: :nullify, class_name: 'Export::Base'
   has_many :compliance_check_sets, dependent: :nullify
   has_many :merges, dependent: :nullify
   has_many :aggregates, dependent: :nullify
   accepts_nested_attributes_for :organisation
 
-  validates :organisation, :presence => true
-  validates :email, :presence => true, :uniqueness => true
-  validates :name, :presence => true
+  validates :organisation, presence: true
+  validates :email, presence: true, uniqueness: true
+  validates :name, presence: true
 
   before_validation(:on => :create) do
     self.password ||= Devise.friendly_token.first(6)
