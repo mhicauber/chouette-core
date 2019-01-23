@@ -122,6 +122,33 @@ RSpec.describe Import::Gtfs do
       expect(workbench.stop_area_referential.stop_areas.pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
+    it "should use the agency timezone by default" do
+      import.import_agencies
+      import.import_stops
+
+      expect(workbench.stop_area_referential.stop_areas.first.time_zone).to eq("America/Los_Angeles")
+    end
+
+    context 'with an invalid timezone' do
+      let(:stop) do
+        GTFS::Stop.new(
+          id: 'stop_id',
+          name: 'stop',
+          location_type: '2',
+          timezone: "incorrect timezone"
+        )
+      end
+
+      before(:each) do
+        allow(import.source).to receive(:stops) { [stop] }
+      end
+
+      it 'should create an error message' do
+        expect { import.import_stops }.to change { Import::Message.count }.by(1)
+          .and(change { Chouette::StopArea.count })
+      end
+    end
+
     context 'with an inexistant parent stop' do
       let(:child) do
         GTFS::Stop.new(
@@ -147,7 +174,8 @@ RSpec.describe Import::Gtfs do
         GTFS::Stop.new(
           id: 'parent_id',
           name: 'parent',
-          location_type: '1'
+          location_type: '1',
+          timezone: 'America/Los_Angeles'
         )
       end
 
@@ -156,7 +184,8 @@ RSpec.describe Import::Gtfs do
           id: 'child_id',
           name: 'child',
           parent_station: 'parent_id',
-          location_type: '2'
+          location_type: '2',
+          timezone: 'Europe/Paris'
         )
       end
 
@@ -169,6 +198,12 @@ RSpec.describe Import::Gtfs do
         parent = Chouette::StopArea.find_by(registration_number: 'parent_id')
         child = Chouette::StopArea.find_by(registration_number: 'child_id')
         expect(child.parent).to eq parent
+      end
+
+      it 'should use the parent timezone' do
+        import.import_stops
+        child = Chouette::StopArea.find_by(registration_number: 'child_id')
+        expect(child.time_zone).to eq 'America/Los_Angeles'
       end
 
       context 'when the parent is not valid' do
@@ -343,25 +378,25 @@ RSpec.describe Import::Gtfs do
         "stop_areas.registration_number", :position, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset,
       ]
       expected_attributes = [
-        ['EMSI', 0, t('2000-01-01 06:30:00 UTC'), t('2000-01-01 06:28:00 UTC'), 0, 0],
-        ['DADAN', 1, t('2000-01-01 06:37:00 UTC'), t('2000-01-01 06:35:00 UTC'), 0, 0],
-        ['NADAV', 2, t('2000-01-01 06:44:00 UTC'), t('2000-01-01 06:42:00 UTC'), 0, 0],
-        ['NANAA', 3, t('2000-01-01 06:51:00 UTC'), t('2000-01-01 06:49:00 UTC'), 0, 0],
-        ['STAGECOACH', 4, t('2000-01-01 06:58:00 UTC'), t('2000-01-01 06:56:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC'), 0, 0],
-        ['BULLFROG', 1, t('2000-01-01 08:15:00 UTC'), t('2000-01-01 08:10:00 UTC'), 0, 0],
-        ['BULLFROG', 0, t('2000-01-01 12:05:00 UTC'), t('2000-01-01 12:05:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 12:15:00 UTC'), t('2000-01-01 12:15:00 UTC'), 0, 0],
-        ['BULLFROG', 0, t('2000-01-01 08:20:00 UTC'), t('2000-01-01 08:20:00 UTC'), 0, 0],
-        ['FUR_CREEK_RES', 1, t('2000-01-01 09:20:00 UTC'), t('2000-01-01 09:20:00 UTC'), 0, 0],
-        ['FUR_CREEK_RES', 0, t('2000-01-01 11:00:00 UTC'), t('2000-01-01 11:00:00 UTC'), 0, 0],
-        ['BULLFROG', 1, t('2000-01-01 12:00:00 UTC'), t('2000-01-01 12:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 08:00:00 UTC'), t('2000-01-01 08:00:00 UTC'), 0, 0],
-        ['AMV', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 13:00:00 UTC'), t('2000-01-01 13:00:00 UTC'), 0, 0],
-        ['AMV', 1, t('2000-01-01 14:00:00 UTC'), t('2000-01-01 14:00:00 UTC'), 1, 1],
-        ['AMV', 0, t('2000-01-01 15:00:00 UTC'), t('2000-01-01 15:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'), 0, 0]
+        ['EMSI', 0, t('2000-01-01 14:30:00 UTC'), t('2000-01-01 14:28:00 UTC'), 0, 0],
+        ['DADAN', 1, t('2000-01-01 14:37:00 UTC'), t('2000-01-01 14:35:00 UTC'), 0, 0],
+        ['NADAV', 2, t('2000-01-01 14:44:00 UTC'), t('2000-01-01 14:42:00 UTC'), 0, 0],
+        ['NANAA', 3, t('2000-01-01 14:51:00 UTC'), t('2000-01-01 14:49:00 UTC'), 0, 0],
+        ['STAGECOACH', 4, t('2000-01-01 14:58:00 UTC'), t('2000-01-01 14:56:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'), 0, 0],
+        ['BULLFROG', 1, t('2000-01-01 16:15:00 UTC'), t('2000-01-01 16:10:00 UTC'), 0, 0],
+        ['BULLFROG', 0, t('2000-01-01 20:05:00 UTC'), t('2000-01-01 20:05:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 20:15:00 UTC'), t('2000-01-01 20:15:00 UTC'), 0, 0],
+        ['BULLFROG', 0, t('2000-01-01 16:20:00 UTC'), t('2000-01-01 16:20:00 UTC'), 0, 0],
+        ['FUR_CREEK_RES', 1, t('2000-01-01 17:20:00 UTC'), t('2000-01-01 17:20:00 UTC'), 0, 0],
+        ['FUR_CREEK_RES', 0, t('2000-01-01 19:00:00 UTC'), t('2000-01-01 19:00:00 UTC'), 0, 0],
+        ['BULLFROG', 1, t('2000-01-01 20:00:00 UTC'), t('2000-01-01 20:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'), 0, 0],
+        ['AMV', 1, t('2000-01-01 17:00:00 UTC'), t('2000-01-01 17:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 21:00:00 UTC'), t('2000-01-01 21:00:00 UTC'), 0, 0],
+        ['AMV', 1, t('2000-01-01 22:00:00 UTC'), t('2000-01-01 22:00:00 UTC'), 1, 1],
+        ['AMV', 0, t('2000-01-01 23:00:00 UTC'), t('2000-01-01 23:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 00:00:00 UTC'), t('2000-01-01 00:00:00 UTC'), 1, 1]
       ]
 
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
