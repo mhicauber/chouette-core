@@ -246,6 +246,11 @@ fr:
       prerequisite: "Aucun"
       messages:
         3_generic_4: "Le champ %{field_name} n’est pas renseigné"
+    stop_area_control/time_zone:
+      description: "Tous les arrêts doivent avoir un fuseau horaire"
+      prerequisite: "None"
+      messages:
+        3_stoparea_1: "L'arret %{source_objectid} doit avoir un fuseau horaire défini"
 
   activerecord:
     models:
@@ -329,7 +334,7 @@ fr:
       company_control/name_is_present:
         one: "Présence du nom des transporteurs"
       stop_area_control/time_zone:
-        one: "Les arrêts sont géolocalisés"
+        one: "Les arrêts ont un fuseau horaire"
       custom_field_control/presence:
         one: "Présence d'un champ personnalisé"
 

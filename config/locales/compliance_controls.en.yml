@@ -248,6 +248,11 @@ en:
       prerequisite: "None"
       messages:
         3_generic_4: "The field %{field_name} is not set"
+    stop_area_control/time_zone:
+      description: "A StopArea must have a timezone"
+      prerequisite: "None"
+      messages:
+        3_stoparea_1: "The StopArea %{source_objectid} is missing a timezone"
 
   activerecord:
     models:
@@ -329,7 +334,7 @@ en:
       company_control/name_is_present:
         one: "Company name is present"
       stop_area_control/time_zone:
-        one: "StopAreas are geolocated"
+        one: "StopAreas have a timezone"
       custom_field_control/presence:
         one: "Custom Field is set"
 

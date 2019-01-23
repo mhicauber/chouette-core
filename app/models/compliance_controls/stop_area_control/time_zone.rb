@@ -9,12 +9,15 @@ module StopAreaControl
     end
 
     def self.collection_type(_)
-      :stop_areas
+      :associated_stop_areas
+    end
+
+    def self.lines_for(compliance_check, stop_area)
+      compliance_check.referential.lines.joins(routes: :stop_points).where('stop_points.stop_area_id = ?', stop_area.id).uniq
     end
 
     def self.compliance_test compliance_check, stop_area
-      false
-      # !!stop_area.parent_id ? stop_area.time_zone.nil? : true
+      stop_area.time_zone.present?
     end
   end
 end

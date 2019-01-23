@@ -7,9 +7,5 @@ module RouteControl
     def self.collection_type(_)
       :routes
     end
-
-    def self.compliance_test compliance_check, route
-      route.stop_points.commercial.all? {|sp| sp.for_boarding == "forbidden" && sp.for_alighting == "forbidden" }
-    end
   end
 end
