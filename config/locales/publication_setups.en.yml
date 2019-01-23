@@ -4,6 +4,7 @@ en:
     actions:
       index: Aggregated offer publications
       create: Add a Publication
+      new: New Publication
       destroy_confirm: "Are you sure you want destroy this publication setup ?"
   activerecord:
     models:
@@ -13,4 +14,8 @@ en:
         other: "Publications"
     attributes:
       publication_setup:
-        name: "Nom"
+        name: "Name"
+        export_type: "Export Type"
+        export_options: "Export Settings"
+        enabled: "Enabled"
+        destinations: "Output"
