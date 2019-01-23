@@ -20,7 +20,7 @@ en:
       current_offer:
         one: Current offer
         other: Current offers
-      workbench_output:
+      workbench_outputs:
         organisation: Organisation offers
         workgroup: Workgroup offers
         edit_workgroup: App configuration
