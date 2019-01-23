@@ -11,8 +11,6 @@ class Export::Base < ActiveRecord::Base
   belongs_to :referential
   belongs_to :publication
 
-  delegate :workbench, to: :referential
-
   validates :type, :referential_id, presence: true
 
   after_create :purge_exports
