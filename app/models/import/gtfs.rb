@@ -43,8 +43,6 @@ class Import::Gtfs < Import::Base
     @source ||= ::GTFS::Source.build local_file, strict: false
   end
 
-  delegate :line_referential, :stop_area_referential, to: :workbench
-
   def prepare_referential
     import_resources :agencies, :stops, :routes
 

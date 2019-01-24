@@ -15,5 +15,22 @@ class Import::Neptune < Import::Base
   end
 
   def import_without_status
+    prepare_referential
+  end
+
+  def prepare_referential
+    # import_resources :lines
+
+    create_referential
+    referential.switch
+  end
+
+  def referential_metadata
+    # TODO #10176
+    line_ids = line_referential.lines.pluck :id
+
+    # TODO #10177
+    periode = (Time.now..1.month.from_now)
+    ReferentialMetadata.new line_ids: line_ids, periodes: [periode]
   end
 end

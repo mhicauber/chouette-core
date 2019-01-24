@@ -4,6 +4,8 @@ module LocalImportSupport
   included do |into|
     include ImportResourcesSupport
     after_commit :launch_worker, on: :create
+
+    delegate :line_referential, :stop_area_referential, to: :workbench
   end
 
   def import
