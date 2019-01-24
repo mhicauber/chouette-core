@@ -1,7 +1,11 @@
 class Import::Workbench < Import::Base
+  include ImportResourcesSupport
+
   after_commit :launch_worker, :on => :create
 
   option :automatic_merge, type: :boolean, default_value: false
+
+  def main_resource; self end
 
   def launch_worker
     update_column :status, 'running'
@@ -15,6 +19,13 @@ class Import::Workbench < Import::Base
     when :neptune
       import_neptune
     else
+      message = create_message(
+        {
+          criticity: :error,
+          message_key: "unknown_file_format"
+        }
+      )
+      message.save
       failed!
     end
   end

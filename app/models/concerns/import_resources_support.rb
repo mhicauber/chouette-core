@@ -16,8 +16,8 @@ module ImportResourcesSupport
 
   def create_message args, opts={}
     resource = opts[:resource] || main_resource || self
-    resource.messages.build args
-    return unless opts[:commit]
+    message = resource.messages.build args
+    return message unless opts[:commit]
 
     begin
       resource.save!

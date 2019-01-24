@@ -14,6 +14,7 @@ fr:
     trip_with_inconsistent_stop_times: La course %{trip_id} a des horaires incohérents
     invalid_stop_time: 'La course %{trip_id} comporte un temps de passage invalide: "%{time}"'
     invalid_time_zone: 'Le fuseau horaire %{time_zone} est invalide'
+    unknown_file_format: "Le fichier ne correspond à aucun format reconnu"
     wrong_calendar_in_zip_file: "Le calendrier contenu dans %{source_filename} contient des données incorrectes ou incohérentes"
     gtfs:
       agencies:
