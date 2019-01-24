@@ -17,7 +17,6 @@ class WorkbenchImportWorker
     @entries = 0
     @workbench_import ||= Import::Workbench.find(import_id)
 
-    workbench_import.update(status: 'running', started_at: Time.now)
     zip_service = ZipService.new(downloaded, allowed_lines)
     upload zip_service
     workbench_import.update(ended_at: Time.now)

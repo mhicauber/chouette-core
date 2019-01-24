@@ -1,42 +1,12 @@
 class Import::Gtfs < Import::Base
+  include ImportResourcesSupport
+
   after_commit :launch_worker, on: :create
 
   after_commit :update_main_resource_status, on:  [:create, :update]
 
   def launch_worker
     GtfsImportWorker.perform_async_or_fail(self)
-  end
-
-  def main_resource
-    @resource ||= parent.resources.find_or_create_by(name: referential_name, resource_type: 'referential', reference: self.name) if parent
-  end
-
-  def update_main_resource_status
-    main_resource.update_status_from_importer status
-    true
-  end
-
-  def create_resource name
-    resources.find_or_initialize_by(name: name, resource_type: 'file', reference: name)
-  end
-
-  def next_step
-    main_resource&.next_step
-  end
-
-  def create_message args, opts={}
-    resource = opts[:resource] || main_resource || self
-    resource.messages.build args
-    return unless opts[:commit]
-
-    begin
-      resource.save!
-    rescue
-      Rails.logger.error "Invalid resource: #{resource.errors.inspect}"
-      Rails.logger.error "Last message: #{resource.messages.last.errors.inspect}"
-      raise
-    end
-    resource.update_status_from_messages
   end
 
   def import
@@ -70,7 +40,7 @@ class Import::Gtfs < Import::Base
     notify_parent
   end
 
-  def self.accept_file?(file)
+  def self.accepts_file?(file)
     Zip::File.open(file) do |zip_file|
       zip_file.glob('agency.txt').size == 1
     end

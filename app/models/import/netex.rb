@@ -1,5 +1,7 @@
 require 'net/http'
 class Import::Netex < Import::Base
+  include ImportResourcesSupport
+
   before_destroy :destroy_non_ready_referential
 
   after_commit :update_main_resource_status, on:  [:create, :update]
@@ -10,13 +12,17 @@ class Import::Netex < Import::Base
 
   validates_presence_of :parent
 
-  def main_resource
-    @resource ||= parent.resources.find_or_create_by(name: self.name, resource_type: "referential", reference: self.name)
+  def self.accepts_file?(file)
+    Zip::File.open(file) do |zip_file|
+      zip_file.glob('**/calendriers.xml').size >= 1
+    end
+  rescue => e
+    Rails.logger.debug "Error in testing Netex file: #{e}"
+    return false
   end
 
-  def update_main_resource_status
-    main_resource.update_status_from_importer status
-    true
+  def main_resource
+    @resource ||= parent.resources.find_or_create_by(name: self.name, resource_type: "referential", reference: self.name)
   end
 
   def notify_parent
@@ -26,14 +32,6 @@ class Import::Netex < Import::Base
       update_referential
       next_step
     end
-  end
-
-  def next_step
-    main_resource.next_step
-  end
-
-  def create_message args
-    main_resource.messages.create args
   end
 
   def create_with_referential!
@@ -79,6 +77,7 @@ class Import::Netex < Import::Base
           resource_attributes: referential.errors.messages
         )
       end
+      main_resource&.save
       self.referential = nil
       aborted!
     end
