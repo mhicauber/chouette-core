@@ -19,7 +19,7 @@ class Import::Neptune < Import::Base
   end
 
   def prepare_referential
-    import_resources :lines
+    import_resources :lines, :companies
 
     create_referential
     referential.switch
@@ -40,23 +40,37 @@ class Import::Neptune < Import::Base
     end
   end
 
-  def import_lines
+  def each_element_matching_css(selector)
     each_source do |source|
-      source.css('ChouettePTNetwork ChouetteLineDescription Line')\
+      source.css(selector)\
             .map(&method(:build_object_from_nokogiri_element))\
-            .each do |source_line|
-
-        line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
-        line.name = source_line[:name]
-        line.number = source_line[:number]
-        line.published_name = source_line[:published_name]
-        line.comment = source_line[:comment]
-        line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
-
-        save_model line
-        @imported_line_ids ||= []
-        @imported_line_ids << line.id
+            .each do |object|
+          yield object
       end
+    end
+  end
+
+  def import_lines
+    each_element_matching_css('ChouettePTNetwork ChouetteLineDescription Line') do |source_line|
+      line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
+      line.name = source_line[:name]
+      line.number = source_line[:number]
+      line.published_name = source_line[:published_name]
+      line.comment = source_line[:comment]
+      line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
+
+      save_model line
+      @imported_line_ids ||= []
+      @imported_line_ids << line.id
+    end
+  end
+
+  def import_companies
+    each_element_matching_css('ChouettePTNetwork Company') do |source_company|
+      company = line_referential.companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
+      company.assign_attributes source_company.except(:registration, :object_version)
+
+      save_model company
     end
   end
 

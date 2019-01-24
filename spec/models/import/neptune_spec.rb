@@ -74,4 +74,21 @@ RSpec.describe Import::Neptune do
       expect(line.reload.attributes.except('updated_at')).to eq attrs
     end
   end
+
+  describe "#import_companies" do
+    let(:import) { build_import }
+
+    it 'should create new companies' do
+      expect{ import.send(:import_companies) }.to change{ workbench.line_referential.companies.count }.by 1
+    end
+
+    it 'should update existing lines' do
+      import.send(:import_companies)
+      company = workbench.line_referential.companies.last
+      attrs = company.attributes.except('updated_at')
+      company.update name: "foo"
+      expect{ import.send(:import_companies) }.to_not change{ workbench.line_referential.companies.count }
+      expect(company.reload.attributes.except('updated_at')).to eq attrs
+    end
+  end
 end
