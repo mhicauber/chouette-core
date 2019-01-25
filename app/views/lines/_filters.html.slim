@@ -15,32 +15,43 @@
       = f.label Chouette::Line.tmf(:company_id), required: false, class: 'control-label'
       = f.input :company_id_eq_any, collection: @line_referential.companies.order(name: :asc), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
 
-    .form-group.togglable class=filter_item_class(params[:q], :transport_mode_eq_any)
+    .form-group.togglable class=filter_item_class(params[:q], :transport_mode)
       = f.label Chouette::Line.tmf(:transport_mode), required: false, class: 'control-label'
-      = f.input :transport_mode_eq_any, collection: NetexTransportModeEnumerations.sorted_transport_modes, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
-
-    .form-group.togglable class=filter_item_class(params[:q], :transport_submode_eq_any)
+      .form-group.checkbox_list.js-transport-mode-checkboxes
+        = f.simple_fields_for :transport_mode do |p|
+          - NetexTransportModeEnumerations.sorted_transport_modes.each do |mode|
+            = p.input mode.to_sym,
+              label: ("<span>" + t("enumerize.transport_mode.#{mode}") + "</span>").html_safe,
+              as: :boolean,
+              wrapper_html: { class: 'checkbox-wrapper'},
+              checked_value: true,
+              unchecked_value: false,
+              input_html: { checked: @transport_modes.include?(mode), data: { transport_mode: mode } }
+    .form-group.togglable class=filter_item_class(params[:q], :transport_submode)
       = f.label Chouette::Line.tmf(:transport_submode), required: false, class: 'control-label'
-      = f.input :transport_submode_eq_any, collection: NetexTransportSubmodeEnumerations.sorted_transport_submodes, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_submode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+      .form-group.checkbox_list.js-transport-submode-checkboxes data-transport_submodes=Chouette::Line.formatted_submodes_for_transports.to_json
+        = f.simple_fields_for :transport_submode do |p|
+          - NetexTransportSubmodeEnumerations.sorted_transport_submodes.each do |submode|
+            = p.input submode.to_sym,
+              label: ("<span>" + t("enumerize.transport_submode.#{submode}") + "</span>").html_safe,
+              as: :boolean,
+              wrapper_html: { class: 'checkbox-wrapper' },
+              checked_value: true,
+              unchecked_value: false,
+              input_html: { checked: @transport_submodes.include?(submode), data: { transport_submode: submode } }
 
     .form-group.togglable class=filter_item_class(params[:q], :status)
       = f.label Chouette::Line.tmf(:status), required: false, class: 'control-label'
       .form-group.checkbox_list
         = f.simple_fields_for :status do |p|
-          = p.input :activated,
-            label: ("<span>#{t('activerecord.attributes.line.activated')}<span class='fa fa-check-circle text-success'></span></span>").html_safe,
-            as: :boolean,
-            wrapper_html: { class: 'checkbox-wrapper' },
-            checked_value: true,
-            unchecked_value: false,
-            input_html: { checked: @status.try(:[], :activated) }
-          = p.input :deactivated,
-            label: ("<span>#{t('activerecord.attributes.line.deactivated')}<span class='fa fa-exclamation-circle text-danger'></span></span>").html_safe,
-            as: :boolean,
-            wrapper_html: { class: 'checkbox-wrapper' },
-            checked_value: true,
-            unchecked_value: false,
-            input_html: { checked: @status.try(:[], :deactivated) }
+          - %w(activated deactivated).each do |status|
+            = p.input status.to_sym,
+              label: ("<span>#{t("activerecord.attributes.line.#{status}")}#{status_symbol(status)}</span>").html_safe,
+              as: :boolean,
+              wrapper_html: { class: 'checkbox-wrapper' },
+              checked_value: true,
+              unchecked_value: false,
+              input_html: { checked: @status.try(:[], status) }
 
 
   .actions

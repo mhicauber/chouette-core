@@ -25,4 +25,12 @@ module LinesHelper
     end
 
   end
+
+  def status_symbol(status)
+    if status == 'activated'
+      "<span class='fa fa-check-circle text-success'></span>"
+    else
+      "<span class='fa fa-exclamation-circle text-danger'></span>"
+    end
+  end
 end

@@ -712,8 +712,15 @@ table, .table
                   text-align: center
                   color: #fff
 
-            &[type='checkbox']:checked + span:before
-              background-color: $brand-color-secondary
+            &[type='checkbox']
+              &:checked
+                + span:before
+                  background-color: $brand-color-secondary
+              &:disabled
+                + span:before
+                  background-color: $lightgrey
+                + span:after
+                  color: $lightgrey
 
   > .ffg-row
     display: block
