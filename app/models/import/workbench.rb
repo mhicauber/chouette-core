@@ -29,14 +29,7 @@ class Import::Workbench < Import::Base
       failed!
     end
   end
-
-  def file_type
-    return unless file
-    return :gtfs if Import::Gtfs.accepts_file?(file.path)
-    return :netex if Import::Netex.accepts_file?(file.path)
-    return :neptune if Import::Neptune.accepts_file?(file.path)
-  end
-
+  
   def import_gtfs
     create_child_import Import::Gtfs
   end
