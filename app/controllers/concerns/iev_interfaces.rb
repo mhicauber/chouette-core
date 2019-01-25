@@ -34,7 +34,10 @@ module IevInterfaces
           @contextual_cols << TableBuilderHelper::Column.new(
             key: :workbench,
             name: Workbench.ts.capitalize,
-            attribute: Proc.new { |n| n.workbench.organisation.name }
+            attribute: Proc.new { |n| n.workbench.organisation.name },
+            link_to: lambda do |import|
+              policy(import.workbench).show? ? import.workbench : nil
+            end
           )
         end
         collection = decorate_collection(collection)
