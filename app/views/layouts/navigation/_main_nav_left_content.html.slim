@@ -18,57 +18,57 @@
         = link_to workgroup_compliance_check_sets_path(workbench.workgroup), class: "list-group-item" do
           span = 'activerecord.models.compliance_check_set.other'.t.capitalize
 
-      = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
-        = link_to workbench_path(workbench), class: "list-group-item" do
-          span = 'activerecord.models.referential.other'.t.capitalize
-        = link_to workbench_imports_path(workbench), class: "list-group-item" do
-          span = 'activerecord.models.import.other'.t.capitalize
-        - if workbench.workgroup.export_types.present?
-          = link_to workbench_exports_path(workbench), class: "list-group-item" do
-            span = 'activerecord.models.export.other'.t.capitalize
-        = link_to workgroup_calendars_path(workbench.workgroup), class: 'list-group-item' do
-          span = 'activerecord.models.calendar.other'.t.capitalize
-        = link_to workbench_compliance_check_sets_path(workbench), class: 'list-group-item' do
-          span = 'activerecord.models.compliance_check_set.other'.t.capitalize
-        = link_to compliance_control_sets_path, class: 'list-group-item' do
-          span = 'activerecord.models.compliance_control_set.other'.t.capitalize
+    = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
+      = link_to workbench_path(workbench), class: "list-group-item" do
+        span = 'activerecord.models.referential.other'.t.capitalize
+      = link_to workbench_imports_path(workbench), class: "list-group-item" do
+        span = 'activerecord.models.import.other'.t.capitalize
+      - if workbench.workgroup.export_types.present?
+        = link_to workbench_exports_path(workbench), class: "list-group-item" do
+          span = 'activerecord.models.export.other'.t.capitalize
+      = link_to workgroup_calendars_path(workbench.workgroup), class: 'list-group-item' do
+        span = 'activerecord.models.calendar.other'.t.capitalize
+      = link_to workbench_compliance_check_sets_path(workbench), class: 'list-group-item' do
+        span = 'activerecord.models.compliance_check_set.other'.t.capitalize
+      = link_to compliance_control_sets_path, class: 'list-group-item' do
+        span = 'activerecord.models.compliance_control_set.other'.t.capitalize
 
-      = main_nav_menu_item 'layouts.navbar.line_referential'.t do
-        = link_to line_referential_lines_path(workbench.line_referential), class: "list-group-item" do
-          span = Chouette::Line.t.capitalize
-        = link_to line_referential_networks_path(workbench.line_referential), class: "list-group-item" do
-          span = Chouette::Network.t.capitalize
-        = link_to line_referential_companies_path(workbench.line_referential), class: "list-group-item" do
-          span = Chouette::Company.t.capitalize
+    = main_nav_menu_item 'layouts.navbar.line_referential'.t do
+      = link_to line_referential_lines_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::Line.t.capitalize
+      = link_to line_referential_networks_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::Network.t.capitalize
+      = link_to line_referential_companies_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::Company.t.capitalize
 
-      = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
-        = link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential), class: "list-group-item" do
-          span = Chouette::StopArea.t.capitalize
-        - if policy(StopAreaProvider).create?
-          = link_to [workbench.stop_area_referential, :stop_area_providers], class: 'list-group-item' do
-            span = StopAreaProvider.t.capitalize
+    = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
+      = link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential), class: "list-group-item" do
+        span = Chouette::StopArea.t.capitalize
+      - if policy(StopAreaProvider).create?
+        = link_to [workbench.stop_area_referential, :stop_area_providers], class: 'list-group-item' do
+          span = StopAreaProvider.t.capitalize
 
-      = main_nav_menu_item 'layouts.navbar.configuration'.t do
-        - if policy(workbench).edit?
-          .subtitle= 'layouts.navbar.workbench.subtitle'.t
-          = link_to [:edit, workbench], class: 'list-group-item level-2' do
-            span = 'layouts.navbar.workbench.edit_control_sets'.t
-        - if policy(workbench.workgroup).edit?
-          .subtitle= 'layouts.navbar.workgroup.subtitle'.t
-          = link_to [:edit_controls, workbench.workgroup], class: 'list-group-item level-2' do
-            span = 'layouts.navbar.workgroup.edit_control_sets'.t
-          = link_to [:edit_aggregate, workbench.workgroup], class: 'list-group-item level-2' do
-            span = 'layouts.navbar.workgroup.edit_aggregate'.t
-          = link_to [:edit_hole_sentinel, workbench.workgroup], class: 'list-group-item level-2' do
-            span = 'layouts.navbar.workgroup.edit_hole_sentinel'.t
-        - if has_feature?(:manage_publications) && policy(workbench.workgroup).edit?
-          .subtitle= 'layouts.navbar.publications.subtitle'.t
-          = link_to [workbench.workgroup, :publication_setups], class: 'list-group-item level-2' do
-            span = PublicationSetup.t
-          = link_to [workbench.workgroup, :publication_apis], class: 'list-group-item level-2' do
-            span = PublicationApi.t
-        = link_to organisation_path, class: 'list-group-item' do
-          span = 'layouts.navbar.organisation_configuration'.t
-        - if current_user.has_permission?('api_keys.index')
-          = link_to workbench_api_keys_path(workbench), class: 'list-group-item' do
-            span = 'layouts.navbar.security_configuration'.t
+    = main_nav_menu_item 'layouts.navbar.configuration'.t do
+      - if policy(workbench).edit?
+        .subtitle= 'layouts.navbar.workbench.subtitle'.t
+        = link_to [:edit, workbench], class: 'list-group-item level-2' do
+          span = 'layouts.navbar.workbench.edit_control_sets'.t
+      - if policy(workbench.workgroup).edit?
+        .subtitle= 'layouts.navbar.workgroup.subtitle'.t
+        = link_to [:edit_controls, workbench.workgroup], class: 'list-group-item level-2' do
+          span = 'layouts.navbar.workgroup.edit_control_sets'.t
+        = link_to [:edit_aggregate, workbench.workgroup], class: 'list-group-item level-2' do
+          span = 'layouts.navbar.workgroup.edit_aggregate'.t
+        = link_to [:edit_hole_sentinel, workbench.workgroup], class: 'list-group-item level-2' do
+          span = 'layouts.navbar.workgroup.edit_hole_sentinel'.t
+      - if has_feature?(:manage_publications) && policy(workbench.workgroup).edit?
+        .subtitle= 'layouts.navbar.publications.subtitle'.t
+        = link_to [workbench.workgroup, :publication_setups], class: 'list-group-item level-2' do
+          span = PublicationSetup.t
+        = link_to [workbench.workgroup, :publication_apis], class: 'list-group-item level-2' do
+          span = PublicationApi.t
+      = link_to organisation_path, class: 'list-group-item' do
+        span = 'layouts.navbar.organisation_configuration'.t
+      - if current_user.has_permission?('api_keys.index')
+        = link_to workbench_api_keys_path(workbench), class: 'list-group-item' do
+          span = 'layouts.navbar.security_configuration'.t
