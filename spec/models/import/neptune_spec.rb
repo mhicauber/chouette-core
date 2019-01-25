@@ -59,6 +59,18 @@ RSpec.describe Import::Neptune do
       expect(import.referential.metadatas.count).to eq 1
       expect(import.referential.metadatas.last.line_ids).to eq new_lines.map(&:id)
     end
+
+    it 'uses the imported dates in the metadata' do
+      new_lines = workbench.line_referential.lines.last(2)
+      import.create_referential
+      expect(import.referential.metadatas.count).to eq 1
+      period_start = '2018-10-22'.to_date
+      period_end = '2018-12-22'.to_date
+      import.instance_variable_set '@timetables_period_start', period_start
+      import.instance_variable_set '@timetables_period_end', period_end
+      import.send(:fix_metadatas_periodes)
+      expect(import.referential.metadatas.last.periodes).to eq [(period_start..period_end)]
+    end
   end
 
   describe "#import_lines" do

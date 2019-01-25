@@ -16,6 +16,9 @@ class Import::Neptune < Import::Base
 
   def import_without_status
     prepare_referential
+
+    import_resources :time_tables
+    fix_metadatas_periodes
   end
 
   def prepare_referential
@@ -26,7 +29,7 @@ class Import::Neptune < Import::Base
   end
 
   def referential_metadata
-    # TODO #10177
+    # we use a mock periode, and will fix it once we have imported the timetables
     periode = (Time.now..1.month.from_now)
     ReferentialMetadata.new line_ids: @imported_line_ids, periodes: [periode]
   end
@@ -75,7 +78,6 @@ class Import::Neptune < Import::Base
   end
 
   def import_time_tables
-    @imported_time_tables ||= []
     each_element_matching_css('ChouettePTNetwork Timetable') do |source_timetable|
       tt = Chouette::TimeTable.find_or_initialize_by objectid: source_timetable[:object_id]
       tt.int_day_types = int_day_types_mapping source_timetable[:day_type]
@@ -85,7 +87,6 @@ class Import::Neptune < Import::Base
       save_model tt
       add_time_table_dates tt, source_timetable[:calendar_day]
       add_time_table_periods tt, source_timetable[:period]
-      @imported_time_tables << source_timetable[:object_id]
     end
   end
 
@@ -94,6 +95,8 @@ class Import::Neptune < Import::Base
 
     dates = [dates] unless dates.is_a?(Array)
     dates.each do |date|
+      @timetables_period_start = [@timetables_period_start, date].compact.min
+      @timetables_period_start = [@timetables_period_start, date].compact.max
       next if timetable.dates.where(in_out: true, date: date).exists?
 
       timetable.dates.create(in_out: true, date: date)
@@ -105,6 +108,9 @@ class Import::Neptune < Import::Base
 
     periods = [periods] unless periods.is_a?(Array)
     periods.each do |period|
+      @timetables_period_start = [@timetables_period_start, period[:start_of_period]].compact.min
+      @timetables_period_start = [@timetables_period_start, period[:end_of_period]].compact.max
+
       timetable.periods.build(period_start: period[:start_of_period], period_end: period[:end_of_period])
     end
     timetable.periods = timetable.optimize_overlapping_periods
@@ -138,6 +144,10 @@ class Import::Neptune < Import::Base
       val = val | day_value if day_value
     end
     val
+  end
+
+  def fix_metadatas_periodes
+    referential.metadatas.last.update periodes: [(@timetables_period_start..@timetables_period_end)]
   end
 
   def transport_mode_name_mapping(source_transport_mode)
