@@ -115,7 +115,7 @@ class User < ApplicationModel
   end
 
   def state
-    %i[blocked invited confirmed invited].each do |s|
+    %i[blocked confirmed invited].each do |s|
       return s if send("#{s}?")
     end
 
@@ -148,7 +148,7 @@ class User < ApplicationModel
     user = User.where(email: email).last
     if user
       return [true, nil] if user.organisation != organisation
-      
+
       user.name = name
       user.profile = profile
       return [true, user]
@@ -163,6 +163,7 @@ class User < ApplicationModel
 
   def invite_from_user!(from_user)
     generate_invitation_token!
+    update invitation_sent_at: Time.now
     UserMailer.invitation_from_user(self, from_user).deliver_now
   end
 

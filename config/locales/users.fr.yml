@@ -34,6 +34,7 @@ fr:
         button: Voir la fiche de l'utilisateur
       already_existing:
         text: <strong>Un utilisateur avec cette adresse email existe déjà.</strong><br />
+      success: Un email d'invitation a été envoyé
     states:
       pending: En Attente
       confirmed: Confirmé

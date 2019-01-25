@@ -34,6 +34,7 @@ en:
         button: See user's details
       already_existing:
         text: <strong>A user with this email already exists</strong><br />
+      success: An invitation email has been sent
     states:
       pending: Pending
       confirmed: Confirmed

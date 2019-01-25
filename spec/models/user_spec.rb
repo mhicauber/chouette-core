@@ -27,7 +27,14 @@ RSpec.describe User, :type => :model do
       expect(UserMailer).to receive(:invitation_from_user).and_call_original
       expect(DeviseMailer).to_not receive(:invitation_instructions).and_call_original
       expect(DeviseMailer).to_not receive(:confirmation_instructions)
-      expect(User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user).first).to be_falsy
+      # allow_any_instance_of(User).to receive(:generate_invitation_token!).and_wrap_original do |m, *args|
+      #   m.call(*args)
+      #   m.receiver.update invitation_sent_at: Time.now
+      # end
+      res = User.invite(email: 'foo@example.com', name: 'foo', profile: :admin, organisation: organisation, from_user: from_user)
+      expect(res.first).to be_falsy
+      expect(res.last).to be_a(User)
+      expect(res.last.reload.state).to eq :invited
     end
 
     context 'when the user alredy exists in the same organisation' do
