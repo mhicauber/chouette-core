@@ -68,10 +68,76 @@ class Import::Neptune < Import::Base
   def import_companies
     each_element_matching_css('ChouettePTNetwork Company') do |source_company|
       company = line_referential.companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
-      company.assign_attributes source_company.except(:registration, :object_version)
+      company.assign_attributes source_company.slice(:name, :short_name, :code, :phone, :email, :fax, :organizational_unit, :operating_department_name)
 
       save_model company
     end
+  end
+
+  def import_time_tables
+    @imported_time_tables ||= []
+    each_element_matching_css('ChouettePTNetwork Timetable') do |source_timetable|
+      tt = Chouette::TimeTable.find_or_initialize_by objectid: source_timetable[:object_id]
+      tt.int_day_types = int_day_types_mapping source_timetable[:day_type]
+      tt.created_at = source_timetable[:creation_time]
+      tt.comment = source_timetable[:comment].presence || source_timetable[:object_id]
+      tt.metadata = { creator_username: source_timetable[:creator_id] }
+      save_model tt
+      add_time_table_dates tt, source_timetable[:calendar_day]
+      add_time_table_periods tt, source_timetable[:period]
+      @imported_time_tables << source_timetable[:object_id]
+    end
+  end
+
+  def add_time_table_dates(timetable, dates)
+    return unless dates
+
+    dates = [dates] unless dates.is_a?(Array)
+    dates.each do |date|
+      next if timetable.dates.where(in_out: true, date: date).exists?
+
+      timetable.dates.create(in_out: true, date: date)
+    end
+  end
+
+  def add_time_table_periods(timetable, periods)
+    return unless periods
+
+    periods = [periods] unless periods.is_a?(Array)
+    periods.each do |period|
+      timetable.periods.build(period_start: period[:start_of_period], period_end: period[:end_of_period])
+    end
+    timetable.periods = timetable.optimize_overlapping_periods
+  end
+
+  def int_day_types_mapping day_types
+    day_types = [day_types] unless day_types.is_a?(Array)
+
+    val = 0
+    day_types.each do |day_type|
+      day_value = case day_type.downcase
+      when 'monday'
+        Chouette::TimeTable::MONDAY
+      when 'tuesday'
+        Chouette::TimeTable::TUESDAY
+      when 'wednesday'
+        Chouette::TimeTable::WEDNESDAY
+      when 'thursday'
+        Chouette::TimeTable::THURSDAY
+      when 'friday'
+        Chouette::TimeTable::FRIDAY
+      when 'saturday'
+        Chouette::TimeTable::SATURDAY
+      when 'sunday'
+        Chouette::TimeTable::SUNDAY
+      when 'weekday'
+        Chouette::TimeTable::MONDAY | Chouette::TimeTable::TUESDAY | Chouette::TimeTable::WEDNESDAY | Chouette::TimeTable::THURSDAY  | Chouette::TimeTable::FRIDAY
+      when 'weekend'
+        Chouette::TimeTable::SATURDAY | Chouette::TimeTable::SUNDAY
+      end
+      val = val | day_value if day_value
+    end
+    val
   end
 
   def transport_mode_name_mapping(source_transport_mode)
@@ -103,11 +169,18 @@ class Import::Neptune < Import::Base
     element.children.each do |child|
       key = child.name.underscore.to_sym
       next if key == :text
+
       if child.children.count == 1 && child.children.last.node_type == Nokogiri::XML::Node::TEXT_NODE
         content = child.children.last.content
-        out[key] = content
       else
-        out[key] = build_object_from_nokogiri_element(child)
+        content = build_object_from_nokogiri_element(child)
+      end
+
+      if element.children.select{ |c| c.name == child.name }.count > 1
+        out[key] ||= []
+        out[key] << content
+      else
+        out[key] = content
       end
     end
     out
