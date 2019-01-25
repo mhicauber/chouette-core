@@ -2,7 +2,7 @@ class Destination < ApplicationModel
   include OptionsSupport
   include RemoteFilesHandler
 
-  belongs_to :publication_setup
+  belongs_to :publication_setup, inverse_of: :destinations
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
   belongs_to :publication_api, class_name: '::PublicationApi'
 

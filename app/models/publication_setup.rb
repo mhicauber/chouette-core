@@ -1,7 +1,7 @@
 class PublicationSetup < ApplicationModel
   belongs_to :workgroup
   has_many :publications, dependent: :destroy
-  has_many :destinations, dependent: :destroy
+  has_many :destinations, dependent: :destroy, inverse_of: :publication_setup
 
   validates :name, presence: true
   validates :workgroup, presence: true
