@@ -435,6 +435,30 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe '#import_calendars with short calendar' do
+    let(:import) { build_import 'google-sample-feed-short-calendar.zip' }
+
+    before do
+      import.prepare_referential
+    end
+
+    it "should create a Date when a calendar starts and ends the same day" do
+      import.import_calendars
+
+      def d(value)
+        Date.parse(value)
+      end
+
+      defined_attributes = ->(t) {
+        [t.comment, t.valid_days, t.dates.first.date]
+      }
+      expected_attributes = [
+        ['Calendar FULLW', [1, 2, 3, 4, 5, 6, 7], d('Mon, 01 Jan 2007')]
+      ]
+      expect(referential.time_tables.map(&defined_attributes)).to match_array(expected_attributes)
+    end
+  end
+
   describe '#import_calendar_dates' do
     let(:import) { build_import 'google-sample-feed.zip' }
 
