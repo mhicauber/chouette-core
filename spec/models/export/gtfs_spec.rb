@@ -23,6 +23,119 @@ RSpec.describe Export::Gtfs, type: :model do
 
   let(:gtfs_export) { create :gtfs_export, referential: referential, workbench: workbench, duration: 5}
 
+  it "should create a default company and generate a message if the journey or its line doesn't have a company" do
+    referential.switch do
+      line = referential.lines.first
+      line.company = nil
+      line.save
+
+      stop_areas = stop_area_referential.stop_areas.order("random()").limit(2)
+      route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+      journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+      vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
+
+      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+
+      tmp_dir = Dir.mktmpdir
+
+      agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
+      GTFS::Target.open(agencies_zip_path) do |target|
+        expect { gtfs_export.export_companies_to target }.to change { Export::Message.count }.by(1)
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build agencies_zip_path, strict: false
+      expect(source.agencies.length).to eq(1)
+      agency = source.agencies.first
+      expect(agency.id).to eq("chouette_default")
+      expect(agency.timezone).to eq("Etc/GMT")
+
+      # Test the line-company link
+      lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
+      GTFS::Target.open(lines_zip_path) do |target|
+        gtfs_export.export_lines_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build lines_zip_path, strict: false
+      route = source.routes.first
+      expect(route.agency_id).to eq("chouette_default")
+    end
+  end
+
+  it "should set a default time zone and generate a message if the journey's company doesn't have one" do
+    referential.switch do
+      company.time_zone = nil
+      company.save
+
+      line = referential.lines.first
+      stop_areas = stop_area_referential.stop_areas.order("random()").limit(2)
+      route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+      journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+      vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+
+      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+
+      tmp_dir = Dir.mktmpdir
+
+      agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
+      GTFS::Target.open(agencies_zip_path) do |target|
+        expect { gtfs_export.export_companies_to target }.to change { Export::Message.count }.by(1)
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build agencies_zip_path, strict: false
+      expect(source.agencies.length).to eq(1)
+      agency = source.agencies.first
+      expect(agency.id).to eq(company.registration_number)
+      expect(agency.timezone).to eq("Etc/GMT")
+
+      # Test the line-company link
+      lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
+      GTFS::Target.open(lines_zip_path) do |target|
+        gtfs_export.export_lines_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build lines_zip_path, strict: false
+      route = source.routes.first
+      expect(route.agency_id).to eq(company.registration_number)
+    end
+  end
+
+  it "should correctly handle timezones" do
+    referential.switch do
+      company.time_zone = "Europe/Paris"
+      company.save
+
+      line = referential.lines.first
+      stop_areas = stop_area_referential.stop_areas.order("random()").limit(2)
+      route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+      journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
+      vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+      vehicle_journey.time_tables << (FactoryGirl.create :time_table)
+      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+
+      tmp_dir = Dir.mktmpdir
+
+      gtfs_export.export_to_dir tmp_dir
+
+      # The processed export files are re-imported through the GTFS gem
+      stop_times_zip_path = File.join(tmp_dir, "#{gtfs_export.zip_file_name}.zip")
+      source = GTFS::Source.build stop_times_zip_path, strict: false
+
+      ap source.stop_times
+
+      vehicle_journey_at_stops = vehicle_journey.vehicle_journey_at_stops.select {|vehicle_journey_at_stop| vehicle_journey_at_stop.stop_point.stop_area.commercial? }
+      expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length)
+
+      random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample
+      stop_time = source.stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::Time.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset, 'UTC', 'Europe/Paris') }
+      expect(stop_time).not_to be_nil
+      expect(stop_time.departure_time).to eq(GTFS::Time.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset, 'UTC', 'Europe/Paris'))
+    end
+  end
+
   it "should correctly export data as valid GTFS output" do
     # Create context for the tests
     factor = 2

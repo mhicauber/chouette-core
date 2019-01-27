@@ -35,6 +35,14 @@ class Export::Gtfs < Export::Base
     @vehicule_journey_service_trip_hash ||= {}
   end
 
+  def line_company_hash
+    @line_company_hash ||= {}
+  end
+
+  def vehicle_journey_time_zone_hash
+    @vehicle_journey_time_zone_hash ||= {}
+  end
+
   def agency_id company
     (company.registration_number.presence || company.object_id) if company
   end
@@ -100,18 +108,63 @@ class Export::Gtfs < Export::Base
   end
 
   def export_companies_to(target)
-    company_ids = journeys.pluck :company_id
-    company_ids += journeys.joins(route: :line).pluck :"lines.company_id"
-    Chouette::Company.where(id: company_ids.uniq).order('name').each do |company|
+    company_ids = []
+    journeys.each do |journey|
+      company_id = journey.company_id.presence || journey.route.line.company_id.presence || "chouette_default"
+      if company_id == "chouette_default"
+        args = {
+          criticity: :info,
+          message_key: :no_company,
+          message_attributes: {
+            journey_name: journey.published_journey_name,
+            line_name: journey.route.line.published_name
+          }
+        }
+        self.messages.create args
+      end
+
+      company_ids << company_id
+      line_company_hash[journey.route.line_id] = company_id
+      vehicle_journey_time_zone_hash[journey.id] = company_id == "chouette_default" ? "Etc/GMT" : company_id
+    end
+    company_ids.uniq!
+
+    Chouette::Company.where(id: company_ids-["chouette_default"]).order('name').each do |company|
+      if company.time_zone.present?
+        time_zone = company.time_zone
+      else
+        time_zone = "Etc/GMT"
+        args = {
+          criticity: :info,
+          message_key: :no_timezone,
+          message_attributes: {
+            company_name: company.name
+          }
+        }
+        self.messages.create args
+      end
+      a_id = agency_id(company)
+
       target.agencies << {
-        id: agency_id(company),
+        id: a_id,
         name: company.name,
         url: company.url,
-        timezone: company.time_zone,
+        timezone: time_zone,
         phone: company.phone,
         email: company.email
         #lang: TO DO
         #fare_url: TO DO
+      }
+
+      line_company_hash.each {|k,v| line_company_hash[k] = a_id if v == company.id}
+      vehicle_journey_time_zone_hash.each {|k,v| vehicle_journey_time_zone_hash[k] = time_zone if v == company.id}
+    end
+
+    if company_ids.include? "chouette_default"
+      target.agencies << {
+        id: "chouette_default",
+        name: "Default Agency",
+        timezone: "Etc/GMT",
       }
     end
   end
@@ -161,7 +214,7 @@ class Export::Gtfs < Export::Base
     Chouette::Line.where(id: line_ids).each do |line|
       target.routes << {
         id: route_id(line),
-        agency_id: agency_id(line.company),
+        agency_id: line_company_hash[line.id],
         long_name: line.published_name,
         short_name: line.number,
         type: gtfs_line_type(line),
@@ -243,20 +296,22 @@ class Export::Gtfs < Export::Base
 
   def export_vehicle_journey_at_stops_to(target)
     journeys.each do |vehicle_journey|
-      vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
-        next if !vehicle_journey_at_stop.stop_point.stop_area.commercial?
+      vj_timezone = vehicle_journey_time_zone_hash[vehicle_journey.id]
+
+      vehicle_journey.vehicle_journey_at_stops.each do |vj_at_stop|
+        next if !vj_at_stop.stop_point.stop_area.commercial?
 
         vehicule_journey_service_trip_hash[vehicle_journey.id].each do |trip_id|
 
-          arrival_time = GTFS::Time.format_datetime(vehicle_journey_at_stop.arrival_time, vehicle_journey_at_stop.arrival_day_offset) if vehicle_journey_at_stop.arrival_time
-          departure_time = GTFS::Time.format_datetime(vehicle_journey_at_stop.departure_time, vehicle_journey_at_stop.departure_day_offset) if vehicle_journey_at_stop.departure_time
+          arrival_time = GTFS::Time.format_datetime(vj_at_stop.arrival_time, vj_at_stop.arrival_day_offset, vj_at_stop.time_zone, vj_timezone) if vj_at_stop.arrival_time
+          departure_time = GTFS::Time.format_datetime(vj_at_stop.departure_time, vj_at_stop.departure_day_offset, vj_at_stop.time_zone, vj_timezone) if vj_at_stop.departure_time
 
           target.stop_times << {
             trip_id: trip_id,
             arrival_time: arrival_time,
             departure_time: departure_time,
-            stop_id: stop_area_stop_hash[vehicle_journey_at_stop.stop_point.stop_area_id],
-            stop_sequence: vehicle_journey_at_stop.stop_point.position # NOT SURE TO DO,
+            stop_id: stop_area_stop_hash[vj_at_stop.stop_point.stop_area_id],
+            stop_sequence: vj_at_stop.stop_point.position # NOT SURE TO DO
             # stop_headsign: TO STORE IN IMPORT,
             # pickup_type: TO STORE IN IMPORT,
             # pickup_type: TO STORE IN IMPORT,
