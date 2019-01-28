@@ -25,7 +25,7 @@ class Import::Neptune < Import::Base
   end
 
   def prepare_referential
-    import_resources :lines, :companies
+    import_resources :lines, :companies, :networks
 
     create_referential
     referential.switch
@@ -78,6 +78,15 @@ class Import::Neptune < Import::Base
       company.assign_attributes source_company.slice(:name, :short_name, :code, :phone, :email, :fax, :organizational_unit, :operating_department_name)
 
       save_model company
+    end
+  end
+
+  def import_networks
+    each_element_matching_css('ChouettePTNetwork PTNetwork') do |source_network|
+      network = line_referential.networks.find_or_initialize_by registration_number: source_network.delete(:object_id)
+      network.assign_attributes source_network.slice(:name, :comment)
+
+      save_model network
     end
   end
 
