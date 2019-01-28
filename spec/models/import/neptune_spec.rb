@@ -148,7 +148,7 @@ RSpec.describe Import::Neptune do
     end
   end
 
-  describe "#import_routes" do
+  describe "#import_lines_content" do
     let(:import) { create_import }
 
     before(:each){
@@ -157,29 +157,48 @@ RSpec.describe Import::Neptune do
     }
 
     it 'should create new routes' do
-      expect{ import.send(:import_routes) }.to change{ Chouette::Route.count }.by 4
+      expect{ import.send(:import_lines_content) }.to change{ Chouette::Route.count }.by 4
     end
 
     it 'should update existing routes' do
-      import.send(:import_routes)
+      import.send(:import_lines_content)
       route = Chouette::Route.last
       attrs = route.attributes.except('updated_at')
       route.update name: "foo"
-      expect{ import.send(:import_routes) }.to_not change{ Chouette::Route.count }
+      expect{ import.send(:import_lines_content) }.to_not change{ Chouette::Route.count }
       expect(route.reload.attributes.except('updated_at')).to eq attrs
     end
 
     it 'should set opposite_route' do
-      import.send(:import_routes)
+      import.send(:import_lines_content)
       route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Aller'
       opposite_route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Retour'
       expect(route.opposite_route).to eq opposite_route
     end
 
     it 'should set stop_points' do
-      import.send(:import_routes)
+      import.send(:import_lines_content)
       route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Aller'
-      expect(route.stop_points.count).to eq 2
+      expect(route.stop_points.count).to eq 3
+    end
+
+    it 'should create new journey_patterns' do
+      expect{ import.send(:import_lines_content) }.to change{ Chouette::JourneyPattern.count }.by 4
+    end
+
+    it 'should update existing journey_patterns' do
+      import.send(:import_lines_content)
+      journey_pattern = Chouette::JourneyPattern.find_by registration_number: '8218'
+      attrs = journey_pattern.attributes.except('updated_at', 'departure_stop_point_id', 'arrival_stop_point_id')
+      journey_pattern.update published_name: "foo"
+      expect{ import.send(:import_lines_content) }.to_not change{ Chouette::JourneyPattern.count }
+      expect(journey_pattern.reload.attributes.except('updated_at', 'departure_stop_point_id', 'arrival_stop_point_id')).to eq attrs
+    end
+
+    it 'should set stop_points on journey_patterns' do
+      import.send(:import_lines_content)
+      journey_pattern = Chouette::JourneyPattern.find_by registration_number: '8218'
+      expect(journey_pattern.stop_points.count).to eq 3
     end
   end
 

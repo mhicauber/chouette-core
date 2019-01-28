@@ -21,7 +21,7 @@ class Import::Neptune < Import::Base
 
     import_resources :time_tables
     fix_metadatas_periodes
-    import_resources :stop_areas, :routes
+    import_resources :stop_areas, :lines_content
   end
 
   def prepare_referential
@@ -106,7 +106,7 @@ class Import::Neptune < Import::Base
   def add_time_table_dates(timetable, dates)
     return unless dates
 
-    dates = [dates] unless dates.is_a?(Array)
+    dates = make_enum dates
     dates.each do |date|
       @timetables_period_start = [@timetables_period_start, date.to_date].compact.min
       @timetables_period_end = [@timetables_period_end, date.to_date].compact.max
@@ -119,7 +119,7 @@ class Import::Neptune < Import::Base
   def add_time_table_periods(timetable, periods)
     return unless periods
 
-    periods = [periods] unless periods.is_a?(Array)
+    periods = make_enum periods
     periods.each do |period|
       @timetables_period_start = [@timetables_period_start, period[:start_of_period].to_date].compact.min
       @timetables_period_end = [@timetables_period_end, period[:end_of_period].to_date].compact.max
@@ -130,7 +130,7 @@ class Import::Neptune < Import::Base
   end
 
   def int_day_types_mapping day_types
-    day_types = [day_types] unless day_types.is_a?(Array)
+    day_types = make_enum day_types
 
     val = 0
     day_types.each do |day_type|
@@ -205,7 +205,7 @@ class Import::Neptune < Import::Base
       save_model stop_area
 
       contains = source_stop_area[:contains]
-      contains = [contains] unless contains.is_a?(Array)
+      contains = make_enum contains
       contains.each do |child_registration_number|
         @parent_stop_areas[child_registration_number] = stop_area.id
       end
@@ -221,39 +221,83 @@ class Import::Neptune < Import::Base
     }[source_stop_area_type]
   end
 
-  def import_routes
+  def import_lines_content
     @opposite_route_id = {}
     each_element_matching_css('ChouettePTNetwork ChouetteLineDescription') do |line_desc|
       line = line_referential.lines.find_by registration_number: line_desc[:line][:object_id]
+      @routes = {}
+      @stop_points = Hash.new{|h, k| h[k] = {}}
 
-      line_desc[:chouette_route].each do |source_route|
-        published_name = source_route[:published_name] || source_route[:name]
-        route = line.routes.find_or_initialize_by published_name: published_name
-        route.name = source_route[:name]
-        route.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
-        route.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
-        route.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
-
-        add_stop_points(route, source_route[:pt_link_id], line_desc[:pt_link])
-        save_model route
-
-        if source_route[:way_back_route_id].present? && !route.opposite_route_id
-          @opposite_route_id[source_route[:way_back_route_id]] = route.id
-        end
-      end
+      import_routes_in_line(line, line_desc[:chouette_route], line_desc)
+      import_journey_patterns_in_line(line, line_desc[:journey_pattern], line_desc)
     end
   end
 
-  def add_stop_points(route, link_ids, links)
-    link_ids = [link_ids] unless link_ids.is_a?(Array)
-    links = [links] unless links.is_a?(Array)
+  def import_routes_in_line(line, source_routes, line_desc)
+    source_routes = make_enum source_routes
+
+    source_routes.each do |source_route|
+      published_name = source_route[:published_name] || source_route[:name]
+      route = line.routes.find_or_initialize_by published_name: published_name
+      route.name = source_route[:name]
+      route.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
+      route.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
+      route.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
+
+      add_stop_points_to_route(route, source_route[:pt_link_id], line_desc[:pt_link], source_route[:object_id])
+      save_model route
+
+      if source_route[:way_back_route_id].present? && !route.opposite_route_id
+        @opposite_route_id[source_route[:way_back_route_id]] = route.id
+      end
+      @routes[source_route[:object_id]] = route
+    end
+  end
+
+  def import_journey_patterns_in_line(line, source_journey_patterns, line_desc)
+    source_journey_patterns = make_enum source_journey_patterns
+
+    source_journey_patterns.each do |source_journey_pattern|
+      route = @routes[source_journey_pattern[:route_id]]
+      journey_pattern = route.journey_patterns.find_or_initialize_by registration_number: source_journey_pattern[:registration][:registration_number]
+      journey_pattern.name = source_journey_pattern[:name]
+      journey_pattern.published_name = source_journey_pattern[:published_name]
+      journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], source_journey_pattern: source_journey_pattern[:creation_time] }
+
+      add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
+      save_model journey_pattern
+    end
+  end
+
+  def add_stop_points_to_route(route, link_ids, links, route_object_id)
+    link_ids = make_enum link_ids
+    links = make_enum links
 
     route.stop_points.destroy_all
 
+    last_point_id = nil
     link_ids.each_with_index do |link_id, i|
-      stop_point_id = links.find{|l| l[:object_id] == link_id }[:start_of_link]
-      stop_area_id = @parent_stop_areas[stop_point_id]
-      route.stop_points.build stop_area_id: stop_area_id, position: i
+      link = links.find{|l| l[:object_id] == link_id }
+      stop_point_id = link[:start_of_link]
+      last_point_id = link[:end_of_link]
+      add_stop_point_to_route(stop_point_id, route, i, route_object_id)
+    end
+    add_stop_point_to_route(last_point_id, route, route.stop_points.size, route_object_id)
+  end
+
+  def add_stop_point_to_route(stop_point_id, route, pos, route_object_id)
+    stop_area_id = @parent_stop_areas[stop_point_id]
+    stop_point = route.stop_points.build stop_area_id: stop_area_id, position: pos
+    @stop_points[route_object_id][stop_point_id] = stop_point
+  end
+
+  def add_stop_points_to_journey_pattern(journey_pattern, stop_point_ids, route_object_id)
+    stop_point_ids = make_enum stop_point_ids
+
+    journey_pattern.stop_points.destroy_all
+
+    stop_point_ids.each do |stop_point_id|
+      journey_pattern.stop_points << @stop_points[route_object_id][stop_point_id]
     end
   end
 
@@ -281,5 +325,9 @@ class Import::Neptune < Import::Base
       end
     end
     out
+  end
+
+  def make_enum(obj)
+    obj.is_a?(Array) ? obj : [obj]
   end
 end
