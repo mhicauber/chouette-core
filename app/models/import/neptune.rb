@@ -229,7 +229,10 @@ class Import::Neptune < Import::Base
       @stop_points = Hash.new{|h, k| h[k] = {}}
 
       import_routes_in_line(line, line_desc[:chouette_route], line_desc)
-      import_journey_patterns_in_line(line, line_desc[:journey_pattern], line_desc)
+
+      @journey_patterns = {}
+      import_journey_patterns_in_line(line, line_desc[:journey_pattern])
+      import_vehicle_journeys_in_line(line, line_desc[:vehicle_journey])
     end
   end
 
@@ -254,18 +257,40 @@ class Import::Neptune < Import::Base
     end
   end
 
-  def import_journey_patterns_in_line(line, source_journey_patterns, line_desc)
+  def import_journey_patterns_in_line(line, source_journey_patterns)
     source_journey_patterns = make_enum source_journey_patterns
 
     source_journey_patterns.each do |source_journey_pattern|
       route = @routes[source_journey_pattern[:route_id]]
-      journey_pattern = route.journey_patterns.find_or_initialize_by registration_number: source_journey_pattern[:registration][:registration_number]
+      journey_pattern = route.journey_patterns.find_or_initialize_by published_name: source_journey_pattern[:published_name]
+      journey_pattern.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
       journey_pattern.name = source_journey_pattern[:name]
-      journey_pattern.published_name = source_journey_pattern[:published_name]
-      journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], source_journey_pattern: source_journey_pattern[:creation_time] }
+      journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
 
       add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
       save_model journey_pattern
+      @journey_patterns[source_journey_pattern[:object_id]] = journey_pattern
+    end
+  end
+
+  def import_vehicle_journeys_in_line(line, source_vehicle_journeys)
+    source_vehicle_journeys = make_enum source_vehicle_journeys
+
+    source_vehicle_journeys.each do |source_vehicle_journey|
+      if source_vehicle_journey[:journey_pattern_id]
+        journey_pattern = @journey_patterns[source_vehicle_journey[:journey_pattern_id]]
+      else
+        journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
+      end
+      vehicle_journey = journey_pattern.vehicle_journeys.find_or_initialize_by number: source_vehicle_journey[:number], published_journey_name: source_vehicle_journey[:published_journey_name]
+      vehicle_journey.route = journey_pattern.route
+      vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
+      vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
+      vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
+
+      add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
+
+      save_model vehicle_journey
     end
   end
 
@@ -301,6 +326,19 @@ class Import::Neptune < Import::Base
     end
   end
 
+  def add_stop_points_to_vehicle_journey(vehicle_journey, vehicle_journey_at_stops, route_object_id)
+    vehicle_journey_at_stops = make_enum vehicle_journey_at_stops
+
+    vehicle_journey.vehicle_journey_at_stops.destroy_all
+
+    vehicle_journey_at_stops.sort_by{|i| i[:order]}.each do |source_vehicle_journey_at_stop|
+      vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build
+      vehicle_journey_at_stop.stop_point = @stop_points[route_object_id][source_vehicle_journey_at_stop[:stop_point_id]]
+      vehicle_journey_at_stop.arrival_local_time = source_vehicle_journey_at_stop[:arrival_time]
+      vehicle_journey_at_stop.departure_local_time = source_vehicle_journey_at_stop[:departure_time]
+    end
+  end
+
   def route_wayback_mapping(source_value)
     {'a' => :outbound, 'aller' => :outbound, 'r' => 'inbound', 'retour' => 'inbound'}[source_value.downcase]
   end
@@ -328,6 +366,6 @@ class Import::Neptune < Import::Base
   end
 
   def make_enum(obj)
-    obj.is_a?(Array) ? obj : [obj]
+    (obj.is_a?(Array) ? obj : [obj]).compact
   end
 end

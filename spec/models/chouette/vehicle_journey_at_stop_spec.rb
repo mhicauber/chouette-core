@@ -69,6 +69,13 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
         winter_time = Timecop.freeze("2000/12/01 12:00:00".to_time) { at_stop.departure_local }
         expect(summer_time).to eq winter_time
       end
+
+      it 'should convert time to UTC vals' do
+        at_stop.arrival_local_time = '12:00'
+        at_stop.departure_local_time = '23:00'
+        expect(at_stop.send(:format_time, at_stop.arrival_time)).to eq '18:00'
+        expect(at_stop.send(:format_time, at_stop.departure_time)).to eq '05:00'
+      end
     end
   end
 

@@ -190,7 +190,7 @@ RSpec.describe Import::Neptune do
       import.send(:import_lines_content)
       journey_pattern = Chouette::JourneyPattern.find_by registration_number: '8218'
       attrs = journey_pattern.attributes.except('updated_at', 'departure_stop_point_id', 'arrival_stop_point_id')
-      journey_pattern.update published_name: "foo"
+      journey_pattern.update name: "foo"
       expect{ import.send(:import_lines_content) }.to_not change{ Chouette::JourneyPattern.count }
       expect(journey_pattern.reload.attributes.except('updated_at', 'departure_stop_point_id', 'arrival_stop_point_id')).to eq attrs
     end
@@ -199,6 +199,29 @@ RSpec.describe Import::Neptune do
       import.send(:import_lines_content)
       journey_pattern = Chouette::JourneyPattern.find_by registration_number: '8218'
       expect(journey_pattern.stop_points.count).to eq 3
+    end
+
+    context 'with a complete file' do
+      let(:import) { create_import 'sample_neptune_large' }
+
+      it 'should create new vehicle_journeys' do
+        expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 63
+      end
+
+      it 'should update existing vehicle_journeys' do
+        import.send(:import_lines_content)
+        vehicle_journey = Chouette::VehicleJourney.find_by published_journey_name: 'Gare Routière'
+        attrs = vehicle_journey.attributes.except('updated_at')
+        vehicle_journey.update transport_mode: nil
+        expect{ import.send(:import_lines_content) }.to_not change{ Chouette::VehicleJourney.count }
+        expect(vehicle_journey.reload.attributes.except('updated_at')).to eq attrs
+      end
+
+      it 'should set vjas on vehicle_journeys' do
+        import.send(:import_lines_content)
+        vehicle_journey = Chouette::VehicleJourney.find_by number: '1001'
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 20
+      end
     end
   end
 
@@ -210,7 +233,7 @@ RSpec.describe Import::Neptune do
     end
 
     it 'should create new time_tables' do
-      expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 25
+      expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 6
     end
 
     it 'should update existing time_tables' do
