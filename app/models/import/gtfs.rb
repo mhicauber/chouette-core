@@ -40,7 +40,7 @@ class Import::Gtfs < Import::Base
   end
 
   def source
-    @source ||= ::GTFS::Source.build local_file, strict: false
+    @source ||= ::GTFS::Source.build local_file.path, strict: false
   end
 
   def prepare_referential

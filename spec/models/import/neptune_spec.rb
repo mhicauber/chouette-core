@@ -90,6 +90,30 @@ RSpec.describe Import::Neptune do
     end
   end
 
+  describe "#import_stop_areas" do
+    let(:import) { build_import }
+
+    it 'should create new stop_areas' do
+      expect{ import.send(:import_stop_areas) }.to change{ workbench.stop_area_referential.stop_areas.count }.by 18
+    end
+
+    it 'should update existing stop_areas' do
+      import.send(:import_stop_areas)
+      stop_area = workbench.stop_area_referential.stop_areas.last
+      attrs = stop_area.attributes.except('updated_at')
+      stop_area.update name: "foo"
+      expect{ import.send(:import_stop_areas) }.to_not change{ workbench.stop_area_referential.stop_areas.count }
+      expect(stop_area.reload.attributes.except('updated_at')).to eq attrs
+    end
+
+    it 'should link stop_areas' do
+      import.send(:import_stop_areas)
+      parent = workbench.stop_area_referential.stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:gen3')
+      child = workbench.stop_area_referential.stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:3')
+      expect(child.parent).to eq parent
+    end
+  end
+
   describe "#import_companies" do
     let(:import) { build_import }
 

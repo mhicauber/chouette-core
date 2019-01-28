@@ -3,7 +3,9 @@ class Import::Neptune < Import::Base
 
   def self.accepts_file?(file)
     Zip::File.open(file) do |zip_file|
-      zip_file.glob('*.xml').size == zip_file.glob('*').size
+      files_count = zip_file.glob('*').size
+      files_count -= zip_file.glob('metadata*.txt').size
+      zip_file.glob('*.xml').size == files_count
     end
   rescue => e
     Rails.logger.debug "Error in testing Neptune file: #{e}"
@@ -19,6 +21,7 @@ class Import::Neptune < Import::Base
 
     import_resources :time_tables
     fix_metadatas_periodes
+    import_resources :stop_areas
   end
 
   def prepare_referential
@@ -35,6 +38,7 @@ class Import::Neptune < Import::Base
   end
 
   protected
+
   def each_source
     Zip::File.open(local_file) do |zip_file|
       zip_file.glob('*.xml').each do |f|
@@ -95,8 +99,8 @@ class Import::Neptune < Import::Base
 
     dates = [dates] unless dates.is_a?(Array)
     dates.each do |date|
-      @timetables_period_start = [@timetables_period_start, date].compact.min
-      @timetables_period_start = [@timetables_period_start, date].compact.max
+      @timetables_period_start = [@timetables_period_start, date.to_date].compact.min
+      @timetables_period_end = [@timetables_period_end, date.to_date].compact.max
       next if timetable.dates.where(in_out: true, date: date).exists?
 
       timetable.dates.create(in_out: true, date: date)
@@ -108,8 +112,8 @@ class Import::Neptune < Import::Base
 
     periods = [periods] unless periods.is_a?(Array)
     periods.each do |period|
-      @timetables_period_start = [@timetables_period_start, period[:start_of_period]].compact.min
-      @timetables_period_start = [@timetables_period_start, period[:end_of_period]].compact.max
+      @timetables_period_start = [@timetables_period_start, period[:start_of_period].to_date].compact.min
+      @timetables_period_end = [@timetables_period_end, period[:end_of_period].to_date].compact.max
 
       timetable.periods.build(period_start: period[:start_of_period], period_end: period[:end_of_period])
     end
@@ -172,6 +176,46 @@ class Import::Neptune < Import::Base
       'VAL' => ['rail', 'railShuttle'],
       'Other' => nil
     }[source_transport_mode]
+  end
+
+  def import_stop_areas
+    @parent_stop_areas = {}
+    each_element_matching_css('ChouettePTNetwork ChouetteArea StopArea') do |source_stop_area|
+      stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
+      stop_area.name = source_stop_area[:name]
+      stop_area.comment = source_stop_area[:comment]
+      stop_area.street_name = source_stop_area[:address].try(:[], :street_name)
+      stop_area.nearest_topic_name = source_stop_area[:nearest_topic_name]
+      stop_area.fare_code = source_stop_area[:fare_code]
+      stop_area.area_type = stop_area_type_mapping(source_stop_area[:stop_area_extension][:area_type])
+      stop_area.kind = :commercial
+      stop_area.latitude = source_stop_area[:latitude]
+      stop_area.longitude = source_stop_area[:longitude]
+      stop_area.parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
+
+      save_model stop_area
+
+      contains = source_stop_area[:contains]
+      contains = [contains] unless contains.is_a?(Array)
+      contains.each do |child_registration_number|
+        @parent_stop_areas[child_registration_number] = stop_area.id
+      end
+    end
+  end
+
+  def stop_area_type_mapping(source_stop_area_type)
+    {
+      'BoardingPosition' => :zdep,
+      'Quay' =>  :zdep,
+      'CommercialStopPoint' => 	:zdlp,
+      'StopPlace' => :lda
+    }[source_stop_area_type]
+  end
+
+  def convert_to_wgs84(lat, lng)
+    return unless lat && lng
+    geometry = GeoRuby::SimpleFeatures::Point.from_lon_lat(lat, lng)
+    [geometry.lat, geometry.lng]
   end
 
   def build_object_from_nokogiri_element(element)

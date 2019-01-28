@@ -94,10 +94,9 @@ module LocalImportSupport
   end
 
   def local_temp_file(&block)
-    Tempfile.open("chouette-import", local_temp_directory) do |file|
-      file.binmode
-      yield file
-    end
+    file = Tempfile.open("chouette-import", local_temp_directory)
+    file.binmode
+    yield file
   end
 
   def download_path
@@ -123,11 +122,10 @@ module LocalImportSupport
             end
           end
         end
-      ensure
-        file.close
       end
 
-      file.path
+      file.rewind
+      file
     end
   end
 
