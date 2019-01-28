@@ -21,7 +21,7 @@ class Import::Neptune < Import::Base
 
     import_resources :time_tables
     fix_metadatas_periodes
-    import_resources :stop_areas
+    import_resources :stop_areas, :routes
   end
 
   def prepare_referential
@@ -221,10 +221,44 @@ class Import::Neptune < Import::Base
     }[source_stop_area_type]
   end
 
-  def convert_to_wgs84(lat, lng)
-    return unless lat && lng
-    geometry = GeoRuby::SimpleFeatures::Point.from_lon_lat(lat, lng)
-    [geometry.lat, geometry.lng]
+  def import_routes
+    @opposite_route_id = {}
+    each_element_matching_css('ChouettePTNetwork ChouetteLineDescription') do |line_desc|
+      line = line_referential.lines.find_by registration_number: line_desc[:line][:object_id]
+
+      line_desc[:chouette_route].each do |source_route|
+        published_name = source_route[:published_name] || source_route[:name]
+        route = line.routes.find_or_initialize_by published_name: published_name
+        route.name = source_route[:name]
+        route.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
+        route.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
+        route.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
+
+        add_stop_points(route, source_route[:pt_link_id], line_desc[:pt_link])
+        save_model route
+
+        if source_route[:way_back_route_id].present? && !route.opposite_route_id
+          @opposite_route_id[source_route[:way_back_route_id]] = route.id
+        end
+      end
+    end
+  end
+
+  def add_stop_points(route, link_ids, links)
+    link_ids = [link_ids] unless link_ids.is_a?(Array)
+    links = [links] unless links.is_a?(Array)
+
+    route.stop_points.destroy_all
+
+    link_ids.each_with_index do |link_id, i|
+      stop_point_id = links.find{|l| l[:object_id] == link_id }[:start_of_link]
+      stop_area_id = @parent_stop_areas[stop_point_id]
+      route.stop_points.build stop_area_id: stop_area_id, position: i
+    end
+  end
+
+  def route_wayback_mapping(source_value)
+    {'a' => :outbound, 'aller' => :outbound, 'r' => 'inbound', 'retour' => 'inbound'}[source_value.downcase]
   end
 
   def build_object_from_nokogiri_element(element)

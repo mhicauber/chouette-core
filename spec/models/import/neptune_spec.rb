@@ -148,6 +148,41 @@ RSpec.describe Import::Neptune do
     end
   end
 
+  describe "#import_routes" do
+    let(:import) { create_import }
+
+    before(:each){
+      import.prepare_referential
+      import.send(:import_stop_areas)
+    }
+
+    it 'should create new routes' do
+      expect{ import.send(:import_routes) }.to change{ Chouette::Route.count }.by 4
+    end
+
+    it 'should update existing routes' do
+      import.send(:import_routes)
+      route = Chouette::Route.last
+      attrs = route.attributes.except('updated_at')
+      route.update name: "foo"
+      expect{ import.send(:import_routes) }.to_not change{ Chouette::Route.count }
+      expect(route.reload.attributes.except('updated_at')).to eq attrs
+    end
+
+    it 'should set opposite_route' do
+      import.send(:import_routes)
+      route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Aller'
+      opposite_route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Retour'
+      expect(route.opposite_route).to eq opposite_route
+    end
+
+    it 'should set stop_points' do
+      import.send(:import_routes)
+      route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Aller'
+      expect(route.stop_points.count).to eq 2
+    end
+  end
+
   describe "#import_time_tables" do
     let(:import) { create_import('sample_neptune_large') }
 
