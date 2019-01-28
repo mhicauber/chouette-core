@@ -154,6 +154,7 @@ RSpec.describe Import::Neptune do
     before(:each){
       import.prepare_referential
       import.send(:import_stop_areas)
+      import.send(:import_time_tables)
     }
 
     it 'should create new routes' do
@@ -206,6 +207,9 @@ RSpec.describe Import::Neptune do
 
       it 'should create new vehicle_journeys' do
         expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 63
+        vehicle_journey = Chouette::VehicleJourney.find_by number: '1001'
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 20
+        expect(vehicle_journey.time_tables.count).to eq 1
       end
 
       it 'should update existing vehicle_journeys' do
@@ -215,12 +219,6 @@ RSpec.describe Import::Neptune do
         vehicle_journey.update transport_mode: nil
         expect{ import.send(:import_lines_content) }.to_not change{ Chouette::VehicleJourney.count }
         expect(vehicle_journey.reload.attributes.except('updated_at')).to eq attrs
-      end
-
-      it 'should set vjas on vehicle_journeys' do
-        import.send(:import_lines_content)
-        vehicle_journey = Chouette::VehicleJourney.find_by number: '1001'
-        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 20
       end
     end
   end

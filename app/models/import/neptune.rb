@@ -91,6 +91,7 @@ class Import::Neptune < Import::Base
   end
 
   def import_time_tables
+    @time_tables = Hash.new{|h, k| h[k] = []}
     each_element_matching_css('ChouettePTNetwork Timetable') do |source_timetable|
       tt = Chouette::TimeTable.find_or_initialize_by objectid: source_timetable[:object_id]
       tt.int_day_types = int_day_types_mapping source_timetable[:day_type]
@@ -100,6 +101,9 @@ class Import::Neptune < Import::Base
       save_model tt
       add_time_table_dates tt, source_timetable[:calendar_day]
       add_time_table_periods tt, source_timetable[:period]
+      make_enum(source_timetable[:vehicle_journey_id]).each do |vehicle_journey_id|
+        @time_tables[vehicle_journey_id] << tt.id
+      end
     end
   end
 
@@ -287,7 +291,7 @@ class Import::Neptune < Import::Base
       vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
       vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
       vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
-
+      vehicle_journey.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
       add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
 
       save_model vehicle_journey
