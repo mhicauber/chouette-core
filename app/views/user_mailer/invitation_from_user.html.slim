@@ -1,0 +1,5 @@
+h2 style=mailer_style(:h2)
+  == t("mailers.user_mailer.invitation_from_user.title")
+
+p== t("mailers.user_mailer.invitation_from_user.body", organisation: @from_user.organisation.name, user: @from_user.name, app_name: 'brandname'.t)
+p= mailer_button(t("mailers.user_mailer.invitation_from_user.button"), accept_invitation_url(@user, :invitation_token => @token))

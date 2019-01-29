@@ -21,6 +21,11 @@ class AF83::Decorator::Link
     link_method *args
   end
 
+  def confirm msg
+    msg = msg.call(self) if msg.is_a?(Proc)
+    data({ confirm: msg })
+  end
+
   def class *args
     link_class args
   end

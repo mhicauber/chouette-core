@@ -5,14 +5,41 @@ en:
       edit: "Edit this user"
       destroy: "Remove this user"
       destroy_confirm: "Are you sure you want destroy this user?"
+      block: "Lock user"
+      block_confirm: "Do you want to lock this user ? They won't be able to access the service anymore"
+      unblock: "Unlock user"
+      unblock_confirm: "Do you want to unlock this user ?"
+      new_invitation: "Invite a new user"
+      invite: "Invite a new user"
+      reinvite: "Resend invitation"
+      reinvite_confirm: "Do you want to send invitation again ?"
+      reinvite_flash: "An invitation email has been sent"
+      reset_password: "Reset password"
+      reset_password_confirm: "Do you want to send password reset intructions to this user ?"
+      reset_password_flash: "A password reset link has been sent"
     new:
       title: "Add a new user"
     edit:
-      title: "Update user %{user}"
+      title: "Update user %{name}"
     show:
-      title: "User %{user}"
+      title: "User %{name}"
     index:
       title: "Users"
+      name_or_email_cont: "Name or email"
+    new_invitation:
+      already_invited:
+        text: |
+          <strong>A user with this email already exists</strong><br />
+          You can see the details, and resend invitation by clicking here:
+        button: See user's details
+      already_existing:
+        text: <strong>A user with this email already exists</strong><br />
+      success: An invitation email has been sent
+    states:
+      pending: Pending
+      confirmed: Confirmed
+      invited: Invited
+      blocked: Locked
   activerecord:
     models:
       user: "user"
@@ -21,6 +48,13 @@ en:
         name: "Full name"
         username: "Username"
         permissions: Permissions
+        profile: Profile
+        state: State
+        locked_at: Locked at
+        created_at: Created at
+        updated_at: Updated at
+        invitation_sent_at: Invitation sent at
+        last_sign_in_at: Last connection
     errors:
       models:
         calendar:

@@ -16,5 +16,6 @@ describe Subscription, type: :model do
     expect(subscription.valid?).to be_truthy
     expect{subscription.save}.to change{ Workgroup.count }.by 1
     expect(subscription.workgroup.owner).to eq subscription.organisation
+    expect(subscription.user.profile).to eq 'admin'
   end
 end

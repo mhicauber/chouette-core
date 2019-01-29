@@ -201,7 +201,19 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resource :organisation, :only => [:show, :edit, :update] do
-    resources :users
+    resources :users do
+      member do
+        put :block
+        put :unblock
+        put :reinvite
+        put :reset_password
+      end
+
+      collection do
+        get :new_invitation
+        post :invite
+      end
+    end
   end
 
   resources :compliance_control_sets do

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181221094635) do
+ActiveRecord::Schema.define(version: 20190117094830) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -351,8 +351,10 @@ ActiveRecord::Schema.define(version: 20181221094635) do
     t.string   "secret_file"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.integer  "publication_api_id",   limit: 8
   end
 
+  add_index "destinations", ["publication_api_id"], name: "index_destinations_on_publication_api_id", using: :btree
   add_index "destinations", ["publication_setup_id"], name: "index_destinations_on_publication_setup_id", using: :btree
 
   create_table "export_messages", id: :bigserial, force: :cascade do |t|
@@ -708,6 +710,39 @@ ActiveRecord::Schema.define(version: 20181221094635) do
   end
 
   add_index "pt_links", ["objectid"], name: "pt_links_objectid_key", unique: true, using: :btree
+
+  create_table "publication_api_keys", id: :bigserial, force: :cascade do |t|
+    t.string   "name"
+    t.string   "token"
+    t.integer  "publication_api_id", limit: 8
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "publication_api_keys", ["publication_api_id"], name: "index_publication_api_keys_on_publication_api_id", using: :btree
+
+  create_table "publication_api_sources", id: :bigserial, force: :cascade do |t|
+    t.integer  "publication_id",     limit: 8
+    t.integer  "publication_api_id", limit: 8
+    t.string   "file"
+    t.string   "key"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "publication_api_sources", ["publication_api_id"], name: "index_publication_api_sources_on_publication_api_id", using: :btree
+  add_index "publication_api_sources", ["publication_id", "key"], name: "index_publication_api_sources_on_publication_id_and_key", using: :btree
+  add_index "publication_api_sources", ["publication_id"], name: "index_publication_api_sources_on_publication_id", using: :btree
+
+  create_table "publication_apis", id: :bigserial, force: :cascade do |t|
+    t.string   "name"
+    t.string   "slug"
+    t.integer  "workgroup_id", limit: 8
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "publication_apis", ["workgroup_id"], name: "index_publication_apis_on_workgroup_id", using: :btree
 
   create_table "publication_setups", id: :bigserial, force: :cascade do |t|
     t.integer  "workgroup_id",   limit: 8
@@ -1105,10 +1140,12 @@ ActiveRecord::Schema.define(version: 20181221094635) do
     t.string   "username"
     t.datetime "synced_at"
     t.string   "permissions",                                                array: true
+    t.string   "profile"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true, using: :btree
+  add_index "users", ["profile"], name: "index_users_on_profile", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 

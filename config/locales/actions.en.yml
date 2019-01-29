@@ -19,6 +19,7 @@ en:
     erase: 'Erase'
     filter: 'Filter'
     import: 'Import'
+    invite_user: 'Invite a new user'
     new: "Add new"
     processing: "Processing…"
     remove: Remove

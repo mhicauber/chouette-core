@@ -1,0 +1,11 @@
+fr:
+  permissions:
+    profiles:
+      admin:
+        name: Administrateur
+      editor:
+        name: Editeur
+      visitor:
+        name: Visiteur
+      custom:
+        name: Sur-mesure

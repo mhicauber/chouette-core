@@ -49,17 +49,26 @@ fr:
       subject: Instructions de confirmation
       title: Bonjour %{email} !
       body: "Vous pouvez confirmer votre compte email en cliquant sur le lien suivant:"
+    unlock_mailer:
+      subject: Votre compte a été désactivé
+      title: Bonjour %{email} !
+      body: "Votre compte a été désactivé.<br />Merci de contacter les administrateurs de votre organisation pour plus d’informations."
     password_mailer:
       updated:
         subject: Réinitialiser votre mot de passe
         body: |
-          Vous avez demandé à réinitialiser votre mot de passe.
+          Vous pouvez choisir une nouveau mot de passe pour accéder à votre compte sur %{app_name} :
         button: Réinitialiser mon mot de passe
     user_mailer:
       created:
         subject: Un nouvel inscrit sur Chouette
         body: |
           Un nouvel utilisateur vient de s'inscrire.<br/>
+      invitation_from_user:
+        subject: Confirmation de compte sur %{app_name}
+        title: Bonjour,
+        body: Vous avez été invité(e) dans l’organisation %{organisation} de %{app_name} par %{user}.<br/>
+        button: Activer votre compte
     invitation_mailer:
       button: Accepter l'invitation
       subject: Invitation sur l'application Chouette

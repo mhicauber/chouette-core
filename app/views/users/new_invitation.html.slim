@@ -1,0 +1,34 @@
+- breadcrumb :new_invitation, current_organisation
+
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
+        - if @error
+          .row
+            - if @existing_user
+              .alert.alert-success
+                = 'users.new_invitation.already_invited.text'.t.html_safe
+                br
+                br
+                = link_to [:organisation, @existing_user], class: 'btn btn-primary' do
+                  = 'users.new_invitation.already_invited.button'.t
+            - else
+              .alert.alert-danger
+                = 'users.new_invitation.already_existing.text'.t.html_safe
+            <br />
+
+        - @user ||= User.new
+
+        = simple_form_for @user, url: [:invite, :organisation, :users], method: :post, html: {class: 'form-horizontal', id: 'invite_form' } do |form|
+          .row
+            .col-lg-12
+              = form.input :name
+              = form.input :email
+              = form.input :profile, collection: Permission::Profile.all_i18n(false), include_blank: false
+
+            = cancel_button [:organisation]
+            = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'invite_form'
+
+= javascript_pack_tag "user_invitations/new"

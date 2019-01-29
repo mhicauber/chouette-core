@@ -55,19 +55,27 @@ en:
       body: |
         Hello %{email} !<br/><br/>
         You can now confirm your subscription by clicking on the following link<br/>
+    unlock_mailer:
+      subject: Your account has been deactivated
+      title: Hello %{email} !
+      body: "Your account has been deactivated.<br />Please reach your organisation's admin for further info."
     password_mailer:
       updated:
         subject: Set up new password
         body: |
-          Hello,<br/><br/>
-          You forgot your password.<br/>
-          You asked to set up a new one.<br/><br/>
+          You can now set a new password for your account on %{app_name} :
+        button: Reset my password
     user_mailer:
       created:
         subject: New registered user on Chouette
         body: |
           Hello,<br/><br/>
           A new user just subscribed on the platform<br/>
+      invitation_from_user:
+        subject: "%{app_name} account confirmation"
+        title: Hello,
+        body: "%{user} invited you join their organisation %{organisation} in %{app_name}.<br/>"
+        button: Activate your account
     invitation_mailer:
       button: Accept the invitation
       subject: Invitation on the Chouette application

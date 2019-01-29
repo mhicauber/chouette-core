@@ -1,21 +1,20 @@
-= title_tag @user.email
+- breadcrumb @user
 
-.user
-  p
-    label = "#{User.human_attribute_name('name')} : "
-    = @user.name
-  p
-    label = "#{User.human_attribute_name('username')} : "
-    = @user.username
-  p
-    label = "#{User.human_attribute_name('email')} : "
-    = @user.email
+- page_header_content_for @user
 
-/ FIXME ref #819
-- if false
-  - content_for(:sidebar) do
-    ul.actions
-      li
-        = link_to( t('users.actions.edit'), edit_user_registration_path, class: "edit") if @user == current_user
-      li
-        = link_to t('users.actions.destroy'), organisation_user_path(@user), method: :delete, data: {:confirm => t('users.actions.destroy_confirm')}, class: "remove"
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = { User.tmf(:name) => @user.name }
+        - metadatas.update( User.tmf(:email) => @user.email )
+        - metadatas.update( User.tmf(:state) => @user.state_i18n )
+        - metadatas.update( User.tmf(:profile) => @user.profile_i18n )
+        - if @user.state == :invited
+          - metadatas.update( User.tmf(:invitation_sent_at) => @user.invitation_sent_at ? l(@user.invitation_sent_at, format: :short_with_time) : '-' )
+        - else
+          - metadatas.update( User.tmf(:last_sign_in_at) => @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short_with_time) : '-' )
+          - metadatas.update( User.tmf(:locked_at) => @user.locked_at ? l(@user.locked_at, format: :short_with_time) : '-' )
+        - metadatas.update( User.tmf(:created_at) => l(@user.created_at, format: :short_with_time))
+        - metadatas.update( User.tmf(:updated_at) => l(@user.updated_at, format: :short_with_time))
+        = definition_list t('metadatas'), metadatas

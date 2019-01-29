@@ -6,27 +6,50 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - attributes = {}
-        - attributes[Organisation.human_attribute_name(:name)] = @organisation.name
-        - attributes[Organisation.human_attribute_name(:code)] = @organisation.code
+        - attributes[Organisation.tmf(:name)] = @organisation.name
+        - attributes[Organisation.tmf(:code)] = @organisation.code
+        - attributes[Organisation.tmf(:created_at)] = l(@organisation.created_at)
         = definition_list t('metadatas'), attributes
+
 
     .row
       .col-lg-12
-        h2= t(".users")
+        h2.col-md-9= User.t
+        - if policy(@organisation).invite_user?
+          .col-md-3
+            = link_to [:new_invitation, :organisation, :users], class: 'btn btn-primary pull-right' do
+              i.fa.fa-envelope
+              span= 'actions.invite_user'.t
 
-        / Nom complet, Email
-        = table_builder_2 @organisation.users,
+    .row
+      .col-lg-12
+        = render 'filters'
+      .col-lg-12
+        = table_builder_2 @users,
           [ \
             TableBuilderHelper::Column.new( \
               key: :name, \
               attribute: 'name', \
-              sortable: false \
+              sortable: true, \
+              link_to: -> (user){ [:organisation, user] } \
             ), \
             TableBuilderHelper::Column.new( \
               key: :email, \
               attribute: 'email', \
+              sortable: true, \
+              link_to: -> (user){ [:organisation, user] } \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :profile, \
+              attribute: 'profile_i18n', \
+              sortable: false \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :state, \
+              attribute: 'state_i18n', \
               sortable: false \
             ), \
           ],
           cls: 'table has-filter has-search',
           action: :index
+        = new_pagination @users

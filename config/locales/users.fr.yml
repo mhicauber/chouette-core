@@ -5,22 +5,59 @@ fr:
       edit: "Editer cet utilisateur"
       destroy: "Supprimer cet utilisateur"
       destroy_confirm: "Etes vous sûr de supprimer cet utilisateur ?"
+      block: "Bloquer l'utilisateur"
+      block_confirm: "Voulez-vous bloquer cet utilisateur ? Ce dernier ne pourra plus se connecter à la plateforme"
+      unblock: "Débloquer l'utilisateur"
+      unblock_confirm: "Voulez-vous débloquer cet utilisateur ?"
+      new_invitation: "Inviter un nouvel utilisateur"
+      invite: "Inviter un nouvel utilisateur"
+      reinvite: "Renvoyer l'invitation"
+      reinvite_confirm: "Voulez-vous renvoyer une invitation à cet utilisateur ?"
+      reinvite_flash: "Un mail d'invitation a été envoyé"
+      reset_password: "Réinitialiser le mot de passe"
+      reset_password_confirm: "Voulez vous envoyer un lien de réinitialisation de mot de passe à cet utilisateur ?"
+      reset_password_flash: "Un lien de réinitialisation de mot de passe a été envoyé"
     new:
       title: "Ajouter un utilisateur"
     edit:
-      title: "Editer l'utilisateur %{user}"
+      title: "Editer l'utilisateur %{name}"
     show:
-      title: "Utilisateur %{user}"
+      title: "Utilisateur %{name}"
     index:
       title: "Utilisateurs"
+      name_or_email_cont: "Nom ou email"
+    new_invitation:
+      already_invited:
+        text: |
+          <strong>Un utilisateur avec cette adresse email existe déjà.</strong><br />
+          Vous pouvez voir sa fiche détaillée, et éventuellemnt le ré-inviter, en suivant ce lien:
+        button: Voir la fiche de l'utilisateur
+      already_existing:
+        text: <strong>Un utilisateur avec cette adresse email existe déjà.</strong><br />
+      success: Un email d'invitation a été envoyé
+    states:
+      pending: En Attente
+      confirmed: Confirmé
+      invited: Invité
+      blocked: Bloqué
   activerecord:
     models:
-      user: "utilisateur"
+      user:
+        zero: "Utilisateur"
+        one: "Utilisateur"
+        other: "Utilisateurs"
     attributes:
       user:
         name: "Nom complet"
         username: "Nom d'utilisateur"
         permissions: Permissions
+        profile: Profil
+        state: État
+        last_sign_in_at: Date de dernière connexion
+        locked_at: Bloqué le
+        created_at: Créé le
+        updated_at: Modifié le
+        invitation_sent_at: Invitation envoyée le
     errors:
       models:
         calendar:

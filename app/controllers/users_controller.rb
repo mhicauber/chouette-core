@@ -2,20 +2,22 @@ class UsersController < ChouetteController
 
   defaults :resource_class => User
 
-  def create
-    @user = current_organisation.users.build(user_params)
-
-    if @user.valid?
-      @user.invite!
-      respond_with @user, :location => organisation_user_path(@user)
+  def invite
+    already_existing, user = User.invite(user_params.update(organisation: current_organisation, from_user: current_user).symbolize_keys)
+    if already_existing
+      @error = true
+      @existing_user = user
+      @user = User.new user_params
+      render "new_invitation"
     else
-      render :action => 'new'
+      flash[:notice] = I18n.t('users.new_invitation.success')
+      redirect_to [:organisation, user]
     end
   end
 
   def update
-    update! do |success, failure|
-      success.html { redirect_to organisation_user_path(@user) }
+    update! do
+      organisation_user_path(@user)
     end
   end
 
@@ -25,9 +27,36 @@ class UsersController < ChouetteController
     end
   end
 
-  private
-  def user_params
-    params.require(:user).permit( :id, :name, :email )
+  def block
+    resource.lock_access!
+    redirect_to :back
   end
 
+  def unblock
+    resource.unlock_access!
+    redirect_to :back
+  end
+
+  def reinvite
+    resource.invite_from_user! current_user
+    flash[:notice] = t('users.actions.reinvite_flash')
+    redirect_to :back
+  end
+
+  def reset_password
+    resource.send_reset_password_instructions
+    flash[:notice] = t('users.actions.reset_password_flash')
+    redirect_to :back
+  end
+
+  private
+  def user_params
+    keys = %i[name profile]
+    keys << :email unless params[:action] == 'update'
+    params.require(:user).permit(*keys)
+  end
+
+  def resource
+    @user = super.decorate
+  end
 end

@@ -1,0 +1,11 @@
+en:
+  permissions:
+    profiles:
+      admin:
+        name: Administrator
+      editor:
+        name: Editor
+      visitor:
+        name: Visitor
+      custom:
+        name: Custom
