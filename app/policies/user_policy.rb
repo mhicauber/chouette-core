@@ -6,7 +6,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def destroy?
-    organisation_match? && user.has_permission?('users.destroy')
+    organisation_match? && user.has_permission?('users.destroy') && record != user
   end
 
   def create?

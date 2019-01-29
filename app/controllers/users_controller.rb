@@ -1,5 +1,6 @@
 class UsersController < ChouetteController
-
+  include PolicyChecker
+  
   defaults :resource_class => User
 
   def invite
