@@ -18,7 +18,7 @@
     # La clé doit être transmise dans une entête HTTP de la forme :
     pre Authorization: Token token="&lt;YOUR TOKEN&gt;"
   p
-    = "Par exemple, si le token de clé est"
+    = "Par exemple, si le token de clé est "
     em 5fa1f901a833aaec78
     = ", la requête doit inclure une entête HTTP :"
     pre Authorization: Token token="5fa1f901a833aaec78"
@@ -28,7 +28,7 @@
     pre
       = "curl \\"
       br
-      = "-H'Authorization: Token token=\"<VOTRE TOKEN>\"'  \\"
+      = "-H 'Authorization: Token token=\"<VOTRE TOKEN>\"'  \\"
       br
       = "-o #{params[:from] && params[:from].split('/').last || 'output.zip'} \\"
       br
