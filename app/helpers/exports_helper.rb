@@ -94,5 +94,7 @@ module ExportsHelper
     else
       metadatas = metadatas.update({I18n.t("activerecord.attributes.export.file") => (export.file.present? ? link_to(t("actions.download"), export.file.url) : "-")})
     end
+
+    metadatas
   end
 end
