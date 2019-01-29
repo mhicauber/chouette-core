@@ -16,7 +16,7 @@ RSpec.describe Import::Gtfs do
   end
 
   def build_import(file)
-    Import::Gtfs.new workbench: workbench, local_file: fixtures_path(file), creator: "test", name: "test"
+    Import::Gtfs.new workbench: workbench, local_file: open_fixture(file), creator: "test", name: "test"
   end
 
   before(:each) do
