@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190117094830) do
+ActiveRecord::Schema.define(version: 20190121081544) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -854,6 +854,7 @@ ActiveRecord::Schema.define(version: 20190117094830) do
 
   add_index "referentials", ["created_from_id"], name: "index_referentials_on_created_from_id", using: :btree
   add_index "referentials", ["referential_suite_id"], name: "index_referentials_on_referential_suite_id", using: :btree
+  add_index "referentials", ["slug"], name: "index_referentials_on_slug", unique: true, using: :btree
 
   create_table "routes", id: :bigserial, force: :cascade do |t|
     t.integer  "line_id",           limit: 8
@@ -1234,6 +1235,7 @@ ActiveRecord::Schema.define(version: 20190117094830) do
     t.time     "nightly_aggregate_time",               default: '2000-01-01 00:00:00'
     t.boolean  "nightly_aggregate_enabled",            default: false
     t.datetime "nightly_aggregated_at"
+    t.datetime "aggregated_at"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

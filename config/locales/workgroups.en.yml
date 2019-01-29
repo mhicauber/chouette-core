@@ -34,6 +34,7 @@ en:
       workgroup:
         nightly_aggregate_enabled: Daily aggregation enabled
         nightly_aggregate_time: Aggregation time
+        aggregated_at: Aggregated at
 
   formtastic:
     hints:

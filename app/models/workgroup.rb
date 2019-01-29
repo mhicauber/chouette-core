@@ -86,13 +86,15 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
+  def aggregated!
+    update aggregated_at: Time.now
+  end
+
   def nightly_aggregate!
     return unless nightly_aggregate_timeframe?
 
-    last_aggregation_time = aggregates.last&.created_at
-
     target_referentials = aggregatable_referentials.select do |r|
-      last_aggregation_time.blank? || (r.created_at > last_aggregation_time)
+      aggregated_at.blank? || (r.created_at > aggregated_at)
     end
 
     if target_referentials.empty?

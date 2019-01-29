@@ -36,6 +36,7 @@ fr:
         sentinel_delay: Distance de détection
         nightly_aggregate_enabled: Lancement quotidien activé
         nightly_aggregate_time: Heure du lancement
+        aggregated_at: Agrégé le
 
   formtastic:
     hints:
