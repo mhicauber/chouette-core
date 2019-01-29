@@ -46,7 +46,10 @@ module STIF
         end
 
         def detect_namespace doc
-          match = doc.match(/xmlns(.*?)="#{NetexFile::XML_NAME_SPACE}"/)[1]
+          matches = doc.match(/xmlns(.*?)="#{NetexFile::XML_NAME_SPACE}"/)
+          return nil unless matches.present?
+
+          match = matches[1]
           return match[1..-1] if match.present?
 
           nil
