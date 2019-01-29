@@ -311,7 +311,7 @@ class Referential < ApplicationModel
       stop_area_referential: from.stop_area_referential,
       created_from: from,
       objectid_format: from.objectid_format,
-      metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, workbench) },
+      metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, workbench) }.select(&:valid?),
       ready: false
     )
   end

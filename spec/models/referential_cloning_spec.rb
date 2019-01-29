@@ -9,12 +9,19 @@ RSpec.describe ReferentialCloning, :type => :model do
   it { should belong_to :source_referential }
   it { should belong_to :target_referential }
 
+  let(:source_referential) { Referential.new slug: "source", organisation: build(:organisation), prefix: "source"}
+  let(:target_referential) { Referential.new slug: "target", organisation: source_referential.organisation, prefix: "target"}
+  let(:referential_cloning) do
+    ReferentialCloning.new source_referential: source_referential,
+                           target_referential: target_referential
+  end
+
   describe 'after commit' do
     let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
 
-    it 'invoke clone method' do
-    expect(referential_cloning).to receive(:clone)
-    referential_cloning.run_callbacks(:commit)
+    it 'invokes clone method' do
+      expect(referential_cloning).to receive(:clone)
+      referential_cloning.run_callbacks(:commit)
     end
   end
 
@@ -27,13 +34,6 @@ RSpec.describe ReferentialCloning, :type => :model do
   end
 
   describe '#clone!' do
-    let(:source_referential) { Referential.new slug: "source", organisation: build(:organisation)}
-    let(:target_referential) { Referential.new slug: "target", organisation: source_referential.organisation}
-    let(:referential_cloning) do
-      ReferentialCloning.new source_referential: source_referential,
-                             target_referential: target_referential
-    end
-
     let(:cloner) { double }
 
     it 'creates a schema cloner with source and target schemas and clone schema' do
@@ -49,14 +49,6 @@ RSpec.describe ReferentialCloning, :type => :model do
   end
 
   describe '#clone_with_status!' do
-    let(:referential_cloning) do
-      ReferentialCloning.new(target_referential: Referential.new(slug: "target", organisation: build(:organisation), prefix: "target"))
-    end
-
-    before do
-      allow(referential_cloning).to receive(:clone!)
-    end
-
     it 'invokes clone! method' do
       expect(referential_cloning).to receive(:clone!)
       referential_cloning.clone_with_status!
@@ -64,13 +56,14 @@ RSpec.describe ReferentialCloning, :type => :model do
 
     context 'when clone_schema is performed without error' do
       it "should have successful status" do
+        expect(referential_cloning).to receive(:clone!)
         referential_cloning.clone_with_status!
         expect(referential_cloning.status).to eq("successful")
       end
     end
 
     context 'when clone_schema raises an error' do
-      it "should have failed status" do
+      it "should have failed status", truncation: true do
         expect(referential_cloning).to receive(:clone!).and_raise("#fail")
         referential_cloning.clone_with_status!
         expect(referential_cloning.status).to eq("failed")
@@ -87,6 +80,5 @@ RSpec.describe ReferentialCloning, :type => :model do
       referential_cloning.clone_with_status!
       expect(referential_cloning.ended_at).not_to be_nil
     end
-
   end
 end

@@ -5,13 +5,12 @@ RSpec.describe Merge do
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
   let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
-  let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3)) }
   let(:referential){
-    create :referential,
-      workbench: workbench,
-      organisation: workbench.organisation,
-      metadatas: [referential_metadata]
+    ref = create :referential, workbench: workbench, organisation: workbench.organisation
+    create(:referential_metadata, lines: line_referential.lines.limit(3), referential: ref)
+    ref.reload
   }
+  let(:referential_metadata){ referential.metadatas.last }
 
   before(:each) do
     4.times { create :line, line_referential: line_referential, company: company, network: nil }
@@ -207,6 +206,38 @@ RSpec.describe Merge do
   end
 
   context "#prepare_new" do
+    context "when some lines are no longer available", truncation: true do
+      let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
+
+      before do
+        ref = create(:workbench_referential, workbench: workbench)
+        create(:referential_metadata, lines: [line_referential.lines.first], referential: ref)
+        create(:referential_metadata, lines: [line_referential.lines.last], referential: ref)
+        workbench.output.update current: ref.reload
+
+        allow(workbench).to receive(:lines){ Chouette::Line.where(id: line_referential.lines.last.id) }
+      end
+
+      after(:each) do
+        Apartment::Tenant.drop(workbench.output.current.slug)
+        Apartment::Tenant.drop(referential.slug)
+      end
+
+      it "should work" do
+        expect{ merge.prepare_new }.to_not raise_error
+      end
+
+      context "when no lines are available anymore" do
+        before do
+          allow(workbench).to receive(:lines){ Chouette::Line.none }
+        end
+
+        it "should work" do
+          expect{ merge.prepare_new }.to_not raise_error
+        end
+      end
+    end
+
     context "with no current output" do
       let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
 
