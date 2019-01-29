@@ -68,6 +68,8 @@ class User < ApplicationModel
 
   scope :with_profiles, ->(*profile_names) { where(profile: profile_names) }
 
+  scope :active, ->() { where(locked_at: nil) }
+
   scope :with_states, ->(*states) do
     subqueries = states.select(&:present?).map{|state| "(#{subquery_for_state(state)})" }
     where(subqueries.join(' OR '))
@@ -106,6 +108,7 @@ class User < ApplicationModel
   def blocked?
     locked_at.present?
   end
+  alias_method :locked?, :blocked?
 
   def invited?
     invitation_sent_at.present? && !invitation_accepted?
