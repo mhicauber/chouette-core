@@ -34,7 +34,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def reset_password?
-    organisation_match? && update?
+    organisation_match? && update? && record.state == :confirmed
   end
 
   def organisation_match?
