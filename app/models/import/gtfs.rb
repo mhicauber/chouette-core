@@ -470,7 +470,7 @@ class Import::Gtfs < Import::Base
         time_table.send("#{day}=", calendar.send(day))
       end
       if calendar.start_date == calendar.end_date
-        time_table.dates.build date: calendar.start_date
+        time_table.dates.build date: calendar.start_date, in_out: true
       else
         time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
       end
