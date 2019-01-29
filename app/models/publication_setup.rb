@@ -1,7 +1,7 @@
 class PublicationSetup < ApplicationModel
   belongs_to :workgroup
   has_many :publications, dependent: :destroy
-  has_many :destinations, dependent: :destroy
+  has_many :destinations, dependent: :destroy, inverse_of: :publication_setup
 
   validates :name, presence: true
   validates :workgroup, presence: true
@@ -13,6 +13,10 @@ class PublicationSetup < ApplicationModel
 
   def export_class
     export_type.presence&.safe_constantize || Export::Base
+  end
+
+  def human_export_name
+    new_export.human_name
   end
 
   def export_creator_name

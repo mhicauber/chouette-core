@@ -1,0 +1,25 @@
+fr:
+  publication_api_keys:
+    search_no_results: "Aucune clé d'api"
+    show:
+      title: "Clé d'API de Publication “%{name}”"
+    actions:
+      create: Ajouter une Clé d'API de Publication
+      new: Nouvelle Clé d'API de Publication
+      edit: Modifier une Clé d'API de Publication
+      destroy_confirm: "Etes vous sûr de supprimer cette Clé d'API de Publication ?"
+    form:
+      hints:
+        token: Le token est généré automatiquement
+  activerecord:
+    models:
+      publication_api_key:
+        zero:  "Clé d'API de Publication"
+        one:   "Clé d'API de Publication"
+        other: "Clés d'API de Publication"
+    attributes:
+      publication_api_key:
+        name: "Nom"
+        token: "Token"
+        created_at: "Date de création"
+        updated_at: "Date de modification"

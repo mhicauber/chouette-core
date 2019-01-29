@@ -1,0 +1,28 @@
+= simple_form_for @publication_api, url: [@workgroup, @publication_api], html: {class: 'form-horizontal', id: 'publication_api_form'}, wrapper: :horizontal_form do |form|
+  .row
+    .form-group
+      .col-lg-12
+        = form.input :name
+
+    .separator.section_separator
+
+    h2.mb-lg= t('publication_apis.form.sections.params')
+    .form-group
+      .col-lg-12
+        = form.input :slug, hint: 'formtastic.hints.publication_api.slug'.t
+      .col-lg-12
+        .form-group
+          label.col-sm-4.col-xs-5.control-label= PublicationApi.tmf(:public_url)
+          .col-sm-8.col-xs-7.public-url-preview
+            span= "#{SmartEnv['RAILS_HOST']}/api/v1/datas/"
+            span.slug-preview= @publication_api.slug
+
+  = cancel_button
+
+  = form.button :submit,
+      t('actions.submit'),
+      class: 'btn btn-default formSubmitr',
+      data: { disable_with: t('actions.processing') },
+      form: 'publication_api_form'
+
+= javascript_pack_tag "publication_apis/new"

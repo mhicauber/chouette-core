@@ -1,0 +1,15 @@
+= simple_form_for @publication_api_key, url: [@workgroup, @publication_api, @publication_api_key], html: {class: 'form-horizontal', id: 'publication_api_key_form'}, wrapper: :horizontal_form do |form|
+  .row
+    .form-group
+      .col-lg-12
+        = form.input :name
+      .col-lg-12
+        = form.input :token, input_html: { disabled: true }, hint: 'publication_api_keys.form.hints.token'.t
+
+  = cancel_button
+
+  = form.button :submit,
+      t('actions.submit'),
+      class: 'btn btn-default formSubmitr',
+      data: { disable_with: t('actions.processing') },
+      form: 'publication_api_key_form'

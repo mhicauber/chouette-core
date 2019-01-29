@@ -1,0 +1,30 @@
+fr:
+  publication_apis:
+    search_no_results: 'Aucune API de publication'
+    actions:
+      index: APIs de Publication
+      create: Ajouter une API de Publication
+      new: Nouvelle API de Publication
+      edit: Modifier une API de Publication
+      destroy_confirm: "Etes vous sûr de supprimer cette API de Publication ?"
+    show:
+      title: "API de Publication “%{name}”"
+    form:
+      sections:
+        params: "Paramètres techniques de l'API"
+  activerecord:
+    models:
+      publication_api:
+        zero:  "API de Publication"
+        one:   "API de Publication"
+        other: "APIs de Publication"
+    attributes:
+      publication_api:
+        name: "Nom"
+        slug: "Nom court"
+        public_url: "Url Publique"
+        publications: "Publications Associées"
+  formtastic:
+    hints:
+      publication_api:
+        slug: caractères alphanumériques et "_" seulement

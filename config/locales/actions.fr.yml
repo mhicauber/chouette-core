@@ -23,6 +23,7 @@ fr:
     new: 'Créer'
     processing: "En cours…"
     remove: Retirer
+    restore: Annuler la suppression
     search: "Chercher"
     select: Sélectionner
     show: 'Consulter'

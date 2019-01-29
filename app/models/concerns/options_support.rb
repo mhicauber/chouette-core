@@ -1,6 +1,12 @@
 module OptionsSupport
   extend ActiveSupport::Concern
-  included do
+  included do |into|
+    after_initialize do
+      if self.attribute_names.include?('options') && options.nil?
+        self.options = {}
+      end
+    end
+
     def self.option name, opts={}
       store_accessor :options, name
 

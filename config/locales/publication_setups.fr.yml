@@ -8,7 +8,7 @@ fr:
       edit: Modifier une Publication
       destroy_confirm: "Etes vous sûr de supprimer cette Publication ?"
     show:
-      title: "Publication %{name}"
+      title: "Publication “%{name}”"
     form:
       add_destination: Ajouter une destination
       sections:
@@ -16,9 +16,9 @@ fr:
   activerecord:
     models:
       publication_setup:
-        zero:  "Publication"
-        one:   "Publication"
-        other: "Publications"
+        zero:  "Publication Automatique"
+        one:   "Publication Automatique"
+        other: "Publications Automatiques"
     attributes:
       publication_setup:
         name: "Nom"

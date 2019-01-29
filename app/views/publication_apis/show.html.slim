@@ -1,0 +1,87 @@
+- breadcrumb @publication_api, @workgroup
+
+- page_header_content_for @publication_api
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = { PublicationApi.tmf(:name) => @publication_api.name }
+        - metadatas.update( PublicationApi.tmf(:slug) => @publication_api.slug )
+        - metadatas.update( PublicationApi.tmf(:public_url) => @publication_api.public_url )
+        = definition_list t('metadatas'), metadatas
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - metadatas = {}
+        - @publication_api.publication_setups.each do |publication_setup|
+          - metadatas.update( publication_setup.human_export_name => link_to(publication_setup.name, [@workgroup, publication_setup]) )
+
+        = definition_list PublicationApi.tmf(:publications), metadatas
+
+    .row
+      .col-lg-12.text-right
+        - if policy(PublicationApiKey).create?
+          = link_to t('publication_api_keys.actions.create'), new_workgroup_publication_api_publication_api_key_path(@workgroup, @publication_api), class: 'btn btn-primary'
+
+      .col-lg-12
+        - if @api_keys.empty?
+          = replacement_msg t('publication_api_keys.search_no_results')
+        - else
+          .h3 = PublicationApiKey.t
+          = table_builder_2 @api_keys,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :token, \
+                attribute: 'token', \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_at, \
+                attribute: ->(key){ l(key.created_at, format: :short_with_time) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :updated_at, \
+                attribute: ->(key){ l(key.updated_at, format: :short_with_time) } \
+              ), \
+            ],
+            sortable: false,
+            cls: 'table',
+            action: :index
+          = new_pagination @api_keys, 'pull-right'
+
+    .row
+      .col-lg-12
+        - if @publication_api_sources.empty?
+          = replacement_msg t('publication_api_sources.search_no_results')
+        - else
+          .h3 = PublicationApiSource.t
+          = table_builder_2 @publication_api_sources,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :key, \
+                attribute: 'key', \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :publication, \
+                attribute: ->(source){ source.publication.name }, \
+                link_to: ->(source){ [@workgroup, source.publication.publication_setup, source.publication] } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_at, \
+                attribute: ->(key){ l(key.created_at, format: :short_with_time) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :file, \
+                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank) : "-" } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :public_url, \
+                attribute: ->(p){ link_to(p.public_url, p.public_url, target: :blank) } \
+              ), \
+            ],
+            sortable: false,
+            cls: 'table',
+            action: :index

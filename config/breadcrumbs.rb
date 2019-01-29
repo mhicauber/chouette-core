@@ -38,9 +38,39 @@ crumb :merge do |merge|
   parent :merges, merge.workbench
 end
 
+crumb :publications_menu do |workgroup|
+  link 'layouts.navbar.publications.subtitle'.t
+  parent workgroup
+end
+
+crumb :publication_apis do |workgroup|
+  link PublicationApi.t, workgroup_publication_apis_path(workgroup)
+  parent :publications_menu, workgroup
+end
+
+crumb :publication_api do |publication_api|
+  link publication_api.name, [publication_api.workgroup, publication_api]
+  parent :publication_apis, publication_api.workgroup
+end
+
+crumb :new_publication_api_key do |publication_api|
+  link 'publication_api_keys.actions.new'.t
+  parent publication_api
+end
+
+crumb :publication_api_key do |publication_api_key|
+  link publication_api_key.name
+  parent publication_api_key.publication_api
+end
+
+crumb :new_publication_api do |workgroup|
+  link 'publication_apis.actions.new'.t
+  parent :publication_apis, workgroup
+end
+
 crumb :publication_setups do |workgroup|
   link PublicationSetup.t, workgroup_publication_setups_path(workgroup)
-  parent workgroup
+  parent :publications_menu, workgroup
 end
 
 crumb :publication do |publication|

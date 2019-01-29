@@ -1,0 +1,34 @@
+doctype html
+html lang=I18n.locale
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+
+    = csrf_meta_tag
+
+    title = t('brandname')
+    = stylesheet_link_tag 'base'
+    = stylesheet_link_tag 'api'
+
+  body
+    .container-fluid
+      .page_header
+        .brandname= link_to t('brandname'), root_path
+
+      .col-md-8
+        = yield
+      .col-md-4.right-col
+        - if I18n.locale == :fr
+          h3 Propulsé par Chouette ITS
+
+          p Chouette est un logiciel de gestion d'offre de transport planifié.
+          p Il permet l'import l'édition, la mise en qualité et la publication des données proposées ici.
+
+          p = link_to 'En savoir plus', 'https://enroute.mobi/produits/chouette/'
+        - else
+          h3 Brought to you by Chouette ITS
+
+          p Chouette is a planned transportation offer management solution.
+          p It allows you to import, edit, apply quality controls, and publish the data available here.
+
+          p = link_to 'Find out more', 'https://enroute.mobi/produits/chouette/'

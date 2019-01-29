@@ -67,11 +67,11 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :type, \
-                attribute: ->(r){ r.destination.human_type } \
+                attribute: ->(r){ r.destination.is_a?(Destination::PublicationApi) ? link_to(r.destination.human_type, [@workgroup, r.destination.publication_api]) : r.destination.human_type } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
-                attribute: ->(r){ r.destination.name } \
+                attribute: ->(r){ r.destination.is_a?(Destination::PublicationApi) ? link_to(r.destination.name, [@workgroup, r.destination.publication_api]) : r.destination.name } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :status, \

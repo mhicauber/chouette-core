@@ -36,7 +36,10 @@ fr:
       fatal: "Fatal"
   export:
     workgroup: Groupe de travail
-    netex:     Netex
+    netex:
+      default: Netex
+      line: Netex par ligne
+      full: Netex complet
     referential_companies: Transporteurs
     gtfs: GTFS
     base:

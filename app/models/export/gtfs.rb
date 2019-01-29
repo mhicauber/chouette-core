@@ -145,7 +145,7 @@ class Export::Gtfs < Export::Base
         stop_areas_array_result << stop_area
         stop_area_stop_hash[stop_area.id] = stop_id(stop_area)
         if (stop_area.parent && !stop_area_stop_hash[stop_area.parent.id])
-          stop_areas_array_parents<<stop_area.parent
+          stop_areas_array_parents << stop_area.parent
         end
       end
     end

@@ -26,6 +26,10 @@ fr:
           zero:  "SFTP"
           one:   "SFTP"
           other: "SFTP"
+        publication_api:
+          zero:  "Publication API"
+          one:   "Publication API"
+          other: "Publication APIs"
     attributes:
       destination:
         name: "Name"

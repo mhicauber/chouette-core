@@ -1,0 +1,17 @@
+fr:
+  publication_api_sources:
+    search_no_results: 'No Data Sources'
+
+  activerecord:
+    models:
+      publication_api_source:
+        zero:  "Data Source"
+        one:   "Data Source"
+        other: "Data Sources"
+    attributes:
+      publication_api_source:
+        key: "Key"
+        publication: "Publication"
+        file: "File"
+        created_at: "Created at"
+        public_url: "Public URL"

@@ -124,5 +124,9 @@ module Chouette
     def status
       activated? ? :activated : :deactivated
     end
+
+    def code
+      (stable_id.presence || number.presence || registration_number.presence || id).to_s.parameterize
+    end
   end
 end

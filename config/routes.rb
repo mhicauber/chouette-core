@@ -56,11 +56,17 @@ ChouetteIhm::Application.routes.draw do
         put :rollback
       end
     end
+
     resources :publication_setups do
       resources :publications, only: :show do
         resources :exports, only: :show
       end
     end
+
+    resources :publication_apis do
+      resources :publication_api_keys
+    end
+
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do
@@ -180,6 +186,10 @@ ChouetteIhm::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get 'datas/:slug', to: 'datas#infos', as: :infos
+      get 'datas/:slug.:key.zip', to: 'datas#download_full', as: :download_full
+      get 'datas/:slug/lines/:line_id.:key.zip', to: 'datas#download_line', as: :download_line
+
       resources :workbenches, except: %i(destroy) do
         resources :imports, only: [:index, :show, :create]
       end

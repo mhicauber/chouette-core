@@ -36,7 +36,7 @@ class PublicationSetupsController < ChouetteController
     if export_class
       permitted_keys << { export_options: export_class.options.keys }
     end
-    permitted_destinations_attributes = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id]
+    permitted_destinations_attributes = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
     permitted_destinations_attributes += Destination.descendants.map{ |t| t.options.keys }.uniq
     permitted_keys << { destinations_attributes: permitted_destinations_attributes }
     publication_setup_params.permit(permitted_keys)
