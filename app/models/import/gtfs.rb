@@ -469,7 +469,11 @@ class Import::Gtfs < Import::Base
       Chouette::TimeTable.all_days.each do |day|
         time_table.send("#{day}=", calendar.send(day))
       end
-      time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
+      if calendar.start_date == calendar.end_date
+        time_table.dates.build date: calendar.start_date, in_out: true
+      else
+        time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
+      end
       save_model time_table, resource: resource
 
       time_tables_by_service_id[calendar.service_id] = time_table.id
