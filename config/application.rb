@@ -45,6 +45,7 @@ module ChouetteIhm
     SmartEnv.add :TEST_ENV_NUMBER
     SmartEnv.add :WORKBENCH_IMPORT_DIR
     SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
+    SmartEnv.add :CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS, default: ""
     SmartEnv.add_boolean :AUTOMATED_AUDITS_ENABLED
     SmartEnv.add_boolean :BYPASS_AUTH_FOR_SIDEKIQ
     SmartEnv.add_boolean :CHOUETTE_ROUTE_POSITION_CHECK
@@ -83,7 +84,10 @@ module ChouetteIhm
     config.additional_compliance_controls = []
     config.additional_compliance_controls.push *SmartEnv["CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS"].split(',')
 
-    config.enable_transactional_checksums = SmartEnv.boolean('CHOUETTE_TRANSACTIONAL_CHECKSUMS') 
+    config.additional_destinations = []
+    config.additional_destinations.push *SmartEnv["CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS"].split(',')
+
+    config.enable_transactional_checksums = SmartEnv.boolean('CHOUETTE_TRANSACTIONAL_CHECKSUMS')
 
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:

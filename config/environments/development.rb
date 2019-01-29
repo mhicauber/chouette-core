@@ -98,6 +98,7 @@ Rails.application.configure do
   end
 
   config.additional_compliance_controls << "dummy"
+  config.additional_destinations << "dummy"
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

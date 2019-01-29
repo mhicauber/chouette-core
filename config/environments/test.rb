@@ -73,6 +73,7 @@ Rails.application.configure do
   end
 
   config.additional_compliance_controls << "dummy"
+  config.additional_destinations << "dummy"
 
   config.enable_transactional_checksums = true
 end
