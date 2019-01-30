@@ -17,7 +17,7 @@ class ReferentialAudit
 
     def initialize referential
       @referential = referential
-      @banner = "Full Audit on referential \"#{referential.name}\" (#{referential.id})"
+      @banner = "Full Audit on referential \"#{referential.name.truncate(30)}\" (#{referential.id})"
       @verbose = true
       @status = :new
       @number_of_lines = self.class.items.size
