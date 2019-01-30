@@ -5,7 +5,7 @@ class ReferentialAudit
     end
 
     def message record
-      "VehicleJourney ##{record.id} has an initial offset > 0"
+      "VehicleJourney ##{record.vehicle_journey_id} has an initial offset > 0"
     end
   end
 end
