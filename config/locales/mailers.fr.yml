@@ -4,7 +4,7 @@ fr:
     hello: 'Bonjour,'
     audit_mailer:
       audit:
-        subject: "Audit automatique du %{date}"
+        subject: "Audit automatique du %{date} sur %{host}"
     calendar_mailer:
       sent_by: "Envoyé par"
       button: Voir le modèle de calendrier

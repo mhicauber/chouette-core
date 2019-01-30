@@ -10,7 +10,7 @@ class ReferentialAudit
       out = []
       if limit
         if limit.is_a? Integer
-          referentials = referentials[0..limit]
+          referentials = referentials[0...limit]
         elsif limit.is_a?(Time) || limit.is_a?(Date)
           referentials = referentials.select{|r| r.created_at > limit }
         end
