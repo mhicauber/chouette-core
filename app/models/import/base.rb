@@ -59,6 +59,13 @@ class Import::Base < ApplicationModel
     workbench.imports.purgeable.destroy_all
   end
 
+  def file_type
+    return unless file
+    return :gtfs if Import::Gtfs.accepts_file?(file.path)
+    return :netex if Import::Netex.accepts_file?(file.path)
+    return :neptune if Import::Neptune.accepts_file?(file.path)
+  end
+
   private
 
   def initialize_fields

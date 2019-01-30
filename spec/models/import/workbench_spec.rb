@@ -26,6 +26,39 @@ RSpec.describe Import::Workbench do
     Import::Workbench.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture("google-sample-feed.zip"), options: options
   }
 
+  context '#file_type' do
+    let(:filename) { 'google-sample-feed.zip' }
+    let(:import) {
+      Import::Workbench.new workbench: workbench, name: "test", creator: "Albator", file: open_fixture(filename), options: options
+    }
+    context 'with a GTFS file' do
+      it 'should return :gtfs' do
+        expect(import.file_type).to eq :gtfs
+      end
+    end
+
+    context 'with a NETEX file' do
+      let(:filename) { 'OFFRE_TRANSDEV_2017030112251.zip' }
+      it 'should return :netex' do
+        expect(import.file_type).to eq :netex
+      end
+    end
+
+    context 'with a Neptune file' do
+      let(:filename) { 'fake_neptune.zip' }
+      it 'should return :neptune' do
+        expect(import.file_type).to eq :neptune
+      end
+    end
+
+    context 'with a malformed file' do
+      let(:filename) { 'malformed_import_file.zip' }
+      it 'should return nil' do
+        expect(import.file_type).to be_nil
+      end
+    end
+  end
+
 
   context "#done!" do
     it "should do nothing" do

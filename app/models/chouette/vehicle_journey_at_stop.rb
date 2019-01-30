@@ -95,6 +95,14 @@ module Chouette
       local_time arrival_time, offset
     end
 
+    def departure_local_time= local_time
+      self.departure_time = format_time local_time(local_time.to_time, -time_zone_offset)
+    end
+
+    def arrival_local_time= local_time
+      self.arrival_time = format_time local_time(local_time.to_time, -time_zone_offset)
+    end
+
     def departure_local
       format_time departure_local_time
     end

@@ -19,7 +19,6 @@ module Chouette
                                         individual_subject_of_travel_itinerary
                                         other_information)
 
-    validates_format_of :registration_number, :with => %r{\A[0-9A-Za-z_-]+\Z}, :allow_nil => true, :allow_blank => true
     validates_presence_of :name
 
     def self.object_id_key
