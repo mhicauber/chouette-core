@@ -1,13 +1,17 @@
 module DeviseRequestHelper
   include Warden::Test::Helpers
 
-  def login_user permissions: nil
+  def login_user permissions: nil, profile: nil
+    if profile
+      permissions = Permission::Profile.permissions_for(profile)
+    end
     permissions ||= Support::Permissions.all_permissions
     organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
     @user ||=
       create(:user,
-             :organisation => organisation,
-             :permissions => permissions)
+             organisation: organisation,
+             profile: profile,
+             permissions: permissions)
 
     login_as @user, :scope => :user
     # post_via_redirect user_session_path, 'user[email]' => @user.email, 'user[password]' => @user.password
@@ -21,9 +25,9 @@ module DeviseRequestHelper
 
   module ClassMethods
 
-    def login_user permissions: nil
+    def login_user permissions: nil, profile: nil
       before(:each) do
-        login_user permissions: permissions
+        login_user permissions: permissions, profile: profile
       end
       after(:each) do
         Warden.test_reset!
@@ -36,19 +40,23 @@ end
 
 module DeviseControllerHelper
 
-  def setup_user permissions: nil
+  def setup_user permissions: nil, profile: nil
     before do
       @request.env["devise.mapping"] = Devise.mappings[:user]
+      if profile
+        permissions = Permission::Profile.permissions_for(profile)
+      end
       permissions ||= Support::Permissions.all_permissions
       organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
       @user = create(:user,
                      organisation: organisation,
+                     profile: profile,
                      permissions: permissions)
     end
   end
 
-  def login_user permissions: nil
-    setup_user permissions: permissions
+  def login_user permissions: nil, profile: nil
+    setup_user permissions: permissions, profile: profile
     before do
       sign_in @user
     end

@@ -6,7 +6,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def destroy?
-    organisation_match? && user.has_permission?('users.destroy')
+    organisation_match? && user.has_permission?('users.destroy') && record != user
   end
 
   def create?
@@ -14,7 +14,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    organisation_match? && user.has_permission?('users.update')
+    not_self? && organisation_match? && user.has_permission?('users.update')
   end
 
   def edit?
@@ -22,16 +22,22 @@ class UserPolicy < ApplicationPolicy
   end
 
   def block?
-    update? && !record.blocked? && record != user
+    not_self? && update? && !record.blocked?
   end
 
   def unblock?
-    update? && record.blocked? && record != user
+    not_self? && update? && record.blocked?
   end
 
   def reinvite?
     organisation_match? && create? && record.state == :invited
   end
+
+  def invite?
+    create?
+  end
+
+  alias_method :new_invitation?, :invite?
 
   def reset_password?
     organisation_match? && update? && record.state == :confirmed
@@ -39,5 +45,9 @@ class UserPolicy < ApplicationPolicy
 
   def organisation_match?
     record.organisation_id == user.organisation_id
+  end
+
+  def not_self?
+    record != user
   end
 end
