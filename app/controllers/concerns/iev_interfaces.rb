@@ -35,7 +35,9 @@ module IevInterfaces
             key: :workbench,
             name: Workbench.ts.capitalize,
             attribute: Proc.new { |n| n.workbench.organisation.name },
-            link_to: Proc.new { |n| n.workbench }
+            link_to: lambda do |import|
+              policy(import.workbench).show? ? import.workbench : nil
+            end
           )
         end
         collection = decorate_collection(collection)
