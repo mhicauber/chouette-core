@@ -23,8 +23,8 @@ module GTFS
 
     FORMAT = /(\d{1,2}):(\d{1,2}):(\d{1,2})/
 
-    def self.format_datetime (date_time, offset, old_timezone = 'UTC', new_timezone = 'UTC')
-      hours = "%.2d" % (date_time.hour+(24*offset)+timezone_hours(old_timezone)-timezone_hours(new_timezone))
+    def self.format_datetime (date_time, offset, new_timezone = 'UTC')
+      hours = "%.2d" % (date_time.hour+(24*offset)+timezone_hours(new_timezone))
       minutes = "%.2d" % date_time.min
       seconds = "%.2d" % date_time.sec
       "#{hours}:#{minutes}:#{seconds}"

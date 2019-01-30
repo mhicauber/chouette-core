@@ -303,8 +303,8 @@ class Export::Gtfs < Export::Base
 
         vehicule_journey_service_trip_hash[vehicle_journey.id].each do |trip_id|
 
-          arrival_time = GTFS::Time.format_datetime(vj_at_stop.arrival_time, vj_at_stop.arrival_day_offset, vj_at_stop.time_zone, vj_timezone) if vj_at_stop.arrival_time
-          departure_time = GTFS::Time.format_datetime(vj_at_stop.departure_time, vj_at_stop.departure_day_offset, vj_at_stop.time_zone, vj_timezone) if vj_at_stop.departure_time
+          arrival_time = GTFS::Time.format_datetime(vj_at_stop.arrival_time, vj_at_stop.arrival_day_offset, vj_timezone) if vj_at_stop.arrival_time
+          departure_time = GTFS::Time.format_datetime(vj_at_stop.departure_time, vj_at_stop.departure_day_offset, vj_timezone) if vj_at_stop.departure_time
 
           target.stop_times << {
             trip_id: trip_id,

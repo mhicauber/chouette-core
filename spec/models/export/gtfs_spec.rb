@@ -124,15 +124,13 @@ RSpec.describe Export::Gtfs, type: :model do
       stop_times_zip_path = File.join(tmp_dir, "#{gtfs_export.zip_file_name}.zip")
       source = GTFS::Source.build stop_times_zip_path, strict: false
 
-      ap source.stop_times
-
       vehicle_journey_at_stops = vehicle_journey.vehicle_journey_at_stops.select {|vehicle_journey_at_stop| vehicle_journey_at_stop.stop_point.stop_area.commercial? }
       expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length)
 
       random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample
-      stop_time = source.stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::Time.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset, 'UTC', 'Europe/Paris') }
+      stop_time = source.stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::Time.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset, 'Europe/Paris') }
       expect(stop_time).not_to be_nil
-      expect(stop_time.departure_time).to eq(GTFS::Time.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset, 'UTC', 'Europe/Paris'))
+      expect(stop_time.departure_time).to eq(GTFS::Time.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
     end
   end
 
