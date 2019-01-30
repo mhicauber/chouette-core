@@ -11,8 +11,13 @@ module NetexTransportSubmodeEnumerations
 
     submodes = NetexTransportSubmodeEnumerations.submodes_for_transports
 
+    pp "FOOOO"
+    pp transport_mode
+    pp transport_submode
+    pp submodes
+
     return if submodes[transport_mode&.to_sym].blank? && transport_submode.blank?
-    return if submodes[transport_mode&.to_sym]&.include?(transport_submode)
+    return if submodes[transport_mode&.to_sym]&.include?(transport_submode.presence)
 
     errors.add(:transport_mode, :submode_mismatch)
   end
