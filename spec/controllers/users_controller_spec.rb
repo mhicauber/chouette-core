@@ -2,48 +2,42 @@ RSpec.describe UsersController, :type => :controller do
 
   let(:organisation) { @user.organisation }
 
-  describe "GET edit" do
-    let(:request){ get :edit, id: target_user.id }
-    let(:target_user)  { create :user }
+  [
+    [:get, :edit],
+    [:post, :update, nil, user: { foo: :bar }],
+    [:delete, :destroy],
+    [:put, :block],
+    [:put, :unblock, ->{ target_user.lock_access! }],
+    [:put, :reset_password, ->{ target_user.update(confirmed_at: Time.now) }],
+    [:put, :reinvite, ->{ target_user.update(invitation_sent_at: Time.now) }]
+  ].each do |verb, action, before, extra_params|
+    extra_params ||= {}
 
-    it 'should be forbidden' do
-      request
-      expect(response.status).to eq 302
-    end
+    describe "#{verb.to_s.upcase} #{action}" do
+      let(:request){ send verb, action, { id: target_user.id }.update(extra_params) }
+      let(:target_user)  { create :user }
 
-    context 'logged in' do
-      context 'in the same organisation' do
-        let(:target_user)  { create :user, organisation: organisation }
+      it 'should be forbidden' do
+        request
+        expect(response.status).to eq 302
+      end
 
-        context 'as visitor' do
-          login_user profile: :visitor
-          it 'should be forbidden' do
-            request
-            expect(response.status).to eq 403
-          end
+      context 'logged in' do
+        before(:each) do
+          @request.env["devise.mapping"] = Devise.mappings[:user]
+          user_organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
+          @user = create(:user, organisation: user_organisation, profile: profile)
+          sign_in @user
+
+          controller.request.env["HTTP_REFERER"] = "/organisation/users/#{target_user.id}"
+          instance_exec &before if before
         end
 
-        context 'as editor' do
-          login_user profile: :editor
-          it 'should be forbidden' do
-            request
-            expect(response.status).to eq 403
-          end
-        end
-
-        context 'as admin' do
-          login_user profile: :admin
-          it 'should be authorized' do
-            request
-            expect(response.status).to eq 200
-          end
-        end
-
-        context 'on self' do
-          let(:target_user)  { @user }
+        context 'in the same organisation' do
+          let(:target_user)  { create :user, organisation: organisation }
 
           context 'as visitor' do
-            login_user profile: :visitor
+            let(:profile){ :visitor }
             it 'should be forbidden' do
               request
               expect(response.status).to eq 403
@@ -51,7 +45,7 @@ RSpec.describe UsersController, :type => :controller do
           end
 
           context 'as editor' do
-            login_user profile: :editor
+            let(:profile){ :editor }
             it 'should be forbidden' do
               request
               expect(response.status).to eq 403
@@ -59,222 +53,74 @@ RSpec.describe UsersController, :type => :controller do
           end
 
           context 'as admin' do
-            login_user profile: :admin
+            let(:profile){ :admin }
             it 'should be authorized' do
               request
-              expect(response.status).to eq 200
+              expect(response.status).to eq (verb == :get ? 200 : 302)
             end
           end
         end
-      end
 
-      context 'in a different organisation' do
-        let(:target_user)  { create :user, organisation: create(:organisation) }
+        context 'in a different organisation' do
+          let(:target_user)  { create :user, organisation: create(:organisation) }
 
-        context 'as visitor' do
-          login_user profile: :visitor
-          it 'should be forbidden' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
+          context 'as visitor' do
+            let(:profile){ :visitor }
+            it 'should be forbidden' do
+              expect{ request }.to raise_error ActiveRecord::RecordNotFound
+            end
           end
-        end
 
-        context 'as editor' do
-          login_user profile: :editor
-          it 'should be forbidden' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
+          context 'as editor' do
+            let(:profile){ :editor }
+            it 'should be forbidden' do
+              expect{ request }.to raise_error ActiveRecord::RecordNotFound
+            end
           end
-        end
 
-        context 'as admin' do
-          login_user profile: :admin
-          it 'should be authorized' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
+          context 'as admin' do
+            let(:profile){ :admin }
+            it 'should be authorized' do
+              expect{ request }.to raise_error ActiveRecord::RecordNotFound
+            end
           end
         end
       end
     end
   end
 
-  describe "POST update" do
-    let(:request){ post :update, id: target_user.id, user: { foo: :bar } }
-    let(:target_user)  { create :user }
+  [
+    [:get, :edit],
+    [:post, :update, nil, user: { foo: :bar }],
+    [:delete, :destroy],
+    [:put, :block]
+  ].each do |verb, action, before, extra_params|
+    extra_params ||= {}
 
-    it 'should be forbidden' do
-      request
-      expect(response.status).to eq 302
-    end
+    describe "#{verb.to_s.upcase} #{action}" do
+      let(:request){ send verb, action, { id: target_user.id }.update(extra_params) }
 
-    context 'logged in' do
-      context 'in the same organisation' do
-        let(:target_user)  { create :user, organisation: organisation }
+      before(:each) do
+        @request.env["devise.mapping"] = Devise.mappings[:user]
+        user_organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
+        @user = create(:user, organisation: user_organisation, profile: profile)
+        sign_in @user
 
-        context 'as visitor' do
-          login_user profile: :visitor
-          it 'should be forbidden' do
-            request
-            expect(response.status).to eq 403
-          end
-        end
-
-        context 'as editor' do
-          login_user profile: :editor
-          it 'should be forbidden' do
-            request
-            expect(response.status).to eq 403
-          end
-        end
-
-        context 'as admin' do
-          login_user profile: :admin
-          it 'should be authorized' do
-            request
-            expect(response.status).to eq 302
-          end
-        end
-
-        context 'on self' do
-          let(:target_user)  { @user }
-
-          context 'as visitor' do
-            login_user profile: :visitor
-            it 'should be forbidden' do
-              request
-              expect(response.status).to eq 403
-            end
-          end
-
-          context 'as editor' do
-            login_user profile: :editor
-            it 'should be forbidden' do
-              request
-              expect(response.status).to eq 403
-            end
-          end
-
-          context 'as admin' do
-            login_user profile: :admin
-            it 'should be authorized' do
-              request
-              expect(response.status).to eq 302
-            end
-          end
-        end
+        controller.request.env["HTTP_REFERER"] = "/organisation/users/#{target_user.id}"
+        instance_exec &before if before
       end
+      let(:target_user)  { create :user, organisation: organisation }
 
-      context 'in a different organisation' do
-        let(:target_user)  { create :user, organisation: create(:organisation) }
+      context 'on self' do
+        let(:target_user)  { @user }
 
-        context 'as visitor' do
-          login_user profile: :visitor
-          it 'should be forbidden' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
-          end
-        end
-
-        context 'as editor' do
-          login_user profile: :editor
-          it 'should be forbidden' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
-          end
-        end
-
-        context 'as admin' do
-          login_user profile: :admin
-          it 'should be authorized' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
-          end
-        end
-      end
-    end
-  end
-
-  describe "DELETE destroy" do
-    let(:request){ delete :destroy, id: target_user.id }
-    let(:target_user)  { create :user }
-
-    it 'should be forbidden' do
-      request
-      expect(response.status).to eq 302
-    end
-
-    context 'logged in' do
-      context 'in the same organisation' do
-        let(:target_user)  { create :user, organisation: organisation }
-
-        context 'as visitor' do
-          login_user profile: :visitor
-          it 'should be forbidden' do
-            request
-            expect(response.status).to eq 403
-          end
-        end
-
-        context 'as editor' do
-          login_user profile: :editor
-          it 'should be forbidden' do
-            request
-            expect(response.status).to eq 403
-          end
-        end
-
-        context 'as admin' do
-          login_user profile: :admin
-          it 'should be authorized' do
-            request
-            expect(response.status).to eq 302
-          end
-        end
-
-        context 'on self' do
-          let(:target_user)  { @user }
-
-          context 'as visitor' do
-            login_user profile: :visitor
+        Permission::Profile.each do |user_profile|
+          context "as #{user_profile}" do
+            let(:profile){ user_profile }
             it 'should be forbidden' do
               request
               expect(response.status).to eq 403
             end
-          end
-
-          context 'as editor' do
-            login_user profile: :editor
-            it 'should be forbidden' do
-              request
-              expect(response.status).to eq 403
-            end
-          end
-
-          context 'as admin' do
-            login_user profile: :admin
-            it 'should be authorized' do
-              request
-              expect(response.status).to eq 403
-            end
-          end
-        end
-      end
-
-      context 'in a different organisation' do
-        let(:target_user)  { create :user, organisation: create(:organisation) }
-
-        context 'as visitor' do
-          login_user profile: :visitor
-          it 'should be forbidden' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
-          end
-        end
-
-        context 'as editor' do
-          login_user profile: :editor
-          it 'should be forbidden' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
-          end
-        end
-
-        context 'as admin' do
-          login_user profile: :admin
-          it 'should be authorized' do
-            expect{ request }.to raise_error ActiveRecord::RecordNotFound
           end
         end
       end

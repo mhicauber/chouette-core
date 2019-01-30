@@ -1,6 +1,9 @@
 class UsersController < ChouetteController
   include PolicyChecker
-  
+
+  before_action :authorize_resource, except: [:create, :index, :new, :new_invitation, :invite]
+  before_action :authorize_resource_class, only: [:create, :index, :new, :new_invitation, :invite]
+
   defaults :resource_class => User
 
   def invite
