@@ -32,7 +32,7 @@ module ComplianceBlockSupport
   def block_name
     if transport_mode?
       transport_mode_t = "enumerize.transport_mode.#{transport_mode}".t
-      if transport_submode
+      if transport_submode.present?
         transport_submode_t = "enumerize.transport_submode.#{transport_submode}".t
         'compliance_control_blocks.with_transport_submode'.t(transport_mode: transport_mode_t, transport_submode: transport_submode_t)
       else

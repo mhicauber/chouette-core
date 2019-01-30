@@ -15,6 +15,9 @@ describe Chouette::Line, :type => :model do
     # BUS -> no submode = OK
     expect(subject).to be_valid
 
+    subject.transport_submode = ""
+    expect(subject).to be_valid
+
     # BUS -> bus specific submode = OK
     subject.transport_submode = "nightBus"
     expect(subject).to be_valid
