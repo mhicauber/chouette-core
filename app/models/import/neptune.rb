@@ -48,12 +48,20 @@ class Import::Neptune < Import::Base
     end
   end
 
-  def each_element_matching_css(selector)
-    each_source do |source|
-      source.css(selector)\
+  def each_element_matching_css(selector, root=nil)
+    if root
+      root[:_node].css(selector)\
             .map(&method(:build_object_from_nokogiri_element))\
             .each do |object|
           yield object
+      end
+    else
+      each_source do |source|
+        source.css(selector)\
+              .map(&method(:build_object_from_nokogiri_element))\
+              .each do |object|
+            yield object
+        end
       end
     end
   end
@@ -194,25 +202,34 @@ class Import::Neptune < Import::Base
 
   def import_stop_areas
     @parent_stop_areas = {}
-    each_element_matching_css('ChouettePTNetwork ChouetteArea StopArea') do |source_stop_area|
-      stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
-      stop_area.name = source_stop_area[:name]
-      stop_area.comment = source_stop_area[:comment]
-      stop_area.street_name = source_stop_area[:address].try(:[], :street_name)
-      stop_area.nearest_topic_name = source_stop_area[:nearest_topic_name]
-      stop_area.fare_code = source_stop_area[:fare_code]
-      stop_area.area_type = stop_area_type_mapping(source_stop_area[:stop_area_extension][:area_type])
-      stop_area.kind = :commercial
-      stop_area.latitude = source_stop_area[:latitude]
-      stop_area.longitude = source_stop_area[:longitude]
-      stop_area.parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
+    each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent|
+      coordinates = {}
+      each_element_matching_css('AreaCentroid', source_parent) do |centroid|
+        coordinates[centroid[:object_id]] = centroid.slice(:latitude, :longitude)
+      end
 
-      save_model stop_area
+      each_element_matching_css('StopArea', source_parent) do |source_stop_area|
+        stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
+        stop_area.name = source_stop_area[:name]
+        stop_area.comment = source_stop_area[:comment]
+        stop_area.street_name = source_stop_area[:address].try(:[], :street_name)
+        stop_area.nearest_topic_name = source_stop_area[:nearest_topic_name]
+        stop_area.fare_code = source_stop_area[:fare_code]
+        stop_area.area_type = stop_area_type_mapping(source_stop_area[:stop_area_extension][:area_type])
+        stop_area.kind = :commercial
+        if source_stop_area[:centroid_of_area]
+          stop_area.latitude = coordinates[source_stop_area[:centroid_of_area]].try(:[], :latitude)
+          stop_area.longitude = coordinates[source_stop_area[:centroid_of_area]].try(:[], :longitude)
+        end
+        stop_area.parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
 
-      contains = source_stop_area[:contains]
-      contains = make_enum contains
-      contains.each do |child_registration_number|
-        @parent_stop_areas[child_registration_number] = stop_area.id
+        save_model stop_area
+
+        contains = source_stop_area[:contains]
+        contains = make_enum contains
+        contains.each do |child_registration_number|
+          @parent_stop_areas[child_registration_number] = stop_area.id
+        end
       end
     end
   end
@@ -349,7 +366,7 @@ class Import::Neptune < Import::Base
   end
 
   def build_object_from_nokogiri_element(element)
-    out = {}
+    out = { _node: element }
     element.children.each do |child|
       key = child.name.underscore.to_sym
       next if key == :text
