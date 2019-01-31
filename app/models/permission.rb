@@ -1,5 +1,11 @@
 class Permission
   class << self
+    def full
+      (extended + referentials + user_permissions).uniq
+    end
+
+    private
+
     def all_resources
       %w[
         access_points
@@ -49,11 +55,6 @@ class Permission
       all_destructive_permissions + %w{sessions.create workbenches.update}
     end
 
-    def read_only
-      # There are probavbly a few permissions missing here
-      %w(sessions.create)
-    end
-
     def extended
       permissions = base
 
@@ -81,10 +82,6 @@ class Permission
         end
       end
       permissions
-    end
-
-    def full
-      extended + referentials + user_permissions
     end
   end
 
@@ -118,7 +115,7 @@ class Permission
 
       def profile_for(permissions)
         return DEFAULT_PROFILE unless permissions
-        
+
         sorted = permissions.sort
 
         each do |profile|
@@ -140,8 +137,7 @@ class Permission
     end
 
     profile :admin, Permission.full
-    profile :editor, Permission.extended
-    profile :visitor, Permission.read_only
-
+    profile :editor, Permission.full.grep_v(/^users/)
+    profile :visitor, %w{sessions.create}
   end
 end

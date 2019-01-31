@@ -84,11 +84,11 @@ class Seed::Workgroup
   end
 
   def features
-    @features ||= Seed.all_features
+    @features ||= Feature.all
   end
 
   def profiles
-    @profiles ||= { all: Seed.all_permissions, none: [] }
+    @profiles ||= { all: Permission.full, none: [] }
   end
 
   def default_profile
@@ -127,7 +127,7 @@ class Seed::Workgroup
   def seed
     owner = Organisation.seed_by(code: code) do |o|
       o.name = base_name
-      o.features = Seed.all_features
+      o.features = Feature.all
 
       @owner_organisation_block&.call o
     end
