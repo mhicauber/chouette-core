@@ -302,7 +302,7 @@ class Referential < ApplicationModel
   end
 
   def self.new_from(from, workbench)
-    Referential.new(
+    clone = Referential.new(
       name: I18n.t("activerecord.copy", name: from.name),
       prefix: from.prefix,
       time_zone: from.time_zone,
@@ -311,9 +311,11 @@ class Referential < ApplicationModel
       stop_area_referential: from.stop_area_referential,
       created_from: from,
       objectid_format: from.objectid_format,
-      metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, workbench) }.select(&:valid?),
+      metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, workbench) },
       ready: false
     )
+    clone.metadatas = clone.metadatas.select(&:valid?)
+    clone
   end
 
   def self.available_srids
