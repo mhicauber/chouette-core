@@ -95,6 +95,9 @@ RSpec.describe Import::Neptune do
 
     it 'should create new stop_areas' do
       expect{ import.send(:import_stop_areas) }.to change{ workbench.stop_area_referential.stop_areas.count }.by 18
+      stop_area = Chouette::StopArea.find_by registration_number: 'NAVSTEX:StopArea:gen6'
+      expect(stop_area.latitude).to be_present
+      expect(stop_area.longitude).to be_present
     end
 
     it 'should update existing stop_areas' do
