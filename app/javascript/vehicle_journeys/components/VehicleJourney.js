@@ -216,7 +216,8 @@ export default class VehicleJourney extends Component {
           <div
             key={i}
             className={'td text-center' + (this.isSelected(this.props.index, i) ? ' selected' : '') + (this.isSelectionStart(this.props.index, i) ? ' selection-start' : '') }
-            onClick={(e) => this.props.onSelectCell(this.props.index, i)}
+            onMouseDown={(e) => this.props.onSelectCell(this.props.index, i, 'down')}
+            onMouseUp={(e) => this.props.onSelectCell(this.props.index, i, 'up')}
             onMouseEnter={(e) => this.props.onHoverCell(this.props.index, i)}
             >
             <div className={'cellwrap' + (this.cityNameChecker(vj) ? ' headlined' : '')}>

@@ -27,7 +27,7 @@ const vehicleJourney= (state = {}, action, keep) => {
           current_time.minute = parseInt(action.data["start_time.minute"].value) + (initTZOffet - 60 * parseInt(initTZOffet / 60))
         }
       }
-      
+
       _.each(action.stopPointsList, (sp) =>{
         let inJourney = false
         let newVjas

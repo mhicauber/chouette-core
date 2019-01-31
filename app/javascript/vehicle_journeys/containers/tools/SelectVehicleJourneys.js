@@ -5,8 +5,7 @@ import SelectVJComponent from '../../components/tools/SelectVehicleJourneys'
 const mapStateToProps = (state, ownProps) => {
   return {
     disabled: ownProps.disabled,
-    selectionMode: state.selectionMode,
-    vehicleJourneys: state.vehicleJourneys
+    selectionMode: state.selectionMode
   }
 }
 

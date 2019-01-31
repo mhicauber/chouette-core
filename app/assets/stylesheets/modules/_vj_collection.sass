@@ -3,8 +3,8 @@
 //-----------------//
 
 #vehicle_journeys_wip, .consolidated-view
-  .selection-mode
-    $selection-background-color: $smooth-green
+  $selection-background-color: $smooth-green
+  .selection-mode .t2e-item-list
     .td
       transition: background-color 0.5s
       .cellwrap
@@ -13,13 +13,13 @@
       background-color: transparentize($selection-background-color, 0.5)
     .td:hover
       cursor: pointer
-      background-color: $selection-background-color
+      background-color: transparentize($selection-background-color, 0.5)
     .td.selection-start
       outline: 3px solid $selection-background-color
       outline-offset: -3px
-    &.selection-locked
-      .td.selected
-        background-color: $selection-background-color
+  .selection-locked .t2e-item-list
+    .td.selected
+      background-color: $selection-background-color
 
   .table-2entries
     .t2e-head

@@ -18,11 +18,11 @@ export default class VehicleJourneys extends Component {
     this.onHoverCell = this.onHoverCell.bind(this)
   }
 
-  onSelectCell(x, y) {
+  onSelectCell(x, y, mouseEvent) {
     if(this.isReturn()){ return }
     if(!this.props.selectionMode){ return }
 
-    this.props.onSelectCell(x, y)
+    this.props.onSelectCell(x, y, mouseEvent, this.props.vehicleJourneys)
     this.componentDidUpdate()
   }
 
@@ -58,7 +58,7 @@ export default class VehicleJourneys extends Component {
 
   selectionClasses() {
     if(this.isReturn()){ return ''}
-    
+
     let classes = ''
     if(this.props.selectionMode ){
       classes += ' selection-mode'

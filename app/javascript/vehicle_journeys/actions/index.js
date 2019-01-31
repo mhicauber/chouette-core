@@ -10,8 +10,8 @@ const actions = {
   toggleTimesSelection: () => ({
     type: "TOGGLE_SELECTION_MODE"
   }),
-  toggleSelection: (x, y) => ({
-    type: "TOGGLE_SELECTION", x, y
+  toggleSelection: (x, y, mouseEvent, vehicleJourneys) => ({
+    type: "TOGGLE_SELECTION", x, y, mouseEvent, vehicleJourneys
   }),
   onHoverCell: (x, y) => ({
     type: "HOVER_CELL", x, y

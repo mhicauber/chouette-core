@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import actions from '../../actions'
 
-export default function SelectVehicleJourneys({onToggleTimesSelection, vehicleJourneys, disabled, selectionMode}) {
+export default function SelectVehicleJourneys({onToggleTimesSelection, disabled, selectionMode}) {
   return (
     <li className='st_action'>
       <button
@@ -22,7 +22,7 @@ export default function SelectVehicleJourneys({onToggleTimesSelection, vehicleJo
 }
 
 SelectVehicleJourneys.propTypes = {
-  onDeleteVehicleJourneys: PropTypes.func.isRequired,
-  vehicleJourneys: PropTypes.array.isRequired,
-  disabled: PropTypes.bool.isRequired
+  onToggleTimesSelection: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  selectionMode: PropTypes.bool.isRequired
 }

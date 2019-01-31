@@ -1,14 +1,28 @@
 selection = (state = {}, action ) ->
   if action.type == 'TOGGLE_SELECTION'
-    if !state.started
-      return _.assign {}, state, { start: { x: action.x, y: action.y }, started: true}
+    if action.mouseEvent == 'down'
+      lastDown = state.lastDown
+      if state.lastDown && state.lastDown.x == action.x && state.lastDown.y == action.y
+        lastDown = {}
+
+      if !state.started
+        lastDown = { x: action.x, y: action.y}
+        return _.assign {}, state, { start: { x: action.x, y: action.y }, started: true, lastDown}
+      else if state.ended
+        lastDown = { x: action.x, y: action.y}
+        return _.assign {}, state, { start: { x: action.x, y: action.y }, end: null, ended: false, lastDown}
+
+      return _.assign {}, state, {lastDown}
     else
-      if !state.ended
-        end = { x: action.x, y: action.y }
-        { topLeft, bottomRight } = computeCorners(state.start, end)
-        return _.assign {}, state, { end, ended: true, topLeft, bottomRight}
-      else
-        return _.assign {}, state, { start: { x: action.x, y: action.y }, end: null, ended: false}
+      if state.started
+        return state if state.lastDown && state.lastDown.x == action.x &&  state.lastDown.y == action.y
+
+        if !state.ended
+          end = { x: action.x, y: action.y }
+          { topLeft, bottomRight } = computeCorners(state.start, end)
+
+          return _.assign {}, state, { end, topLeft, bottomRight, ended: true }
+
   else if action.type == 'HOVER_CELL'
     if state.started && !state.ended
       end = { x: action.x, y: action.y }
