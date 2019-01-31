@@ -104,7 +104,7 @@ RSpec.describe ReferentialCopy do
         overlapping_metadata.line_ids = referential_metadata.line_ids
         overlapping_metadata.save!
         expect{referential_copy.send :copy_metadatas}.to change{target.metadatas.count}.by 1
-        target_metadata = target.metadatas.reload.last
+        target_metadata = target.metadatas.reload.order(:created_at).last
         expect(target_metadata.lines).to eq referential_metadata.lines
         expect(target_metadata.periodes).to eq [period]
       end
