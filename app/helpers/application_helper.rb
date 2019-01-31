@@ -143,4 +143,12 @@ module ApplicationHelper
   def cancel_button(cancel_path = :back)
     link_to t('cancel'), cancel_path, method: :get, class: 'btn btn-primary formSubmitr', data: {:confirm =>  t('cancel_confirm')}
   end
+
+  def link_to_if_i_can label, url, object:, permission: :show
+    if Pundit.policy(UserContext.new(current_user), object).send "#{permission}?"
+      link_to label, url
+    else
+      label
+    end
+  end
 end

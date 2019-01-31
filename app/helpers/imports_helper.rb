@@ -51,13 +51,9 @@ module ImportsHelper
     if @import.referential.nil?
       metadata = metadata.update({ t('.referential') => '' })
     else
-      if policy(@import.referential).show?
-        metadata = metadata.update({ t('.referential') => link_to(@import.referential.name, @import.referential) })
-      else
-        metadata = metadata.update({ t('.referential') => @import.referential.name })
-      end
+      metadata = metadata.update({ t('.referential') => link_to_if_i_can(@import.referential.name, @import.referential, object: @import.referential) })
     end
-    metadata = metadata.update({ Workbench.ts.capitalize => link_to(@import.workbench.organisation.name, @import.workbench) }) unless @workbench
+    metadata = metadata.update({ Workbench.ts.capitalize => link_to_if_i_can(@import.workbench.organisation.name, @import.workbench, object: @import.workbench) }) unless @workbench
     metadata = metadata.update Hash[*@import.visible_options.map{|k, v| [t("activerecord.attributes.import.#{@import.object.class.name.demodulize.underscore}.#{k}"), @import.display_option_value(k, self)]}.flatten]
     metadata = metadata.update({ Import::Base.tmf(:notification_target) => I18n.t("operation_support.notification_targets.#{@import.notification_target || 'none'}") })
     metadata
