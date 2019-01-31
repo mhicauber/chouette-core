@@ -43,4 +43,4 @@ COPY config/database.yml.docker app/config/database.yml
 COPY config/secrets.yml.docker app/config/secrets.yml
 
 WORKDIR /app
-CMD ["sh", "-c", "bundle exec rake ci:docker"]
+CMD ["sh", "-c", "bundle exec rake ci"]

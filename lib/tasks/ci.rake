@@ -14,18 +14,6 @@ namespace :ci do
 
   desc "Prepare CI build"
   task :setup do
-    unless ENV["IGNORE_YARN_INSTALL"]
-      # FIXME remove this specific behavior
-      # Managed by Dockerfile.build
-      sh "yarn --frozen-lockfile install"
-    end
-
-    unless ENV["KEEP_DATABASE_CONFIG"]
-      # FIXME remove this specific behavior
-      cp "config/database.yml", "config/database.yml.orig"
-      cp "config/database/ci.yml", "config/database.yml"
-    end
-
     puts "Use #{database_name} database"
     if parallel_tests?
       sh "RAILS_ENV=test rake parallel:drop parallel:create parallel:migrate"
@@ -48,19 +36,6 @@ namespace :ci do
       $1
     else
       `git rev-parse --abbrev-ref HEAD`.strip
-    end
-  end
-
-  def deploy_envs
-    Dir["config/deploy/*.rb"].map { |f| File.basename(f, ".rb") }
-  end
-
-  def deploy_env
-    return ENV["DEPLOY_ENV"] if ENV["DEPLOY_ENV"]
-    if git_branch == "master"
-      "dev"
-    elsif git_branch.in?(deploy_envs)
-      git_branch
     end
   end
 
@@ -98,23 +73,6 @@ namespace :ci do
     sh "node_modules/.bin/jest" unless ENV["CHOUETTE_JEST_DISABLED"]
   end
 
-  desc "Deploy after CI"
-  task :deploy do
-    unless ENV["CHOUETTE_DEPLOY_DISABLED"]
-      if deploy_env
-        sh "cap #{deploy_env} deploy:migrations deploy:seed"
-      else
-        puts "No deploy for branch #{git_branch}"
-      end
-    end
-  end
-
-  desc "Clean test files"
-  task :clean do
-    sh "rm -rf log/test.log"
-    sh "RAILS_ENV=test bundle exec rake assets:clobber"
-  end
-
   task :spec do
     if parallel_tests?
       # parallel tasks invokes this task ..
@@ -127,7 +85,7 @@ namespace :ci do
     end
   end
 
-  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "cucumber", "ci:check_security"]
+  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:check_security"]
 
   namespace :docker do
     task :clean do
@@ -147,4 +105,4 @@ namespace :ci do
 end
 
 desc "Run continuous integration tasks (spec, ...)"
-task :ci => ["ci:build", "ci:deploy", "ci:clean"]
+task :ci => ["ci:build"]
