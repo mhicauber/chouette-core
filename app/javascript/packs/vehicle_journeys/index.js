@@ -22,6 +22,11 @@ if (window.journeyPatternId)
 
 var initialState = {
   editMode: false,
+  selectionMode: false,
+  selection: {
+    started: false,
+    ended: false
+  },
   filters: {
     selectedJourneyPatterns : selectedJP,
     policy: window.perms,
@@ -92,12 +97,13 @@ if (window.jpOrigin){
   initialState.filters.queryString = actions.encodeParams(params)
 }
 
-const loggerMiddleware = createLogger()
+const loggerMiddleware = null //createLogger()
 
 let store = createStore(
   enableBatching(vehicleJourneysApp),
   initialState,
-  applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  applyMiddleware(thunkMiddleware, promise)
 )
 
 render(

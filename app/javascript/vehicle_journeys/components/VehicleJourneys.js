@@ -14,6 +14,24 @@ export default class VehicleJourneys extends Component {
     )
     this.togglePurchaseWindows = this.togglePurchaseWindows.bind(this)
     this.toggleTimetables = this.toggleTimetables.bind(this)
+    this.onSelectCell = this.onSelectCell.bind(this)
+    this.onHoverCell = this.onHoverCell.bind(this)
+  }
+
+  onSelectCell(x, y) {
+    if(this.isReturn()){ return }
+    if(!this.props.selectionMode){ return }
+
+    this.props.onSelectCell(x, y)
+    this.componentDidUpdate()
+  }
+
+  onHoverCell(x, y) {
+    if(this.isReturn()){ return }
+    if(!this.props.selectionMode){ return }
+
+    this.props.onHoverCell(x, y)
+    this.componentDidUpdate()
   }
 
   isReturn() {
@@ -36,6 +54,19 @@ export default class VehicleJourneys extends Component {
     else{
       return this.props.stopPointsList
     }
+  }
+
+  selectionClasses() {
+    if(this.isReturn()){ return ''}
+    
+    let classes = ''
+    if(this.props.selectionMode ){
+      classes += ' selection-mode'
+    }
+    if(this.props.selection.ended ){
+      classes += ' selection-locked'
+    }
+    return classes
   }
 
   componentDidMount() {
@@ -191,7 +222,7 @@ export default class VehicleJourneys extends Component {
       )
     } else {
       return (
-        <div className='row' ref='vehicleJourneys'>
+        <div className='row' ref='vehicleJourneys' className={this.selectionClasses()} >
           <div className='col-lg-12'>
             {(this.props.status.fetchSuccess == false) && (
               <div className='alert alert-danger mt-sm'>
@@ -294,6 +325,8 @@ export default class VehicleJourneys extends Component {
                       key={index}
                       index={index}
                       editMode={this.isReturn() ? false : this.props.editMode}
+                      selection={this.props.selection}
+                      selectionMode={!this.isReturn() && this.props.selectionMode}
                       filters={this.props.filters}
                       features={this.props.features}
                       onUpdateTime={this.props.onUpdateTime}
@@ -304,6 +337,8 @@ export default class VehicleJourneys extends Component {
                       allTimeTables={this.allTimeTables()}
                       allPurchaseWindows={this.allPurchaseWindows()}
                       extraHeaders={this.props.extraHeaders}
+                      onSelectCell={this.onSelectCell}
+                      onHoverCell={this.onHoverCell}
                       />
                   )}
                 </div>

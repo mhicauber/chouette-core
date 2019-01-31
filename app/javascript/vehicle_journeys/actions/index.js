@@ -7,6 +7,15 @@ const actions = {
   exitEditMode: () => ({
     type: "EXIT_EDIT_MODE"
   }),
+  toggleTimesSelection: () => ({
+    type: "TOGGLE_SELECTION_MODE"
+  }),
+  toggleSelection: (x, y) => ({
+    type: "TOGGLE_SELECTION", x, y
+  }),
+  onHoverCell: (x, y) => ({
+    type: "HOVER_CELL", x, y
+  }),
   receiveVehicleJourneys : (json, returnJourneys) => ({
     type: (returnJourneys ? "RECEIVE_RETURN_VEHICLE_JOURNEYS" : "RECEIVE_VEHICLE_JOURNEYS"),
     json

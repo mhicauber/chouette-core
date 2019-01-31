@@ -5,6 +5,8 @@ import VehicleJourneys from '../components/VehicleJourneys'
 const mapStateToProps = (state) => {
   return {
     editMode: state.editMode,
+    selectionMode: state.selectionMode,
+    selection: state.selection,
     vehicleJourneys: state.vehicleJourneys,
     returnVehicleJourneys: state.returnVehicleJourneys,
     status: state.status,
@@ -31,6 +33,12 @@ const mapDispatchToProps = (dispatch) => {
     onOpenInfoModal: (vj) =>{
       dispatch(actions.openInfoModal(vj))
     },
+    onSelectCell: (x, y)=>{
+      dispatch(actions.toggleSelection(x, y))
+    },
+    onHoverCell: (x, y)=>{
+      dispatch(actions.onHoverCell(x, y))
+    }
   }
 }
 
