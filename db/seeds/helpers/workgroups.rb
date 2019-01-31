@@ -127,7 +127,7 @@ class Seed::Workgroup
   def seed
     owner = Organisation.seed_by(code: code) do |o|
       o.name = base_name
-      o.features = Feature.all
+      o.features = features
 
       @owner_organisation_block&.call o
     end
@@ -160,11 +160,12 @@ class Seed::Workgroup
       @line_referential_block&.call referential
     end
 
-    workgroup = Workgroup.seed_by(name: workgroup_name) do |w|
+    workgroup = Workgroup.seed_by(name: workgroup_name, owner_id: owner.id) do |w|
       w.line_referential      = line_referential
       w.stop_area_referential = stop_area_referential
       w.owner = owner
       @workgroup_block&.call w
+      w.export_types ||= %w[Export::Gtfs]
     end
 
     custom_fields.each do |code, block|
