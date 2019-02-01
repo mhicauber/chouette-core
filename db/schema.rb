@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190201071407) do
+ActiveRecord::Schema.define(version: 20190201150549) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -741,7 +741,7 @@ ActiveRecord::Schema.define(version: 20190201071407) do
     t.string   "key"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "export_id"          , limit: 8
+    t.integer  "export_id",          limit: 8
   end
 
   add_index "publication_api_sources", ["publication_api_id"], name: "index_publication_api_sources_on_publication_api_id", using: :btree
