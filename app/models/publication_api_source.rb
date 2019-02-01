@@ -3,15 +3,14 @@ class PublicationApiSource < ActiveRecord::Base
 
   belongs_to :publication_api
   belongs_to :publication
+  belongs_to :export, class_name: 'Export::Base'
 
   validates :publication_api, presence: true
   validates :publication, presence: true
 
-  attr_accessor :export
-  mount_uploader :file, ImportUploader
-
   before_save :cleanup_previous
-  after_save :download_file
+
+  delegate :file, to: :export
 
   def self.generate_key(export)
     return unless export.present?
@@ -55,14 +54,6 @@ class PublicationApiSource < ActiveRecord::Base
 
     self.key = generate_key
     PublicationApiSource.where(publication_api_id: publication_api_id, key: key).destroy_all
-  end
-
-  def download_file
-    return unless export
-
-    self.remote_file_url = build_remote_file_url(export.file)
-    self.export = nil
-    self.save
   end
 
   def generate_key
