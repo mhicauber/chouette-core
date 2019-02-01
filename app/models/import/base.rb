@@ -53,7 +53,7 @@ class Import::Base < ApplicationModel
   end
 
   def purge_imports
-    workbench.imports.file_purgeable.each do |import|
+    workbench.imports.file_purgeable.where.not(file: nil).each do |import|
       import.update(remove_file: true)
     end
     workbench.imports.purgeable.destroy_all
