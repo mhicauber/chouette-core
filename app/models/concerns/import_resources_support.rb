@@ -6,7 +6,7 @@ module ImportResourcesSupport
   end
 
   def update_main_resource_status
-    main_resource.&update_status_from_importer status
+    main_resource&.update_status_from_importer status
     true
   end
 

@@ -29,7 +29,7 @@ class Import::Workbench < Import::Base
       failed!
     end
   end
-  
+
   def import_gtfs
     create_child_import Import::Gtfs
   end
@@ -42,6 +42,7 @@ class Import::Workbench < Import::Base
     klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
   rescue Exception => e
     Rails.logger.error "Error while processing #{file_type} file: #{e}"
+    Rails.logger.error e.backtrace.join("\n")
 
     failed!
   end
