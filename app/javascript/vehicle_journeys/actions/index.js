@@ -7,14 +7,20 @@ const actions = {
   exitEditMode: () => ({
     type: "EXIT_EDIT_MODE"
   }),
+  onKeyUp: (event) => ({
+    type: "KEY_UP", event
+  }),
+  onKeyDown: (event) => ({
+    type: "KEY_DOWN", event
+  }),
   toggleTimesSelection: () => ({
     type: "TOGGLE_SELECTION_MODE"
   }),
-  toggleSelection: (x, y, mouseEvent, vehicleJourneys) => ({
-    type: "TOGGLE_SELECTION", x, y, mouseEvent, vehicleJourneys
+  toggleSelection: (x, y, clickDirection, shiftKey, vehicleJourneys) => ({
+    type: "TOGGLE_SELECTION", x, y, clickDirection, shiftKey, vehicleJourneys
   }),
-  onHoverCell: (x, y) => ({
-    type: "HOVER_CELL", x, y
+  onHoverCell: (x, y, shiftKey) => ({
+    type: "HOVER_CELL", x, y, shiftKey
   }),
   receiveVehicleJourneys : (json, returnJourneys) => ({
     type: (returnJourneys ? "RECEIVE_RETURN_VEHICLE_JOURNEYS" : "RECEIVE_VEHICLE_JOURNEYS"),

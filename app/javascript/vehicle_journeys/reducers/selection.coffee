@@ -1,6 +1,7 @@
 selection = (state = {}, action ) ->
+  console.log(action)
   if action.type == 'TOGGLE_SELECTION'
-    if action.mouseEvent == 'down'
+    if action.clickDirection == 'down'
       lastDown = state.lastDown
       if state.lastDown && state.lastDown.x == action.x && state.lastDown.y == action.y
         lastDown = {}
@@ -8,7 +9,7 @@ selection = (state = {}, action ) ->
       if !state.started
         lastDown = { x: action.x, y: action.y}
         return _.assign {}, state, { start: { x: action.x, y: action.y }, started: true, lastDown}
-      else if state.ended
+      else if state.ended && !action.shiftKey
         lastDown = { x: action.x, y: action.y}
         return _.assign {}, state, { start: { x: action.x, y: action.y }, end: null, ended: false, lastDown}
 
@@ -17,17 +18,37 @@ selection = (state = {}, action ) ->
       if state.started
         return state if state.lastDown && state.lastDown.x == action.x &&  state.lastDown.y == action.y
 
-        if !state.ended
+        if !state.ended || action.shiftKey
           end = { x: action.x, y: action.y }
           { topLeft, bottomRight } = computeCorners(state.start, end)
 
-          return _.assign {}, state, { end, topLeft, bottomRight, ended: true }
+          clipboard = {}
+          for vehicleJourney, x in action.vehicleJourneys
+            if x >= topLeft.x && x <= bottomRight.x
+              for VehicleJourneyAtStop, y in vehicleJourney.vehicle_journey_at_stops
+                if y >= topLeft.y && y <= bottomRight.y
+                  clipboard[y] ||= []
+                  clipboard[y].push VehicleJourneyAtStop.arrival_time
+
+          return _.assign {}, state, { end, topLeft, bottomRight, ended: true, clipboard }
 
   else if action.type == 'HOVER_CELL'
-    if state.started && !state.ended
-      end = { x: action.x, y: action.y }
+    lastSeen = { x: action.x, y: action.y }
+    if state.started && (!state.ended || action.shiftKey)
+      end = lastSeen
       { topLeft, bottomRight } = computeCorners(state.start, end)
-      return _.assign {}, state, { end, topLeft, bottomRight}
+      return _.assign {}, state, { end, topLeft, bottomRight, ended: false}
+    return _.assign {}, state, { lastSeen }
+
+  else if action.type == 'KEY_UP' && action.event.key == 'Shift'
+    if state.started && !state.ended
+      return _.assign {}, state, { ended: true }
+
+  else if action.type == 'KEY_DOWN' && action.event.key == 'Shift'
+    if state.started
+      end = state.lastSeen
+      { topLeft, bottomRight } = computeCorners(state.start, end)
+      return _.assign {}, state, { end, topLeft, bottomRight, ended: false}
 
   return state
 
