@@ -71,6 +71,21 @@ RSpec.describe Export::Base, type: :model do
         old_export.workbench.exports.purgeable.count
       }
     end
+
+    it 'keeps files used in Publication Apis' do
+      old_export = Timecop.freeze(90.days.ago) do
+        # We create TWO exports
+        create(:workgroup_export, workbench: workbench)
+        create(:workgroup_export, workbench: workbench)
+      end
+
+      create :publication_api_source, export: old_export
+      create :publication_api_source, export: old_export
+
+      expect { Export::Workgroup.new(workbench: workbench).purge_exports }.to change {
+        workbench.exports.count
+      }.by -1
+    end
   end
 
   describe ".abort_old" do

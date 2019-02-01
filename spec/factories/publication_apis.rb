@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :publication_api do
-    name "MyString"
-    slug "MyString"
+    sequence(:name) { |n| "Publication API #{n}" }
+    sequence(:slug) { |n| "publication_api_#{n}" }
   end
 end
