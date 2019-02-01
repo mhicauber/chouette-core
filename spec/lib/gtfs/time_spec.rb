@@ -44,4 +44,8 @@ RSpec.describe GTFS::Time do
     expect(GTFS::Time.format_datetime(Time.parse("2000-01-01 04:00:00 +00"), 0)).to eq "04:00:00"
   end
 
+  it "format datetime by correctly handling time zones" do
+    expect(GTFS::Time.format_datetime(Time.parse("2000-01-01 12:00:00 +00"), 0, "Europe/Paris")).to eq "13:00:00"
+    expect(GTFS::Time.format_datetime(Time.parse("2000-01-01 23:30:00 +00"), 0, "Europe/Paris")).to eq "24:30:00"
+  end
 end
