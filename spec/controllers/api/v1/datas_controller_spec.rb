@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::DatasController, type: :controller do
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
-
+  let(:export){ create :gtfs_export, status: :successful, file: file}
   describe 'GET #info' do
     it 'should not be successful' do
       expect{ get :infos, slug: :foo }.to raise_error ActiveRecord::RecordNotFound
@@ -46,7 +46,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'with a publication_api_source' do
           before(:each) do
-            create :publication_api_source, publication_api: publication_api, key: key, file: file
+            create :publication_api_source, publication_api: publication_api, key: key, export: export
           end
 
           it 'should not be successful' do
@@ -90,7 +90,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'with a publication_api_source' do
           before(:each) do
-            create :publication_api_source, publication_api: publication_api, key: "#{key}-#{line_id}", file: file
+            create :publication_api_source, publication_api: publication_api, key: "#{key}-#{line_id}", export: export
           end
 
           it 'should not be successful' do

@@ -52,7 +52,7 @@ class PublicationApiSource < ActiveRecord::Base
   def cleanup_previous
     return unless export
 
-    self.key = generate_key
+    self.key ||= generate_key
     PublicationApiSource.where(publication_api_id: publication_api_id, key: key).destroy_all
   end
 

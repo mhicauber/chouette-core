@@ -36,7 +36,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
 
     it 'should add publications to the API' do
       expect{ destination.transmit(publication) }.to change{ publication_api.publication_api_sources.count }.by 2
-      expect(PublicationApiSource.all.map(&:key)).to eq ["netex-line-#{line_1.code}", "netex-line-#{line_2.code}"]
+      expect(PublicationApiSource.all.map(&:key)).to match_array ["netex-line-#{line_1.code}", "netex-line-#{line_2.code}"]
     end
 
     context 'when a publication already exists' do

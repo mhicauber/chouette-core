@@ -741,7 +741,7 @@ ActiveRecord::Schema.define(version: 20190201071407) do
     t.string   "key"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "export_id"
+    t.integer  "export_id"          , limit: 8
   end
 
   add_index "publication_api_sources", ["publication_api_id"], name: "index_publication_api_sources_on_publication_api_id", using: :btree
