@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190121081544) do
+ActiveRecord::Schema.define(version: 20190201150549) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -107,9 +107,9 @@ ActiveRecord::Schema.define(version: 20190121081544) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -411,9 +411,15 @@ ActiveRecord::Schema.define(version: 20190121081544) do
     t.integer  "publication_id",         limit: 8
   end
 
-  add_index "exports", ["publication_id"], name: "index_exports_on_publication_id", using: :btree
   add_index "exports", ["referential_id"], name: "index_exports_on_referential_id", using: :btree
   add_index "exports", ["workbench_id"], name: "index_exports_on_workbench_id", using: :btree
+
+  create_table "exports_publications", id: :bigserial, force: :cascade do |t|
+    t.integer "export_id",      limit: 8
+    t.integer "publication_id"
+  end
+
+  add_index "exports_publications", ["export_id", "publication_id"], name: "index_exports_publications_on_export_id_and_publication_id", using: :btree
 
   create_table "facilities", id: :bigserial, force: :cascade do |t|
     t.integer  "stop_area_id",       limit: 8
@@ -680,6 +686,14 @@ ActiveRecord::Schema.define(version: 20190121081544) do
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
 
+  create_table "notifications", id: :bigserial, force: :cascade do |t|
+    t.string   "objectid"
+    t.json     "payload"
+    t.string   "channel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -724,10 +738,10 @@ ActiveRecord::Schema.define(version: 20190121081544) do
   create_table "publication_api_sources", id: :bigserial, force: :cascade do |t|
     t.integer  "publication_id",     limit: 8
     t.integer  "publication_api_id", limit: 8
-    t.string   "file"
     t.string   "key"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "export_id",          limit: 8
   end
 
   add_index "publication_api_sources", ["publication_api_id"], name: "index_publication_api_sources_on_publication_api_id", using: :btree
@@ -762,6 +776,7 @@ ActiveRecord::Schema.define(version: 20190121081544) do
     t.integer  "parent_id",            limit: 8
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.integer  "referential_id",       limit: 8
     t.string   "status"
     t.datetime "started_at"
     t.datetime "ended_at"
@@ -769,6 +784,7 @@ ActiveRecord::Schema.define(version: 20190121081544) do
 
   add_index "publications", ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id", using: :btree
   add_index "publications", ["publication_setup_id"], name: "index_publications_on_publication_setup_id", using: :btree
+  add_index "publications", ["referential_id"], name: "index_publications_on_referential_id", using: :btree
 
   create_table "purchase_windows", id: :bigserial, force: :cascade do |t|
     t.string    "name"

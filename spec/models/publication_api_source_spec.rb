@@ -6,7 +6,7 @@ RSpec.describe PublicationApiSource, type: :model do
   it { should belong_to :publication_api }
   it { should belong_to :publication }
 
-  let(:publication_api_source) { build :publication_api_source }
+  let(:publication_api_source) { build :publication_api_source, export: nil }
   let(:line) { create :line }
 
   context '#generate_key' do

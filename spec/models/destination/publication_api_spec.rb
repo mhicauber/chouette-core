@@ -33,14 +33,10 @@ RSpec.describe Destination::PublicationApi, type: :model do
   context 'when publishing' do
     let(:publication) { create :publication, publication_setup: publication_setup, exports: [export_1, export_2] }
     let(:destination) { create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api }
-    before(:each) do
-      [export_1, export_2, other_export_1, other_export_2].each do |export|
-        stub_request(:get, "http://www.example.com/uploads/export/netex/file/#{export.id}/terminated_job.json").to_return(status: 200, body: "", headers: {})
-      end
-    end
+
     it 'should add publications to the API' do
       expect{ destination.transmit(publication) }.to change{ publication_api.publication_api_sources.count }.by 2
-      expect(PublicationApiSource.all.map(&:key)).to eq ["netex-line-#{line_1.code}", "netex-line-#{line_2.code}"]
+      expect(PublicationApiSource.all.map(&:key)).to match_array ["netex-line-#{line_1.code}", "netex-line-#{line_2.code}"]
     end
 
     context 'when a publication already exists' do
@@ -48,7 +44,6 @@ RSpec.describe Destination::PublicationApi, type: :model do
         other_publication = create :publication, publication_setup: publication_setup, exports: [other_export_1, other_export_2]
         destination.transmit(other_publication)
         unrelated_publication = create :publication, exports: [create(:gtfs_export, status: :successful, file: file)]
-        stub_request(:get, "http://www.example.com/uploads/export/gtfs/file/#{unrelated_publication.exports.last.id}/terminated_job.json").to_return(status: 200, body: "", headers: {})
         destination.transmit(unrelated_publication)
       end
 
