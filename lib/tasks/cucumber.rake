@@ -86,8 +86,10 @@ namespace :cucumber do
     puts "Remove #{organisations.count} test organisation(s)"
 
     organisations.find_each do |organisation|
-      organisation.workgroups.destroy_all
-      organisation.destroy
+      organisation.workgroups.delete_all
+      organisation.line_referentials.delete_all
+      organisation.stop_area_referentials.delete_all
+      organisation.delete
     end
   end
 end
