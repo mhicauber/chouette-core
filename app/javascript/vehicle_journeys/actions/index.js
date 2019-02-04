@@ -19,14 +19,17 @@ const actions = {
   toggleTimesSelection: () => ({
     type: "TOGGLE_SELECTION_MODE"
   }),
-  toggleSelection: (x, y, clickDirection, shiftKey, vehicleJourneys) => ({
-    type: "TOGGLE_SELECTION", x, y, clickDirection, shiftKey, vehicleJourneys
+  toggleSelection: (x, y, clickDirection, shiftKey) => ({
+    type: "TOGGLE_SELECTION", x, y, clickDirection, shiftKey
   }),
   onHoverCell: (x, y, shiftKey) => ({
     type: "HOVER_CELL", x, y, shiftKey
   }),
   copyClipboard: ()=>({
     type: "COPY_CLIPBOARD"
+  }),
+  pasteFromClipboard: ()=>({
+    type: "PASTE_CLIPBOARD"
   }),
   closeCopyModal: ()=>({
     type: "CLOSE_COPY_MODAL"

@@ -24,7 +24,7 @@ export default class VehicleJourneys extends Component {
     if(this.isReturn()){ return }
     if(!this.props.selectionMode){ return }
 
-    this.props.onSelectCell(x, y, clickDirection, event.shiftKey, this.props.vehicleJourneys)
+    this.props.onSelectCell(x, y, clickDirection, event.shiftKey)
   }
 
   onHoverCell(x, y, event) {
@@ -38,6 +38,7 @@ export default class VehicleJourneys extends Component {
     if(event.key == 'Shift'){ return true }
     if(event.key == "Enter" && (event.metaKey || event.ctrlKey)){ return true }
     if(event.key == "c" && (event.metaKey || event.ctrlKey)){ return true }
+    if(event.key == "v" && (event.metaKey || event.ctrlKey)){ return true }
 
     return false
   }

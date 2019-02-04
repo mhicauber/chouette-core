@@ -1,20 +1,21 @@
 class ClipboardHelper
   @copy: (content)->
-    console.log 'copy to clipboard'
-    console.log content
     out = ""
     for _, row of content
       line = []
       for _, cell of row
-        if cell.hour
-          cell_content = "#{cell.hour}:#{cell.minute}"
+        if cell.hour || cell.hour == 0
+          hour = parseInt cell.hour
+          hour = '0' + hour if hour < 10
+          minute = parseInt cell.minute
+          minute = '0' + minute if minute < 10
+          cell_content = "#{hour}:#{minute}"
         line.push cell_content
       out += line.join("\t") + "\n"
 
     out
 
   @paste: (rawContent, selection)->
-
     error = null
     if rawContent
       out = []
@@ -23,6 +24,8 @@ class ClipboardHelper
           line = []
           for _, cell of row.split("\t")
             [hour, minute] = cell.split(':')
+            hour = Math.min(23, parseInt(hour))
+            minute = Math.min(59, parseInt(minute))
             line.push { hour: hour, minute: minute }
           out.push line
       out

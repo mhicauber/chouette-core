@@ -33,8 +33,8 @@ const mapDispatchToProps = (dispatch) => {
     onOpenInfoModal: (vj) =>{
       dispatch(actions.openInfoModal(vj))
     },
-    onSelectCell: (x, y, clickDirection, shiftKey, vehicleJourneys)=>{
-      dispatch(actions.toggleSelection(x, y, clickDirection, shiftKey, vehicleJourneys))
+    onSelectCell: (x, y, clickDirection, shiftKey)=>{
+      dispatch(actions.toggleSelection(x, y, clickDirection, shiftKey))
     },
     onHoverCell: (x, y, shiftKey)=>{
       dispatch(actions.onHoverCell(x, y, shiftKey))

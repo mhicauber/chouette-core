@@ -177,7 +177,6 @@ const vehicleJourney= (state = {}, action, keep) => {
             actions.getDelta(schedule, false)
             newSchedule.departure_time[action.timeUnit] = actions.pad(val, action.timeUnit)
             if(!action.isArrivalsToggled){
-              console.log({schedule})
               schedule = actions.getShiftedSchedule({arrival_time: newSchedule.departure_time, departure_time: newSchedule.departure_time}, - schedule.delta)
               newSchedule.arrival_time = schedule.arrival_time
             }
@@ -363,6 +362,7 @@ export default function vehicleJourneys(state = [], action) {
       })
     case 'DID_VALIDATE_VEHICLE_JOURNEYS':
       return [...action.vehicleJourneys]
+
     default:
       return state
   }

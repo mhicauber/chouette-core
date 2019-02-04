@@ -23,7 +23,7 @@ export default class VehicleJourney extends Component {
   }
 
   isEditable() {
-    this.props.editionMode && ! this.props.selectionMode
+    return this.props.editMode && !this.props.selectionMode
   }
 
   isSelected(x, y){

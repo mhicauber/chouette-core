@@ -98,13 +98,12 @@ if (window.jpOrigin){
   initialState.filters.queryString = actions.encodeParams(params)
 }
 
-const loggerMiddleware = null //createLogger()
+const loggerMiddleware = createLogger()
 
 let store = createStore(
   enableBatching(vehicleJourneysApp),
   initialState,
-  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
-  applyMiddleware(thunkMiddleware, promise)
+  applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
 )
 
 render(
