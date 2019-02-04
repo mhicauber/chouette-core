@@ -3,6 +3,8 @@
 
 .modal
   z-index: 2052
+  .modal-header i+span
+    margin-left: 0.25em
 
 .boolean-icon
   i
@@ -75,3 +77,20 @@ h4.underline
 #JourneyPatternModal
   position: fixed
   z-index: 2003
+
+#CopyModal
+  .alert
+    margin-bottom: 10px
+
+  .btn-default
+    border: 1px solid $grey
+    &.pull-right
+    & + br
+      clear: both
+      height: 1em
+
+  textarea
+    width: 100%
+    min-height: 200px
+    padding: 10px
+    resize: vertical

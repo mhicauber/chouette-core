@@ -1,0 +1,12 @@
+fr:
+  courses_copy_paste:
+    modal:
+      head: Copier/Coller d'horaires
+      to_paste_mode: Confirmer la copie
+      to_copy_mode: Retourner à la phase de copie
+      paste_content: Coller la sélection
+      select_all: Tout sélectionner
+      paste_from_clipboard: Coller depuis le presse-papiers
+    errors:
+      size_does_not_match: La taille du contenu collé ne correspond pas à la taille de la sélection
+      missing_content: Merci de coller du contenu

@@ -25,7 +25,8 @@ var initialState = {
   selectionMode: false,
   selection: {
     started: false,
-    ended: false
+    ended: false,
+    copyModal: { visible: false, mode: 'copy' }
   },
   filters: {
     selectedJourneyPatterns : selectedJP,

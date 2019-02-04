@@ -13,6 +13,9 @@ const actions = {
   onKeyDown: (event) => ({
     type: "KEY_DOWN", event
   }),
+  onVisibilityChange: (event) => ({
+    type: "VISIBILITY_CHANGE", event
+  }),
   toggleTimesSelection: () => ({
     type: "TOGGLE_SELECTION_MODE"
   }),
@@ -21,6 +24,24 @@ const actions = {
   }),
   onHoverCell: (x, y, shiftKey) => ({
     type: "HOVER_CELL", x, y, shiftKey
+  }),
+  copyClipboard: ()=>({
+    type: "COPY_CLIPBOARD"
+  }),
+  closeCopyModal: ()=>({
+    type: "CLOSE_COPY_MODAL"
+  }),
+  copyModalToPasteMode: ()=>({
+    type: "COPY_MODAL_TO_PASTE_MODE"
+  }),
+  copyModalToCopyMode: ()=>({
+    type: "COPY_MODAL_TO_COPY_MODE"
+  }),
+  updateContentToPaste: (content)=>({
+    type: "UPDATE_CONTENT_TO_PASTE", content
+  }),
+  pasteContent: ()=>({
+    type: "PASTE_CONTENT"
   }),
   receiveVehicleJourneys : (json, returnJourneys) => ({
     type: (returnJourneys ? "RECEIVE_RETURN_VEHICLE_JOURNEYS" : "RECEIVE_VEHICLE_JOURNEYS"),

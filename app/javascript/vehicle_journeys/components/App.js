@@ -6,6 +6,7 @@ import Filters from '../containers/Filters'
 import CancelVehicleJourneys from '../containers/CancelVehicleJourneys'
 import SaveVehicleJourneys from '../containers/SaveVehicleJourneys'
 import ConfirmModal from '../containers/ConfirmModal'
+import CopyModal from '../containers/CopyModal'
 import Tools from '../containers/Tools'
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
       <Tools />
 
       <ConfirmModal />
+      <CopyModal />
     </div>
   )
 }

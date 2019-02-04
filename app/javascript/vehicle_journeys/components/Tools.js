@@ -4,6 +4,8 @@ import actions from '../actions'
 import AddVehicleJourney from '../containers/tools/AddVehicleJourney'
 import DeleteVehicleJourneys from '../containers/tools/DeleteVehicleJourneys'
 import SelectVehicleJourneys from '../containers/tools/SelectVehicleJourneys'
+import CopyButton from '../containers/tools/CopyButton'
+import PasteButton from '../containers/tools/PasteButton'
 import ShiftVehicleJourney from '../containers/tools/ShiftVehicleJourney'
 import DuplicateVehicleJourney from '../containers/tools/DuplicateVehicleJourney'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
@@ -36,7 +38,7 @@ export default class Tools extends Component {
   }
 
   render() {
-    let { hasPolicy, hasFeature, hasDeletedVJ, props: { vehicleJourneys, onCancelSelection, onCancelDeletion, editMode, selectionMode } } = this
+    let { hasPolicy, hasFeature, hasDeletedVJ, props: { vehicleJourneys, onCancelSelection, onCancelDeletion, editMode, selectionMode, selection } } = this
     return (
       <div className='select_toolbox'>
         <ul>
@@ -54,6 +56,8 @@ export default class Tools extends Component {
           }
           { !selectionMode && <NotesEditVehicleJourney disabled={hasDeletedVJ()}/> }
           { !selectionMode && <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/> }
+          { selectionMode && <CopyButton disabled={ !selection.ended } />  }
+          { selectionMode && <PasteButton disabled={ !selection.ended } />  }
           <SelectVehicleJourneys disabled={!editMode}/>
         </ul>
         { !selectionMode && <div>

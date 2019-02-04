@@ -34,9 +34,18 @@ export default class VehicleJourneys extends Component {
     this.props.onHoverCell(x, y, event.shiftKey)
   }
 
+  bubbleKeyEvent(event) {
+    if(event.key == 'Shift'){ return true }
+    if(event.key == "Enter" && (event.metaKey || event.ctrlKey)){ return true }
+    if(event.key == "c" && (event.metaKey || event.ctrlKey)){ return true }
+
+    return false
+  }
+
   onKeyUp(event) {
     if(this.isReturn()){ return }
     if(!this.props.selectionMode){ return }
+    if(!this.bubbleKeyEvent(event)){ return }
 
     this.props.onKeyUp(event)
   }
@@ -44,6 +53,7 @@ export default class VehicleJourneys extends Component {
   onKeyDown(event) {
     if(this.isReturn()){ return }
     if(!this.props.selectionMode){ return }
+    if(!this.bubbleKeyEvent(event)){ return }
 
     this.props.onKeyDown(event)
   }
@@ -190,8 +200,15 @@ export default class VehicleJourneys extends Component {
           $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', refCol[nth]);
         }
       })
-      document.addEventListener("keyup", this.onKeyUp);
-      document.addEventListener("keydown", this.onKeyDown);
+      document.addEventListener("keyup", this.onKeyUp)
+      document.addEventListener("keydown", this.onKeyDown)
+      document.addEventListener("visibilitychange", this.props.onVisibilityChange)
+      document.addEventListener("webkitvisibilitychange", this.props.onVisibilityChange)
+      document.addEventListener("mozvisibilitychange", this.props.onVisibilityChange)
+      document.addEventListener("msvisibilitychange", this.props.onVisibilityChange)
+      // document.addEventListener("focusin", this.props.onVisibilityChange)
+      window.addEventListener("pageshow", this.props.onVisibilityChange)
+      window.addEventListener("focus", this.props.onVisibilityChange)
     }
   }
 

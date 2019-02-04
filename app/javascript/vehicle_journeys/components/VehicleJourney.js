@@ -53,6 +53,21 @@ export default class VehicleJourney extends Component {
     && this.props.selection.start.y == y
   }
 
+  isSelectionBottomRight(x, y){
+    if(!this.props.selectionMode){
+      return false
+    }
+
+    return this.props.selection.started
+    && this.props.selection.bottomRight
+    && this.props.selection.bottomRight.x == x
+    && this.props.selection.bottomRight.y == y
+  }
+
+  selectionSizeHelperContent(){
+    return this.props.selection.width + 'x' + this.props.selection.height
+  }
+
   timeTableURL(tt) {
     let refURL = window.location.pathname.split('/', 3).join('/')
     let ttURL = refURL + '/time_tables/' + tt.id
@@ -220,6 +235,9 @@ export default class VehicleJourney extends Component {
             onMouseUp={(e) => this.props.onSelectCell(this.props.index, i, 'up', e)}
             onMouseEnter={(e) => this.props.onHoverCell(this.props.index, i, e)}
             >
+            { this.isSelectionBottomRight(this.props.index, i) && <div className='selection-size-helper'>
+              { this.selectionSizeHelperContent() }
+            </div>}
             <div className={'cellwrap' + (this.cityNameChecker(vj) ? ' headlined' : '')}>
               {this.props.filters.toggleArrivals &&
                 <div data-headline={I18n.t("vehicle_journeys.form.arrival_at")}>

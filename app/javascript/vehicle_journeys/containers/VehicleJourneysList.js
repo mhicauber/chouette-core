@@ -44,6 +44,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onKeyDown: (e)=>{
       dispatch(actions.onKeyDown(e))
+    },
+    onVisibilityChange: (e)=>{
+      dispatch(actions.onVisibilityChange(e))
     }
   }
 }
