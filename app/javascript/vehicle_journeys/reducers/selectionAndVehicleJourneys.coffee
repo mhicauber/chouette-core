@@ -16,6 +16,11 @@ getSchedules = (selection, vehicleJourneys) ->
 selectionAndVehicleJourneys = (state, action) ->
   selection = state.selection
   vehicleJourneys = state.vehicleJourneys
+  if action.type == 'TOGGLE_SELECTION_MODE'
+    unless state.selectionMode
+      selection = { started: false, ended: false, copyModal: { visible: false, mode: 'copy' } }
+      return _.assign {}, state, { selection }
+
   if action.type == 'PASTE_CONTENT' || action.type == 'KEY_DOWN' && action.event.key == "Enter" && (action.event.metaKey || action.event.ctrlKey) && selection.copyModal.visible && selection.copyModal.mode == 'paste'
     {content, error} = ClipboardHelper.paste(selection.rawContent, selection, state.filters.toggleArrivals)
     if error

@@ -56,9 +56,9 @@ class ClipboardHelper
   @size_match: (content, selection, toggleArrivals)->
     return false unless content.length > 0
 
-    res = content.length == selection.height && content[0].length == selection.width
+    res = content.length == selection.height && content[content.length - 1].length == selection.width
     if toggleArrivals
-      res = res && !!content[0][content[0].length - 1].departure_time
+      res = res && !!content[content.length - 1][content[0].length - 1].departure_time
 
     res
 
