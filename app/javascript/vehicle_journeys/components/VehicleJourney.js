@@ -26,6 +26,36 @@ export default class VehicleJourney extends Component {
     return this.props.editMode && !this.props.selectionMode
   }
 
+  selectionClasses(x, y) {
+    let out = []
+
+    if (this.isSelected(x, y)){
+      out.push('selected')
+
+      if (this.isSelectionStart(x, y)){
+        out.push('selection-start')
+      }
+      if (x == this.props.selection.topLeft.x){
+        out.push('selection-border')
+        out.push('selection-border-left')
+      }
+      if (y == this.props.selection.topLeft.y){
+        out.push('selection-border')
+        out.push('selection-border-top')
+      }
+      if (x == this.props.selection.bottomRight.x){
+        out.push('selection-border')
+        out.push('selection-border-right')
+      }
+      if (y == this.props.selection.bottomRight.y){
+        out.push('selection-border')
+        out.push('selection-border-bottom')
+      }
+    }
+
+    return ' ' + (new Array(... new Set(out))).join(' ')
+  }
+
   isSelected(x, y){
     if(!this.props.selectionMode){
       return false
@@ -230,7 +260,7 @@ export default class VehicleJourney extends Component {
         {this.props.value.vehicle_journey_at_stops.map((vj, i) =>
           <div
             key={i}
-            className={'td text-center' + (this.isSelected(this.props.index, i) ? ' selected' : '') + (this.isSelectionStart(this.props.index, i) ? ' selection-start' : '') }
+            className={'td text-center' + this.selectionClasses(this.props.index, i) }
             onMouseDown={(e) => this.props.onSelectCell(this.props.index, i, 'down', e)}
             onMouseUp={(e) => this.props.onSelectCell(this.props.index, i, 'up', e)}
             onMouseEnter={(e) => this.props.onHoverCell(this.props.index, i, e)}
