@@ -100,7 +100,7 @@ export default class CopyModal extends Component {
                     <i className='fa fa-paste'></i>
                     <span>{ I18n.t('courses_copy_paste.modal.to_paste_mode') }</span>
                 </button>}
-                {this.props.mode == 'paste' && <button
+                {this.props.mode == 'paste' && !this.props.paste_only && <button
                   className='btn btn-default'
                   onClick={this.props.toCopyMode}>
                     <i className='fa fa-caret-left'></i>

@@ -24,7 +24,8 @@ selectionAndVehicleJourneys = (state, action) ->
   if action.type == 'PASTE_CONTENT' || action.type == 'KEY_DOWN' && action.event.key == "Enter" && (action.event.metaKey || action.event.ctrlKey) && selection.copyModal.visible && selection.copyModal.mode == 'paste'
     {content, error} = ClipboardHelper.paste(selection.rawContent, selection, state.filters.toggleArrivals)
     if error
-      selection = _.assign {}, selection, { copyModal: { visible: true, mode: 'paste', error: error } }
+      copyModal = _.assign {}, selection.copyModal, { error: error }
+      selection = _.assign {}, selection, { copyModal }
     else
       selection = _.assign {}, selection, { copyModal: { visible: false } }
       vehicleJourneys = vehicleJourneys.map (vj, x) ->
@@ -51,7 +52,8 @@ selectionAndVehicleJourneys = (state, action) ->
     new_selection = _.assign {}, selection, { rawContent: action.content }
     if new_selection.copyModal.visible && new_selection.copyModal.mode == 'paste'
       {error} = ClipboardHelper.paste action.content, selection, state.filters.toggleArrivals
-      new_selection = _.assign {}, new_selection, { copyModal: { visible: true, mode: 'paste', content: action.content, error: error } }
+      copyModal = _.assign {}, new_selection.copyModal, { content: action.content, error: error }
+      new_selection = _.assign {}, new_selection, { copyModal: copyModal }
 
     return _.assign {}, state, { selection: new_selection }
 
@@ -65,7 +67,7 @@ selectionAndVehicleJourneys = (state, action) ->
     return _.assign {}, state, { selection }
 
   if action.type == 'PASTE_CLIPBOARD' || action.type == 'KEY_DOWN' && action.event.key == "v" && (action.event.metaKey || action.event.ctrlKey) && selection.started && selection.ended && !selection.copyModal.visible
-    selection = _.assign {}, selection, { copyModal: { visible: true, mode: 'paste', content: '' } }
+    selection = _.assign {}, selection, { copyModal: { visible: true, mode: 'paste', content: '', paste_only: true } }
     return _.assign {}, state, { selection }
 
   state
