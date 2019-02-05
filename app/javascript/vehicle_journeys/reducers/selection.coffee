@@ -7,14 +7,6 @@ selection = (state = {}, action ) ->
   if action.type == 'CLOSE_COPY_MODAL'
     return _.assign {}, state, { copyModal: { visible: false } }
 
-  if action.type == 'UPDATE_CONTENT_TO_PASTE'
-    new_state = _.assign {}, state, { rawContent: action.content }
-    if new_state.copyModal.visible && new_state.copyModal.mode == 'paste'
-      {error} = ClipboardHelper.paste action.content, state
-      new_state = _.assign {}, new_state, { copyModal: { visible: true, mode: 'paste', content: action.content, error: error } }
-
-    return new_state
-
   if action.type == 'TOGGLE_SELECTION'
     if action.clickDirection == 'down'
       lastDown = state.lastDown
@@ -58,7 +50,7 @@ selection = (state = {}, action ) ->
         end = state.lastSeen
         {topLeft, bottomRight, width, height} = computeCorners(state.start, end)
         return _.assign {}, state, { end, topLeft, bottomRight, width, height, ended: false}
-    
+
   else if action.type == 'VISIBILITY_CHANGE'
     if state.copyModal.visible && state.copyModal.mode == 'copy'
       return _.assign {}, state, { copyModal: { visible: true, mode: 'paste', content: '' } }
