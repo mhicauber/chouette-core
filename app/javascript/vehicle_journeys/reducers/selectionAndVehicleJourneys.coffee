@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import actions from '../actions'
 import ClipboardHelper from '../../helpers/clipboard'
 
 getSchedules = (selection, vehicleJourneys) ->
@@ -8,7 +9,7 @@ getSchedules = (selection, vehicleJourneys) ->
       for VehicleJourneyAtStop, y in vehicleJourney.vehicle_journey_at_stops
         if y >= selection.topLeft.y && y <= selection.bottomRight.y
           schedules[y] ||= []
-          schedules[y].push { arrival_time: VehicleJourneyAtStop.arrival_time, departure_time: VehicleJourneyAtStop.departure_time }
+          schedules[y].push { arrival_time: VehicleJourneyAtStop.arrival_time, departure_time: VehicleJourneyAtStop.departure_time, dummy: VehicleJourneyAtStop.dummy }
 
   schedules
 
@@ -24,13 +25,16 @@ selectionAndVehicleJourneys = (state, action) ->
       vehicleJourneys = vehicleJourneys.map (vj, x) ->
         if x >= selection.topLeft.x && x <= selection.bottomRight.x
           vjasArray = vj.vehicle_journey_at_stops.map (vjas, y) ->
-            if y >= selection.topLeft.y && y <= selection.bottomRight.y
-              departure_time = content[y - selection.topLeft.y][x - selection.topLeft.x].departure_time
+            if y >= selection.topLeft.y && y <= selection.bottomRight.y && !vjas.dummy
+              item = content[y - selection.topLeft.y][x - selection.topLeft.x]
+              departure_time = item.departure_time
+              return vjas if item.dummy
+
               if state.filters.toggleArrivals
-                arrival_time = content[y - selection.topLeft.y][x - selection.topLeft.x].arrival_time
-                return _.assign({}, vjas, {departure_time, arrival_time})
+                arrival_time = item.arrival_time
+                return actions.getDelta(_.assign({}, vjas, {departure_time, arrival_time}), true)
               else
-                return _.assign({}, vjas, {departure_time})
+                return actions.getDelta(_.assign({}, vjas, {departure_time}), true)
 
             return vjas
           return _.assign({}, vj, { vehicle_journey_at_stops: vjasArray })
