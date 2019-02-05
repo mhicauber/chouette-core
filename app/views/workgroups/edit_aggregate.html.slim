@@ -13,6 +13,10 @@
         .col-lg-12
           = f.input :nightly_aggregate_enabled, as: :switchable_checkbox
           = f.input :nightly_aggregate_time, as: :clockpicker, input_html: { value: resource.nightly_aggregate_time&.strftime("%H:%M") || "00:00" }
+          = f.input :nightly_aggregate_notification_target,
+            collection: NightlyAggregate.notification_target_options,
+            selected: f.object.nightly_aggregate_notification_target,
+            input_html: { style: 'max-width: 350px;' }
       .row
         .col-lg-12= I18n.t('workgroups.edit_aggregate.disclaimer').html_safe
 

@@ -11,7 +11,7 @@ class Workgroup < ApplicationModel
   has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
-  has_many :aggregates
+  has_many :aggregates, class_name: 'NightlyAggregate'
   has_many :publication_setups
   has_many :publication_apis
   has_many :compliance_check_sets, through: :workbenches
@@ -32,6 +32,13 @@ class Workgroup < ApplicationModel
 
   @@workbench_scopes_class = WorkbenchScopes::All
   mattr_accessor :workbench_scopes_class
+
+  extend Enumerize
+  enumerize :nightly_aggregate_notification_target, in: %w[none workgroup], default: :none
+
+  def self.nightly_aggregate_notification_target_options
+    nightly_aggregate_notification_target.values.map { |k| [k && "operation_support.notification_targets.#{k}".t, k] }
+  end
 
   def custom_fields_definitions
     Hash[*custom_fields.map{|cf| [cf.code, cf]}.flatten]
@@ -102,7 +109,7 @@ class Workgroup < ApplicationModel
       return
     end
 
-    aggregates.create!(referentials: target_referentials, creator: 'CRON')
+    aggregates.create!(referentials: target_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
     update(nightly_aggregated_at: Time.current)
   end
 

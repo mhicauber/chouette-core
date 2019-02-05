@@ -21,7 +21,7 @@ class WorkgroupsController < ChouetteController
     params[:workgroup].permit(
       :sentinel_min_hole_size,
       :sentinel_delay,
-      :nightly_aggregate_enabled, :nightly_aggregate_time,
+      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_notification_target,
       workbenches_attributes: [
         :id,
         :locked_referential_to_aggregate_id,

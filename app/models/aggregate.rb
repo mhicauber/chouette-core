@@ -120,3 +120,11 @@ class Aggregate < ActiveRecord::Base
     create_compliance_check_set :after_aggregate, after_aggregate_compliance_control_set, new
   end
 end
+
+class NightlyAggregate < Aggregate
+  enumerize :notification_target, in: %w[none workgroup], default: :none
+  
+   def self.notification_target_options
+    notification_target.values.map { |k| [k && "operation_support.notification_targets.#{k}".t, k] }
+  end
+end

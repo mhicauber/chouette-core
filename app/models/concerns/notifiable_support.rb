@@ -41,13 +41,19 @@ module NotifiableSupport
     workbench
   end
 
+  def workgroup_for_notifications
+    workgroup
+  end
+
   def notification_recipients
     return [] unless has_notification_recipients?
 
     users = if notification_target.to_s == 'user'
       [user]
-    else
+    elsif notification_target.to_s == 'workbench'
       workbench_for_notifications.users
+    else
+      workgroup_for_notifications.workbenches.map(&:users)
     end
 
     users.compact.map(&:email_recipient)
