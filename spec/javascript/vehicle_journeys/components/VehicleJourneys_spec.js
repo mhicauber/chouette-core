@@ -21,7 +21,9 @@ describe('stopPointHeader', () => {
       stopPointsList: [stop_point, same_city_stop_point, other_country_stop_point],
 			vehicleJourneys: [],
 			customFields: {},
-			extraHeaders: []
+			extraHeaders: [],
+      selection: {},
+      selectionMode: false
     }
     let list = renderer.create(
       <VehicleJourneys
@@ -34,6 +36,8 @@ describe('stopPointHeader', () => {
         vehicleJourneys={props.vehicleJourneys}
 				customFields={props.customFields}
         extraHeaders={props.extraHeaders}
+        selection={props.selection}
+        selectionMode={props.selectionMode}
       />
     ).toJSON()
 

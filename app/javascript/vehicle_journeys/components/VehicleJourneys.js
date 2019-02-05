@@ -257,9 +257,8 @@ export default class VehicleJourneys extends Component {
     } else {
       return (
         <div
-          className='row'
           ref='vehicleJourneys'
-          className={this.selectionClasses()}
+          className={'row' + this.selectionClasses()}
           >
           <div className='col-lg-12'>
             {(this.props.status.fetchSuccess == false) && (
