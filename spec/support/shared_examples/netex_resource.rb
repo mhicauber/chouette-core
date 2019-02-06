@@ -53,6 +53,10 @@ RSpec.shared_examples_for 'it outputs custom fields' do |tag, attr|
       create :custom_field, field_type: :string, code: :energy2, name: :energy2, resource_type: resource_type, workgroup: workgroup
     end
 
+    after(:each) do
+      resource.class.reset_custom_fields
+    end
+
     it 'should have custom_fields' do
       resource.custom_field_values = { energy: 'foo', foo: 'bar', energy2: nil }
       expect(node.css('> keyList').size) .to eq 1

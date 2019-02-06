@@ -30,8 +30,12 @@ module CustomFieldsSupport
 
     def self.within_workgroup workgroup
       @current_workgroup = workgroup
-      value = yield
-      @current_workgroup = nil
+      value = nil
+      begin
+        value = yield
+      ensure
+        @current_workgroup = nil
+      end
       value
     end
 
