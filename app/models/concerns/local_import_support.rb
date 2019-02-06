@@ -138,7 +138,7 @@ module LocalImportSupport
 
     unless model.save
       Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
-
+      
       model.errors.details.each do |key, messages|
         messages.each do |message|
           message.each do |criticity, error|

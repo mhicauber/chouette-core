@@ -192,10 +192,10 @@ RSpec.describe Import::Neptune do
       let(:import) { create_import 'sample_neptune_large' }
 
       it 'should create new vehicle_journeys' do
-        expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 63
-        vehicle_journey = Chouette::VehicleJourney.find_by number: '1001'
-        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 20
-        expect(vehicle_journey.time_tables.count).to eq 1
+        expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 3
+        vehicle_journey = Chouette::VehicleJourney.find_by number: '1026'
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 12
+        expect(vehicle_journey.time_tables.count).to eq 2
       end
     end
   end
@@ -208,7 +208,7 @@ RSpec.describe Import::Neptune do
     end
 
     it 'should create new time_tables' do
-      expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 6
+      expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 2
     end
 
     it 'should update existing time_tables' do
