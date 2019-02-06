@@ -40,7 +40,7 @@ export default class CopyModal extends Component {
   }
 
   pasteFromClipboardAvailable() {
-    return !! navigator.clipboard.readText
+    return !! (navigator.clipboard && navigator.clipboard.readText)
   }
 
   pasteFromClipboard() {
