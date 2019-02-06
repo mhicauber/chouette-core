@@ -11,7 +11,7 @@
   h4 Ressources disponibles:
   ul
     - @publication_api.publication_api_sources.each do |source|
-      li= link_to source.public_url
+      li= link_to source.public_url, source.public_url
 
   h4 Authentification
   p
