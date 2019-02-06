@@ -7,6 +7,7 @@ export default class CopyModal extends Component {
     this.updateContent = this.updateContent.bind(this)
     this.selectAll = this.selectAll.bind(this)
     this.pasteFromClipboard = this.pasteFromClipboard.bind(this)
+    this.onKeyDown = this.onKeyDown.bind(this)
   }
 
   updateContent() {
@@ -24,6 +25,17 @@ export default class CopyModal extends Component {
       range.selectNodeContents(this.refs.copyContent);
       selection.removeAllRanges();
       selection.addRange(range);
+    }
+  }
+
+  onKeyDown(event) {
+    if(!this.props.visible){ return }
+
+    if(this.props.mode == 'copy' && event.key == "a" && (event.metaKey || event.ctrlKey)){
+      event.stopImmediatePropagation()
+      event.preventDefault()
+      this.selectAll()
+      return false
     }
   }
 
@@ -47,6 +59,7 @@ export default class CopyModal extends Component {
         this.refs.pasteContent.focus()
       }
     }
+    document.addEventListener("keydown", this.onKeyDown)
   }
 
   render() {
@@ -67,12 +80,6 @@ export default class CopyModal extends Component {
                   </div>}
                   {this.props.mode == 'copy' && <div>
                     <pre ref='copyContent'>{this.props.content}</pre>
-                    <button
-                      className="btn btn-default pull-right"
-                      onClick={this.selectAll}>
-                        { I18n.t('courses_copy_paste.modal.select_all') }
-                    </button>
-                    <br/>
                   </div>}
                   {this.props.mode == 'paste' && <div>
                     <textarea
