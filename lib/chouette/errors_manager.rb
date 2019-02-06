@@ -1,8 +1,9 @@
 module Chouette
   class ErrorsManager
     class << self
-      def log message, error: nil
+      def log message, error: nil, extra_infos: []
         message = "#{message}: #{error.message} \n*** BACKTRACE ***\n#{error.backtrace.grep(/#{Rails.root.to_s}*/).join("\n")}\n*****************" if error.present?
+        message = "#{message}\n#{extra_infos.join("\n")}" if extra_infos.present?
         to_rails_log message
       end
       alias handle log
@@ -19,21 +20,21 @@ module Chouette
           proxy = BlockProxy.new(block)
           binding = block.binding
 
-          action = SecureAction.new description, verbose: verbose do
+          action = Chouette::SecureAction.new description, verbose: verbose, shift_caller: true do
             proc = proxy.__run
             binding.receiver.instance_eval &proc
           end
 
           if block.arity > 1
             action.on_failure raise_error: raise_error do
-              proc = proxy.__on_failure
-              binding.receiver.instance_eval &proc
+              if proc = proxy.__on_failure
+                binding.receiver.instance_eval &proc
+              end
             end
           end
-
           action.call
         else
-          action = SecureAction.new description, verbose: verbose, &block
+          action = SecureAction.new description, verbose: verbose, shift_caller: true, &block
           action.call
         end
       end

@@ -40,7 +40,7 @@ module Chouette
           item.delete('errors')
           jp = find_by(objectid: item['object_id']) || state_create_instance(route, item)
           next if item['deletable'] && jp.persisted? && jp.destroy
-          Chouette::ErrorsManager.watch do
+          Chouette::ErrorsManager.watch 'Update JourneyPattern' do
             ::ActiveRecord::Base.transaction do
               # Update attributes and stop_points associations
               jp.assign_attributes(state_permited_attributes(item)) unless item['new_record']

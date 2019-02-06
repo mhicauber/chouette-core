@@ -9,10 +9,14 @@ class ReferentialCloning < ApplicationModel
   end
 
   def clone_with_status!
-    Chouette::ErrorsManager.watch('Clone failed', on_failure: -> { failed!}) do
-      run!
-      clone!
-      successful!
+    Chouette::ErrorsManager.watch('ReferentialCloning#clone_with_status!') do |action, on_failure|
+      on_failure &:failed!
+
+      action do
+        run!
+        clone!
+        successful!
+      end
     end
   end
 

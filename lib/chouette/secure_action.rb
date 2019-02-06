@@ -2,10 +2,15 @@ module Chouette
   class SecureAction
     attr_accessor :verbose
 
-    def initialize(description, verbose: false, &block)
+    def initialize(description, verbose: false, shift_caller: false, &block)
       @description = description
       @content = block
-      @caller = caller[1]
+      if shift_caller
+        @caller = caller[2]
+      else
+        @caller = caller[1]
+      end
+
       @verbose = verbose
     end
 
@@ -41,25 +46,34 @@ module Chouette
         @status = :success
         @res
       rescue => e
-        Chouette::ErrorsManager.log "#{@description} failed", error: e
-        @on_failure&.call
+        finished!
         @status = :failed
+        Chouette::ErrorsManager.log "#{@description} failed", error: e, extra_infos: infos
+        @on_failure&.call
         raise if @raise_error_on_failure
       ensure
-        @end_time = Time.now
-        @memory_after = Chouette::Benchmark.current_usage
+        finished!
         @ensure&.call
-        log_info if verbose
+        log_infos if verbose && @status == :success
       end
     end
 
-    def log_info
-      info = ["SecureAction: '#{@description}'"]
-      info << "Caller:\t\t#{@caller}"
-      info << "Status:\t\t#{@status}"
-      info << "Duration:\t#{duration}s"
-      info << "Memory Usage:\t#{memory_usage} (#{@memory_before} > #{@memory_after})"
-      Chouette::ErrorsManager.log info.join("\n")
+    def finished!
+      @memory_after = Chouette::Benchmark.current_usage
+      @end_time = Time.now
+    end
+
+    def infos
+      infos = ["SecureAction: '#{@description}'"]
+      infos << "Caller:\t\t#{@caller}"
+      infos << "Status:\t\t#{@status}"
+      infos << "Duration:\t#{duration}s"
+      infos << "Memory Usage:\t#{memory_usage} (#{@memory_before} > #{@memory_after})"
+      infos
+    end
+
+    def log_infos
+      Chouette::ErrorsManager.log infos.join("\n")
     end
 
     class ActionNotCalled < RuntimeError; end

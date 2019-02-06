@@ -16,7 +16,7 @@ RSpec.describe Chouette::SecureAction do
         action.on_failure { @on_failure = true }
         action.ensure { @ensure = true }
         action.verbose = true
-        expect(action).to receive(:log_info)
+        expect(action).to receive(:log_infos)
         expect{ action.call }.to_not raise_error
         expect(@on_success).to be_truthy
         expect(@on_failure).to be_falsy

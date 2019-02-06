@@ -82,24 +82,23 @@ class Merge < ApplicationModel
   end
 
   def merge!
-    Chouette::ErrorsManager.watch(
-      'Merge failed',
-      raise_error: true,
-      on_failure: -> { failed! }
-    ) do
+    Chouette::ErrorsManager.watch('Merge#merge!', raise_error: true) do |action, on_failure|
+      on_failure &:failed!
 
-      prepare_new
+      action do
+        prepare_new
 
-      referentials.each do |referential|
-        merge_referential referential
-      end
+        referentials.each do |referential|
+          merge_referential referential
+        end
 
-      clean_new
+        clean_new
 
-      if after_merge_compliance_control_sets.present?
-        create_after_merge_compliance_check_sets
-      else
-        save_current
+        if after_merge_compliance_control_sets.present?
+          create_after_merge_compliance_check_sets
+        else
+          save_current
+        end
       end
     end
   end
@@ -132,7 +131,7 @@ class Merge < ApplicationModel
     new.name = I18n.t("merges.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
 
-    Chouette::ErrorsManager.watch(raise_error: true){ new.save! }
+    Chouette::ErrorsManager.watch('Merge: save new referential', raise_error: true){ new.save! }
 
     new.pending!
 

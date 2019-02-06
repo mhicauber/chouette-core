@@ -39,11 +39,12 @@ class Import::Workbench < Import::Base
   end
 
   def create_child_import(klass)
-    Chouette::ErrorsManager.watch(
-      'Error while processing GTFS file',
-      on_failure: -> { failed!  }
-    ) do
-      klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
+    Chouette::ErrorsManager.watch('GTFS file processing ') do |action, on_failure|
+      action do
+        klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
+      end
+
+      on_failure &:failed!
     end
   end
 

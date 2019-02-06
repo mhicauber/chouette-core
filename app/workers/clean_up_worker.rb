@@ -6,7 +6,7 @@ class CleanUpWorker
     cleaner = CleanUp.find id
     cleaner.original_state = original_state
     cleaner.run if cleaner.may_run?
-    Chouette::ErrorsManager.watch 'CleanUpWorker failed' do
+    Chouette::ErrorsManager.watch 'CleanUpWorker#perform' do
       cleaner.referential.switch
       result = cleaner.clean
     end

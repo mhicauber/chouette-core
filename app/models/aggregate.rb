@@ -43,32 +43,31 @@ class Aggregate < ActiveRecord::Base
   end
 
   def aggregate!
-    on_failure = Proc.new do
-      failed!
-      raise e if Rails.env.test?
-    end
+    Chouette::ErrorsManager.watch('Aggregate#aggregate!', raise_error: Rails.env.test?, verbose: true) do |action, failure|
+      action do
+        prepare_new
 
-    Chouette::ErrorsManager.watch('Aggregate failed', on_failure: on_failure) do
-      prepare_new
+        referentials.each do |source|
+          ReferentialCopy.new(source: source, target: new).copy!
+        end
 
-      referentials.each do |source|
-        ReferentialCopy.new(source: source, target: new).copy!
+        if after_aggregate_compliance_control_set.present?
+          create_after_aggregate_compliance_check_set
+        else
+          save_current
+        end
+
+        self.class.keep_operations = if Rails.configuration.respond_to?(:keep_aggregates)
+                                       Rails.configuration.keep_aggregates
+                                     else
+                                       DEFAULT_KEEP_AGGREGATES
+                                     end
+         clean_previous_operations
+         publish
+         workgroup.aggregated!
       end
 
-      if after_aggregate_compliance_control_set.present?
-        create_after_aggregate_compliance_check_set
-      else
-        save_current
-      end
-
-      self.class.keep_operations = if Rails.configuration.respond_to?(:keep_aggregates)
-                                     Rails.configuration.keep_aggregates
-                                   else
-                                     DEFAULT_KEEP_AGGREGATES
-                                   end
-       clean_previous_operations
-       publish
-       workgroup.aggregated!
+      failure &:failed!
     end
   end
 

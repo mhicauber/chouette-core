@@ -26,15 +26,18 @@ class VehicleTranslationsController < ChouetteController
   def create
     @vehicle_translation = VehicleTranslation.new( params[:vehicle_translation].merge( :vehicle_journey_id => parent.id))
 
-    Chouette::ErrorsManager.watch(
-      "VehicleTranslation error, @vehicle_translation=#{@vehicle_translation.inspect}",
-      on_failure: -> { flash[:alert] = t('vehicle_translations.failure') }
-    ) do
-      if @vehicle_translation.valid?
-        @vehicle_translation.translate
-        flash[:notice] = t('vehicle_translations.success', :count => @vehicle_translation.count)
-      else
-        flash[:alert] = @vehicle_translation.errors[ :vehicle_journey_id] unless @vehicle_translation.errors[ :vehicle_journey_id].empty?
+    Chouette::ErrorsManager.watch 'VehicleTranslation#translate' do |action, failure|
+      action do
+        if @vehicle_translation.valid?
+          @vehicle_translation.translate
+          flash[:notice] = t('vehicle_translations.success', :count => @vehicle_translation.count)
+        else
+          flash[:alert] = @vehicle_translation.errors[ :vehicle_journey_id] unless @vehicle_translation.errors[ :vehicle_journey_id].empty?
+        end
+      end
+
+      failure do
+        flash[:alert] = t('vehicle_translations.failure')
       end
     end
 

@@ -54,8 +54,8 @@ module LocalImportSupport
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
     )
-    Chouette::ErrorsManager.watch('Unable to create referential', raise_error: true){ self.referential.save! }
-    
+    Chouette::ErrorsManager.watch('Import: create referential', raise_error: true){ self.referential.save! }
+
     main_resource.update referential: referential if main_resource
   end
 
