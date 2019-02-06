@@ -1,4 +1,4 @@
-RSpec.describe AF83::Decorator do
+RSpec.describe Chouette::ChecksumManager do
   context "Chouette::ChecksumManager#current" do
     it "should return an Chouette::ChecksumManager::Inline" do
       expect(Chouette::ChecksumManager.current).to be_a(Chouette::ChecksumManager::Inline)

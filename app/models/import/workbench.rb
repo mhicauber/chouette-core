@@ -43,8 +43,8 @@ class Import::Workbench < Import::Base
       'Error while processing GTFS file',
       on_failure: -> { failed!  }
     ) do
-
-    klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
+      klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
+    end
   end
 
   def compliance_check_sets

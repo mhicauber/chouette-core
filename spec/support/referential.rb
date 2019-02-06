@@ -63,7 +63,7 @@ RSpec.configure do |config|
       line_referential: line_referential,
       stop_area_referential: stop_area_referential
     )
-    
+
     workbench = FactoryGirl.create(
       :workbench,
       name: "Gestion de l'offre",
@@ -87,7 +87,7 @@ RSpec.configure do |config|
   config.before(:each) do
     DatabaseCleaner.strategy = :transaction
     # Switch into the default tenant
-    first_referential.switch
+    first_referential.switch(verbose: false)
   end
 
   config.before(:each, truncation: true) do
