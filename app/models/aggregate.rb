@@ -14,6 +14,9 @@ class Aggregate < ActiveRecord::Base
 
   delegate :output, to: :workgroup
 
+  scope :automatic, -> { where(creator: 'CRON') }
+  scope :manual, -> { where.not(creator: 'CRON') }
+
   def parent
     workgroup
   end

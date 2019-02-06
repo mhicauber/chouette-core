@@ -14,6 +14,7 @@ class MasterSlave
         $slave.find("input:disabled, select:disabled").attr "data-slave-force-disabled", "true"
       toggle = (disableInputs=true)->
         val = master.filter(":checked").val() if master.filter("[type=radio]").length > 0
+        val = master.prop('checked') if master.hasClass('onoffswitch-checkbox')
         val ||= master.val()
         selected = "#{val}" == "#{$slave.data().value}"
         $slave.toggle selected

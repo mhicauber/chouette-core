@@ -104,5 +104,5 @@ fr:
         subject: L'agrégation automatique est terminée
         body: | 
           Bonjour, l'agrégation automatique est terminée
-          L'agrégation automatique [nom de l'agrégation] a été effectué . Elle est maintenant terminée.
+          L'agrégation automatique <strong>"%{agg_name}"</strong> a été effectuée . Elle est maintenant terminée.
           Pour y accéder :
