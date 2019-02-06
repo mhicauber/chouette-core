@@ -115,7 +115,7 @@ RSpec.describe Chouette::ChecksumManager::Transactional do
 
           expect(@update_calls[Chouette::VehicleJourney].size).to eq(1)
 
-          vj.vehicle_journey_at_stops.each do |vjas|
+          vj.vehicle_journey_at_stops[0..-2].each do |vjas|
             expect{ vjas.reload }.to_not change { vjas.checksum_source }
             expect{ vjas.update_checksum_without_callbacks! }.to_not change { vjas.checksum_source }
           end

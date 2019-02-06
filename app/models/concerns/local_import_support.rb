@@ -138,7 +138,9 @@ module LocalImportSupport
 
     unless model.save
       Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
-      
+
+      # if the model cannot be saved, we still ensure we store a consistent checksum
+      model.try(:update_checksum_without_callbacks!) if model.persisted?
       model.errors.details.each do |key, messages|
         messages.each do |message|
           message.each do |criticity, error|
