@@ -15,8 +15,6 @@ class CurrentOfferCloningWorker
     copy = ReferentialCopy.new source: current_offer, target: referential, skip_metadatas: true, lines: lines
     copy.copy!
 
-    CleanUp.new(referential: referential, methods: %i[destroy_time_tables_outside_referential]).clean
-
     referential.active!
   end
 end
