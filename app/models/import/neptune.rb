@@ -43,7 +43,7 @@ class Import::Neptune < Import::Base
   def each_source
     Zip::File.open(local_file) do |zip_file|
       zip_file.glob('*.xml').each do |f|
-        yield Nokogiri::XML(f.get_input_stream)
+        yield Nokogiri::XML(f.get_input_stream), f.name
       end
     end
   end
@@ -56,28 +56,64 @@ class Import::Neptune < Import::Base
           yield object
       end
     else
-      each_source do |source|
+      each_source do |source, filename|
         source.css(selector)\
               .map(&method(:build_object_from_nokogiri_element))\
               .each do |object|
-            yield object
+            yield object, filename
         end
       end
     end
   end
 
-  def import_lines
-    each_element_matching_css('ChouettePTNetwork ChouetteLineDescription Line') do |source_line|
-      line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
-      line.name = source_line[:name]
-      line.number = source_line[:number]
-      line.published_name = source_line[:published_name]
-      line.comment = source_line[:comment]
-      line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
+  def get_associated_network(source_pt_network, filename)
+    network = nil
+    each_element_matching_css('PTNetwork', source_pt_network) do |source_network|
+      if network
+        create_message(
+          criticity: :warning,
+          message_key: "multiple_networks_in_file",
+          message_attributes: { source_filename: filename }
+        )
+        return
+      end
+      network = line_referential.networks.find_by registration_number: source_network[:object_id]
+    end
+    network
+  end
 
-      save_model line
-      @imported_line_ids ||= []
-      @imported_line_ids << line.id
+  def get_associated_company(source_pt_network, filename)
+    company = nil
+    each_element_matching_css('Company', source_pt_network) do |source_company, filename|
+      if company
+        create_message(
+          criticity: :warning,
+          message_key: "multiple_companies_in_file",
+          message_attributes: { source_filename: filename }
+        )
+        return
+      end
+      company = line_referential.companies.find_by registration_number: source_company[:object_id]
+    end
+    company
+  end
+
+  def import_lines
+    each_element_matching_css('ChouettePTNetwork') do |source_pt_network, filename|
+      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line|
+        line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
+        line.name = source_line[:name]
+        line.number = source_line[:number]
+        line.published_name = source_line[:published_name]
+        line.comment = source_line[:comment]
+        line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
+        line.company = get_associated_company(source_pt_network, filename)
+        line.network = get_associated_network(source_pt_network, filename)
+
+        save_model line
+        @imported_line_ids ||= []
+        @imported_line_ids << line.id
+      end
     end
   end
 

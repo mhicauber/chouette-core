@@ -6,6 +6,8 @@ fr:
     missing_calendar_in_zip_file: "Le dossier %{source_filename} ne contient pas de calendrier"
     invalid_parent: Parent invalide
     parent_not_found: Le parent %{parent_name} de l'arrêt %{stop_area_name} n'a pas pu être trouvé
+    multiple_networks_in_file: "Le fichier %{source_filename} contient plusieurs réseaux, les lignes importées n'ont donc pas étées associées."
+    multiple_companies_in_file: "Le fichier %{source_filename} contient plusieurs transporteurs, les lignes importées n'ont donc pas étées associées."
     referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} n'a pas pu être créé car aucune donnée d'offre n'est présente dans le fichier"
     referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car aucune ligne n'appartient à l'organisation"
     referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
