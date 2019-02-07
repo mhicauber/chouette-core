@@ -108,24 +108,18 @@ RSpec.describe CleanUp, :type => :model do
     it 'should call destroy_time_tables_before' do
       cleaner.date_type = :before
       expect(cleaner).to receive(:destroy_time_tables_before)
-      expect(cleaner).to receive(:destroy_time_tables_dates_before)
-      expect(cleaner).to receive(:destroy_time_tables_periods_before)
       cleaner.clean
     end
 
     it 'should call destroy_time_tables_after' do
       cleaner.date_type = :after
       expect(cleaner).to receive(:destroy_time_tables_after)
-      expect(cleaner).to receive(:destroy_time_tables_dates_after)
-      expect(cleaner).to receive(:destroy_time_tables_periods_after)
       cleaner.clean
     end
 
     it 'should call destroy_time_tables_between' do
       cleaner.date_type = :between
       expect(cleaner).to receive(:destroy_time_tables_between)
-      expect(cleaner).to receive(:destroy_time_tables_dates_between)
-      expect(cleaner).to receive(:destroy_time_tables_periods_between)
       cleaner.clean
     end
 
@@ -133,45 +127,6 @@ RSpec.describe CleanUp, :type => :model do
       cleaner.original_state = :archived
       cleaner.clean
       expect(cleaner.referential.state).to eq :archived
-    end
-  end
-
-  context '#destroy_time_tables_dates_between' do
-    let!(:time_table) { create(:time_table) }
-    let(:cleaner) { create(:clean_up, date_type: :between) }
-
-    before do
-      time_table.periods.clear
-      time_table.save
-      cleaner.begin_date = time_table.start_date
-      cleaner.end_date   = time_table.end_date
-    end
-
-    it 'should destroy record' do
-      expect{ cleaner.destroy_time_tables_dates_between }.to change {
-        Chouette::TimeTableDate.count
-      }.by(-time_table.dates.count + 2)
-    end
-
-    it 'should not destroy record not in range' do
-      cleaner.begin_date = time_table.end_date + 1.day
-      cleaner.end_date   = cleaner.begin_date + 1.day
-
-      expect{ cleaner.destroy_time_tables_dates_between }.to_not change {
-        Chouette::TimeTableDate.count
-      }
-    end
-  end
-
-  context '#destroy_time_tables_dates_after' do
-    let!(:time_table_date) { create(:time_table_date, date: Date.yesterday, in_out: true) }
-    let(:cleaner) { create(:clean_up, date_type: :after, begin_date: time_table_date.date) }
-
-    it 'should destroy record' do
-      count = Chouette::TimeTableDate.where('date > ?', cleaner.begin_date).count
-      expect{ cleaner.destroy_time_tables_dates_after }.to change {
-        Chouette::TimeTableDate.count
-      }.by(-count)
     end
   end
 

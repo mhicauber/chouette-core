@@ -574,6 +574,45 @@ module Chouette
       dates.empty? && periods.empty?
     end
 
+    def self.delete_and_clean_offer!(scope)
+      # purpose of this method :
+      # cleaning the timetables themselves, and all data in the referential no longer linked to any timetable
+      # This is pretty destructive
+      # A focus is put on performance here (thus the non-use of :destroy)
+
+      scope = self.where(scope) unless scope.is_a?(::ActiveRecord::Relation)
+      return if scope.empty?
+
+      ::ActiveRecord::Base.transaction do
+        Chouette::TimeTableDate.all.joins(:time_table).merge(scope).delete_all
+        Chouette::TimeTablePeriod.all.joins(:time_table).merge(scope).delete_all
+
+        vehicle_journeys = Chouette::VehicleJourney.all.joins(:time_tables).merge(scope).distinct
+        vehicle_journey_ids = vehicle_journeys.pluck(:id)
+        journey_pattern_ids = vehicle_journeys.pluck(:journey_pattern_id)
+        route_ids           = vehicle_journeys.pluck(:route_id)
+
+        self.connection.execute("DELETE FROM time_tables_vehicle_journeys WHERE time_table_id IN (#{scope.pluck(:id).join(',')})")
+        doomed_vehicle_journeys = Chouette::VehicleJourney.joins("LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id")
+        doomed_vehicle_journeys = doomed_vehicle_journeys.joins("LEFT JOIN time_tables ON time_tables_vehicle_journeys.time_table_id = time_tables.id")
+        doomed_vehicle_journeys = doomed_vehicle_journeys.where('vehicle_journeys.id' => vehicle_journey_ids)
+        doomed_vehicle_journeys = doomed_vehicle_journeys.where('time_tables_vehicle_journeys.time_table_id IS NULL')
+        doomed_vehicle_journeys.delete_all
+
+        doomed_journey_patterns = Chouette::JourneyPattern.where('journey_patterns.id' => journey_pattern_ids)
+        doomed_journey_patterns = doomed_journey_patterns.joins("LEFT JOIN vehicle_journeys ON vehicle_journeys.journey_pattern_id = journey_patterns.id")
+        doomed_journey_patterns = doomed_journey_patterns.where("vehicle_journeys.id IS NULL")
+        doomed_journey_patterns.delete_all
+
+        doomed_routes = Chouette::Route.where('routes.id' => route_ids)
+        doomed_routes = doomed_routes.joins("LEFT JOIN vehicle_journeys ON vehicle_journeys.route_id = routes.id")
+        doomed_routes = doomed_routes.where("vehicle_journeys.id IS NULL")
+        doomed_routes.find_each &:clean!
+
+        scope.delete_all
+      end
+    end
+
     # returns VehicleJourneys with at least 1 day in their time_tables
     # included in the given range. Abandonned to use flattened_circulation_periods
     # def self.including_vehicle_journeys_within_date_range vehicle_journey_ids, date_range

@@ -2,16 +2,49 @@ require 'spec_helper'
 include Support::TimeTableHelper
 
 describe Chouette::TimeTable, :type => :model do
-  subject { create(:time_table) }
+  subject(:time_table) { create(:time_table) }
   let(:subject_periods_to_range) { subject.periods.map{|p| p.period_start..p.period_end } }
 
   it { is_expected.to validate_presence_of :comment }
   it { is_expected.to validate_uniqueness_of :objectid }
 
 
-    def create_time_table_periode time_table, start_date, end_date
-      create(:time_table_period, time_table: time_table, :period_start => start_date, :period_end => end_date)
+  def create_time_table_periode time_table, start_date, end_date
+    create(:time_table_period, time_table: time_table, :period_start => start_date, :period_end => end_date)
+  end
+
+  describe '#delete_and_clean_offer!' do
+    let!(:vehicle_journey){ create :vehicle_journey }
+    let!(:journey_pattern){ vehicle_journey.journey_pattern }
+    let!(:route){ journey_pattern.route }
+    let!(:other_vehicle_journey){ create :vehicle_journey }
+    let!(:other_journey_pattern){ other_vehicle_journey.journey_pattern }
+    let!(:other_route){ other_journey_pattern.route }
+
+    before(:each) do
+      vehicle_journey.update time_tables: [time_table]
+      other_vehicle_journey.update time_tables: [time_table, create(:time_table)]
     end
+
+    it 'should clean all related assets' do
+      dates = time_table.dates
+      expect(dates).to be_present
+      periods = time_table.periods
+      expect(periods).to be_present
+
+      Chouette::TimeTable.delete_and_clean_offer!(id: [time_table.id, create(:time_table).id])
+
+      expect(Chouette::TimeTable.where(id: time_table.id)).to be_empty
+      expect(Chouette::TimeTableDate.where(id: dates.map(&:id))).to be_empty
+      expect(Chouette::TimeTablePeriod.where(id: periods.map(&:id))).to be_empty
+      expect(Chouette::VehicleJourney.where(id: vehicle_journey.id)).to be_empty
+      expect(Chouette::JourneyPattern.where(id: journey_pattern.id)).to be_empty
+      expect(Chouette::Route.where(id: route.id)).to be_empty
+      expect{ other_journey_pattern.reload }.to_not raise_error
+      expect{ other_route.reload }.to_not raise_error
+      expect(other_vehicle_journey.reload.time_tables.size).to eq 1
+    end
+  end
 
   describe "#merge! with time_table" do
     let(:another_tt) { create(:time_table) }
@@ -1399,7 +1432,5 @@ end
       expect(time_table.periods).to be_empty
       expect(time_table.dates).to be_empty
     end
-
   end
-
 end
