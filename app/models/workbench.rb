@@ -88,12 +88,6 @@ class Workbench < ApplicationModel
     workgroup.calendars.where('(organisation_id = ? OR shared = ?)', organisation.id, true)
   end
 
-  def self.default
-    return last if count == 1
-
-    where(name: DEFAULT_WORKBENCH_NAME).last || last
-  end
-
   # XXX
   # def import_compliance_control_set
   #   import_compliance_control_set_id && ComplianceControlSet.find(import_compliance_control_set_id)

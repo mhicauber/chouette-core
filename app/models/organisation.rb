@@ -53,10 +53,6 @@ class Organisation < ApplicationModel
     features && features.include?(feature.to_s)
   end
 
-  def default_workbench
-    workbenches.default
-  end
-
   def lines_scope
     functional_scope = sso_attributes.try(:[], "functional_scope")
     JSON.parse(functional_scope) if functional_scope
