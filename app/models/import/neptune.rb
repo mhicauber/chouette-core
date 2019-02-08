@@ -100,6 +100,9 @@ class Import::Neptune < Import::Base
 
   def import_lines
     each_element_matching_css('ChouettePTNetwork') do |source_pt_network, filename|
+      file_company = get_associated_company(source_pt_network, filename)
+      file_network = get_associated_network(source_pt_network, filename)
+
       each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line|
         line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
         line.name = source_line[:name]
@@ -107,8 +110,8 @@ class Import::Neptune < Import::Base
         line.published_name = source_line[:published_name]
         line.comment = source_line[:comment]
         line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
-        line.company = get_associated_company(source_pt_network, filename)
-        line.network = get_associated_network(source_pt_network, filename)
+        line.company = file_company
+        line.network = file_network
 
         save_model line
         @imported_line_ids ||= []
