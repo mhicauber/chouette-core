@@ -33,7 +33,7 @@ module IevInterfaces
         else
           @contextual_cols << TableBuilderHelper::Column.new(
             key: :workbench,
-            name: Workbench.ts.capitalize,
+            name: Organisation.ts.capitalize,
             attribute: Proc.new { |n| n.workbench.organisation.name },
             link_to: lambda do |import|
               policy(import.workbench).show? ? import.workbench : nil
