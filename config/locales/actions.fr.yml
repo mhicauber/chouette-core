@@ -32,9 +32,9 @@ fr:
     unarchive: 'Désarchiver'
     validate: 'Contrôler'
     wait_for_submission: "Validation..."
-  are_you_sure: Etes vous sûr ?
+  are_you_sure: Êtes vous sûr ?
   back: "Retour"
-  cancel_confirm: Etes vous sûr de vouloir annuler l'action en cours ?
+  cancel_confirm: Êtes vous sûr de vouloir annuler l'action en cours ?
   cancel: "Annuler"
   discard: Abandonner
   no_result_text: "Aucun résultat"

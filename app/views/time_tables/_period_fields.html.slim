@@ -12,4 +12,4 @@
     div
       = f.input :period_end, as: :date, label: false, wrapper_html: { class: 'date smart_date' }
     div
-      = link_to_remove_association '', f, class: 'fa fa-trash', data: { confirm: 'Etes-vous sûr(e) ?' }, title: t('actions.delete')
+      = link_to_remove_association '', f, class: 'fa fa-trash', data: { confirm: I18n.t('are_you_sure') }, title: t('actions.delete')

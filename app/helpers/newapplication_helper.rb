@@ -122,7 +122,7 @@ module NewapplicationHelper
           if policy(item).present?
             if policy(item).destroy?
               content_tag :li, '', class: 'delete-action' do
-                link_to(polymorph_url, method: :delete, data: { confirm: 'Etes-vous sûr(e) de vouloir effectuer cette action ?' }) do
+                link_to(polymorph_url, method: :delete, data: { confirm: I18n.t('are_you_sure') }) do
                   txt = t("actions.#{action}")
                   pic = content_tag :span, '', class: 'fa fa-trash'
                   pic + txt
@@ -131,7 +131,7 @@ module NewapplicationHelper
             end
           else
             content_tag :li, '', class: 'delete-action' do
-              link_to(polymorph_url, method: :delete, data: { confirm: 'Etes-vous sûr(e) de vouloir effectuer cette action ?' }) do
+              link_to(polymorph_url, method: :delete, data: { confirm: I18n.t('are_you_sure') }) do
                 txt = t("actions.#{action}")
                 pic = content_tag :span, '', class: 'fa fa-trash'
                 pic + txt
@@ -194,7 +194,7 @@ module NewapplicationHelper
             content_tag :span, '', class: 'fa fa-pencil'
           end
         elsif action == :delete
-          actitem = link_to('#', method: :delete, data: { path: dPath, confirm: 'Etes-vous sûr(e) de vouloir effectuer cette action ?' }, title: t("actions.#{action}")) do
+          actitem = link_to('#', method: :delete, data: { path: dPath, confirm: I18n.t('are_you_sure') }, title: t("actions.#{action}")) do
             content_tag :span, '', class: 'fa fa-trash'
           end
         end
