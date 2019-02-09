@@ -7,6 +7,8 @@ module JourneyPatternControl
     store_accessor :control_attributes, :min
     store_accessor :control_attributes, :max
 
+    enumerize :criticity, in: %i(warning error), scope: true, default: :warning
+
     def self.compliance_test(compliance_check, journey_pattern)
       journey_pattern.stop_points.order(:position).each_cons(2) do |from, to|
         costs = journey_pattern.costs_between(from, to)
