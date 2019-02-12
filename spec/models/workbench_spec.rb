@@ -21,6 +21,7 @@ RSpec.describe Workbench, :type => :model do
   it { should have_many(:group_of_lines).through(:line_referential) }
 
   it { should have_many(:stop_areas).through(:stop_area_referential) }
+  it { should have_many(:notification_rules).dependent(:destroy) }
 
   it do
     # This callback interferes with the validation test

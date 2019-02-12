@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   end
 
   def pundit_user
-    UserContext.new(current_user, referential: @referential)
+    UserContext.new(current_user, referential: @referential, workbench_ids: current_user.workbench_ids)
   end
 
   protected

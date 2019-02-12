@@ -39,18 +39,6 @@ class NotificationRulesController < ChouetteController
     )
   end
 
-  # def collection
-  #   @q = parent.notification_rules.search(params[:q])
-  #   @notification_rules ||=
-  #     begin
-  #       notification_rules = ransack_period_range(scope: @q, error_message:  t('referentials.errors.validity_period'), query: :in_periode)
-  #       notification_rules = @q.result(:distinct => true)
-  #       notification_rules = ransack_period_range(scope: @notification_rules, error_message:  t('referentials.errors.validity_period'), query: :in_periode)
-  #       notification_rules = notification_rules.paginate(:page => params[:page])
-  #       notification_rules
-  #     end
-  # end
-
   def create_resource(object)
     object.period = params[:period]
     super

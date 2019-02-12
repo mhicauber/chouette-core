@@ -31,7 +31,7 @@ class Workbench < ApplicationModel
 
   has_many :referentials, dependent: :destroy
   has_many :referential_metadatas, through: :referentials, source: :metadatas
-  has_many :notification_rules
+  has_many :notification_rules, dependent: :destroy
 
   before_validation :initialize_output
 
