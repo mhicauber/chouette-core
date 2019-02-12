@@ -39,7 +39,7 @@ module Chouette::Netex::Concerns::EntityCollections
     end
   end
 
-  def netex_stop_assignements(builder)
+  def netex_stop_assignments(builder)
     stop_points.includes(:stop_area_light).find_each do |stop_point|
       Chouette::Netex::PassengerStopAssignment.new(stop_point).to_xml(builder)
     end

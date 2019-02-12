@@ -44,6 +44,15 @@ class Chouette::Netex::Resource
     end
   end
 
+  def attribute(name, mapping=nil, target=nil)
+    mapping ||= attributes
+    target ||= resource
+
+    attr = mapping[name]
+    val = attr_to_val(attr, target)
+    @builder.send(name, val) if val.present?
+  end
+
   def default_resource_metas
     {
       version: :any,

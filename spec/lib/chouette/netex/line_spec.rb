@@ -14,4 +14,14 @@ RSpec.describe Chouette::Netex::Line, type: :netex_resource do
 
   it_behaves_like 'it has one child with ref', 'OperatorRef', ->{ resource.company.objectid }
   it_behaves_like 'it has one child with ref', 'RepresentedByGroupRef', ->{ resource.network.objectid }
+  it_behaves_like 'it has no child', 'additionalOperators'
+
+  context 'with a secondary company' do
+    let(:secondary){ create(:company) }
+    before(:each) do
+      resource.update secondary_companies: [secondary]
+    end
+
+    it_behaves_like 'it has one child with ref', 'additionalOperators OperatorRef', ->{ secondary.objectid }
+  end
 end

@@ -7,12 +7,16 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
 
   def attributes
     {
-      'Name' => :published_name,
+      'Name' => ->{ resource.published_name.presence || resource.name },
+      'TransportMode' => :transport_mode
+    }
+  end
+
+  def extra_attributes
+    {
       'Url' => :url,
       'PublicCode' => :number,
-      'PrivateCode' => :registration_number,
-      'TransportMode' => :transport_mode,
-      'TransportSubmode' => :transport_submode
+      'PrivateCode' => :registration_number
     }
   end
 
@@ -23,10 +27,23 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
     }
   end
 
+  def additional_operators
+    resource.secondary_companies.each do |c|
+      ref 'OperatorRef', c.objectid
+    end
+  end
+
   def build_xml
     @builder.Line(resource_metas) do
       attributes_mapping
+      node_if_content 'TransportSubmode' do
+        @builder.BusSubmode(resource.transport_submode) if resource.transport_submode
+      end
+      attributes_mapping extra_attributes
       ref 'OperatorRef', resource.company_light&.objectid
+      node_if_content 'additionalOperators' do
+        additional_operators
+      end
       ref 'RepresentedByGroupRef', resource.network&.objectid
       node_if_content 'Presentation' do
         attributes_mapping presentation_attributes

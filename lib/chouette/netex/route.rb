@@ -16,12 +16,13 @@ class Chouette::Netex::Route < Chouette::Netex::Resource
 
   def build_xml
     @builder.Route(resource_metas) do
-      attributes_mapping
+      attribute 'Name'
       ref 'LineRef', resource.line.objectid
-      ref 'InverseRouteRef', resource.opposite_route&.objectid
+      attribute 'DirectionType'
       node_if_content 'pointsInSequence' do
         points_in_sequence
       end
+      ref 'InverseRouteRef', resource.opposite_route&.objectid
     end
   end
 end

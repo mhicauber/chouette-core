@@ -44,8 +44,8 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
 
   def postal_address_attributes
     {
-      'Town' => :city_name,
       'AddressLine1' => :street_name,
+      'Town' => :city_name,
       'PostCode' => :zip_code
     }
   end
@@ -55,8 +55,8 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
   end
 
   def postal_address
+    ref 'CountryRef', resource.country_code&.downcase
     attributes_mapping(postal_address_attributes)
-    ref 'CountryRef', resource.country_code&.upcase
   end
 
   def postal_address_id
@@ -120,34 +120,34 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
 
   def stop_metas
     unless resource.commercial?
-      @builder.PublicUse(public_use) if public_use
       if resource.area_type == 'border'
         @builder.BorderCrossing true
       end
     end
 
-    @builder.StopPlaceType :other
   end
 
   def build_xml
     @builder.StopPlace(resource_metas) do
-      attributes_mapping
-      stop_metas
-      quays
+      node_if_content('keyList' ){ key_list }
+      attribute 'Name'
+      attribute 'Description'
       centroid
-      alternative_names
-
-      ref 'ParentSiteRef', resource.parent&.objectid
+      @builder.placeTypes do
+        ref 'TypeOfPlaceRef', type_of_place
+      end
+      attribute 'Url'
 
       @builder.PostalAddress(version: :any, id: postal_address_id) do
         postal_address
       end
-
-      node_if_content('keyList' ){ key_list }
-
-      @builder.placeTypes do
-        ref 'TypeOfPlaceRef', type_of_place
-      end
+      alternative_names
+      @builder.PublicUse(public_use) if public_use
+      ref 'ParentSiteRef', resource.parent&.objectid
+      @builder.StopPlaceType :other
+      quays
+      stop_metas
+      # attribute 'PrivateCode'
     end
   end
 end

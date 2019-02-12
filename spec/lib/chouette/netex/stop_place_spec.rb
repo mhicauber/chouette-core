@@ -28,7 +28,7 @@ RSpec.describe Chouette::Netex::StopPlace, type: :netex_resource do
     '> Name' => :name,
     'Description' => :comment,
     'Url' => :url,
-    'PrivateCode' => :registration_number
+    # 'PrivateCode' => :registration_number
   }
 
   context 'with ZDEP children' do
@@ -70,8 +70,8 @@ RSpec.describe Chouette::Netex::StopPlace, type: :netex_resource do
 
 
     context 'PostalAddress' do
-      before(:each) { resource.update country_code: :fr }
-      it_behaves_like 'it has one child with ref', 'PostalAddress CountryRef', 'FR'
+      before(:each) { resource.update country_code: :FR }
+      it_behaves_like 'it has one child with ref', 'PostalAddress CountryRef', 'fr'
       it_behaves_like 'it has one child with value', 'PostalAddress Town', :city_name
       it_behaves_like 'it has one child with value', 'PostalAddress AddressLine1', :street_name
       it_behaves_like 'it has one child with value', 'PostalAddress PostCode', :zip_code

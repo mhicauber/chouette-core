@@ -22,7 +22,7 @@ RSpec.describe Chouette::Netex::Operator, type: :netex_resource do
 
   it_behaves_like 'it has children matching attributes', {
     'PublicCode' => :code,
-    'CompanyCode' => :registration_number,
+    'CompanyNumber' => :registration_number,
     'Name' => :name,
     'ShortName' => :short_name,
     'ContactDetails > Email' => :email,

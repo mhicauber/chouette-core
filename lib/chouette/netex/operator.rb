@@ -2,7 +2,7 @@ class Chouette::Netex::Operator < Chouette::Netex::Resource
   def attributes
     {
       'PublicCode'  => :code,
-      'CompanyCode' => :registration_number,
+      'CompanyNumber' => :registration_number,
       'Name'        => :name,
       'ShortName'   => :short_name
     }

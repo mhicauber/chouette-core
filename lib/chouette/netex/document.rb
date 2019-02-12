@@ -85,12 +85,6 @@ class Chouette::Netex::Document
         builder.routes do
           netex_routes builder
         end
-        builder.scheduledStopPoints do
-          netex_scheduled_stop_points builder
-        end
-        builder.stopAssignements do
-          netex_stop_assignements builder
-        end
       end
       if lines.exists?
         builder.lines do
@@ -100,6 +94,14 @@ class Chouette::Netex::Document
       if networks.exists?
         builder.groupsOfLines do
           netex_groups_of_lines builder
+        end
+      end
+      if routes.exists?
+        builder.scheduledStopPoints do
+          netex_scheduled_stop_points builder
+        end
+        builder.stopAssignments do
+          netex_stop_assignments builder
         end
       end
     end
