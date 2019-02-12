@@ -1,0 +1,33 @@
+fr:
+  notification_rules:
+    search_no_results: "Aucune règle de notification ne correspond à votre recherche"
+    actions:
+      index: Règles de notifications
+      new: Ajouter une règle de notification
+    index:
+      title: Règles de notifications
+    show:
+      title: Règle de notification
+    edit: &notification_rule_edit
+      title: Editer la règle de notification
+    update:
+      <<: *notification_rule_edit
+    new: &notification_rule_new
+      edit: Ajouter une règle de notification
+    create:
+      <<: *notification_rule_new
+    notification_types:
+      hole_sentinel: Trou d'offre
+    errors:
+      period: "Invalid period"
+  activerecord:
+    models:
+      organisation:
+        zero: "règle de notification"
+        one: "règle de notification"
+        other: "règles de notification"
+    attributes:
+      notification_rule:
+        period: Pèriode
+        notification_type: Type de notification
+        line_id: Ligne

@@ -15,7 +15,7 @@ class WorkbenchesController < ChouetteController
   def show
     scope = resource.all_referentials
     scope = ransack_associated_lines(scope)
-    scope = self.ransack_period_range(scope: scope, error_message:  t('referentials.errors.validity_period'), query: :in_periode)
+    scope = self.ransack_period_range(scope: scope, error_message:  t('notification_rules.errors.period'), query: :in_periode)
     scope = ransack_status(scope)
 
     @q_for_form   = scope.ransack(params[:q])

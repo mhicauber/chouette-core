@@ -1,0 +1,8 @@
+- breadcrumb :notification_rules, @workbench, @notification_rule
+- page_header_content_for @notification_rule
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t('metadatas'), notification_rules_metadatas(@notification_rule)

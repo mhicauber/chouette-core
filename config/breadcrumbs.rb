@@ -397,6 +397,11 @@ crumb :api_keys do |workbench|
   parent :workbench, workbench
 end
 
+crumb :notification_rules do |workbench|
+  link I18n.t('notification_rules.index.title'), workbench_notification_rules_path(workbench)
+  parent :workbench, workbench
+end
+
 # crumb :compliance_controls do|compliance_control_sets|
 #   link
 #   parent :compliance_control_sets, compliance_control_sets

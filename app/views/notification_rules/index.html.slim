@@ -1,0 +1,37 @@
+- breadcrumb :notification_rules, @workbench
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @notification_rules.any?
+        .row
+          .col-lg-12
+            = render 'filters'
+
+    - if @notification_rules.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @notification_rules,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :notification_type, \
+                attribute: Proc.new {|o| "notification_rules.notification_types.#{o.notification_type}".t}, \
+                sortable: false \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :period, \
+                attribute: Proc.new {|o| t('bounding_dates', debut: o.period.begin, end: o.period.end)}, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :line_id, \
+                attribute: Proc.new{|o| o.line.name},\
+              ), \
+            ],
+            links: [:show],
+            cls: 'table has-search'
+
+          = new_pagination @notification_rules, 'pull-right'
+
+    - unless @notification_rules.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('notification_rules.search_no_results')

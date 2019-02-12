@@ -40,6 +40,8 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :referentials, only: %w(new create)
+
+    resources :notification_rules
   end
 
   resources :workgroups, concerns: :iev_interfaces do
