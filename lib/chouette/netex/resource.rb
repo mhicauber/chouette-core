@@ -108,12 +108,6 @@ class Chouette::Netex::Resource
     @builder.send(name, ref: val)
   end
 
-  def node_if_content name, &block
-    built = @builder.send name, &block
-    node = built.instance_variable_get("@node")
-    node.remove if node.children.count.zero?
-  end
-
   def node_with_attributes_mapping name, attributes
     node_if_content name do
       attributes_mapping(attributes)

@@ -28,8 +28,10 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
   end
 
   def additional_operators
-    resource.secondary_companies.each do |c|
-      ref 'OperatorRef', c.objectid
+    return if resource.secondary_company_ids.nil? || resource.secondary_company_ids.empty?
+
+    Chouette::Company.where(id: resource.secondary_company_ids).pluck(:objectid).each do |objectid|
+      ref 'OperatorRef', objectid
     end
   end
 

@@ -2,7 +2,7 @@ class Chouette::Netex::ScheduledStopPoint < Chouette::Netex::Resource
   def resource_metas
     {
       version: :any,
-      id: id_with_entity(resource, 'ScheduledStopPoint')
+      id: id_with_entity('ScheduledStopPoint', resource)
     }
   end
 

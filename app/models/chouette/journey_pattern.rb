@@ -25,6 +25,11 @@ module Chouette
       "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
     end
 
+    def workgroup_with_cache
+      self.class.current_workgroup || workgroup_without_cache
+    end
+    alias_method_chain :workgroup, :cache
+
     def checksum_attributes(db_lookup = true)
       values = self.slice(*['name', 'published_name', 'registration_number']).values
       values << self.stop_points.sort_by(&:position).map(&:stop_area_id)

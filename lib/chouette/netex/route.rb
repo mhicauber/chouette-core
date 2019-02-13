@@ -8,8 +8,8 @@ class Chouette::Netex::Route < Chouette::Netex::Resource
 
   def points_in_sequence
     resource.stop_points.each_with_index do |stop_point, i|
-      @builder.PointOnRoute(version: :any, id: id_with_entity(stop_point, 'PointOnRoute'), order: i+1) do
-        ref 'RoutePointRef', id_with_entity(stop_point, 'RoutePoint')
+      @builder.PointOnRoute(version: :any, id: id_with_entity('PointOnRoute', stop_point), order: i+1) do
+        ref 'RoutePointRef', id_with_entity('RoutePoint', stop_point)
       end
     end
   end

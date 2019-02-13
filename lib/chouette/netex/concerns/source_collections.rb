@@ -8,7 +8,7 @@ module Chouette::Netex::Concerns::SourceCollections
   end
 
   def lines
-    @lines ||= referential.lines.includes(:network, :company_light)
+    @lines ||= referential.lines
   end
 
   def networks
@@ -21,5 +21,9 @@ module Chouette::Netex::Concerns::SourceCollections
 
   def stop_points
     @stop_points ||= referential.stop_points
+  end
+
+  def journey_patterns
+    @journey_patterns ||= referential.journey_patterns
   end
 end

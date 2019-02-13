@@ -2,7 +2,7 @@ class Chouette::Netex::PassengerStopAssignment < Chouette::Netex::Resource
   def resource_metas
     {
       version: :any,
-      id: id_with_entity(resource, 'PassengerStopAssignment'),
+      id: id_with_entity('PassengerStopAssignment', resource),
       order: 0
     }
   end
@@ -13,7 +13,7 @@ class Chouette::Netex::PassengerStopAssignment < Chouette::Netex::Resource
 
   def build_xml
     @builder.PassengerStopAssignment(resource_metas) do
-      ref 'ScheduledStopPointRef', id_with_entity(resource, 'ScheduledStopPoint')
+      ref 'ScheduledStopPointRef', id_with_entity('ScheduledStopPoint', resource)
       ref parent_ref, resource.stop_area_light.objectid
     end
   end
