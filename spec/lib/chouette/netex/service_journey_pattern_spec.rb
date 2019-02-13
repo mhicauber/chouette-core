@@ -1,7 +1,6 @@
 RSpec.describe Chouette::Netex::ServiceJourneyPattern, type: :netex_resource do
   let(:resource){ create :journey_pattern, registration_number: nil, published_name: nil }
-  let(:workgroup){ referential.workgroup }
-
+  
   it_behaves_like 'it has default netex resource attributes'
   it_behaves_like 'it outputs custom fields'
   it_behaves_like 'it has one child with ref', 'RouteRef', ->{ resource.route.objectid }

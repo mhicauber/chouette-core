@@ -1,15 +1,18 @@
 RSpec.shared_context 'with a netex resource' do
   let(:collection){ nil }
   let(:subject){ described_class.new(resource, collection) }
+  let(:workgroup){ referential.workgroup }
 
   let(:result) do
      Nokogiri::XML::Builder.new do |builder|
-       subject.to_xml(builder)
+       builder.root do
+         subject.to_xml(builder)
+       end
      end
    end
 
    let(:doc){ result.doc }
-   let(:node){ doc.children.first }
+   let(:node){ doc.css('root').last.children.first }
 
    before(:each) do
      described_class.reset_cache

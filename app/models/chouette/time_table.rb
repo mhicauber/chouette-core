@@ -40,6 +40,8 @@ module Chouette
       .where("time_tables_vehicle_journeys.vehicle_journey_id is null")
     }
 
+    scope :used, -> { joins(:vehicle_journeys).uniq }
+
     scope :empty, -> {
       includes(:periods, :dates).where(time_table_periods: {id: nil}, time_table_dates: {id: nil})
     }

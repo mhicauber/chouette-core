@@ -105,11 +105,30 @@ class Chouette::Netex::Document
     end
   end
 
+  def service_calendar_frame
+    @builder.ServiceCalendarFrame(version: :any, id: 'Chouette:SiteFrame:1', created: format_time(Time.now), changed: format_time(Time.now)) do
+      @builder.ServiceCalendar(version: :any, id: 'Chouette:ServiceCalendar:1') do
+        @builder.FromDate referential.circulation_start
+        @builder.ToDate referential.circulation_end
+      end
+      node_if_content :dayTypes do
+        netex_day_types
+      end
+      node_if_content :operatingPeriods do
+        netex_operating_periods
+      end
+      node_if_content :dayTypeAssignments do
+        netex_day_type_assignments
+      end
+    end
+  end
+
   def frames(builder)
     @builder = builder
     resource_frame
     site_frame
     service_frame
+    service_calendar_frame
     @builder = nil
   end
 

@@ -13,10 +13,6 @@ class Export::NetexFull < Export::Base
     document.build
   end
 
-  def journeys
-    @journeys ||= Chouette::VehicleJourney.all
-  end
-
   def document
     @document ||= Chouette::Netex::Document.new(referential)
   end

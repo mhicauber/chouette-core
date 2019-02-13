@@ -9,7 +9,7 @@ FactoryGirl.define do
       dates_count 0
       periods_count 0
     end
-    
+
     transient do
       dates_count 4
       periods_count 4
@@ -18,7 +18,7 @@ FactoryGirl.define do
     after(:create) do |time_table, evaluator|
       unless time_table.dates.any?
         evaluator.dates_count.times do |i|
-          time_table.dates  << create(:time_table_date, :time_table => time_table, :date => i.days.since.to_date, :in_out => true)
+          time_table.dates << create(:time_table_date, :time_table => time_table, :date => i.days.since.to_date, :in_out => true)
         end
       end
 

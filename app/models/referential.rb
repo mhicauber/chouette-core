@@ -276,6 +276,14 @@ class Referential < ApplicationModel
     end
   end
 
+  def circulation_start
+    time_tables.used.order('start_date ASC').select(:start_date).first&.start_date
+  end
+
+  def circulation_end
+    time_tables.used.order('end_date ASC').select(:end_date).last&.end_date
+  end
+
   before_validation :define_default_attributes
 
   def define_default_attributes

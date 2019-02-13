@@ -66,4 +66,22 @@ module Chouette::Netex::Concerns::EntityCollections
       end
     end
   end
+
+  def netex_day_types
+    time_tables.includes(:tags).find_each do |time_table|
+      Chouette::Netex::DayType.new(time_table).to_xml(@builder)
+    end
+  end
+
+  def netex_operating_periods
+    time_tables.includes(:periods).find_each do |time_table|
+      Chouette::Netex::OperatingPeriod.new(time_table).to_xml(@builder)
+    end
+  end
+
+  def netex_day_type_assignments
+    time_tables.includes(:periods, :dates).find_each do |time_table|
+      Chouette::Netex::DayTypeAssignment.new(time_table).to_xml(@builder)
+    end
+  end
 end

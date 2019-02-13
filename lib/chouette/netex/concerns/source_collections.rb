@@ -26,4 +26,8 @@ module Chouette::Netex::Concerns::SourceCollections
   def journey_patterns
     @journey_patterns ||= referential.journey_patterns
   end
+
+  def time_tables
+    @time_tables ||= referential.time_tables
+  end
 end
