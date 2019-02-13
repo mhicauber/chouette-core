@@ -3,6 +3,10 @@ module Chouette::Netex::Concerns::Helpers
     time_or_date.to_time.utc.strftime('%Y-%m-%dT%H:%M:%S.%1NZ')
   end
 
+  def format_time_only(time)
+    time.strftime('%H:%M:%S')
+  end
+
   def format_date(date)
     date.strftime('%Y-%m-%d')
   end

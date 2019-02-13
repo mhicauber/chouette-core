@@ -22,7 +22,7 @@ module Chouette
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
     belongs_to :route
     belongs_to :journey_pattern
-    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
+    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :journey_pattern
 
     delegate :line, to: :route
@@ -142,6 +142,11 @@ module Chouette
       time_table_ids = scope.overlapping(date_range).applied_at_least_once_in_ids(date_range)
       joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
+
+    def workgroup_with_cache
+      self.class.current_workgroup || workgroup_without_cache
+    end
+    alias_method_chain :workgroup, :cache
 
     # TODO: Remove this validator
     # We've eliminated this validation because it prevented vehicle journeys

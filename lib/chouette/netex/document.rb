@@ -105,6 +105,14 @@ class Chouette::Netex::Document
     end
   end
 
+  def timetable_frame
+    @builder.TimetableFrame(version: :any, id: 'Chouette:TimetableFrame:1') do
+      node_if_content :vehicleJourneys do
+        netex_service_journeys
+      end
+    end
+  end
+
   def service_calendar_frame
     @builder.ServiceCalendarFrame(version: :any, id: 'Chouette:SiteFrame:1', created: format_time(Time.now), changed: format_time(Time.now)) do
       @builder.ServiceCalendar(version: :any, id: 'Chouette:ServiceCalendar:1') do
@@ -128,6 +136,7 @@ class Chouette::Netex::Document
     resource_frame
     site_frame
     service_frame
+    timetable_frame
     service_calendar_frame
     @builder = nil
   end

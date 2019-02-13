@@ -9,7 +9,7 @@ RSpec.describe Chouette::Netex::Line, type: :netex_resource do
     'PublicCode' => :number,
     'PrivateCode' => :registration_number,
     'TransportMode' => :transport_mode,
-    'TransportSubmode' => :transport_submode,
+    'TransportSubmode BusSubmode' => :transport_submode,
   }
 
   it_behaves_like 'it has one child with ref', 'OperatorRef', ->{ resource.company.objectid }

@@ -84,4 +84,14 @@ module Chouette::Netex::Concerns::EntityCollections
       Chouette::Netex::DayTypeAssignment.new(time_table).to_xml(@builder)
     end
   end
+
+  def netex_service_journeys
+    Chouette::VehicleJourney.within_workgroup(workgroup) do
+      vehicle_journeys\
+      .includes(:journey_pattern_only_objectid, :company_light, :purchase_windows, :time_tables, vehicle_journey_at_stops: { stop_point: :stop_area_light })\
+      .find_each do |vehicle_journey|
+        Chouette::Netex::ServiceJourney.new(vehicle_journey).to_xml(@builder)
+      end
+    end
+  end
 end

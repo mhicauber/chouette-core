@@ -30,4 +30,8 @@ module Chouette::Netex::Concerns::SourceCollections
   def time_tables
     @time_tables ||= referential.time_tables
   end
+
+  def vehicle_journeys
+    @vehicle_journeys ||= referential.vehicle_journeys
+  end
 end
