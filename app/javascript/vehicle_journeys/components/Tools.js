@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import actions from '../actions'
 import AddVehicleJourney from '../containers/tools/AddVehicleJourney'
 import DeleteVehicleJourneys from '../containers/tools/DeleteVehicleJourneys'
+import SelectVehicleJourneys from '../containers/tools/SelectVehicleJourneys'
+import CopyButton from '../containers/tools/CopyButton'
+import PasteButton from '../containers/tools/PasteButton'
 import ShiftVehicleJourney from '../containers/tools/ShiftVehicleJourney'
 import DuplicateVehicleJourney from '../containers/tools/DuplicateVehicleJourney'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
@@ -35,38 +38,44 @@ export default class Tools extends Component {
   }
 
   render() {
-    let { hasPolicy, hasFeature, hasDeletedVJ, props: { vehicleJourneys, onCancelSelection, onCancelDeletion, editMode } } = this
+    let { hasPolicy, hasFeature, hasDeletedVJ, props: { vehicleJourneys, onCancelSelection, onCancelDeletion, editMode, selectionMode, selection } } = this
     return (
       <div className='select_toolbox'>
         <ul>
-          <AddVehicleJourney disabled={!hasPolicy("create") || !editMode} />
-          <DuplicateVehicleJourney disabled={!hasPolicy("create") || !hasPolicy("update") || !editMode || hasDeletedVJ()}/>
-          <ShiftVehicleJourney disabled={!hasPolicy("update") || !editMode || hasDeletedVJ()}/>
-          <EditVehicleJourney disabled={hasDeletedVJ()}/>
+          { !selectionMode && <AddVehicleJourney disabled={!hasPolicy("create") || !editMode} /> }
+          { !selectionMode && <DuplicateVehicleJourney disabled={!hasPolicy("create") || !hasPolicy("update") || !editMode || hasDeletedVJ()}/> }
+          { !selectionMode && <ShiftVehicleJourney disabled={!hasPolicy("update") || !editMode || hasDeletedVJ()}/> }
+          { !selectionMode && <EditVehicleJourney disabled={hasDeletedVJ()}/> }
 
           <TimetablesEditVehicleJourney disabled={hasDeletedVJ()}/>
-          { hasFeature('purchase_windows') &&
+          { !selectionMode && hasFeature('purchase_windows') &&
             <PurchaseWindowsEditVehicleJourney disabled={hasDeletedVJ()}/>
           }
-          {hasFeature('routing_constraint_zone_exclusion_in_vehicle_journey') &&
+          { !selectionMode && hasFeature('routing_constraint_zone_exclusion_in_vehicle_journey') &&
             <ConstraintExclusionEditVehicleJourney disabled={hasDeletedVJ()} />
           }
-          <NotesEditVehicleJourney disabled={hasDeletedVJ()}/>
-          <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/>
+          { !selectionMode && <NotesEditVehicleJourney disabled={hasDeletedVJ()}/> }
+          { !selectionMode && <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/> }
+          { selectionMode && <CopyButton disabled={ !selection.ended } />  }
+          { selectionMode && <PasteButton disabled={ !selection.ended } />  }
+          <SelectVehicleJourneys disabled={!editMode}/>
         </ul>
-        <div className='pull-left'>
-          <span className='info-msg left-span'>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.selected_journeys', { count: actions.getSelected(vehicleJourneys).length })}</span>
+        { !selectionMode && <div>
+          <div className='pull-left'>
+            <span className='info-msg left-span'>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.selected_journeys', { count: actions.getSelected(vehicleJourneys).length })}</span>
+          </div>
+          <button className='btn btn-xs btn-link'
+                  disabled={actions.getSelected(vehicleJourneys).length == 0}
+                  onClick={onCancelSelection}>
+                  {I18n.t('vehicle_journeys.vehicle_journeys_matrix.cancel_selection')}
+          </button>
+          <button className='btn btn-xs btn-link pull-right'
+                  disabled={actions.getSelectedDeletables(vehicleJourneys).length == 0}
+                  onClick={onCancelDeletion}>
+                  {I18n.t('vehicle_journeys.vehicle_journeys_matrix.cancel_destroy')}
+          </button>
         </div>
-        <button className='btn btn-xs btn-link'
-                disabled={actions.getSelected(vehicleJourneys).length == 0}
-                onClick={onCancelSelection}>
-                {I18n.t('vehicle_journeys.vehicle_journeys_matrix.cancel_selection')}
-        </button>
-        <button className='btn btn-xs btn-link pull-right'
-                disabled={actions.getSelectedDeletables(vehicleJourneys).length == 0}
-                onClick={onCancelDeletion}>
-                {I18n.t('vehicle_journeys.vehicle_journeys_matrix.cancel_destroy')}
-        </button>
+      }
       </div>
     )
   }

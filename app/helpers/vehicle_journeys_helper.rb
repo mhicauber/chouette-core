@@ -82,7 +82,7 @@ module VehicleJourneysHelper
   end
 
   def display_time_with_day_offset(time, offset)
-    return time if offset.zero?
+    return time if offset.nil? || offset.zero?
 
     I18n.t('vehicle_journeys.index.vjas.arrival_time', time: time, offset: offset)
   end

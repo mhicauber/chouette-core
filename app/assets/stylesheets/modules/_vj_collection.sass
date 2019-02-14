@@ -3,6 +3,65 @@
 //-----------------//
 
 #vehicle_journeys_wip, .consolidated-view
+  $selection-background-color: $smooth-green
+  .selection-mode
+    *
+      -webkit-user-select: none !important
+      -khtml-user-select: none !important
+      -moz-user-select: none !important
+      -ms-user-select: none !important
+      user-select: none !important
+    .t2e-item-list
+      .td
+        transition: background-color 0.5s
+        .cellwrap
+          pointer-events: none
+          &.headlined:before
+            transition-delay: 0.5s
+            transition-property: background-color
+
+        & > .selection-size-helper
+          position: absolute
+          bottom: 0%
+          right: 0%
+          color: $selection-background-color
+          border-top: 2px solid $selection-background-color
+          border-left: 2px solid $selection-background-color
+          padding: 5px 10px
+          background-color: white
+          height: auto
+          z-index: 10
+      .td.selected
+        background-color: transparentize($selection-background-color, 0.5)
+        .cellwrap.headlined
+          &:before
+            transition-delay: 0s
+        &.selection-border-top
+          .cellwrap.headlined
+            &:before
+              background-color: white
+      .td:hover
+        cursor: pointer
+        background-color: transparentize($selection-background-color, 0.5)
+        &:not(.selected)
+          .cellwrap.headlined
+            &:before
+              background-color: white
+              transition-delay: 0s
+              transition-property: background-color
+
+      // .td.selection-start
+      //   outline: 3px solid $selection-background-color
+      //   outline-offset: -3px
+      //   .cellwrap.headlined
+      //     &:before
+      //       background-color: white
+      //       border-bottom: 3px solid $selection-background-color
+
+  .selection-locked .t2e-item-list
+    .td.selected
+      background-color: $selection-background-color
+
   .table-2entries
     .t2e-head
       > .td

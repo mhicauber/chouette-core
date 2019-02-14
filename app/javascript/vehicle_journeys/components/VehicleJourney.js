@@ -22,6 +22,82 @@ export default class VehicleJourney extends Component {
     return this.props.filters.features[key]
   }
 
+  isEditable() {
+    return this.props.editMode && !this.props.selectionMode
+  }
+
+  selectionClasses(x, y) {
+    let out = []
+
+    if (this.isSelected(x, y)){
+      out.push('selected')
+
+      if (this.isSelectionStart(x, y)){
+        out.push('selection-start')
+      }
+      if (x == this.props.selection.topLeft.x){
+        out.push('selection-border')
+        out.push('selection-border-left')
+      }
+      if (y == this.props.selection.topLeft.y){
+        out.push('selection-border')
+        out.push('selection-border-top')
+      }
+      if (x == this.props.selection.bottomRight.x){
+        out.push('selection-border')
+        out.push('selection-border-right')
+      }
+      if (y == this.props.selection.bottomRight.y){
+        out.push('selection-border')
+        out.push('selection-border-bottom')
+      }
+    }
+
+    return ' ' + (new Array(... new Set(out))).join(' ')
+  }
+
+  isSelected(x, y){
+    if(!this.props.selectionMode){
+      return false
+    }
+    if(!this.props.selection.started){
+      return false
+    }
+    if(this.props.selection.end == null){
+      return false
+    }
+    return this.props.selection.topLeft.x <= x
+    && this.props.selection.bottomRight.x >= x
+    && this.props.selection.topLeft.y <= y
+    && this.props.selection.bottomRight.y >= y
+  }
+
+  isSelectionStart(x, y){
+    if(!this.props.selectionMode){
+      return false
+    }
+
+    return this.props.selection.started
+    && !this.props.selection.ended
+    && this.props.selection.start.x == x
+    && this.props.selection.start.y == y
+  }
+
+  isSelectionBottomRight(x, y){
+    if(!this.props.selectionMode){
+      return false
+    }
+
+    return this.props.selection.started
+    && this.props.selection.bottomRight
+    && this.props.selection.bottomRight.x == x
+    && this.props.selection.bottomRight.y == y
+  }
+
+  selectionSizeHelperContent(){
+    return this.props.selection.width + 'x' + this.props.selection.height
+  }
+
   timeTableURL(tt) {
     let refURL = window.location.pathname.split('/', 3).join('/')
     let ttURL = refURL + '/time_tables/' + tt.id
@@ -58,7 +134,6 @@ export default class VehicleJourney extends Component {
     }
     return delta
   }
-
 
   hasTimeTable(time_tables, tt) {
     let found = false
@@ -181,10 +256,18 @@ export default class VehicleJourney extends Component {
             </div>
           }
 
-
         </div>
         {this.props.value.vehicle_journey_at_stops.map((vj, i) =>
-          <div key={i} className='td text-center'>
+          <div
+            key={i}
+            className={'td text-center' + this.selectionClasses(this.props.index, i) }
+            onMouseDown={(e) => this.props.onSelectCell(this.props.index, i, 'down', e)}
+            onMouseUp={(e) => this.props.onSelectCell(this.props.index, i, 'up', e)}
+            onMouseEnter={(e) => this.props.onHoverCell(this.props.index, i, e)}
+            >
+            { this.isSelectionBottomRight(this.props.index, i) && <div className='selection-size-helper'>
+              { this.selectionSizeHelperContent() }
+            </div>}
             <div className={'cellwrap' + (this.cityNameChecker(vj) ? ' headlined' : '')}>
               {this.props.filters.toggleArrivals &&
                 <div data-headline={I18n.t("vehicle_journeys.form.arrival_at")}>
@@ -192,22 +275,22 @@ export default class VehicleJourney extends Component {
                     <input
                       type='number'
                       className='form-control'
-                      disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.props.editMode && !vj.dummy}
-                      onChange={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false)}}
-                      onMouseOut={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
-                      onBlur={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
+                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
+                      readOnly={!this.isEditable() && !vj.dummy}
+                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false)}}
+                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
+                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
                       value={vj.arrival_time['hour']}
                       />
                     <span>:</span>
                     <input
                       type='number'
                       className='form-control'
-                      disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.props.editMode && !vj.dummy}
-                      onChange={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false)}}
-                      onMouseOut={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
-                      onBlur={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
+                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
+                      readOnly={!this.isEditable() && !vj.dummy}
+                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false)}}
+                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
+                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
                       value={vj.arrival_time['minute']}
                       />
                   </span>
@@ -223,22 +306,22 @@ export default class VehicleJourney extends Component {
                     <input
                       type='number'
                       className='form-control'
-                      disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.props.editMode && !vj.dummy}
-                      onChange={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals)}}
-                      onMouseOut={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
-                      onBlur={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
+                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
+                      readOnly={!this.isEditable() && !vj.dummy}
+                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals)}}
+                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
+                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
                       value={vj.departure_time['hour']}
                       />
                     <span>:</span>
                     <input
                       type='number'
                       className='form-control'
-                      disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.props.editMode && !vj.dummy}
-                      onChange={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals)}}
-                      onMouseOut={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
-                      onBlur={(e) => {this.props.editMode && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
+                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
+                      readOnly={!this.isEditable() && !vj.dummy}
+                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals)}}
+                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
+                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
                       value={vj.departure_time['minute']}
                       />
                 </span>

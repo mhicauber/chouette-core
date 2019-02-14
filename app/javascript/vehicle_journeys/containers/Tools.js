@@ -6,7 +6,9 @@ const mapStateToProps = (state) => {
   return {
     vehicleJourneys: state.vehicleJourneys,
     editMode: state.editMode,
-    filters: state.filters
+    selectionMode: state.selectionMode,
+    filters: state.filters,
+    selection: state.selection
   }
 }
 

@@ -389,12 +389,20 @@ table, .table
               background-color: #fff
               transition: 0.2s
 
-          &:checked + .switch-label:after
-            left: 0
-            transition: 0.2s
+          & + .switch-label
+            &:after
+              transition: left 0.2s
+            &:before
+              transition: background-color 0.2s
+
+          &:checked + .switch-label
+            &:before
+              background-color: $brand-color-primary
+            &:after
+              left: 20px
+
           &:not(:checked) + .switch-label:after
-            left: 20px
-            transition: 0.2s
+            left: 0
 
   &.inline
     > *
@@ -424,7 +432,7 @@ table, .table
             width: 18px
             height: 18px
 
-        &:not(:checked) + .switch-label:after
+        &:checked + .switch-label:after
           left: 15px
 
 // Form filter
