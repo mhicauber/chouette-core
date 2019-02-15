@@ -10,21 +10,23 @@ class Chouette::Netex::Document
   end
 
   def build
-    ActiveRecord::Base.cache do
-      @document = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
-        xml.PublicationDelivery(
-          'xmlns'       => 'http://www.netex.org.uk/netex',
-          'xmlns:xsi'   => 'http://www.w3.org/2001/XMLSchema-instance',
-          'xmlns:gml'   => 'http://www.opengis.net/gml/3.2',
-          'xmlns:siri'  => 'http://www.siri.org.uk/siri',
-          'version'     => '1.04:NO-NeTEx-networktimetable:1.0'
-        ) do
-          xml.PublicationTimestamp format_time(Time.now)
-          xml.ParticipantRef participant_ref
-          xml.dataObjects do
-            xml.CompositeFrame(version: :any, id: 'Chouette:CompositeFrame:1') do
-              xml.frames do
-                self.frames(xml)
+    referential.switch do
+      ActiveRecord::Base.cache do
+        @document = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
+          xml.PublicationDelivery(
+            'xmlns'       => 'http://www.netex.org.uk/netex',
+            'xmlns:xsi'   => 'http://www.w3.org/2001/XMLSchema-instance',
+            'xmlns:gml'   => 'http://www.opengis.net/gml/3.2',
+            'xmlns:siri'  => 'http://www.siri.org.uk/siri',
+            'version'     => '1.04:NO-NeTEx-networktimetable:1.0'
+          ) do
+            xml.PublicationTimestamp format_time(Time.now)
+            xml.ParticipantRef participant_ref
+            xml.dataObjects do
+              xml.CompositeFrame(version: :any, id: 'Chouette:CompositeFrame:1') do
+                xml.frames do
+                  self.frames(xml)
+                end
               end
             end
           end
@@ -33,12 +35,16 @@ class Chouette::Netex::Document
     end
   end
 
+  def document
+    @document ||= build && @document
+  end
+
   def reset_xml
     @xml = nil
   end
 
   def to_xml
-    @xml ||= @document.to_xml
+    @xml ||= document.to_xml
   end
 
   def temp_file
@@ -135,20 +141,26 @@ class Chouette::Netex::Document
 
   def frames(builder)
     @builder = builder
-    resource_frame
-    site_frame
-    service_frame
-    timetable_frame
-    service_calendar_frame
+    # netex_frames :resource, :site, :service, :timetable, :service_calendar
+    netex_frames :service
     @builder = nil
   end
 
-  def node_if_content_with_log name, &block
-    Rails.logger.info "NETEX Export: #{name}"
-    node_if_content_without_log name, &block
+  # def node_if_content_with_log name, &block
+  #   Rails.logger.info "NETEX Export: #{name}"
+  #   node_if_content_without_log name, &block
+  # end
+  # alias_method_chain :node_if_content, :log
+
+  def netex_frames *frame
+    frame.each &method(:netex_frame)
   end
 
-  alias_method_chain :node_if_content, :log
+  def netex_frame name
+    Chouette::Benchmark.log "NETEX FULL EXPORT: #{name} frame" do
+      send("#{name}_frame")
+    end
+  end
 
   def workgroup
     @workgroup ||= referential.workgroup

@@ -28,7 +28,7 @@ module Chouette::Netex::Concerns::EntityCollections
   end
 
   def netex_routes
-    routes.find_each do |route|
+    routes.includes(:line, :stop_points, :opposite_route).find_each do |route|
       Chouette::Netex::Route.new(route).to_xml(@builder)
     end
   end
