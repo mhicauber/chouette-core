@@ -1,7 +1,8 @@
 class Chouette::Netex::Resource
   include Chouette::Netex::Concerns::Helpers
 
-  def initialize(resource, collection=nil)
+  def initialize(document, resource, collection=nil)
+    @document = document
     @resource = resource
     @collection = collection
   end
@@ -28,10 +29,38 @@ class Chouette::Netex::Resource
     @collection
   end
 
+  def attributes_to_validate
+    []
+  end
+
+  def resource_is_valid?
+    return true unless attributes_to_validate.present?
+
+    attributes_to_validate.each do |attr|
+      key = attr
+      if attr.is_a?(Hash)
+        key, attr = *attr.first
+      end
+      resource.class.validators_on(key).each do |validator|
+        validator.validate_each(resource, key, resource.send(attr))
+      end
+    end
+
+    resource.errors.empty?
+  end
+
   def to_xml(builder)
-    @builder = builder
-    build_xml
-    @builder = nil
+    if resource_is_valid?
+      @builder = builder
+      build_xml
+      @builder = nil
+    else
+      @document.log_warning :skipping_invalid_object, {
+        object_class: resource.class.name,
+        object_id: resource.objectid,
+        errors: resource.errors.messages.map{|k, v| "#{k}: #{v.to_sentence}"}.to_sentence
+      }
+    end
   end
 
   def attributes_mapping(mapping=nil, target=nil)

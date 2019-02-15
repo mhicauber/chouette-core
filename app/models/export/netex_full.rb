@@ -14,7 +14,7 @@ class Export::NetexFull < Export::Base
   end
 
   def document
-    @document ||= Chouette::Netex::Document.new(referential)
+    @document ||= Chouette::Netex::Document.new(self)
   end
 
   def generate_export_file

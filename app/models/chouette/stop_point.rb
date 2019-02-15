@@ -30,6 +30,7 @@ module Chouette
     end
 
     scope :default_order, -> { order("position") }
+    scope :light, -> { select(:id, :objectid, :stop_area_id, :for_alighting, :for_boarding, :position) }
 
     scope :commercial, -> { joins(:stop_area).where("stop_areas.kind = ?", "commercial") }
     scope :non_commercial, -> { joins(:stop_area).where("stop_areas.kind = ?", "non_commercial") }

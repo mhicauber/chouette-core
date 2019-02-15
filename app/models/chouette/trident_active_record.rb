@@ -9,13 +9,6 @@ module Chouette
       def current_referential
         Referential.where(slug: Apartment::Tenant.current).first!
       end
-
-      def in_workgroup workgroup
-        @current_workgroup = workgroup
-        value = yield
-        @current_workgroup = nil
-        value
-      end
     end
 
     def referential

@@ -1,4 +1,7 @@
 class Chouette::Netex::ServiceJourneyPattern < Chouette::Netex::Resource
+  def attributes_to_validate
+    [{stop_points: :stop_point_lights}]
+  end
 
   def attributes
     { 'Name' => :name }
@@ -21,7 +24,7 @@ class Chouette::Netex::ServiceJourneyPattern < Chouette::Netex::Resource
   end
 
   def points_in_sequence
-    resource.stop_points.select(:objectid, :for_alighting, :for_boarding).each_with_index do |stop_point, i|
+    resource.stop_point_lights.each_with_index do |stop_point, i|
       @builder.StopPointInJourneyPattern(version: :any, id: stop_point_in_journey_pattern_id(stop_point), order: i+1) do
         ref 'ScheduledStopPointRef', id_with_entity('ScheduledStopPoint', stop_point)
         @builder.ForAlighting('false') if stop_point.for_alighting == 'forbidden'
@@ -32,7 +35,7 @@ class Chouette::Netex::ServiceJourneyPattern < Chouette::Netex::Resource
 
   def links_in_sequence
     i = 0
-    resource.stop_points.select(:objectid, :stop_area_id).each_cons(2) do |start, finish|
+    resource.stop_point_lights.each_cons(2) do |start, finish|
       costs = resource.costs_between start, finish
       if costs[:time] || costs[:distance]
         i += 1

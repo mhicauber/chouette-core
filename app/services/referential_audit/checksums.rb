@@ -25,8 +25,8 @@ class ReferentialAudit
           end
         }
         model.klass.cache do
-          if model.klass.respond_to?(:in_workgroup)
-            model.klass.in_workgroup(@referential.workgroup, &lookup)
+          if model.klass.respond_to?(:within_workgroup)
+            model.klass.within_workgroup(@referential.workgroup, &lookup)
           else
             lookup.call
           end

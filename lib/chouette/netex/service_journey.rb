@@ -1,4 +1,13 @@
 class Chouette::Netex::ServiceJourney < Chouette::Netex::Resource
+  def resource_is_valid?
+    unless resource.vehicle_journey_at_stops.all? { |vjas|
+      vjas.departure_time.present? || vjas.arrival_time.present?
+    }
+      resource.errors.add(:vehicle_journey_at_stops, :invalid_times)
+      return false
+    end
+    true
+  end
   def attributes
     {
       'Name' => :published_journey_name,

@@ -5,8 +5,9 @@ class Chouette::Netex::Document
 
   attr_accessor :referential
 
-  def initialize(referential)
-    @referential = referential
+  def initialize(export)
+    @referential = export.referential
+    @export = export
   end
 
   def build
@@ -56,6 +57,14 @@ class Chouette::Netex::Document
 
   def participant_ref
     "enRoute"
+  end
+
+  def log_warning(key, attrs={})
+    @export.messages.create({
+      criticity: :warning,
+      message_attributes: attrs,
+      message_key: key
+    })
   end
 
   protected
@@ -141,16 +150,15 @@ class Chouette::Netex::Document
 
   def frames(builder)
     @builder = builder
-    # netex_frames :resource, :site, :service, :timetable, :service_calendar
-    netex_frames :service
+    netex_frames :resource, :site, :service, :timetable, :service_calendar
     @builder = nil
   end
 
-  # def node_if_content_with_log name, &block
-  #   Rails.logger.info "NETEX Export: #{name}"
-  #   node_if_content_without_log name, &block
-  # end
-  # alias_method_chain :node_if_content, :log
+  def node_if_content_with_log name, &block
+    Rails.logger.info "NETEX Export: #{name}"
+    node_if_content_without_log name, &block
+  end
+  alias_method_chain :node_if_content, :log
 
   def netex_frames *frame
     frame.each &method(:netex_frame)

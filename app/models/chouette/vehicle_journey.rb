@@ -143,11 +143,6 @@ module Chouette
       joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
 
-    def workgroup_with_cache
-      self.class.current_workgroup || workgroup_without_cache
-    end
-    alias_method_chain :workgroup, :cache
-
     # TODO: Remove this validator
     # We've eliminated this validation because it prevented vehicle journeys
     # from being saved with at-stops having a day offset greater than 0,

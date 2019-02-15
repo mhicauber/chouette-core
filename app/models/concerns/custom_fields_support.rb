@@ -29,13 +29,14 @@ module CustomFieldsSupport
     end
 
     def self.within_workgroup workgroup
-      @_current_workgroup = workgroup
-      yield
-      @_current_workgroup = nil
+      @current_workgroup = workgroup
+      value = yield
+      @current_workgroup = nil
+      value
     end
 
     def self.current_workgroup
-      @_current_workgroup
+      @current_workgroup
     end
 
     def method_missing method_name, *args

@@ -1,10 +1,14 @@
 class Chouette::Netex::ServiceLink < Chouette::Netex::Resource
+  def attributes_to_validate
+    [{stop_points: :stop_point_lights}]
+  end
+
   def service_link_id(start, finish)
     id_with_entity 'ServiceLink', resource, start, finish
   end
 
   def build_xml
-    resource.stop_points.select(:objectid, :stop_area_id).each_cons(2) do |start, finish|
+    resource.stop_point_lights.each_cons(2) do |start, finish|
       costs = resource.costs_between start, finish
       if costs[:time] || costs[:distance]
         @builder.ServiceLink(version: :any, id: service_link_id(start, finish)) do
