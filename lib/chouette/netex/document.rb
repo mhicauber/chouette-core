@@ -115,9 +115,11 @@ class Chouette::Netex::Document
 
   def service_calendar_frame
     @builder.ServiceCalendarFrame(version: :any, id: 'Chouette:SiteFrame:1', created: format_time(Time.now), changed: format_time(Time.now)) do
-      @builder.ServiceCalendar(version: :any, id: 'Chouette:ServiceCalendar:1') do
-        @builder.FromDate referential.circulation_start
-        @builder.ToDate referential.circulation_end
+      if referential.circulation_start && referential.circulation_end
+        @builder.ServiceCalendar(version: :any, id: 'Chouette:ServiceCalendar:1') do
+          @builder.FromDate referential.circulation_start
+          @builder.ToDate referential.circulation_end
+        end
       end
       node_if_content :dayTypes do
         netex_day_types

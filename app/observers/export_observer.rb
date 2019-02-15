@@ -1,5 +1,5 @@
 class ExportObserver < NotifiableOperationObserver
-  observe Export::Gtfs, Export::Netex
+  observe Export::Gtfs, Export::Netex, Export::NetexFull
 
   def mailer_name(model)
     'ExportMailer'.freeze

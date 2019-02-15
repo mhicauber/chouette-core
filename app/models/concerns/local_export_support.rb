@@ -6,6 +6,10 @@ module LocalExportSupport
     after_commit :launch_worker, on: :create
   end
 
+  module ClassMethods
+    attr_accessor :skip_empty_exports
+  end
+
   def launch_worker
     if synchronous
       run unless status == "running"
@@ -25,7 +29,7 @@ module LocalExportSupport
   def export
     referential.switch
 
-    if journeys.count == 0
+    if self.class.skip_empty_exports && journeys.count == 0
       self.update status: :successful, ended_at: Time.now
       vals = {}
       vals[:criticity] = :info

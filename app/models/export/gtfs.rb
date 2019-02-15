@@ -3,6 +3,8 @@ class Export::Gtfs < Export::Base
 
   option :duration, required: true, type: :integer, default_value: 200
 
+  @skip_empty_exports = true
+
   def worker_class
     GTFSExportWorker
   end
