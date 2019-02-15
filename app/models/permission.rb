@@ -32,6 +32,7 @@ class Permission
         publication_setups
         publication_apis
         publication_api_keys
+        notification_rules
       ]
     end
 

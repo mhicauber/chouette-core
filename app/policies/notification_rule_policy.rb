@@ -1,7 +1,7 @@
 class NotificationRulePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope
+      scope.where(workbench_id: user.workbench_ids)
     end
   end
 
@@ -10,7 +10,7 @@ class NotificationRulePolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_permission?('notification_rules.create') && workbench_match?
+    user.has_permission?('notification_rules.create')
   end
 
   def destroy?

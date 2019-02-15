@@ -10,9 +10,6 @@ class NotificationRuleDecorator < AF83::Decorator
 
     instance_decorator.edit_action_link
 
-    instance_decorator.destroy_action_link do |l|
-      l.content { h.destroy_link_content('stop_areas.actions.destroy') }
-      l.data {{ confirm: h.t('stop_areas.actions.destroy_confirm') }}
-    end
+    instance_decorator.destroy_action_link
   end
 end

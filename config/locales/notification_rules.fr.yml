@@ -4,6 +4,8 @@ fr:
     actions:
       index: Règles de notifications
       new: Ajouter une règle de notification
+      destroy: Supprimer la règle de notification
+      destroy_confirm: Êtes-vous sûr de vouloir supprimer la règle de notification ?
     index:
       title: Règles de notifications
     show:

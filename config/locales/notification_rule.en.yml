@@ -4,6 +4,8 @@ en:
     actions:
       index: Notification rules
       new: Add a notification rules
+      destroy: Delete the notification rule
+      destroy_confirm: Are you sure you want to delete the notification rule ?
     index:
       title: Notification rules
     show:
