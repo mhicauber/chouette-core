@@ -71,7 +71,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stops
-    sorted_stops = source.stops.sort_by { |s| s.parent_station ? 1 : 0 }
+    sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
       stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
 
