@@ -91,6 +91,7 @@ RSpec.describe Aggregate, type: :model do
       end
 
       it "should change the other aggregates status" do
+        expect(aggregate).to receive(:publish)
         aggregate.rollback!
         expect(previous_aggregate.reload.status).to eq "successful"
         expect(previous_failed_aggregate.reload.status).to eq "failed"

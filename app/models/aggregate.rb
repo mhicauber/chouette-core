@@ -22,6 +22,7 @@ class Aggregate < ActiveRecord::Base
     raise "You cannot rollback to the current version" if current?
     workgroup.output.update current: self.new
     following_aggregates.each(&:cancel!)
+    publish
     workgroup.aggregated!
   end
 
