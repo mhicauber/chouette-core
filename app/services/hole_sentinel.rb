@@ -10,7 +10,8 @@ class HoleSentinel
     return holes unless days_ahead.positive?
 
     referential.switch do
-      referential.lines.each do |line|
+
+      referential.notifiable_lines.each do |line|
         line_holes = Stat::JourneyPatternCoursesByDate.where('date >= CURRENT_DATE').holes_for_line(line)
 
         # first we check that the next hole is soon enough for us to care about

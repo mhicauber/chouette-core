@@ -61,6 +61,10 @@ module Chouette
       where(line_referential_id: workbench.line_referential_id)
     }
 
+    scope :notifiable, -> (workbench) {
+      where(id: workbench.notification_rules.pluck(:line_id))
+    }
+
     def self.nullable_attributes
       [:published_name, :number, :comment, :url, :color, :text_color, :stable_id]
     end

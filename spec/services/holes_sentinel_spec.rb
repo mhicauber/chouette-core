@@ -8,6 +8,7 @@ RSpec.describe HoleSentinel do
   before(:each) do
     workbench.output.update current: referential
     referential.metadatas << create(:referential_metadata, line_ids: [line.id, line2.id], periodes: [(Time.now..1.month.since)])
+    allow(referential).to receive(:notifiable_lines).and_return([line, line2])
     referential.switch
   end
 
