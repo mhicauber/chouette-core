@@ -1,6 +1,8 @@
 RSpec.shared_context 'with a netex resource' do
   let(:collection){ nil }
-  let(:subject){ described_class.new(resource, collection) }
+  let(:export){ Export::NetexFull.new(referential: referential) }
+  let(:document){ Chouette::Netex::Document.new(export) }
+  let(:subject){ described_class.new(document, resource, collection) }
   let(:workgroup){ referential.workgroup }
 
   let(:result) do

@@ -34,4 +34,8 @@ module Chouette::Netex::Concerns::SourceCollections
   def vehicle_journeys
     @vehicle_journeys ||= referential.vehicle_journeys
   end
+
+  def routing_constraint_zones
+    @routing_constraint_zones ||= referential.routing_constraint_zones
+  end
 end

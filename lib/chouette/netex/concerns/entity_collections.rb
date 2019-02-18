@@ -94,4 +94,10 @@ module Chouette::Netex::Concerns::EntityCollections
       end
     end
   end
+
+  def netex_routing_constraint_zones
+    routing_constraint_zones.includes(route: :line).find_each do |rcz|
+      Chouette::Netex::RoutingConstraintZone.new(self, rcz).to_xml(@builder)
+    end
+  end
 end

@@ -8,6 +8,7 @@ class Chouette::Netex::ServiceJourney < Chouette::Netex::Resource
     end
     true
   end
+
   def attributes
     {
       'Name' => :published_journey_name,

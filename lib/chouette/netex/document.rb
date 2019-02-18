@@ -117,6 +117,9 @@ class Chouette::Netex::Document
       node_if_content :journeyPatterns do
         netex_service_journey_patterns
       end
+      node_if_content :routingConstraintZones do
+        netex_routing_constraint_zones
+      end
     end
   end
 

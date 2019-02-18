@@ -21,6 +21,8 @@ fr:
       models:
         routing_constraint_zone:
           attributes:
+            route:
+              missing: "Une ITL doit appartenir à un itinéraire"
             stop_points:
               not_enough_stop_points: "Une ITL doit contenir au moins deux arrêts sur la séquence"
               stop_points_not_from_route: "Arrêt sur séquence d'arrêts n'appartient pas à la Route de cette Zone de contrainte."
