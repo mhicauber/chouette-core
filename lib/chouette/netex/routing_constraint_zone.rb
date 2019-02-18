@@ -52,7 +52,7 @@ class Chouette::Netex::RoutingConstraintZone < Chouette::Netex::Resource
   def build_xml
     @builder.RoutingConstraintZone(resource_metas) do
       node_if_content :keyList do
-        key_value 'RouteRef', resource.route.objectid
+        key_value 'routeRef', resource.route.objectid
       end
       attribute 'Name'
       members

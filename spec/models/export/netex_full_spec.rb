@@ -11,6 +11,7 @@ RSpec.describe Export::NetexFull, type: [:model, :with_exportable_referential] d
     let(:synchronous){ true }
     it 'should not call a worker' do
       expect(NetexFullExportWorker).to_not receive(:perform_async_or_fail)
+      expect(export).to receive :upload_file
       export.run_callbacks(:commit)
     end
 

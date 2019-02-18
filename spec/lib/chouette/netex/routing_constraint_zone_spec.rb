@@ -4,10 +4,10 @@ RSpec.describe Chouette::Netex::RoutingConstraintZone , type: :netex_resource do
   it_behaves_like 'it has default netex resource attributes'
 
   it_behaves_like 'it has children matching attributes', {
-    'Name' => :published_journey_name
+    'Name' => :name
   }
 
-  it_behaves_like 'it has one child with ref', 'lines LineRef', ->{ resource.line.objectid }
+  it_behaves_like 'it has one child with ref', 'lines LineRef', ->{ resource.route.line.objectid }
   it_behaves_like 'it has one child with value', 'keyList KeyValue Key', 'routeRef'
   it_behaves_like 'it has one child with value', 'keyList KeyValue Value', ->{ resource.route.objectid }
   it_behaves_like 'it has one child with value', 'ZoneUse', 'cannotBoardAndAlightInSameZone'
