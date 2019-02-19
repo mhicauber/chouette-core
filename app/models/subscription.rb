@@ -52,9 +52,11 @@ class Subscription
     end
   end
 
-  def create_workgroup!
+  def workgroup
     @workgroup ||= Workgroup.create_with_organisation(organisation)
   end
+
+  alias_method :create_workgroup!, :workgroup
 
   def save
     if valid?
