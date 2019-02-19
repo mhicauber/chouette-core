@@ -302,11 +302,13 @@ class Import::Neptune < Import::Base
 
     source_routes.each do |source_route|
       published_name = source_route[:published_name] || source_route[:name]
-      route = line.routes.find_or_initialize_by published_name: published_name
-      route.name = source_route[:name]
-      route.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
-      route.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
-      route.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
+      route = line.routes.build do |route|
+        route.published_name = published_name
+        route.name = source_route[:name]
+        route.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
+        route.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
+        route.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
+      end
 
       add_stop_points_to_route(route, source_route[:pt_link_id], line_desc[:pt_link], source_route[:object_id])
       save_model route
@@ -323,10 +325,12 @@ class Import::Neptune < Import::Base
 
     source_journey_patterns.each do |source_journey_pattern|
       route = @routes[source_journey_pattern[:route_id]]
-      journey_pattern = route.journey_patterns.find_or_initialize_by published_name: source_journey_pattern[:published_name]
-      journey_pattern.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
-      journey_pattern.name = source_journey_pattern[:name]
-      journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
+      journey_pattern = route.journey_patterns.build do |journey_pattern|
+        journey_pattern.published_name = source_journey_pattern[:published_name]
+        journey_pattern.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
+        journey_pattern.name = source_journey_pattern[:name]
+        journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
+      end
 
       add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
       save_model journey_pattern
@@ -343,12 +347,15 @@ class Import::Neptune < Import::Base
       else
         journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
       end
-      vehicle_journey = journey_pattern.vehicle_journeys.find_or_initialize_by number: source_vehicle_journey[:number], published_journey_name: source_vehicle_journey[:published_journey_name]
-      vehicle_journey.route = journey_pattern.route
-      vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
-      vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
-      vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
-      vehicle_journey.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
+      vehicle_journey = journey_pattern.vehicle_journeys.build do |vehicle_journey|
+        vehicle_journey.number =  source_vehicle_journey[:number]
+        vehicle_journey.published_journey_name = source_vehicle_journey[:published_journey_name]
+        vehicle_journey.route = journey_pattern.route
+        vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
+        vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
+        vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
+        vehicle_journey.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
+      end
       add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
 
       save_model vehicle_journey
@@ -393,10 +400,11 @@ class Import::Neptune < Import::Base
     vehicle_journey.vehicle_journey_at_stops.destroy_all
 
     vehicle_journey_at_stops.sort_by{|i| i[:order]}.each do |source_vehicle_journey_at_stop|
-      vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build
-      vehicle_journey_at_stop.stop_point = @stop_points[route_object_id][source_vehicle_journey_at_stop[:stop_point_id]]
-      vehicle_journey_at_stop.arrival_local_time = source_vehicle_journey_at_stop[:arrival_time]
-      vehicle_journey_at_stop.departure_local_time = source_vehicle_journey_at_stop[:departure_time]
+      vehicle_journey.vehicle_journey_at_stops.build do |vehicle_journey_at_stop|
+        vehicle_journey_at_stop.stop_point = @stop_points[route_object_id][source_vehicle_journey_at_stop[:stop_point_id]]
+        vehicle_journey_at_stop.arrival_local_time = source_vehicle_journey_at_stop[:arrival_time]
+        vehicle_journey_at_stop.departure_local_time = source_vehicle_journey_at_stop[:departure_time]
+      end
     end
   end
 

@@ -165,15 +165,6 @@ RSpec.describe Import::Neptune do
       expect{ import.send(:import_lines_content) }.to change{ Chouette::Route.count }.by 4
     end
 
-    it 'should update existing routes' do
-      import.send(:import_lines_content)
-      route = Chouette::Route.last
-      attrs = route.attributes.except('updated_at')
-      route.update name: "foo"
-      expect{ import.send(:import_lines_content) }.to_not change{ Chouette::Route.count }
-      expect(route.reload.attributes.except('updated_at')).to eq attrs
-    end
-
     it 'should set opposite_route' do
       import.send(:import_lines_content)
       route = Chouette::Route.find_by published_name: 'ST EXUPERY - GRENOBLE - Aller'
@@ -191,15 +182,6 @@ RSpec.describe Import::Neptune do
       expect{ import.send(:import_lines_content) }.to change{ Chouette::JourneyPattern.count }.by 4
     end
 
-    it 'should update existing journey_patterns' do
-      import.send(:import_lines_content)
-      journey_pattern = Chouette::JourneyPattern.find_by registration_number: '8218'
-      attrs = journey_pattern.attributes.except('updated_at', 'departure_stop_point_id', 'arrival_stop_point_id')
-      journey_pattern.update name: "foo"
-      expect{ import.send(:import_lines_content) }.to_not change{ Chouette::JourneyPattern.count }
-      expect(journey_pattern.reload.attributes.except('updated_at', 'departure_stop_point_id', 'arrival_stop_point_id')).to eq attrs
-    end
-
     it 'should set stop_points on journey_patterns' do
       import.send(:import_lines_content)
       journey_pattern = Chouette::JourneyPattern.find_by registration_number: '8218'
@@ -210,19 +192,10 @@ RSpec.describe Import::Neptune do
       let(:import) { create_import 'sample_neptune_large' }
 
       it 'should create new vehicle_journeys' do
-        expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 63
-        vehicle_journey = Chouette::VehicleJourney.find_by number: '1001'
-        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 20
-        expect(vehicle_journey.time_tables.count).to eq 1
-      end
-
-      xit 'should update existing vehicle_journeys' do
-        import.send(:import_lines_content)
-        vehicle_journey = Chouette::VehicleJourney.find_by published_journey_name: 'Gare Routière'
-        attrs = vehicle_journey.attributes.except('updated_at')
-        vehicle_journey.update transport_mode: nil
-        expect{ import.send(:import_lines_content) }.to_not change{ Chouette::VehicleJourney.count }
-        expect(vehicle_journey.reload.attributes.except('updated_at')).to eq attrs
+        expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 3
+        vehicle_journey = Chouette::VehicleJourney.find_by number: '1026'
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 12
+        expect(vehicle_journey.time_tables.count).to eq 2
       end
     end
   end
@@ -235,7 +208,7 @@ RSpec.describe Import::Neptune do
     end
 
     it 'should create new time_tables' do
-      expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 6
+      expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 2
     end
 
     it 'should update existing time_tables' do
