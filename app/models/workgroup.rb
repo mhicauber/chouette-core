@@ -176,4 +176,35 @@ class Workgroup < ApplicationModel
     self.output ||= ReferentialSuite.create
   end
 
+  def self.create_with_organisation organisation, params={}
+    name = params[:name] || "#{Workgroup.ts} #{organisation.name}"
+
+    Workgroup.transaction do
+      workgroup = Workgroup.create!(name: name) do |workgroup|
+        workgroup.owner = organisation
+
+        workgroup.line_referential ||= LineReferential.create!(name: LineReferential.ts) do |referential|
+          referential.add_member organisation, owner: true
+          referential.objectid_format = :netex
+          referential.sync_interval = 1 # XXX is this really useful ?
+        end
+
+        workgroup.stop_area_referential ||= StopAreaReferential.create!(name: StopAreaReferential.ts) do |referential|
+          referential.add_member organisation, owner: true
+          referential.objectid_format = :netex
+        end
+      end
+
+      organisation.workbenches.create!(name: Workbench.ts) do |w|
+        w.line_referential      = workgroup.line_referential
+        w.stop_area_referential = workgroup.stop_area_referential
+        w.workgroup             = workgroup
+        w.objectid_format       = 'netex'
+        w.prefix = organisation.code
+      end
+
+      workgroup
+    end
+  end
+
 end

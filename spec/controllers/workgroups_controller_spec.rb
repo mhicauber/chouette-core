@@ -7,10 +7,9 @@ RSpec.describe WorkgroupsController, :type => :controller do
   let(:compliance_control_set) { create :compliance_control_set, organisation: organisation }
   let(:merge_id) { 2**64/2 - 1 } # Let's check we support Bigint
 
-
   describe "GET show" do
     let(:request){ get :show, id: workgroup.id }
-    it_behaves_like 'checks current_organisation', success_code: 302
+    it_behaves_like 'checks current_organisation'
   end
 
   describe "GET edit_controls" do
@@ -23,6 +22,58 @@ RSpec.describe WorkgroupsController, :type => :controller do
         workgroup.update owner: @user.organisation
       end
       it_behaves_like 'checks current_organisation'
+    end
+  end
+
+  describe 'PUT create' do
+    let(:params){
+      {
+        workgroup: { name: "Foo" }
+      }
+    }
+    let(:request){ put :create, params }
+
+    without_permission "workgroups.create" do
+      it 'should respond with 403' do
+        expect(request).to have_http_status 403
+      end
+    end
+
+    with_permission "workgroups.create" do
+      it 'should create a new Workgroup' do
+        expect{ request }.to change{ Workgroup.count }.by 1
+      end
+
+      it 'should create a new Workbench' do
+        expect{ request }.to change{ Workbench.count }.by 1
+      end
+
+      it 'should create a new LineReferential' do
+        expect{ request }.to change{ LineReferential.count }.by 1
+      end
+
+      it 'should create a new LineReferential' do
+        expect{ request }.to change{ StopAreaReferential.count }.by 1
+      end
+
+      context "with an error" do
+        before { create :workgroup, name: "Foo" }
+        it 'should respond with 200' do
+          expect(request).to have_http_status 200
+        end
+
+        it 'should not create a new Workbench' do
+          expect{ request }.to_not change{ Workbench.count }
+        end
+
+        it 'should not create a new LineReferential' do
+          expect{ request }.to_not change{ LineReferential.count }
+        end
+
+        it 'should not create a new LineReferential' do
+          expect{ request }.to_not change{ StopAreaReferential.count }
+        end
+      end
     end
   end
 

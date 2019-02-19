@@ -12,6 +12,14 @@ class WorkgroupsController < ChouetteController
     update!
   end
 
+  def create
+    @workgroup = Workgroup.create_with_organisation current_organisation, workgroup_params
+    redirect_to(@workgroup)
+  rescue ActiveRecord::RecordInvalid => e
+    @workgroup = Workgroup.new workgroup_params
+    render :new
+  end
+
   def index
     index! do |format|
       @workgroups = WorkgroupDecorator.decorate(@workgroups)
@@ -24,8 +32,13 @@ class WorkgroupsController < ChouetteController
     end
   end
 
+  def show
+    @workgroup = resource.decorate
+  end
+
   def workgroup_params
     params.require(:workgroup).permit(
+      :name,
       :sentinel_min_hole_size,
       :sentinel_delay,
       :nightly_aggregate_enabled, :nightly_aggregate_time,
@@ -39,7 +52,11 @@ class WorkgroupsController < ChouetteController
   end
 
   def resource
-    @workgroup = current_organisation.workgroups.find(params[:id]).decorate
+    if params[:id]
+      @workgroup = current_organisation.workgroups.find(params[:id])
+    else
+      current_organisation.workgroups.build
+    end
   end
 
   def collection
