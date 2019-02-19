@@ -11,7 +11,7 @@ module CustomFieldControl
       when "Company"
         [object.line_referential, object]
       when "VehicleJourney"
-        [object.referential, object.route.line, object.route, :vehicle_journeys_collection]
+        [object.referential, object.route.line, object.route, :vehicle_journeys]
       when "JourneyPattern"
         [object.referential, object.route.line, object.route, :journey_patterns_collection]
       when "StopArea"
