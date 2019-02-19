@@ -31,7 +31,7 @@ class Merge < ApplicationModel
   def cancel!
     update status: :canceled
     referentials.each(&:unmerged!)
-    new.rollbacked!
+    new&.rollbacked!
   end
 
   def following_merges
@@ -96,7 +96,7 @@ class Merge < ApplicationModel
       save_current
     end
   rescue => e
-    Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
+    Rails.logger.error "Merge ##{id} failed: #{e} #{e.backtrace.join("\n")}"
     failed!
     raise e# if Rails.env.test?
   end
@@ -104,7 +104,7 @@ class Merge < ApplicationModel
   def prepare_new
     new =
       if workbench.output.current
-        Rails.logger.debug "Clone current output"
+        Rails.logger.debug "Merge ##{id}: Clone current output"
         Referential.new_from(workbench.output.current, workbench).tap do |clone|
           clone.inline_clone = true
         end
@@ -113,7 +113,7 @@ class Merge < ApplicationModel
           # there had been previous merges, we should have a current output
           raise "Trying to create a new referential to merge into from Merge##{self.id}, while there had been previous merges in the same workbench"
         end
-        Rails.logger.debug "Create a new output"
+        Rails.logger.debug "Merge ##{id}: Create a new output"
         # 'empty' one
         attributes = {
           workbench: workbench,
@@ -130,13 +130,13 @@ class Merge < ApplicationModel
 
 
     unless new.valid?
-      Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
+      Rails.logger.error "Merge ##{id}: New referential isn't valid : #{new.errors.inspect}"
     end
 
     begin
       new.save!
     rescue
-      Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
+      Rails.logger.debug "Merge ##{id}: Errors on new referential: #{new.errors.messages}"
       raise
     end
 
@@ -151,7 +151,7 @@ class Merge < ApplicationModel
   end
 
   def merge_referential(referential)
-    Rails.logger.debug "Merge #{referential.slug}"
+    Rails.logger.debug "Merge ##{id}: Merge #{referential.slug}"
 
     metadata_merger = MetadatasMerger.new new, referential
     metadata_merger.merge
@@ -164,7 +164,7 @@ class Merge < ApplicationModel
 
     new.switch do
       line_periods.each do |line_id, periods|
-        Rails.logger.debug "Clean data for #{line_id} #{periods.inspect}"
+        Rails.logger.debug "Merge ##{id}: Clean data for #{line_id} #{periods.inspect}"
 
         new.lines.find(line_id).time_tables.find_each do |time_table|
           time_table.remove_periods! periods
@@ -316,7 +316,7 @@ class Merge < ApplicationModel
               end
             end
 
-            Rails.logger.warn "Can't merge opposite route for Route #{route_id}" unless new_route
+            Rails.logger.warn "Merge ##{id}: Can't merge opposite route for Route #{route_id}" unless new_route
           end
         end
       end
@@ -643,10 +643,10 @@ class Merge < ApplicationModel
 
   def save_model!(model)
     unless model.save
-      Rails.logger.info "Can't save #{model.class.name} : #{model.errors.inspect}"
+      Rails.logger.info "Merge ##{id}: Can't save #{model.class.name} : #{model.errors.inspect}"
       raise ActiveRecord::RecordNotSaved, "Invalid #{model.class.name} : #{model.errors.inspect}"
     end
-    Rails.logger.debug { "Created #{model.inspect}" }
+    Rails.logger.debug { "Merge ##{id}: Created #{model.inspect}" }
   end
 
   def clean_scope
