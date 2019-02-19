@@ -47,7 +47,6 @@ class Referential < ApplicationModel
 
   belongs_to :created_from, class_name: 'Referential'
   has_many :associated_lines, through: :line_referential, source: :lines
-  has_many :notifiable_lines, -> (ref) { lines.notifiable(ref.workbench) }
   has_many :companies, through: :line_referential
   has_many :group_of_lines, through: :line_referential
   has_many :networks, through: :line_referential

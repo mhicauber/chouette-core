@@ -8,7 +8,9 @@ end
 module Arel
   module Predications
     def between other
-      gteq(other[0]).and(lt(other[1]))
+      min = other.is_a?(Range) ? other.begin : other[0]
+      max = other.is_a?(Range) ? other.begin : other[0]
+      gteq(min).and(lt(max))
     end
   end
 end

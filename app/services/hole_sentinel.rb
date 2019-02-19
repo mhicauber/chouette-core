@@ -11,8 +11,8 @@ class HoleSentinel
 
     referential.switch do
 
-      referential.notifiable_lines.each do |line|
-        line_holes = Stat::JourneyPatternCoursesByDate.where('date >= CURRENT_DATE').holes_for_line(line)
+      referential.lines.each do |line|
+        line_holes = Stat::JourneyPatternCoursesByDate.where('date >= CURRENT_DATE').holes_for_line(line).notifiable(@workbench)
 
         # first we check that the next hole is soon enough for us to care about
         next unless line_holes.exists?

@@ -11,7 +11,6 @@ class Workbench < ApplicationModel
 
   has_many :users, through: :organisation
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
-  has_many :notifiable_lines, -> (workbench) { notifiable(workbench) }, through: :line_referential, source: :lines
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
   has_many :networks, through: :line_referential
   has_many :companies, through: :line_referential
