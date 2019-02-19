@@ -139,7 +139,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def perform_internal_checks
-    update status: :pending
+    update status: :running
     begin
       compliance_checks.internals.each &:process
     ensure

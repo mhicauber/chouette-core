@@ -31,7 +31,7 @@ class Merge < ApplicationModel
   def cancel!
     update status: :canceled
     referentials.each(&:unmerged!)
-    new.rollbacked!
+    new&.rollbacked!
   end
 
   def following_merges
