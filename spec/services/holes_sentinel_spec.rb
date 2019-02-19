@@ -60,7 +60,7 @@ RSpec.describe HoleSentinel do
 
         context "without notification rules" do
           it { should be_present }
-  
+
           it 'should have a hole for the line with the date' do
             expect(subject[line.id]).to eq 4.days.since.to_date
             expect(subject[line2.id]).to be_nil
@@ -69,7 +69,7 @@ RSpec.describe HoleSentinel do
 
         context "with notification rules not covering all the holes" do
           before(:each) do
-            workbench.notification_rules << create(:notification_rule, workbench: workbench, line_id: line.id, period: Date.today...5.day.since.to_date)
+            workbench.notification_rules << create(:notification_rule, workbench: workbench, line_id: line.id, period: Date.today...8.day.since.to_date)
           end
 
           it { should be_present }
