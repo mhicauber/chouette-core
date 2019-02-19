@@ -26,6 +26,7 @@ fr:
         edit_workgroup: Configuration de l'application
       configuration: Paramétrages
       organisation_configuration: Mon organisation
+      workgroups_configuration: Groupes de travail
       security_configuration: Sécurité
       tools: Outils
       sync: Synchronisation

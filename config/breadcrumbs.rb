@@ -5,13 +5,13 @@ crumb :workbench do |workbench|
   link workbench.name, workbench_path(workbench)
 end
 
-crumb :workgroup do |workgroup|
-  link workgroup.name, workgroup_path(workgroup)
+crumb :workgroups do |workgroup|
+  link Workgroup.t, workgroups_path()
 end
 
-crumb :workgroup_hole_sentinel_settings do
-  link I18n.t('workgroups.edit_hole_sentinel.title')
-  parent :workgroup
+crumb :workgroup do |workgroup|
+  link workgroup.name, workgroup_path(workgroup)
+  parent :workgroups
 end
 
 crumb :workbench_configure do |workbench|
@@ -383,14 +383,21 @@ crumb :vehicle_journeys do |referential, route|
   parent :route, referential, route
 end
 
-crumb :workgroup do |_|
-  link I18n.t('workgroups.edit.title')
+crumb :workgroup_aggregation_settings do |workgroup|
+  link I18n.t('workgroups.edit_aggregate.title')
+  parent workgroup
 end
 
-crumb :workgroup_aggregation_settings do
-  link I18n.t('workgroups.edit_aggregate.title')
-  parent :workgroup
+crumb :workgroup_edit_controls do |workgroup|
+  link I18n.t('workgroups.edit_controls.title')
+  parent workgroup
 end
+
+crumb :workgroup_hole_sentinel_settings do |workgroup|
+  link I18n.t('workgroups.edit_hole_sentinel.title')
+  parent workgroup
+end
+
 
 crumb :api_keys do |workbench|
   link I18n.t('api_keys.index.title'), workbench_api_keys_path(workbench)

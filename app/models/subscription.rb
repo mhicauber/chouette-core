@@ -52,38 +52,11 @@ class Subscription
     end
   end
 
-  def line_referential
-    @line_referential ||= LineReferential.create!(name: LineReferential.ts) do |referential|
-      referential.add_member organisation, owner: true
-      referential.objectid_format = :netex
-      referential.sync_interval = 1 # XXX is this really useful ?
-    end
-  end
-
-  def stop_area_referential
-    @stop_area_referential ||= StopAreaReferential.create!(name: StopAreaReferential.ts) do |referential|
-      referential.add_member organisation, owner: true
-      referential.objectid_format = :netex
-    end
-  end
-
   def workgroup
-    @workgroup ||= Workgroup.create!(name: "#{Workgroup.ts} #{organisation.name}") do |w|
-      w.line_referential      = line_referential
-      w.stop_area_referential = stop_area_referential
-      w.owner = organisation
-    end
+    @workgroup ||= Workgroup.create_with_organisation(organisation)
   end
 
-  def create_workbench!
-    @workbench ||= organisation.workbenches.create!(name: Workbench.ts) do |w|
-      w.line_referential      = line_referential
-      w.stop_area_referential = stop_area_referential
-      w.workgroup             = workgroup
-      w.objectid_format       = 'netex'
-      w.prefix = organisation.code
-    end
-  end
+  alias_method :create_workgroup!, :workgroup
 
   def save
     if valid?
@@ -91,7 +64,7 @@ class Subscription
         organisation.save!
         user.save!
 
-        create_workbench!
+        create_workgroup!
       end
     end
     valid?

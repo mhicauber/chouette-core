@@ -164,6 +164,5 @@ class LinesController < ChouetteController
     }
 
     scope.where(deactivated: @status[:deactivated])
-end
-
+  end
 end

@@ -26,6 +26,7 @@ en:
         edit_workgroup: App configuration
       configuration: Settings
       organisation_configuration: My organization
+      workgroups_configuration: Workgroups
       security_configuration: Security
       tools: Tools
       sync: Synchronization

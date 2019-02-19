@@ -1,0 +1,12 @@
+- breadcrumb @workgroup
+- page_header_content_for @workgroup
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t('metadatas'),
+          { Workgroup.tmf(:owner) => @workgroup.owner.name,
+            Workgroup.tmf(:workbenches) => @workgroup.workbenches.count,
+            Workgroup.tmf(:created_at) => l(@workgroup.created_at, format: :short_with_time),
+            Workgroup.tmf(:updated_at) => l(@workgroup.updated_at, format: :short_with_time)}
