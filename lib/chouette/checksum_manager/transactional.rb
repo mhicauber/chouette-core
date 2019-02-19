@@ -24,6 +24,7 @@ module Chouette::ChecksumManager
     def commit
       begin
         return if resolution_stack.empty?
+
         Apartment::Tenant.switch @current_tenant do
           # If I'm correct, the max complexity here is n(n+1)/2
           # The +1 is to prevent an error when te stack contains a single element
@@ -89,6 +90,7 @@ module Chouette::ChecksumManager
     def after_destroy object
       log "after_destroy #{object}"
       dirty_objects.delete object_signature(object)
+      resolution_children_count.delete(object_signature(object))
     end
 
     protected
