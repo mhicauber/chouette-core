@@ -7,7 +7,6 @@ module Stat
     scope :for_journey_pattern, ->(journey_pattern) { where(journey_pattern_id: journey_pattern.id) }
     scope :for_line, ->(line) { where(line_id: line.id) }
     scope :for_route, ->(route) { where(route_id: route.id) }
-    scope :notifiable, -> (workbench) { where.not(date: workbench.notification_rules.pluck(:period)) }
 
     def self.compute_for_referential(referential)
       Chouette::Benchmark.log "JourneyPatternCoursesByDate computation" do

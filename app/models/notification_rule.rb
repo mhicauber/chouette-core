@@ -7,7 +7,8 @@ class NotificationRule < ApplicationModel
   belongs_to :line, class_name: 'Chouette::Line'
 
   # Scopes
-  scope :in_periode, -> (daterange) { where('lower(notification_rules.period) < ? AND upper(notification_rules.period) >= ?', daterange.end, daterange.begin) }
+  scope :in_periode, -> (daterange) { where('period && daterange(:begin, :end)', begin: daterange.min, end: daterange.max + 1.day) } #Need to add one day because of PostgreSQL behaviour with daterange (exclusvive end)
+  scope :coverring, -> (daterange) { where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max + 1.day) }
 
   # Validations
   validates_presence_of :workbench
