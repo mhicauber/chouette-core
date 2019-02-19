@@ -22,7 +22,7 @@ module Chouette
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
     belongs_to :route
     belongs_to :journey_pattern
-    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
+    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :journey_pattern
 
     delegate :line, to: :route

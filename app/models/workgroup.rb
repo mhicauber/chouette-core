@@ -182,6 +182,7 @@ class Workgroup < ApplicationModel
     Workgroup.transaction do
       workgroup = Workgroup.create!(name: name) do |workgroup|
         workgroup.owner = organisation
+        workgroup.export_types = %w[Export::Gtfs Export::NetexFull]
 
         workgroup.line_referential ||= LineReferential.create!(name: LineReferential.ts) do |referential|
           referential.add_member organisation, owner: true

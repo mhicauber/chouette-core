@@ -12,8 +12,8 @@ describe "Companies", :type => :feature do
     before(:each) { visit line_referential_companies_path(line_referential) }
 
     it "displays companies" do
-      expect(page).to have_content(companies.first.short_name)
-      expect(page).to have_content(companies.last.short_name)
+      expect(page).to have_content(companies.first.name)
+      expect(page).to have_content(companies.last.name)
     end
 
     context 'filtering' do

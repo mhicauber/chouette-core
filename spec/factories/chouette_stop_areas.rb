@@ -7,6 +7,10 @@ FactoryGirl.define do
     latitude {10.0 * rand}
     longitude {10.0 * rand}
     kind "commercial"
+    city_name 'Bordeaux'
+    zip_code '33800'
+    street_name "Parc du couvent, Avenue Steve Biko"
+    url   { Faker::Internet.url }
 
     association :stop_area_referential
 

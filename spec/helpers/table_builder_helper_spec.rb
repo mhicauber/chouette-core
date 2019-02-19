@@ -232,9 +232,9 @@ describe TableBuilderHelper, type: :helper do
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
             <td title="Voir" class="name"><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}">#{company.name}</a></td>
-            <td class="phone"></td>
-            <td class="email"></td>
-            <td class="url"></td>
+            <td class="phone">#{company.phone}</td>
+            <td class="email">#{company.email}</td>
+            <td class="url">#{company.url}</td>
             <td class="actions">
                 <div class="btn-group">
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
@@ -347,9 +347,9 @@ describe TableBuilderHelper, type: :helper do
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
             <td title="Voir" class="name"><a href="/line_referentials/#{company.line_referential.id}/companies/#{company.id}">#{company.name}</a></td>
-            <td class="phone"></td>
-            <td class="email"></td>
-            <td class="url"></td>
+            <td class="phone">#{company.phone}</td>
+            <td class="email">#{company.email}</td>
+            <td class="url">#{company.url}</td>
             <td class="actions">
                 <div class="btn-group">
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>

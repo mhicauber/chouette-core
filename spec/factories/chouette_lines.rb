@@ -2,18 +2,23 @@ FactoryGirl.define do
 
   factory :line, :class => Chouette::Line do
     sequence(:name) { |n| "Line #{n}" }
+    sequence(:published_name) { |n| "Line-#{n}" }
     sequence(:objectid) { |n| "STIF:CODIFLIGNE:Line:#{n}" }
-    sequence(:transport_mode) { |n| "bus" }
     sequence(:number, 1)
+
 
     association :network, :factory => :network
     association :company, :factory => :company
+
+    transport_mode "bus"
 
     before(:create) do |line|
       line.line_referential ||= LineReferential.find_by! name: "first"
     end
 
     sequence(:registration_number) { |n| "test-#{n}" }
+
+    url { Faker::Internet.url }
 
     transient do
       referential nil

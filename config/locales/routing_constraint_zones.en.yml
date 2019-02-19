@@ -21,6 +21,8 @@ en:
       models:
         routing_constraint_zone:
           attributes:
+            route:
+              missing: "The constraint zone must belong to a route"
             stop_points:
               not_enough_stop_points: 'You should specify at least 2 stop points.'
               stop_points_not_from_route: 'Stop point does not belong to the Route of this Routing constraint zone.'
