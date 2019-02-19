@@ -4,11 +4,15 @@ class Sidekiq::Middleware::Server::Logging
       start = Time.now
       logger.info("#{queue_name queue} # start")
       logger.info("#{queue_name queue} # #{item["class"]} | #{item["args"]}")
+      @rails_logger = Rails.logger
+      Rails.logger = Sidekiq.logger
       yield
       logger.info("#{queue_name queue} # done: #{elapsed(start)} sec")
     rescue Exception
       logger.info("#{queue_name queue} # fail: #{elapsed(start)} sec")
       raise
+    ensure
+      Rails.logger = @rails_logger
     end
   end
 
