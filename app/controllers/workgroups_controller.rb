@@ -32,10 +32,6 @@ class WorkgroupsController < ChouetteController
     end
   end
 
-  def show
-    @workgroup = resource.decorate
-  end
-
   def workgroup_params
     params.require(:workgroup).permit(
       :name,
@@ -53,7 +49,7 @@ class WorkgroupsController < ChouetteController
 
   def resource
     if params[:id]
-      @workgroup = current_organisation.workgroups.find(params[:id])
+      @workgroup = current_organisation.workgroups.find(params[:id]).decorate
     else
       current_organisation.workgroups.build
     end
