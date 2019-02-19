@@ -46,6 +46,7 @@ module ReferentialCopyHelpers
   def each_item_in_source_collection collection
     source.switch do
       meth = collection.respond_to?(:find_each) ? :find_each : :each
+      collection = collection.reorder(nil) if meth == :find_each
       collection.send(meth) do |item|
         yield item
       end
