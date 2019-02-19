@@ -6,7 +6,7 @@ class WorkgroupPolicy < ApplicationPolicy
   end
 
   def create?
-    false
+    user.has_permission?('workgroups.create')
   end
 
   def destroy?

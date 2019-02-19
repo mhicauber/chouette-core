@@ -1,9 +1,19 @@
 fr:
   workgroups:
+    actions:
+      new: "Ajouter un Groupe de travail"
+      edit_control_sets: Paramétrer les Contrôles
+      edit_aggregate: Paramétrer l'Agrégation
+      edit_hole_sentinel: Paramétrer l'Analyse d'Offre
     edit_controls: &edit_controls
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:
       <<: *edit_controls
+    index:
+      name_cont: Nom
+      title: Groupes de travail
+    show:
+      title: "%{name}"
     edit_aggregate:
       title: Paramétrage de l'agrégation
       nightly_aggregate: "Lancement quotidien de l'agrégation"
@@ -37,6 +47,11 @@ fr:
         nightly_aggregate_enabled: Lancement quotidien activé
         nightly_aggregate_time: Heure du lancement
         aggregated_at: Agrégé le
+        owner: Propriétaire
+        name: Nom
+        workbenches: Espaces
+        created_at: Créé le
+        updated_at: Modifié le
 
   formtastic:
     hints:

@@ -1,0 +1,31 @@
+- breadcrumb :workgroups
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-12
+        = render 'filters'
+
+    .row
+      .col-lg-12
+        = table_builder_2 @workgroups,
+          [ TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: 'name', \
+              link_to: lambda do |workgroup| \
+                workgroup_path(workgroup) \
+              end \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: 'owner', \
+              attribute: Proc.new { |n| n.owner.name } \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: 'workbenches', \
+              attribute: Proc.new { |n| n.workbenches.count }, \
+              sortable: false \
+            ), \
+          ],
+          cls: 'table has-filter has-search'
+
+        = new_pagination @workgroups, 'pull-right'

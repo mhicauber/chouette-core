@@ -1,0 +1,17 @@
+= search_form_for @q, url: workgroups_path(), html: {method: :get}, class: 'form form-filter' do |f|
+  .ffg-row
+    .input-group.search_bar class=filter_item_class(params[:q], :name_cont)
+      = f.search_field :name_cont, placeholder: t('workgroups.index.name_cont'), class: 'form-control'
+      span.input-group-btn
+        button.btn.btn-default#search-btn type='submit'
+          span.fa.fa-search
+
+  .ffg-row
+    .form-group.togglable class=filter_item_class(params[:q], :owner_id_eq_any)
+      = f.label Workgroup.tmf(:owner), required: false, class: 'control-label'
+      = f.input :owner_id_eq_any, collection: current_organisation.workgroups.map{|w| w.owner }.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+
+
+  .actions
+    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default'

@@ -1,9 +1,19 @@
 en:
   workgroups:
+    actions:
+      new: "Create a new Workgroup"
+      edit_control_sets: Setup Controls
+      edit_aggregate: Setup Aggregation
+      edit_hole_sentinel: Setup Offer analysis
     edit_controls: &edit_controls
       title: "Workgroups Compliance Compliance Check Set Settings"
     edit:
       <<: *edit_controls
+    index:
+      name_cont: Name
+      title: Workgroups
+    show:
+      title: "%{name}"
     edit_aggregate:
       title: Aggregation settings
       nightly_aggregate: Daily Aggregation
@@ -35,6 +45,11 @@ en:
         nightly_aggregate_enabled: Daily aggregation enabled
         nightly_aggregate_time: Aggregation time
         aggregated_at: Aggregated at
+        owner: Owner
+        name: Name
+        workbenches: Workbenches
+        created_at: Created at
+        updated_at: Updated at
 
   formtastic:
     hints:
