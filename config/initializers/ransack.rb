@@ -8,8 +8,8 @@ end
 module Arel
   module Predications
     def between other
-      min = other.is_a?(Range) ? other.begin : other[0]
-      max = other.is_a?(Range) ? other.begin : other[0]
+      min = other.is_a?(Range) ? other.min : other[0]
+      max = other.is_a?(Range) ? other.max : other[0]
       gteq(min).and(lt(max))
     end
   end
@@ -21,7 +21,7 @@ module Ransack
     # replace % \ to \% \\
     def escape_wildcards(unescaped)
       case ActiveRecord::Base.connection.adapter_name
-      when "Mysql2".freeze, "PostgreSQL".freeze, "PostGIS".freeze 
+      when "Mysql2".freeze, "PostgreSQL".freeze, "PostGIS".freeze
         # Necessary for PostgreSQL and MySQL
         unescaped.to_s.gsub(/([\\|\%|_|.])/, '\\\\\\1')
       else
