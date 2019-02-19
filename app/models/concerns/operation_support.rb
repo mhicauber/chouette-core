@@ -65,7 +65,7 @@ module OperationSupport
 
   def check_other_operations
     if clean_scope && clean_scope.where(status: [:new, :pending, :running]).exists?
-      Rails.logger.warn "Pending #{self.class.name}(s) on #{parent.class.name} #{parent.name}/#{parent.id}"
+      Rails.logger.warn "#{self.class.name} ##{self.id} - Pending #{self.class.name}(s) on #{parent.class.name} #{parent.name}/#{parent.id}"
       errors.add(:base, :multiple_process)
     end
   end
@@ -112,7 +112,7 @@ module OperationSupport
       else
         # We just passed 'before' validations
         if operation_scheduled?
-          Rails.logger.warn "Trying to schedule a #{self.class.name} while it is already enqueued (#{self.class.name} ID: #{id})"
+          Rails.logger.warn "#{self.class.name} ##{self.id} - Trying to schedule a #{self.class.name} while it is already enqueued"
         else
           worker_class.perform_async(id)
         end
