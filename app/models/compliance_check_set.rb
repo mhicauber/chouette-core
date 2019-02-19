@@ -125,7 +125,7 @@ class ComplianceCheckSet < ApplicationModel
     end
     if should_call_iev? && !only_internals
       begin
-        logger.log "ComplianceCheckSet ##{id}: calling IEV"
+        logger.info "ComplianceCheckSet ##{id}: calling IEV"
         Net::HTTP.get(URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{id}"))
       rescue Exception => e
         logger.error "IEV server error : #{e.message}"
