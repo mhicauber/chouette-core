@@ -35,9 +35,7 @@ RSpec.describe GTFS::Time do
   it "handles time zone" do
     expect(GTFS::Time.parse("13:00:00").time("Europe/Paris")).to eq(Time.parse("2000-01-01 12:00:00 +00"))
     expect(GTFS::Time.parse("25:00:00").time("Europe/Sofia")).to eq(Time.parse("2000-01-01 23:00:00 +00"))
-    expect(GTFS::Time.parse("25:00:00").day_offset("Europe/Sofia")).to eq(0)
     expect(GTFS::Time.parse("27:00:00").time("Europe/Sofia")).to eq(Time.parse("2000-01-01 01:00:00 +00"))
-    expect(GTFS::Time.parse("27:00:00").day_offset("Europe/Sofia")).to eq(1)
   end
 
   it "formats datetime with 2 digits" do
