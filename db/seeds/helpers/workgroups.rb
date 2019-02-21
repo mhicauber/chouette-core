@@ -161,12 +161,17 @@ module Seed
         @line_referential_block&.call referential
       end
 
-      workgroup = ::Workgroup.seed_by(owner_id: owner.id) do |w|
-        w.line_referential      = line_referential
-        w.stop_area_referential = stop_area_referential
-        w.owner = owner
-        @workgroup_block&.call w
-        w.export_types ||= %w[Export::Gtfs]
+      workgroup = nil
+      if ::Workgroup.where(owner_id: owner.id).exists?
+        workgroup = ::Workgroup.where(owner_id: owner.id).order(:id).first
+      else
+        workgroup = ::Workgroup.seed_by(name: workgroup_name, owner_id: owner.id) do |w|
+          w.line_referential      = line_referential
+          w.stop_area_referential = stop_area_referential
+          w.owner = owner
+          @workgroup_block&.call w
+          w.export_types ||= %w[Export::Gtfs]
+        end
       end
 
       custom_fields.each do |code, block|
