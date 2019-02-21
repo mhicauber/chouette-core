@@ -46,7 +46,12 @@ module Chouette::ChecksumManager
 
     def resolve_object object
       return object if object.is_a? ActiveRecord::Base
-      object.first.constantize.find(object.last)
+      begin
+        object.first.constantize.find(object.last)
+      rescue => e
+        Rails.logger.error "Unable to resiolve object #{object.inspect}: #{e.message}"
+        raise
+      end
     end
 
     def serialize_object object
