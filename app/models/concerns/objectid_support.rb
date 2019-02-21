@@ -53,6 +53,7 @@ module ObjectidSupport
         vanilla_search
       end
       alias_method_chain :search, :objectid
+      alias_method :ransack, :search
 
       def ransackable_scopes(auth_object = nil)
         [:with_short_id]
