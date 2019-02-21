@@ -161,7 +161,7 @@ module Seed
         @line_referential_block&.call referential
       end
 
-      workgroup = ::Workgroup.seed_by(name: workgroup_name, owner_id: owner.id) do |w|
+      workgroup = ::Workgroup.seed_by(owner_id: owner.id) do |w|
         w.line_referential      = line_referential
         w.stop_area_referential = stop_area_referential
         w.owner = owner
