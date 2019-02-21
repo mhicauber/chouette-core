@@ -166,7 +166,7 @@ module Seed
         w.stop_area_referential = stop_area_referential
         w.owner = owner
         @workgroup_block&.call w
-        w.export_types ||= %w[Export::Gtfs]
+        w.export_types ||= Workgroup.default_export_types
       end
 
       custom_fields.each do |code, block|

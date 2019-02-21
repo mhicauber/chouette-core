@@ -176,13 +176,17 @@ class Workgroup < ApplicationModel
     self.output ||= ReferentialSuite.create
   end
 
+  def self.default_export_types
+    %w[Export::Gtfs Export::NetexFull]
+  end
+
   def self.create_with_organisation organisation, params={}
     name = params[:name] || "#{Workgroup.ts} #{organisation.name}"
 
     Workgroup.transaction do
       workgroup = Workgroup.create!(name: name) do |workgroup|
         workgroup.owner = organisation
-        workgroup.export_types = %w[Export::Gtfs Export::NetexFull]
+        workgroup.export_types = Workgroup.default_export_types
 
         workgroup.line_referential ||= LineReferential.create!(name: LineReferential.ts) do |referential|
           referential.add_member organisation, owner: true
