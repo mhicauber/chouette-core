@@ -2,7 +2,9 @@ fr:
   area_types:
     label:
       zdep: "Zone d'Embarquement"
+      zder: ZDEr
       zdlp: "Zone de Lieu"
+      zdlr: ZDLr
       lda: "Lieu d'Arrêt"
       gdl: "Groupe de Lieux"
       deposit: Dépôt
