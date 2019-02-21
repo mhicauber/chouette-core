@@ -2,7 +2,9 @@ en:
   area_types:
     label:
       zdep: "Quay"
+      zder: ZDEr
       zdlp: "Monomodal Stop Place"
+      zdlr: ZDLr
       lda: "Stop Place"
       gdl: "Group of Stop Places"
       deposit: Deposit
