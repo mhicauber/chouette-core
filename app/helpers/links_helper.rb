@@ -15,4 +15,12 @@ module LinksHelper
   def activate_link_content(translation_key = 'actions.activate')
     custom_link_content translation_key, 'power-off', extra_class: "text-success"
   end
+
+  def link_to_if_can_show(object, label, url)
+    if policy(object).show?
+      link_to(label, url)
+    else
+      label
+    end
+  end
 end

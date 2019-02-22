@@ -14,11 +14,8 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.gtfs.filename'), \
-          attribute: 'name', \
-          sortable: false, \
-          link_to: lambda do |item| \
-            referential_path(item.referential) if item.referential.present? \
-          end \
+          attribute: :name ,\
+          sortable: false \
         ), \
         TableBuilderHelper::Column.new( \
           key: :status, \

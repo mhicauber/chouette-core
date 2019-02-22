@@ -15,11 +15,10 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'), \
-          attribute: 'name', \
-          sortable: false, \
-          link_to: lambda do |item| \
-            referential_path(item.referential) if item.referential.present? \
-          end \
+          attribute: lambda do |item| \
+            link_to_if_can_show(item.referential, item.referential.name, referential_path(item.referential)) if item.referential.present? \
+          end, \
+          sortable: false \
         ), \
         TableBuilderHelper::Column.new( \
           key: :status, \
