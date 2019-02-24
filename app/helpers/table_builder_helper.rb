@@ -425,7 +425,8 @@ module TableBuilderHelper
         link.disabled ? '#' : link.href,
         method: link.disabled ? nil : link.method,
         data: link.data,
-        disabled: link.disabled
+        disabled: link.disabled,
+        download: link.html_options[:download]
       ) do
         link.content
       end,
