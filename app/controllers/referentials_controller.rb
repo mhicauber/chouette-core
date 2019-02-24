@@ -174,7 +174,7 @@ class ReferentialsController < ChouetteController
   end
 
   def referential_params
-    params.require(:referential).permit(
+    referential_params = params.require(:referential).permit(
       :id,
       :name,
       :organisation_id,
@@ -185,6 +185,8 @@ class ReferentialsController < ChouetteController
       :from_current_offer,
       metadatas_attributes: [:id, :first_period_begin, :first_period_end, periods_attributes: [:begin, :end, :id, :_destroy], :lines => []]
     )
+    referential_params[:from_current_offer] = referential_params[:from_current_offer] == '1'
+    referential_params
   end
 
   def check_cloning_source_is_accessible

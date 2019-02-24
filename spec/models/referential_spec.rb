@@ -74,6 +74,13 @@ describe Referential, :type => :model do
       expect(referential.state).to eq :active
     end
 
+    it "should not clone the current offer" do
+      @create_from_current_offer = false
+      allow_any_instance_of(Referential).to receive(:create_from_current_offer){ @create_from_current_offer = true }
+      referential
+      expect(@create_from_current_offer).to be_falsy
+    end
+
     context 'with create_from_current_offer' do
       subject(:referential) { Referential.create name: "test", objectid_format: :netex, organisation: create(:organisation), line_referential: create(:line_referential), stop_area_referential: create(:stop_area_referential), prefix: "foo", from_current_offer: true }
 
@@ -253,7 +260,7 @@ describe Referential, :type => :model do
   end
 
   describe "#workgroup" do
-    
+
     context "when is referential" do
       let(:ref1) {  create(:referential) }
       let(:ref2) {  create(:workbench_referential) }

@@ -78,6 +78,7 @@ describe ReferentialsController, :type => :controller do
   end
 
   describe "POST #create" do
+    let(:from_current_offer) { '0' }
     context "when duplicating" do
       let(:request){
         post :create,
@@ -88,7 +89,8 @@ describe ReferentialsController, :type => :controller do
           stop_area_referential: referential.stop_area_referential,
           line_referential: referential.line_referential,
           objectid_format: referential.objectid_format,
-          workbench_id: referential.workbench_id
+          workbench_id: referential.workbench_id,
+          from_current_offer: from_current_offer
         }
       }
 
@@ -98,11 +100,29 @@ describe ReferentialsController, :type => :controller do
         expect(Referential.last.state).to eq :pending
       end
 
+      it "should not clone the current offer" do
+        @create_from_current_offer = false
+        allow_any_instance_of(Referential).to receive(:create_from_current_offer){ @create_from_current_offer = true }
+        request
+        expect(@create_from_current_offer).to be_falsy
+      end
+
       it "displays a flash message" do
         request
         expect(controller).to set_flash[:notice].to(
           I18n.t('notice.referentials.duplicate')
         )
+      end
+
+      context "from_current_offer" do
+        let(:from_current_offer) { '1' }
+
+        it "should clone the current offer" do
+          @create_from_current_offer = false
+          allow_any_instance_of(Referential).to receive(:create_from_current_offer){ @create_from_current_offer = true }
+          request
+          expect(@create_from_current_offer).to be_truthy
+        end
       end
     end
   end
