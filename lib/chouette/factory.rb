@@ -123,7 +123,7 @@ module Chouette
 
               attribute(:line) { parent.metadatas_lines.first }
 
-              model :stop_point, count: 3, required: true do
+              model :stop_point, count:3, required: true do
                 attribute(:stop_area) do
                   # TODO create a StopArea with Factory::Model ?
                   stop_area_referential = parent.referential.stop_area_referential
@@ -236,7 +236,12 @@ module Chouette
       root_context.create_instance
     end
 
+    def method_missing(name, *arguments, &block)
+      root_context.find_instance(name) || root_context.find_instances(name).presence || super
+    end
+
     attr_reader :root_context
 
+    class MultipleUnnamedModels < RuntimeError; end
   end
 end

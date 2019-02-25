@@ -58,6 +58,31 @@ module Chouette
         model.build_instance self
       end
 
+      def find_instance(instance_name)
+        return named_instances[instance_name] if named_instances[instance_name].present?
+        return instance if model.name == instance_name
+
+        out = []
+        children.each do |child|
+          out << child.find_instance(instance_name)
+        end
+        out.compact!
+
+        raise Chouette::Factory::MultipleUnnamedModels if out.size > 1
+
+        out.first
+      end
+
+      def find_instances(name)
+        instance_name = name.to_s.singularize.to_sym
+
+        return [instance] if model.name == instance_name
+
+        children.flat_map do |child|
+          child.find_instances name
+        end
+      end
+
       attr_accessor :model
 
       def named_instances

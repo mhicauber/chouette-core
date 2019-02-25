@@ -78,9 +78,10 @@ module Chouette
       end
 
       def build_instance(context, parent = nil)
-        puts "Create #{name} #{klass.inspect} in #{context}"
-
         attributes_values = build_attributes(context)
+
+        puts "Create #{name} #{klass.name} in #{context} with attributes #{attributes_values.inspect}"
+
         parent ||= context.parent.instance
 
         new_instance = nil

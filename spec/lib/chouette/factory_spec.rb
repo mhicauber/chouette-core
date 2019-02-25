@@ -80,7 +80,6 @@ RSpec.describe Chouette::Factory do
   end
 
   describe "TimeTables" do
-
     describe "{ time_table }" do
       before do
         Chouette::Factory.create do
@@ -156,7 +155,109 @@ RSpec.describe Chouette::Factory do
         end
       end
     end
-
   end
 
+  describe 'nested context' do
+    let(:context) do
+      Chouette::Factory.create do
+        route do
+          vehicle_journey :first
+          vehicle_journey :second
+        end
+      end
+    end
+
+    it 'should create only one parent resource' do
+      expect{ context }.to change{ Referential.count }.by 1
+
+      context.referential.switch do
+        expect(Chouette::Route.count).to eq 1
+      end
+    end
+  end
+
+  describe 'context accessors' do
+    let(:context) do
+      Chouette::Factory.create do
+        referential do
+          vehicle_journey :first
+          vehicle_journey :second
+        end
+      end
+    end
+
+    it 'should allow the access to a single instance' do
+      expect(context.referential).to eq Referential.last
+    end
+
+    it 'should allow the access to a named instance' do
+      context
+      second_vehicle_journey = Referential.last.switch { Chouette::VehicleJourney.last }
+      expect(context.second).to eq second_vehicle_journey
+    end
+
+    it 'should allow the access to multiple instances' do
+      expect(context.referentials).to match_array Referential.order(:id).last(1).to_a
+    end
+
+    context 'with multiple unnamed models' do
+      let(:context) do
+        Chouette::Factory.create do
+          vehicle_journey :first
+          vehicle_journey :second
+        end
+      end
+
+      it 'should forbid the access to a single instance' do
+        expect { context.referential }.to raise_error Chouette::Factory::MultipleUnnamedModels
+        expect { context.vehicle_journey }.to raise_error Chouette::Factory::MultipleUnnamedModels
+      end
+
+      it 'should allow the access to multiple instances' do
+        expect(context.referentials).to match_array Referential.order(:id).last(2).to_a
+      end
+    end
+  end
+
+  describe 'with no context' do
+    let(:context) do
+      Chouette::Factory.create do
+        vehicle_journey :first
+        vehicle_journey :second
+      end
+    end
+
+    it 'should create one parent each' do
+      expect{ context }.to change{ Referential.count }.by 2
+
+      context.referentials.each do |referential|
+        referential.switch do
+          expect(Chouette::Route.count).to eq 1
+        end
+      end
+    end
+  end
+
+  describe 'with explicitly different contexts' do
+    let(:context) do
+      Chouette::Factory.create do
+        route do
+          vehicle_journey :first
+        end
+        route do
+          vehicle_journey :second
+        end
+      end
+    end
+
+    it 'should create one parent each' do
+      expect{ context }.to change{ Referential.count }.by 2
+
+      context.referentials.each do |referential|
+        referential.switch do
+          expect(Chouette::Route.count).to eq 1
+        end
+      end
+    end
+  end
 end
