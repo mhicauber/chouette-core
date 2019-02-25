@@ -421,8 +421,8 @@ RSpec.describe Import::Gtfs do
         ['NADAV', 2, t('2000-01-01 14:44:00 UTC'), t('2000-01-01 14:42:00 UTC'), 0, 0],
         ['NANAA', 3, t('2000-01-01 14:51:00 UTC'), t('2000-01-01 14:49:00 UTC'), 0, 0],
         ['STAGECOACH', 4, t('2000-01-01 14:58:00 UTC'), t('2000-01-01 14:56:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'), 0, 0],
-        ['BULLFROG', 1, t('2000-01-01 16:15:00 UTC'), t('2000-01-01 16:10:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 0, t('2000-01-01 23:00:00 UTC'), t('2000-01-01 23:00:00 UTC'), 0, 0],
+        ['BULLFROG', 1, t('2000-01-01 00:05:00 UTC'), t('2000-01-01 00:00:00 UTC'), 0, 0],
         ['BULLFROG', 0, t('2000-01-01 20:05:00 UTC'), t('2000-01-01 20:05:00 UTC'), 0, 0],
         ['BEATTY_AIRPORT', 1, t('2000-01-01 20:15:00 UTC'), t('2000-01-01 20:15:00 UTC'), 0, 0],
         ['BULLFROG', 0, t('2000-01-01 16:20:00 UTC'), t('2000-01-01 16:20:00 UTC'), 0, 0],
@@ -438,6 +438,9 @@ RSpec.describe Import::Gtfs do
       ]
 
       expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
+      referential.vehicle_journeys.each do |vj|
+        expect{ vj.calculate_vehicle_journey_at_stop_day_offset; vj.update_checksum! }.to_not change { vj.checksum }
+      end
     end
 
     context 'with invalid stop times' do

@@ -21,6 +21,7 @@ module Chouette
           offset += 1
         end
 
+        offset = [stop.arrival_day_offset, offset].max
         stop.arrival_day_offset = offset
 
         # Compare '23:00' with '00:05' for example
@@ -28,6 +29,7 @@ module Chouette
           offset += 1
         end
 
+        offset = [stop.departure_day_offset, offset].max
         stop.departure_day_offset = offset
 
         stop
