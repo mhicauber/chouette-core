@@ -72,6 +72,7 @@ class Permission
       permissions << "merges.rollback"
       permissions << "aggregates.rollback"
       permissions << "api_keys.index"
+      permissions << "workgroups.update"
     end
 
     def referentials
