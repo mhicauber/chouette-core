@@ -11,8 +11,8 @@ class Workgroup < ApplicationModel
   has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
-  has_many :aggregates, -> { manual },  class_name: 'Aggregate'
-  has_many :nightly_aggregates, -> { automatic }, class_name: 'NightlyAggregate'
+  has_many :aggregates
+  has_many :nightly_aggregates
   has_many :publication_setups
   has_many :publication_apis
   has_many :compliance_check_sets, through: :workbenches
@@ -110,7 +110,7 @@ class Workgroup < ApplicationModel
       return
     end
 
-    aggregates.create!(referentials: target_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
+    aggregates.create!(referentials: target_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target, type: 'NightlyAggregate')
     update(nightly_aggregated_at: Time.current)
   end
 
