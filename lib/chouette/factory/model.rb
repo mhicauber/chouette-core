@@ -1,6 +1,7 @@
 module Chouette
   class Factory
     class Model
+      include Chouette::Logger
 
       attr_reader :name
       attr_accessor :required, :count
@@ -13,6 +14,10 @@ module Chouette
       end
 
       alias_method :required?, :required
+
+      def logger_prefix
+        "Model #{name}"
+      end
 
       def define(&block)
         dsl.instance_eval &block
@@ -80,50 +85,48 @@ module Chouette
       def build_instance(context, parent = nil)
         attributes_values = build_attributes(context)
 
-        puts "Create #{name} #{klass.name} in #{context} with attributes #{attributes_values.inspect}"
+        log "Create #{name} #{klass.name} in #{context} with attributes #{attributes_values.inspect}"
 
         parent ||= context.parent.instance
 
         new_instance = nil
 
-        context.parent.around_models do
-          new_instance =
-            if parent
-              # Try Parent#build_model
-              if parent.respond_to?("build_#{name}")
-                parent.send("build_#{name}", attributes_values)
-              else
-                # Then Parent#models
-                parent.send(name.to_s.pluralize).build attributes_values
-              end
+        new_instance =
+          if parent
+            # Try Parent#build_model
+            if parent.respond_to?("build_#{name}")
+              parent.send("build_#{name}", attributes_values)
             else
-              klass.new attributes_values
+              # Then Parent#models
+              parent.send(name.to_s.pluralize).build attributes_values
             end
-
-          models.each do |_, model|
-            if model.required?
-              model.count.times do
-                model.build_instance(Context.new(model, context.with_instance(new_instance)), new_instance)
-              end
-            end
+          else
+            klass.new attributes_values
           end
 
-          after_callbacks.each do |after_callback|
-            after_dsl = AfterDSL.new(self, new_instance, context)
-
-            if after_callback.arity > 0
-              after_callback.call new_instance
-            else
-              after_dsl.instance_eval &after_callback
+        models.each do |_, model|
+          if model.required?
+            model.count.times do
+              model.build_instance(Context.new(model, context.with_instance(new_instance)), new_instance)
             end
           end
-
-          unless new_instance.valid?
-            puts "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
-          end
-
-          puts "Created #{new_instance.inspect}"
         end
+
+        after_callbacks.each do |after_callback|
+          after_dsl = AfterDSL.new(self, new_instance, context)
+
+          if after_callback.arity > 0
+            after_callback.call new_instance
+          else
+            after_dsl.instance_eval &after_callback
+          end
+        end
+
+        unless new_instance.valid?
+          log "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
+        end
+
+        log "Created #{new_instance.inspect}"
 
         new_instance
       end

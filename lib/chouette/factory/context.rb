@@ -1,6 +1,7 @@
 module Chouette
   class Factory
     class Context
+      include Chouette::Logger
 
       attr_accessor :instance, :instance_name, :attributes, :parent
 
@@ -27,6 +28,10 @@ module Chouette
         path
       end
 
+      def logger_prefix
+        to_s
+      end
+
       def evaluate(&block)
         dsl.instance_eval &block
       end
@@ -43,8 +48,10 @@ module Chouette
 
       def create_instance
         unless root?
-          self.instance = build_instance
-          instance.save!
+          parent.around_models do
+            self.instance = build_instance
+            instance.save!
+          end
 
           if instance_name
             named_instances[instance_name] = instance
@@ -127,11 +134,11 @@ module Chouette
         if root?
           block.call
         else
-          puts "Around models in #{self}"
+          log "Around models"
           parent.around_models do
             local_models_proc = model.around_models
             if local_models_proc
-              puts "local_models_proc: #{local_models_proc.inspect} with #{instance.inspect}"
+              log "local_models_proc: #{local_models_proc.inspect} with #{instance.inspect}"
               local_models_proc.call instance, block
             else
               block.call

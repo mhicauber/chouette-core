@@ -1,4 +1,6 @@
 module Chouette::ChecksumManager
+  extend Chouette::Logger
+
   THREAD_VARIABLE_NAME = "current_checksum_manager".freeze
 
   class NotInTransactionError < StandardError; end
@@ -15,25 +17,8 @@ module Chouette::ChecksumManager
     manager
   end
 
-  def self.logger
-    @@logger ||= Rails.logger
-  end
-
-  def self.logger= logger
-    @@logger = logger
-  end
-
-  def self.log_level
-    @@log_level ||= :debug
-  end
-
-  def self.log_level= log_level
-    @@log_level = log_level if logger.respond_to?(log_level)
-  end
-
-  def self.log msg
-    prefix = "[ChecksumManager::#{current.class.name.split('::').last} #{current.object_id.to_s(16)}]"
-    logger.send log_level, "#{prefix} #{msg}"
+  def self.logger_prefix
+    "ChecksumManager::#{current.class.name.split('::').last} #{current.object_id.to_s(16)}"
   end
 
   def self.start_transaction
