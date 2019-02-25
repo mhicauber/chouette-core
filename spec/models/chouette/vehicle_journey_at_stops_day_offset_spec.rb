@@ -14,8 +14,8 @@ describe Chouette::VehicleJourneyAtStop do
           :vehicle_journey_at_stop,
           arrival_time: arrival_time,
           departure_time: departure_time,
-          arrival_day_offset: 12,
-          departure_day_offset: 12
+          arrival_day_offset: 0,
+          departure_day_offset: 0
         )
       end
 
@@ -31,6 +31,36 @@ describe Chouette::VehicleJourneyAtStop do
 
       expect(at_stops[2].arrival_day_offset).to eq(1)
       expect(at_stops[2].departure_day_offset).to eq(1)
+    end
+
+    it 'keeps increments when full days are skipped' do
+      at_stops = []
+      [
+        ['22:30', '22:35', 0],
+        ['23:50', '00:05', 12],
+        ['00:30', '00:35', 12],
+      ].each do |arrival_time, departure_time, day_offset|
+        at_stops << build_stubbed(
+          :vehicle_journey_at_stop,
+          arrival_time: arrival_time,
+          departure_time: departure_time,
+          arrival_day_offset: day_offset,
+          departure_day_offset: day_offset
+        )
+      end
+
+      offsetter = Chouette::VehicleJourneyAtStopsDayOffset.new(at_stops)
+
+      offsetter.calculate!
+
+      expect(at_stops[0].arrival_day_offset).to eq(0)
+      expect(at_stops[0].departure_day_offset).to eq(0)
+
+      expect(at_stops[1].arrival_day_offset).to eq(12)
+      expect(at_stops[1].departure_day_offset).to eq(13)
+
+      expect(at_stops[2].arrival_day_offset).to eq(13)
+      expect(at_stops[2].departure_day_offset).to eq(13)
     end
 
     it "increments day offset when an at_stop passes midnight the next day" do
