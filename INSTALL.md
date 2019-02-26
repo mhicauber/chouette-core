@@ -74,7 +74,7 @@ brew install postgis
 On debian/ubuntu system :
 
 ```sh
-sudo apt-get install libproj-dev postgis
+sudo apt-get install libproj-dev postgis libmagickwand-dev libmagic-dev
 ```
 
 ### Install gems
